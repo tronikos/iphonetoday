@@ -1,0 +1,257 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Neutral resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NEU)
+#ifdef _WIN32
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIALOGPAGE0 DIALOG  0, 0, 140, 129
+STYLE DS_SETFONT | WS_CHILD | WS_SYSMENU
+FONT 8, "System"
+BEGIN
+    LTEXT           "Icon Width:",IDC_STATIC,6,7,38,8
+    LTEXT           "Icons for Row:",IDC_STATIC,6,19,47,8
+    LTEXT           "Portrait Heigth:",IDC_STATIC,6,31,50,8
+    LTEXT           "Landscape Heigth:",IDC_STATIC,6,43,62,8
+    LTEXT           "Velocity:",IDC_STATIC,6,55,29,8
+    LTEXT           "Factor Movement:",IDC_STATIC,6,68,59,8
+    EDITTEXT        IDC_EDIT_ICON_WIDTH,102,6,22,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_ICONS_ROW,102,18,22,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_HEIGTH_P,102,30,22,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_HEIGTH_L,102,42,22,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_VELOCITY,102,54,22,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_FACTOR_MOV,102,66,22,12,ES_AUTOHSCROLL
+    LTEXT           "Font Size:",IDC_STATIC,6,80,34,8
+    EDITTEXT        IDC_EDIT_FONT_SIZE,102,78,22,12,ES_AUTOHSCROLL
+    CONTROL         "Ignore Rotation Screen",IDC_CHECK_IGNORE_ROTATION,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,6,103,90,10
+    CONTROL         "Close on launch icon",IDC_CHECK_CLOSEONLAUNCH,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,6,113,84,10
+    LTEXT           "Time of vibration:",IDC_STATIC,6,92,58,8
+    EDITTEXT        IDC_EDIT_TIME_VIBRATION,102,90,22,12,ES_AUTOHSCROLL
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_DIALOGPAGE0, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 133
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 122
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+#endif    // Neutral resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Inglés (Estados Unidos) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDS_APPNAME             "iPhoneToday"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_TAB0                "General"
+    IDS_TAB1                "Wallpaper"
+    IDS_TAB2                "Clock"
+END
+
+#endif    // Inglés (Estados Unidos) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Español resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ESN)
+#ifdef _WIN32
+LANGUAGE LANG_SPANISH, SUBLANG_SPANISH_MODERN
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_MENU_ICON DIALOG  0, 0, 160, 158
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Icon Settings"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    LTEXT           "Screen:",IDC_STATIC,6,8,24,8
+    EDITTEXT        IDC_MICON_SCREEN,36,6,18,12,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "Name:",IDC_STATIC,6,23,26,9
+    LTEXT           "Image:",IDC_STATIC,6,37,24,8
+    LTEXT           "Execute:",IDC_STATIC,6,66,30,8
+    LTEXT           "Parameters:",IDC_STATIC,6,81,40,8
+    LTEXT           "ExecuteAlt:",IDC_STATIC,6,97,38,8
+    LTEXT           "Type:",IDC_STATIC,6,51,20,8
+    LTEXT           "ParamsAlt:",IDC_STATIC,6,111,36,8
+    EDITTEXT        IDC_MICON_NAME,48,20,90,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_MICON_IMAGE,48,34,72,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_MICON_EXEC,48,63,72,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_MICON_PARAMETERS,48,78,90,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_MICON_EXECALT,48,93,72,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_MICON_PARAMETERSALT,48,108,90,14,ES_AUTOHSCROLL
+    LTEXT           "Icon:",IDC_STATIC,81,8,18,8
+    EDITTEXT        IDC_MICON_ICON,102,6,18,12,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "",IDC_MICON_SPIN_SCREEN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ARROWKEYS,54,6,18,12
+    CONTROL         "",IDC_MICON_SPIN_ICON,"msctls_updown32",UDS_SETBUDDYINT | UDS_ARROWKEYS,120,6,18,12
+    COMBOBOX        IDC_MICON_TYPE,48,49,90,54,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "...",IDC_MICON_IMAGE_B,120,34,20,14
+    PUSHBUTTON      "...",IDC_MICON_EXECALT_B,120,93,20,14
+    PUSHBUTTON      "...",IDC_MICON_EXEC_B,120,63,20,14
+    CONTROL         "Launch Animation",IDC_MICON_LAUNCHANIMATION,"Button",BS_AUTOCHECKBOX | BS_LEFTTEXT | WS_TABSTOP,48,126,90,10
+END
+
+IDD_DIALOGDUMMY DIALOG  0, 0, 156, 177
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_SYSMENU
+FONT 8, "MS Shell Dlg"
+BEGIN
+END
+
+IDD_DIALOGPAGE1 DIALOG  0, 0, 156, 177
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
+FONT 8, "MS Shell Dlg"
+BEGIN
+    LTEXT           "Wallpaper:",IDC_STATIC,6,9,36,8
+    EDITTEXT        IDC_P1_EDIT_WALLPAPER,48,6,72,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_P1_EDIT_WALLPAPER_B,120,6,20,14
+    CONTROL         "Transparent Background",IDC_P1_CHECK_TRANSPARENT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,6,24,128,12
+    CONTROL         "Static Wallpaper",IDC_P1_CHECK_STATIC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,6,37,128,12
+END
+
+IDD_DIALOGPAGE2 DIALOG  0, 0, 156, 177
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
+FONT 8, "MS Shell Dlg"
+BEGIN
+    LTEXT           "Font Color:",IDC_STATIC,6,41,37,8
+    EDITTEXT        IDC_P2_EDIT_FONT_COLOR,54,38,60,14,ES_AUTOHSCROLL | ES_READONLY
+    PUSHBUTTON      "...",IDC_P2_EDIT_FONT_COLOR_B,114,38,20,14
+    CONTROL         "12 Hours Format",IDC_P2_CHECK_12FORMAT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,6,56,128,12
+    LTEXT           "Font Width:",IDC_STATIC,6,9,51,10
+    LTEXT           "Font Height:",IDC_STATIC,6,24,63,10
+    EDITTEXT        IDC_P2_EDIT_FONT_WIDTH,84,6,29,15,ES_AUTOHSCROLL
+    EDITTEXT        IDC_P2_EDIT_FONT_HEIGHT,84,22,29,15,ES_AUTOHSCROLL
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_MENU_ICON, DIALOG
+    BEGIN
+        VERTGUIDE, 6
+        VERTGUIDE, 39
+        HORZGUIDE, 10
+        HORZGUIDE, 25
+        HORZGUIDE, 42
+    END
+
+    IDD_DIALOGPAGE1, DIALOG
+    BEGIN
+        BOTTOMMARGIN, 152
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_DISPLAYICON         ICON                    "IconoApp.ico"
+#endif    // Español resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
