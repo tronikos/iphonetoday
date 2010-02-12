@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "iPhoneToday", "iPhoneToday.vcproj", "{E86A05B7-61BA-4F59-A656-ADE7A6424CDB}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "iPhoneToday", "iPhoneToday\iPhoneToday.vcproj", "{E86A05B7-61BA-4F59-A656-ADE7A6424CDB}"
 EndProject
-Project("{B900F1C2-3D47-4FEC-85B3-04AAF18C3634}") = "iPhoneTodayCab", "iPhoneTodaycab\iPhoneTodayCab.vddproj", "{E367A166-9BCE-4466-8586-3117B97B9F50}"
+Project("{B900F1C2-3D47-4FEC-85B3-04AAF18C3634}") = "iPhoneTodayCab", "iPhoneTodayCab\iPhoneTodayCab.vddproj", "{E367A166-9BCE-4466-8586-3117B97B9F50}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
