@@ -12,28 +12,30 @@
 LRESULT CALLBACK OptionDialog0(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg)
-    {
-    case WM_INITDIALOG:
-        {
+	{
+	case WM_INITDIALOG:
+		{
 			// Initialize handle to property sheet
 			g_hDlg[0] = hDlg;
 
-			// Property sheet will destroy part of the soft key bar,
-			// therefore we create an empty menu bar here
-			// Only required on the first property sheet
-            SHMENUBARINFO shmbi;
-            shmbi.cbSize = sizeof(shmbi);
-            shmbi.hwndParent = hDlg;
-            shmbi.dwFlags = SHCMBF_EMPTYBAR;
-            SHCreateMenuBar(&shmbi);
+			if (FindWindow(L"MS_SIPBUTTON", NULL) != NULL) {
+				// Property sheet will destroy part of the soft key bar,
+				// therefore we create an empty menu bar here
+				// Only required on the first property sheet
+				SHMENUBARINFO shmbi;
+				shmbi.cbSize = sizeof(shmbi);
+				shmbi.hwndParent = hDlg;
+				shmbi.dwFlags = SHCMBF_EMPTYBAR;
+				SHCreateMenuBar(&shmbi);
+			}
 
 			SHINITDLGINFO shidi;
 
-            // Create a Done button and size it.  
-            shidi.dwMask = SHIDIM_FLAGS;
-            shidi.dwFlags = SHIDIF_DONEBUTTON | SHIDIF_SIZEDLG | SHIDIF_WANTSCROLLBAR;
-            shidi.hDlg = hDlg;
-            SHInitDialog(&shidi);
+			// Create a Done button and size it.  
+			shidi.dwMask = SHIDIM_FLAGS;
+			shidi.dwFlags = SHIDIF_DONEBUTTON | SHIDIF_SIZEDLG | SHIDIF_WANTSCROLLBAR;
+			shidi.hDlg = hDlg;
+			SHInitDialog(&shidi);
 
 			SHInitExtraControls();
 
@@ -43,230 +45,146 @@ LRESULT CALLBACK OptionDialog0(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 			}
 			if (configuracion != NULL) {
 
-				TCHAR str[MAX_PATH];
-			
-				// Configuramos el elemento Icon Width
-				swprintf(str, L"%d", configuracion->anchoIconoXML);
-				SetWindowText(GetDlgItem(hDlg, IDC_EDIT_ICON_WIDTH), str);
+				CConfigurationScreen *cs = configuracion->mainScreenConfig;
 
-				// Configuramos el elemento Icons for Row
-				swprintf(str, L"%d", configuracion->numeroIconosXML);
-				SetWindowText(GetDlgItem(hDlg, IDC_EDIT_ICONS_ROW), str);
+				SetDlgItemInt(hDlg, IDC_EDIT_MS_ICON_WIDTH,		cs->iconWidthXML,	TRUE);
+				SetDlgItemInt(hDlg, IDC_EDIT_MS_ICONS_PER_ROW,	cs->iconsPerRowXML,	TRUE);
+				SetDlgItemInt(hDlg, IDC_EDIT_MS_TEXT_HEIGHT,	cs->fontSize,		TRUE);
+				SetDlgItemInt(hDlg, IDC_EDIT_MS_TEXT_OFFSET,	cs->fontOffset,		TRUE);
 
-				// Configuramos el elemento Heigth Portrait
-				swprintf(str, L"%d", configuracion->altoPantallaP);
-				SetWindowText(GetDlgItem(hDlg, IDC_EDIT_HEIGTH_P), str);
+				SetDlgItemHex(hDlg, IDC_EDIT_MS_TEXT_COLOR,		cs->fontColor);
 
-				// Configuramos el elemento Heigth Landscape
-				swprintf(str, L"%d", configuracion->altoPantallaL);
-				SetWindowText(GetDlgItem(hDlg, IDC_EDIT_HEIGTH_L), str);
+				SendMessage(GetDlgItem(hDlg, IDC_CHECK_MS_TEXT_BOLD), BM_SETCHECK, cs->fontBold ? BST_CHECKED : BST_UNCHECKED, 0);
 
-				// Configuramos el elemento Velocity
-				swprintf(str, L"%d", configuracion->velMaxima);
-				SetWindowText(GetDlgItem(hDlg, IDC_EDIT_VELOCITY), str);
+				SetDlgItemHex(hDlg, IDC_EDIT_MS_BACK_COLOR1,	cs->backColor1);
+				SetDlgItemHex(hDlg, IDC_EDIT_MS_BACK_COLOR2,	cs->backColor2);
 
-				// Configuramos el elemento Factor Movement
-				swprintf(str, L"%d", configuracion->factorMovimiento);
-				SetWindowText(GetDlgItem(hDlg, IDC_EDIT_FACTOR_MOV), str);
+				SetDlgItemInt(hDlg, IDC_EDIT_MS_MINVSPACE,		cs->minVerticalSpace,	TRUE);
+				SetDlgItemInt(hDlg, IDC_EDIT_MS_ADDHSPACE,		cs->additionalHorizontalSpace,	TRUE);
 
-				// Configuramos el elemento Font Size
-				swprintf(str, L"%d", configuracion->fontSize);
-				SetWindowText(GetDlgItem(hDlg, IDC_EDIT_FONT_SIZE), str);
-
-				// Configuramos el elemento Time of Vibration
-				swprintf(str, L"%d", configuracion->vibrateOnLaunchIcon);
-				SetWindowText(GetDlgItem(hDlg, IDC_EDIT_TIME_VIBRATION), str);
-
-				// Configuramos los checks
-				if (configuracion->ignoreRotation > 0) {
-					SendMessage(GetDlgItem(hDlg, IDC_CHECK_IGNORE_ROTATION), BM_SETCHECK, BST_CHECKED, 0);
-				} else {
-					SendMessage(GetDlgItem(hDlg, IDC_CHECK_IGNORE_ROTATION), BM_SETCHECK, BST_UNCHECKED, 0);
-				}
-
-				if (configuracion->closeOnLaunchIcon > 0) {
-					SendMessage(GetDlgItem(hDlg, IDC_CHECK_CLOSEONLAUNCH), BM_SETCHECK, BST_CHECKED, 0);
-				} else {
-					SendMessage(GetDlgItem(hDlg, IDC_CHECK_CLOSEONLAUNCH), BM_SETCHECK, BST_UNCHECKED, 0);
-				}
+				SetDlgItemInt(hDlg, IDC_EDIT_MS_OFFSET_LEFT,	cs->offset.left,	TRUE);
+				SetDlgItemInt(hDlg, IDC_EDIT_MS_OFFSET_TOP,		cs->offset.top,		TRUE);
+				SetDlgItemInt(hDlg, IDC_EDIT_MS_OFFSET_RIGHT,	cs->offset.right,	TRUE);
+				SetDlgItemInt(hDlg, IDC_EDIT_MS_OFFSET_BOTTOM,	cs->offset.bottom,	TRUE);
 
 			} else {
-				MessageBox(0, L"Configuracion vacio!", 0, MB_OK);
-			}
-
-			
-        }
-        return TRUE; 
-	case WM_VSCROLL:
-		{
-			// Get the current scroll bar position
-			SCROLLINFO si = {0};
-			si.cbSize = sizeof (si);
-			si.fMask = SIF_ALL;
-			GetScrollInfo (hDlg, SB_VERT, &si);
-
-			// Save the position for comparison later on
-			int currentPos = si.nPos;
-
-			// Adjust the scrollbar position based upon
-			// the action the user took
-			switch (LOWORD (wParam))
-			{
-				// user clicked the HOME keyboard key
-				case SB_TOP:
-					si.nPos = si.nMin;
-					break;
-				// user clicked the END keyboard key
-				case SB_BOTTOM:
-					si.nPos = si.nMax;
-					break;
-
-				// user clicked the top arrow
-				case SB_LINEUP:
-					si.nPos -= 1;
-					break;
-
-				// user clicked the bottom arrow
-				case SB_LINEDOWN:
-					si.nPos += 1;
-					break;
-
-				// user clicked the scroll bar shaft above the scroll box
-				case SB_PAGEUP:
-					si.nPos -= si.nPage;
-					break;
-
-				// user clicked the scroll bar shaft below the scroll box
-				case SB_PAGEDOWN:
-					si.nPos += si.nPage;
-					break;
-
-				// user dragged the scroll box
-				case SB_THUMBTRACK:
-					si.nPos = si.nTrackPos;
-					break;
-			}
-
-			// Set the position and then retrieve it. Due to adjustments
-			// by Windows it may not be the same as the value set.
-			si.fMask = SIF_POS;
-			SetScrollInfo (hDlg, SB_VERT, &si, TRUE);
-			GetScrollInfo (hDlg, SB_VERT, &si);
-
-			// If the position has changed
-			if (si.nPos != currentPos)
-			{ 
-				// Scroll the window contents
-				ScrollWindowEx(hDlg, 0, currentPos - si.nPos,
-					NULL, NULL, NULL, NULL,
-					SW_SCROLLCHILDREN | SW_INVALIDATE);
+				MessageBox(0, L"Empty Configuration!", 0, MB_OK);
 			}
 		}
-		break;
-    }
+		return TRUE;
+	case WM_COMMAND:
+		{
+			int rgbCurrent;
+			COLORREF nextColor;
+			switch (LOWORD(wParam))
+			{
+			case IDC_BUTTON_MS_TEXT_COLOR:
+				rgbCurrent = GetDlgItemHex(hDlg, IDC_EDIT_MS_TEXT_COLOR, NULL);
+				if (ColorSelector(rgbCurrent, &nextColor)) {
+					SetDlgItemHex(hDlg, IDC_EDIT_MS_TEXT_COLOR, nextColor);
+				}
+				break;
+			case IDC_BUTTON_MS_BACK_COLOR1:
+				rgbCurrent = GetDlgItemHex(hDlg, IDC_EDIT_MS_BACK_COLOR1, NULL);
+				if (ColorSelector(rgbCurrent, &nextColor)) {
+					SetDlgItemHex(hDlg, IDC_EDIT_MS_BACK_COLOR1, nextColor);
+				}
+				break;
+			case IDC_BUTTON_MS_BACK_COLOR2:
+				rgbCurrent = GetDlgItemHex(hDlg, IDC_EDIT_MS_BACK_COLOR2, NULL);
+				if (ColorSelector(rgbCurrent, &nextColor)) {
+					SetDlgItemHex(hDlg, IDC_EDIT_MS_BACK_COLOR2, nextColor);
+				}
+				break;
+			}
+		}
+		return 0;
+	}
 
 	return DefWindowProc(hDlg, uMsg, wParam, lParam);
 }
 
 BOOL SaveConfiguration0(HWND hDlg)
 {
-	// Recuperamos los valores introducidos
-	TCHAR strIconWidth[MAX_PATH];
-	TCHAR strIconsRow[MAX_PATH];
-	TCHAR strScreenHeigthP[MAX_PATH];
-	TCHAR strScreenHeigthL[MAX_PATH];
-	TCHAR strVelocity[MAX_PATH];
-	TCHAR strFactorMov[MAX_PATH];
-	TCHAR strFontSize[MAX_PATH];
-	TCHAR strVibrateOnLaunchIcon[MAX_PATH];
+	int iconWidth, iconsPerRow, textHeight, textOffset, textColor, textBold, backColor1, backColor2, minVSpace, addHSpace, offset_left, offset_top, offset_right, offset_bottom;
 
+	CConfigurationScreen *cs = configuracion->mainScreenConfig;
 
-	int iconWidth;
-	int iconsRow;
-	int screenHeigthP;
-	int screenHeigthL;
-	int velocity;
-	int factorMov;
-	int fontSize;
-	int ignoreRotation;
-	int closeOnLaunchIcon;
-	int vibrateOnLaunchIcon;
+	iconWidth	= GetDlgItemInt(hDlg, IDC_EDIT_MS_ICON_WIDTH,		NULL, TRUE);
+	iconsPerRow	= GetDlgItemInt(hDlg, IDC_EDIT_MS_ICONS_PER_ROW,	NULL, TRUE);
+	textHeight	= GetDlgItemInt(hDlg, IDC_EDIT_MS_TEXT_HEIGHT,		NULL, TRUE);
+	textOffset	= GetDlgItemInt(hDlg, IDC_EDIT_MS_TEXT_OFFSET,		NULL, TRUE);
 
-	GetWindowText(GetDlgItem(hDlg, IDC_EDIT_ICON_WIDTH), strIconWidth, MAX_PATH);
-	GetWindowText(GetDlgItem(hDlg, IDC_EDIT_ICONS_ROW), strIconsRow, MAX_PATH);
-	GetWindowText(GetDlgItem(hDlg, IDC_EDIT_HEIGTH_P), strScreenHeigthP, MAX_PATH);
-	GetWindowText(GetDlgItem(hDlg, IDC_EDIT_HEIGTH_L), strScreenHeigthL, MAX_PATH);
-	GetWindowText(GetDlgItem(hDlg, IDC_EDIT_VELOCITY), strVelocity, MAX_PATH);
-	GetWindowText(GetDlgItem(hDlg, IDC_EDIT_FACTOR_MOV), strFactorMov, MAX_PATH);
-	GetWindowText(GetDlgItem(hDlg, IDC_EDIT_FONT_SIZE), strFontSize, MAX_PATH);
-	GetWindowText(GetDlgItem(hDlg, IDC_EDIT_TIME_VIBRATION), strVibrateOnLaunchIcon, MAX_PATH);
-	if (SendMessage(GetDlgItem(hDlg, IDC_CHECK_IGNORE_ROTATION), BM_GETCHECK, 0, 0) == BST_CHECKED) {
-		ignoreRotation = 1;
-	} else {
-		ignoreRotation = 0;
-	}
-	if (SendMessage(GetDlgItem(hDlg, IDC_CHECK_CLOSEONLAUNCH), BM_GETCHECK, 0, 0) == BST_CHECKED) {
-		closeOnLaunchIcon = 1;
-	} else {
-		closeOnLaunchIcon = 0;
-	}
+	textColor	= GetDlgItemHex(hDlg, IDC_EDIT_MS_TEXT_COLOR,		NULL);
 
-	iconWidth = _wtoi(strIconWidth);
-	iconsRow = _wtoi(strIconsRow);
-	screenHeigthP = _wtoi(strScreenHeigthP);
-	screenHeigthL = _wtoi(strScreenHeigthL);
-	velocity = _wtoi(strVelocity);
-	factorMov = _wtoi(strFactorMov);
-	fontSize = _wtoi(strFontSize);
-	vibrateOnLaunchIcon = _wtoi(strVibrateOnLaunchIcon);
+	textBold = SendMessage(GetDlgItem(hDlg, IDC_CHECK_MS_TEXT_BOLD), BM_GETCHECK, 0, 0) == BST_CHECKED;
 
-	// Comprobaciones
-	if (iconWidth < 20 || iconWidth > 200) {
-		MessageBox(hDlg, TEXT("Icon Width value is not valid!"), TEXT("Error"), MB_OK);
+	backColor1	= GetDlgItemHex(hDlg, IDC_EDIT_MS_BACK_COLOR1,		NULL);
+	backColor2	= GetDlgItemHex(hDlg, IDC_EDIT_MS_BACK_COLOR2,		NULL);
+
+	minVSpace	= GetDlgItemInt(hDlg, IDC_EDIT_MS_MINVSPACE,		NULL, TRUE);
+	addHSpace	= GetDlgItemInt(hDlg, IDC_EDIT_MS_ADDHSPACE,		NULL, TRUE);
+
+	offset_left		= GetDlgItemInt(hDlg, IDC_EDIT_MS_OFFSET_LEFT,		NULL, TRUE);
+	offset_top		= GetDlgItemInt(hDlg, IDC_EDIT_MS_OFFSET_TOP,		NULL, TRUE);
+	offset_right	= GetDlgItemInt(hDlg, IDC_EDIT_MS_OFFSET_RIGHT,		NULL, TRUE);
+	offset_bottom	= GetDlgItemInt(hDlg, IDC_EDIT_MS_OFFSET_BOTTOM,	NULL, TRUE);
+
+	if (iconWidth < 0 || iconWidth > 256) {
+		MessageBox(hDlg, TEXT("Icon width value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
-	if (iconsRow < 1 || iconsRow > 32) {
-		MessageBox(hDlg, TEXT("Icons for Row value is not valid!"), TEXT("Error"), MB_OK);
+	if (iconsPerRow < 0 || iconsPerRow > 32) {
+		MessageBox(hDlg, TEXT("Icons per row value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
-	if (screenHeigthP <= 0) {
-		MessageBox(hDlg, TEXT("Screen Heigth value is not valid!"), TEXT("Error"), MB_OK);
+	if (textHeight < 0 || textHeight > 100) {
+		MessageBox(hDlg, TEXT("Text height value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
-	if (screenHeigthL <= 0) {
-		MessageBox(hDlg, TEXT("Screen Heigth value is not valid!"), TEXT("Error"), MB_OK);
+	if (textOffset < -256 || textOffset > 256) {
+		MessageBox(hDlg, TEXT("Text offset value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
-	if (velocity < 10 || velocity > 1000) {
-		MessageBox(hDlg, TEXT("Velocity value is not valid!"), TEXT("Error"), MB_OK);
+	if (minVSpace < 0 || minVSpace > 256) {
+		MessageBox(hDlg, TEXT("Minimum vertical space value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
-	if (factorMov < 0 || factorMov > 40) {
-		MessageBox(hDlg, TEXT("Factor of Movement value is not valid!"), TEXT("Error"), MB_OK);
+	if (addHSpace < 0 || addHSpace > 256) {
+		MessageBox(hDlg, TEXT("Additional horizontal space value is not valid!"), TEXT("Error"), MB_OK);
+		return FALSE;
+	}
+	if (offset_left < 0 || offset_left > 256) {
+		MessageBox(hDlg, TEXT("Offset left value is not valid!"), TEXT("Error"), MB_OK);
+		return FALSE;
+	}
+	if (offset_top < 0 || offset_top > 256) {
+		MessageBox(hDlg, TEXT("Offset top value is not valid!"), TEXT("Error"), MB_OK);
+		return FALSE;
+	}
+	if (offset_right < 0 || offset_right > 256) {
+		MessageBox(hDlg, TEXT("Offset right value is not valid!"), TEXT("Error"), MB_OK);
+		return FALSE;
+	}
+	if (offset_bottom < 0 || offset_bottom > 256) {
+		MessageBox(hDlg, TEXT("Offset bottom value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
 
-	if (fontSize < 0 || fontSize > 20) {
-		MessageBox(hDlg, TEXT("Font Size value is not valid!"), TEXT("Error"), MB_OK);
-		return FALSE;
-	}
-
-	if (vibrateOnLaunchIcon < 0 || vibrateOnLaunchIcon > 500) {
-		MessageBox(hDlg, TEXT("Time of vibration value is not valid!"), TEXT("Error"), MB_OK);
-		return FALSE;
-	}
-
-	// Ponemos los nuevos valores
-	configuracion->anchoIconoXML = iconWidth;
-	configuracion->numeroIconosXML = iconsRow;
-	configuracion->altoPantallaP = screenHeigthP;
-	configuracion->altoPantallaL = screenHeigthL;
-	configuracion->velMaxima = velocity;
-	configuracion->factorMovimiento = factorMov;
-	configuracion->fontSize = fontSize;
-	configuracion->ignoreRotation = ignoreRotation;
-	configuracion->closeOnLaunchIcon = closeOnLaunchIcon;
-	configuracion->vibrateOnLaunchIcon = vibrateOnLaunchIcon;
+	cs->iconWidthXML				= iconWidth;
+	cs->iconsPerRowXML				= iconsPerRow;
+	cs->fontSize					= textHeight;
+	cs->fontOffset					= textOffset;
+	cs->fontColor					= textColor;
+	cs->fontBold					= textBold;
+	cs->backColor1					= backColor1;
+	cs->backColor2					= backColor2;
+	cs->minVerticalSpace			= minVSpace;
+	cs->additionalHorizontalSpace	= addHSpace;
+	cs->offset.left					= offset_left;
+	cs->offset.top					= offset_top;
+	cs->offset.right				= offset_right;
+	cs->offset.bottom				= offset_bottom;
 
 	return TRUE;
 }

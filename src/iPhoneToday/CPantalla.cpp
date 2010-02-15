@@ -3,6 +3,7 @@
 CPantalla::CPantalla(void)
 {
 	debeActualizar = TRUE;
+	header[0] = '\0';
 	imagen = NULL;
 	hDC = NULL;
 
@@ -10,8 +11,6 @@ CPantalla::CPantalla(void)
 	for (int i = 0; i < MAX_ICONOS_PANTALLA; i++) {
 		listaIconos[i] = NULL;
 	}
-
-	fondoPantalla = NULL;
 }
 
 CPantalla::~CPantalla(void)
@@ -21,24 +20,19 @@ CPantalla::~CPantalla(void)
 			delete listaIconos[i];
 		}
 	}
-	if(imagen != NULL && imagenOld != NULL && hDC != NULL) {
-		SelectObject(hDC, imagenOld);
+	if (hDC != NULL) {
+		if (hFontOld != NULL) {
+			DeleteObject(SelectObject(hDC, hFontOld));
+		}
+		if (imagenOld != NULL) {
+			SelectObject(hDC, imagenOld);
+		}
 		DeleteDC(hDC);
-		DeleteObject(imagen);
-		imagen = NULL;
 		hDC = NULL;
-	}
-	if (hFontOld != NULL) {
-		DeleteObject(hFontOld);
-	}
-	if (imagenMascara != NULL) {
-		DeleteObject(imagenMascara);
-	}
-	if (hDCMascara != NULL) {
-		DeleteDC(hDCMascara);
-	}
-	if (fondoPantalla != NULL){
-		delete fondoPantalla;
+		if (imagen != NULL) {
+			DeleteObject(imagen);
+			imagen = NULL;
+		}
 	}
 }
 
@@ -73,7 +67,6 @@ BOOL CPantalla::borraIcono(int posIcon)
 	for (int i = posIcon; i < int(numIconos - 1); i++) {
 		listaIconos[i] = listaIconos[i + 1];
 	}
-	// delete listaIconos[numIconos - 1];
 	listaIconos[numIconos - 1] = NULL;
 	numIconos--;
 	debeActualizar = TRUE;

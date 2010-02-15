@@ -1,5 +1,6 @@
 #pragma once
 
+#include "CReloadIcon.h"
 #include "CIcono.h"
 
 class CEstado
@@ -21,33 +22,29 @@ public:
 	POINTS posObjetivo; // Posicion Objetivo en una transicion
 	UINT pantallaActiva;
 	BOOL hayMovimiento;
-	BOOL hayLanzamiento;
 	COLORREF colorFondo;
-	// CIcono *fondoPantalla;
 	CIcono *iconoActivo;
 
-	RECT cuadroLanzando; // Posicion Objetivo en una transicion de lanzamiento
-	UINT estadoCuadro; // 0=Desactivado, 1=Lanzando, 2=Abierto
+	RECT cuadroLanzando;	// Posicion Objetivo en una transicion de lanzamiento
+	UINT estadoCuadro;		// 0=Desactivado, 1=Lanzando, 2=Abierto
 	LONG timeUltimoLanzamiento;
 	BOOL debeCortarTimeOut;
-	int estadoPantalla; // 0 = Normal; 1 = Landscape
-	int semaforoRotacion; // 0 = Normal; 1 = Rotando
 
 	// Notificaciones
-	int numLlamadas;
-	int numSMS;
-	int numMMS;
-	int numOtherEmail;
-	int numSyncEmail;
-	int numCitas;
-	int numTareas;
-	int estadoWifi;
-	int estadoBluetooth;
-	int estadoAlarm;
+	int numLlamadas;	// HKCU\System\State\Phone\Missed Call Count
+	int numSMS;			// HKCU\System\State\Messages\sms\Unread\Count
+	int numMMS;			// HKCU\System\State\Messages\MMS\Unread\Count
+	int numOtherEmail;	// HKCU\System\State\Messages\OtherEmail\Unread\Count
+	int numSyncEmail;	// HKCU\System\State\Messages\sync\Unread\Count
+	int numCitas;		// HKCU\System\State\Appointments\List\Count
+	int numTareas;		// HKCU\System\State\Tasks\Active
+	int estadoWifi;		// HKLM\System\State\Hardware\Wifi\WiFi
+	int estadoBluetooth;// HKLM\System\State\Hardware\Wifi\Bluetooth
+	int estadoAlarm;	// HKLM\Software\Microsoft\Clock\0\AlarmFlags HKLM\Software\Microsoft\Clock\1\AlarmFlags HKLM\Software\Microsoft\Clock\2\AlarmFlags
 
-	int diaDelMes;
-	int hora;
+	int diaDelMes;		// day of the month
+	int hora;			// hours+mins
 
-	int reloadIcons;
-	int reloadIcon;
+	int reloadIcons;	// HKLM\Software\iPhoneToday\reloadIcons
+	int reloadIcon;		// HKLM\Software\iPhoneToday\reloadIcon
 };

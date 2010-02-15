@@ -88,6 +88,55 @@ CIcono *CListaPantalla::mueveIcono(int nPantallaActual, int nIconoActual, int nS
 	return icon;
 }
 
+CIcono *CListaPantalla::copyIcono(int nPantallaActual, int nIconoActual, int nScreen, int nIcon, CIcono *destIcon)
+{
+	
+	CIcono *icon = NULL;
+	CPantalla *pantalla = NULL;
+
+	if (nPantallaActual == -1) {
+		pantalla = barraInferior;
+	} else {
+		pantalla = listaPantalla[nPantallaActual];
+	}
+	icon = pantalla->listaIconos[nIconoActual];
+
+	if (nScreen >= int(numPantallas)) {
+		nScreen = numPantallas - 1;
+	}
+
+	if (nScreen == -1) {
+		pantalla = barraInferior;
+	} else {
+		pantalla = listaPantalla[nScreen];
+	}
+
+	if (nIcon >= int(pantalla->numIconos)) {
+		nIcon = pantalla->numIconos;
+	}
+
+	for (int i = pantalla->numIconos; i > nIcon; i--) {
+		pantalla->listaIconos[i] = pantalla->listaIconos[i - 1];
+	}
+	pantalla->listaIconos[nIcon] = destIcon;
+	pantalla->numIconos++;
+	pantalla->debeActualizar = TRUE;
+
+	if (nPantallaActual != -1) {
+		if (listaPantalla[nPantallaActual]->numIconos == 0 && numPantallas > 1) {
+			delete listaPantalla[nPantallaActual];
+			for (int i = nPantallaActual; i < int(numPantallas - 1); i++) {
+				listaPantalla[i] = listaPantalla[i + 1];
+			}
+			
+			listaPantalla[numPantallas - 1] = NULL;
+			numPantallas--;
+		}
+	}
+	
+	return icon;
+}
+
 BOOL CListaPantalla::borraIcono(int posScreen, int posIcon)
 {
 	if (listaPantalla == NULL || posScreen >= int(numPantallas)) {
@@ -104,7 +153,6 @@ BOOL CListaPantalla::borraIcono(int posScreen, int posIcon)
 			for (int i = posScreen; i < int(numPantallas - 1); i++) {
 				listaPantalla[i] = listaPantalla[i + 1];
 			}
-			// delete listaPantalla[numPantallas - 1];
 			listaPantalla[numPantallas - 1] = NULL;
 			numPantallas--;
 		}

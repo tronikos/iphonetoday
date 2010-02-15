@@ -1,5 +1,6 @@
 #pragma once
 
+#include "CConfigurationScreen.h"
 #include "CListaPantalla.h"
 #include "GraphicFunctions.h"
 #include "xmlWrapper.h"
@@ -10,71 +11,114 @@ public:
 	CConfiguracion(void);
 	~CConfiguracion(void);
 
-	int calculaConfiguracion(int maxIconos, int hayBarraInferior, int width, int height);
+	void calculaConfiguracion(int maxIconos, int numIconsInBottomBar, int width, int height);
 	BOOL cargaIconos(HDC *hDC, CListaPantalla *listaPantallas);
-	BOOL cargaImagenIcono(HDC *hDC, CIcono *icono);
+	BOOL cargaImagenIcono(HDC *hDC, CIcono *icono, BOOL esBarraInferior);
 	BOOL cargaImagenes(HDC *hDC);
 	BOOL cargaFondo(HDC *hDC);
 
 	BOOL cargaXMLIconos(CListaPantalla *listaPantallas);
+	void defaultValues();
 	BOOL cargaXMLConfig();
 	BOOL guardaXMLConfig();
 	BOOL guardaXMLIconos(CListaPantalla *listaPantallas);
-	BOOL guardaXMLIconos2(CListaPantalla *listaPantallas);
 
-	BOOL creaNodoXMLConfig(IXMLDOMDocument *pXMLDom, IXMLDOMElement *parent, TCHAR name[MAX_PATH], int content);
-	BOOL creaNodoXMLConfig(IXMLDOMDocument *pXMLDom, IXMLDOMElement *parent, TCHAR name[MAX_PATH], TCHAR content[MAX_PATH]);
+	BOOL static creaNodoXMLConfig(IXMLDOMDocument *pXMLDom, IXMLDOMElement *parent, TCHAR name[MAX_PATH], int content, int tabs = 1);
+	BOOL static creaNodoXMLConfig(IXMLDOMDocument *pXMLDom, IXMLDOMElement *parent, TCHAR name[MAX_PATH], TCHAR content[MAX_PATH], int tabs = 1);
+	BOOL static createAttributeXML(IXMLDOMDocument *pXMLDom, IXMLDOMElement *parent, TCHAR name[MAX_PATH], int content);
+	BOOL static createAttributeXML(IXMLDOMDocument *pXMLDom, IXMLDOMElement *parent, TCHAR name[MAX_PATH], TCHAR content[MAX_PATH]);
+
 	BOOL creaNodoXMLIcono(IXMLDOMDocument *pXMLDom, IXMLDOMElement *parent, CIcono *icono);
 
-	TCHAR rutaInstalacion[MAX_PATH];
+	void getAbsolutePath(LPTSTR pszDest, size_t cchDest, LPCTSTR pszSrc);
+	BOOL hasTimestampChanged();
 
-	// Variables que cambian al poner la PDA en horizontal
-	UINT numeroIconos;
-	UINT numeroIconosXML;
+	TCHAR pathExecutableDir[MAX_PATH]; // Path of executable's directory
+	TCHAR pathSettingsXML[MAX_PATH];   // Path of settings.xml
+	TCHAR pathIconsXML[MAX_PATH];      // Path of icons.xml
+	TCHAR pathIconsXMLDir[MAX_PATH];   // Path of the directory where icons.xml resides
+	TCHAR pathIconsDir[MAX_PATH];      // Path of the icons directory
+
+	FILETIME lastModifiedSettingsXML;
+	FILETIME lastModifiedIconsXML;
+
 	UINT altoPantalla;
-	UINT altoPantallaP;
-	UINT altoPantallaL;
-
-
-	// Variables 
-	RECT dimensionesPantalla;
+	UINT altoPantallaMax;
 	UINT anchoPantalla;
-	UINT anchoIcono;
-	UINT anchoIconoXML;
-	UINT distanciaIconosH;
-	UINT distanciaIconosV;
+
+	CIcono *bubbleNotif;
+	CIcono *bubbleState;
+	CIcono *bubbleAlarm;
+
+	CIcono *fondoPantalla;
+
+
+	// Variables from XML
+
+	// Screens
+	CConfigurationScreen *mainScreenConfig;
+	CConfigurationScreen *bottomBarConfig;
+
+	// Circles
+	UINT circlesDiameter;
+	UINT circlesDistance;
+
+	// Header
+	UINT headerFontSize;
+	UINT headerFontWeight;
+	UINT headerFontColor;
+	UINT headerOffset;
+
+	// Background
 	UINT fondoTransparente;
-	UINT ignoreRotation;
-	UINT closeOnLaunchIcon;
-	UINT vibrateOnLaunchIcon;
-	UINT fondoEstatico; // Si es cierto el fondo no tendra animacion
-	UINT alreadyConfigured;
+	COLORREF fondoColor;
+	UINT fondoEstatico;
+	TCHAR strFondoPantalla[MAX_PATH];
+
+	// Movement
+	UINT umbralMovimiento;
+	UINT velMaxima;
+	UINT velMinima;
+	UINT refreshTime;
+	UINT factorMovimiento;
+	UINT verticalScroll;
+
+	// DayOfWeek
+	COLORREF dowColor;
+	UINT dowWidth;
+	UINT dowHeight;
+	UINT dowWeight;
+	TCHAR diasSemana[7][16];
+
+	// DayOfMonth
+	COLORREF domColor;
+	UINT domWidth;
+	UINT domHeight;
+	UINT domWeight;
 
 	// Clock
 	COLORREF clockColor;
 	UINT clockWidth;
 	UINT clockHeight;
+	UINT clockWeight;
 	UINT clock12Format;
 
-	POINTS posReferencia; // Posicion 1º icono
-	// RECT cuadroVirtualLanzando; // Posicion Objetivo en una transicion de lanzamiento
-	UINT umbralMovimiento;
-	UINT fontSize;
-	UINT fontBold;
-	UINT velMaxima;
-	UINT velMinima;
-	UINT refreshTime;
-	UINT factorMovimiento;
+	// Bubbles
+	TCHAR bubble_notif[MAX_PATH];
+	TCHAR bubble_state[MAX_PATH];
+	TCHAR bubble_alarm[MAX_PATH];
 
-	TCHAR diasSemana[7][16];
+	// OnLaunch
+	UINT closeOnLaunchIcon;
+	UINT vibrateOnLaunchIcon;
+	UINT allowAnimationOnLaunchIcon;
 
-	// Burbujas
-	CIcono *bubbleNotif;
-	CIcono *bubbleState;
-	CIcono *bubbleAlarm;
-
-	// Fondo de pantalla
-	TCHAR strFondoPantalla[MAX_PATH];
-	CIcono *fondoPantalla;
+	UINT notifyTimer;
+	UINT ignoreRotation;
+	UINT disableRightClick;
+	UINT fullscreen;
+	UINT neverShowTaskBar;
+	UINT noWindowTitle;
+	UINT alreadyConfigured;
 
 };

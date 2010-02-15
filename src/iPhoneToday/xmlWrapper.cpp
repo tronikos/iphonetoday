@@ -22,6 +22,7 @@
 
 #include "xmlWrapper.h"
 
+/*
 // XML Filename
 const TCHAR *kszXMLFileName = TEXT("mailset.xml");
 
@@ -170,6 +171,7 @@ Error:
 
     return vtRet;
 }
+*/
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -184,12 +186,15 @@ Error:
 // Returns ULONG
 //
 
-ULONG ReadNodeNumber(IXMLDOMNamedNodeMap *pNodeMap, TCHAR *pszNodeName)
+ULONG ReadNodeNumber(IXMLDOMNamedNodeMap *pNodeMap, TCHAR *pszNodeName, ULONG defaultValue)
 {
     HRESULT hr;
     IXMLDOMNode *pAttribute = NULL;
     VARIANT vt;
-    ULONG ulRet = 0;
+    ULONG ulRet = defaultValue;
+
+	if (pNodeMap == NULL)
+		goto Error;
 
     // Get the appropriate attribute
     hr = pNodeMap->getNamedItem(pszNodeName, &pAttribute);
@@ -231,7 +236,9 @@ BOOL ReadNodeString(LPTSTR pszRet, IXMLDOMNamedNodeMap *pNodeMap, TCHAR *pszNode
     IXMLDOMNode *pAttribute = NULL;
     VARIANT vt;
     size_t cch;
-    
+
+	if (pNodeMap == NULL)
+		goto Error;
 
     // Get the appropriate attribute
     hr = pNodeMap->getNamedItem(pszNodeName, &pAttribute);
@@ -311,7 +318,9 @@ IXMLDOMDocument *DomFromCOM()
     IXMLDOMDocument *pxmldoc = NULL;
 	CLSID clsid;
 
-	CHR(CLSIDFromProgID(TEXT("Msxml2.DOMDocument"), &clsid));
+	hr = CLSIDFromProgID(TEXT("Msxml2.DOMDocument"), &clsid);
+	if (FAILED(hr))
+		CHR(CLSIDFromProgID(TEXT("Microsoft.XMLDOM"), &clsid));
     CHR(CoCreateInstance(clsid, NULL, CLSCTX_INPROC_SERVER, IID_IXMLDOMDocument, (LPVOID *) &pxmldoc));
 
     CHR(pxmldoc->put_async(VARIANT_FALSE));
@@ -321,10 +330,7 @@ IXMLDOMDocument *DomFromCOM()
 
     return pxmldoc;
 Error:
-    if (pxmldoc)
-    {
-        pxmldoc->Release();
-    }
+    RELEASE_OBJ(pxmldoc);
     return NULL;
 }
 
@@ -342,6 +348,7 @@ VARIANT VariantString(BSTR str)
 }
 
 
+/*
 // Helper function to display xml parse error:
 void ReportParseError(IXMLDOMDocument *pDom, char *desc) {
     IXMLDOMParseError *pXMLErr=NULL;
@@ -351,9 +358,10 @@ void ReportParseError(IXMLDOMDocument *pDom, char *desc) {
     CHR(pXMLErr->get_reason(&bstrReason));
 
 Error:
-    if (pXMLErr) pXMLErr->Release();
+    RELEASE_OBJ(pXMLErr);
     if (bstrReason) SysFreeString(bstrReason);
 }
+*/
 
 // Helper function to append a whitespace text node to a 
 // specified element:
@@ -365,10 +373,8 @@ void AddWhiteSpaceToNode(IXMLDOMDocument* pDom, BSTR bstrWs, IXMLDOMNode *pNode)
     CHR(pDom->createTextNode(bstrWs,&pws));
     CHR(pNode->appendChild(pws,&pBuf));
 Error:
-    if (pws) pws->Release();
-    pws=NULL;
-    if (pBuf) pBuf->Release();
-    pBuf=NULL;
+    RELEASE_OBJ(pws);
+    RELEASE_OBJ(pBuf);
 }
 
 // Helper function to append a child to a parent node:
@@ -378,7 +384,6 @@ void AppendChildToParent(IXMLDOMNode *pChild, IXMLDOMNode *pParent)
     IXMLDOMNode *pNode=NULL;
     CHR(pParent->appendChild(pChild, &pNode));
 Error:
-    if (pNode) pNode->Release();
-    pNode=NULL;
+    RELEASE_OBJ(pNode);
 }
 

@@ -1,5 +1,11 @@
 #include "CIcono.h"
-#include <imaging.h>
+#include "iPhoneToday.h"
+
+#ifdef TIMING
+long loadImage_duration = 0;
+long loadImage_IImagingFactory_CreateImageFromFile_duration = 0;
+long loadImage_IImagingFactory_CreateBitmapFromImage_duration = 0;
+#endif
 
 CIcono::CIcono(void)
 {
@@ -12,39 +18,101 @@ CIcono::CIcono(void)
 
 CIcono::~CIcono(void)
 {
-	if(imagen != NULL && imagenOld != NULL && hDC != NULL) {
-		SelectObject(hDC, imagenOld);
-		DeleteDC(hDC);
-		DeleteObject(imagen);
-		imagen = NULL;
-		hDC = NULL;
-	}
+	clearImageObjects();
 }
 
 void CIcono::loadImage(HDC *hDC, TCHAR *pathImage, int witdh, int height, int bitsPerPixel) {
-	IImagingFactory* m_pImgFactory = NULL;
-	IImage* m_pImage = NULL;
-	IImage* m_pImageThumb = NULL;
-	IBitmapImage *m_pBitmap = NULL;
+	TIMER_START(loadImage_duration);
+	// IImagingFactory* g_pImgFactory = NULL;
 	HDC hdcResult;
 	HBITMAP hbmResult;
 	HBITMAP hbmResultOld;
 
-	// init it
-	// CoInitializeEx(NULL, COINIT_MULTITHREADED);
+	clearImageObjects();
 
-	if (!SUCCEEDED(CoCreateInstance (CLSID_ImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IImagingFactory, (void **) & m_pImgFactory)))
-	{
+	// initialize imaging API
+	// CoInitializeEx(NULL, COINIT_MULTITHREADED);
+	// if (!SUCCEEDED(CoCreateInstance (CLSID_ImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IImagingFactory, (void **) & g_pImgFactory)))
+	// {
+	// 	return;
+	// }
+
+	// If imaging API is not available or it is a .bmp use SHLoadDIBitmap that only supports .bmp images and is faster.
+	if (g_pImgFactory == NULL || lstrcmpi(wcsrchr(pathImage, '.'), L".bmp") == 0) {
+
+		HDC hdcTemp;
+		HBITMAP hbmTemp;
+		HBITMAP hbmTempOld;
+
+		HDC hdcTempNULL = GetDC(NULL);
+		hdcTemp = CreateCompatibleDC(hdcTempNULL);
+		hbmTemp = SHLoadDIBitmap(pathImage);
+		BITMAP bm;
+		GetObject(hbmTemp, sizeof(BITMAP), &bm);
+		int widthTemp = bm.bmWidth;
+		int heightTemp = bm.bmHeight;
+		hbmTempOld = (HBITMAP)SelectObject(hdcTemp, hbmTemp);
+
+		SetBkMode(hdcTemp, TRANSPARENT);
+
+		// create a BITMAPINFO with minimal initilisation 
+
+		// for the CreateDIBSection
+		BITMAPINFO RGB32BitsBITMAPINFO; 
+		ZeroMemory(&RGB32BitsBITMAPINFO,sizeof(BITMAPINFO));
+		RGB32BitsBITMAPINFO.bmiHeader.biSize=sizeof(BITMAPINFOHEADER);
+		RGB32BitsBITMAPINFO.bmiHeader.biWidth=witdh;
+		RGB32BitsBITMAPINFO.bmiHeader.biHeight=height;
+		RGB32BitsBITMAPINFO.bmiHeader.biPlanes=1;
+		RGB32BitsBITMAPINFO.bmiHeader.biBitCount=32;
+
+		// pointer used for direct Bitmap pixels access
+		hdcResult = CreateCompatibleDC(*hDC);
+
+		BYTE *ptPixels;	
+		hbmResult = CreateDIBSection(hdcResult, 
+			(BITMAPINFO *)&RGB32BitsBITMAPINFO, 
+			DIB_RGB_COLORS,
+			(void **)&ptPixels, 
+			NULL, 0);
+
+		hbmResultOld = (HBITMAP)SelectObject(hdcResult, hbmResult);		
+		SetBkMode(hdcResult, TRANSPARENT);
+
+		// Resize hdc
+		StretchBlt(hdcResult, 0, 0, witdh, height, hdcTemp, 0, 0, widthTemp, heightTemp, SRCCOPY);
+
+
+
+		DeleteObject(SelectObject(hdcTemp, hbmTempOld));
+		DeleteDC(hdcTemp);
+		ReleaseDC(NULL, hdcTempNULL);
+
+		this->hDC = hdcResult;
+		this->imagen = hbmResult;
+		this->imagenOld = hbmResultOld;
+		this->anchoImagen = witdh;
+		this->altoImagen = height;
+
+		TIMER_STOP(loadImage_duration);
 		return;
 	}
 
+	IImage* m_pImage = NULL;
+	IImage* m_pImageThumb = NULL;
+	IBitmapImage *m_pBitmap = NULL;
+
 	// load it
-	if( SUCCEEDED(m_pImgFactory->CreateImageFromFile(pathImage, &m_pImage )) )
-	{	
+	TIMER_START(loadImage_IImagingFactory_CreateImageFromFile_duration);
+	if( SUCCEEDED(g_pImgFactory->CreateImageFromFile(pathImage, &m_pImage )) )
+	{
+		TIMER_STOP(loadImage_IImagingFactory_CreateImageFromFile_duration);
 		HRESULT hRet;
+		TIMER_START(loadImage_IImagingFactory_CreateBitmapFromImage_duration);
 		// hRet = m_pImgFactory->CreateBitmapFromImage(m_pImage, witdh, height, PIXFMT_16BPP_RGB565, InterpolationHintDefault, &m_pBitmap);
 		// hRet = m_pImgFactory->CreateBitmapFromImage(m_pImage, witdh, height, PIXFMT_16BPP_ARGB1555, InterpolationHintDefault, &m_pBitmap);
-		hRet = m_pImgFactory->CreateBitmapFromImage(m_pImage, witdh, height, bitsPerPixel, InterpolationHintDefault, &m_pBitmap);
+		hRet = g_pImgFactory->CreateBitmapFromImage(m_pImage, witdh, height, bitsPerPixel, InterpolationHintDefault, &m_pBitmap);
+		TIMER_STOP(loadImage_IImagingFactory_CreateBitmapFromImage_duration);
 		if (hRet != S_OK) {
 			return;
 		}
@@ -92,15 +160,15 @@ void CIcono::loadImage(HDC *hDC, TCHAR *pathImage, int witdh, int height, int bi
 		hdcResult = CreateCompatibleDC(*hDC);
 
 		// Create HBITMAP
-		hbmResult = CreateBitmap(lockedBitmapData.Width, lockedBitmapData.Height, 1, 
-		 	GetPixelFormatSize(lockedBitmapData.PixelFormat), lockedBitmapData.Scan0);           
+		hbmResult = CreateBitmap(lockedBitmapData.Width, lockedBitmapData.Height, 1,
+			GetPixelFormatSize(lockedBitmapData.PixelFormat), lockedBitmapData.Scan0);
 
 		m_pBitmap->UnlockBits(&lockedBitmapData);
 
 		hbmResultOld = (HBITMAP)SelectObject(hdcResult, hbmResult);		
 
-		BITMAP bm;
-		GetObject(hbmResult, sizeof(BITMAP), &bm);
+		// BITMAP bm;
+		// GetObject(hbmResult, sizeof(BITMAP), &bm);
 		/*TCHAR cad[32];
 		swprintf(cad, L"Bits hbmResult pixel: %d\r\n", bm.bmBitsPixel);
 		WriteToLog(cad);*/
@@ -118,22 +186,19 @@ void CIcono::loadImage(HDC *hDC, TCHAR *pathImage, int witdh, int height, int bi
 	// release
 	if( m_pImageThumb != NULL ) m_pImageThumb->Release(); 
 	if( m_pImage != NULL ) m_pImage->Release(); 
-	if( m_pImgFactory != NULL ) m_pImgFactory->Release();
+	// if( m_pImgFactory != NULL ) m_pImgFactory->Release();
 	if( m_pBitmap != NULL ) m_pBitmap->Release();
 	// CoUninitialize();
+
+	TIMER_STOP(loadImage_duration);
 
 	return;
 }
 
-void CIcono::loadImageFromExec(HDC *hDC, TCHAR *pathExec, int witdh, int heigth) {
+void CIcono::loadImageFromExec(HDC *hDC, TCHAR *pathExec, int witdh, int height) {
 
-	if (this->hDC) {
-		DeleteDC(this->hDC);
-	}
-	if (this->imagen) {
-		DeleteObject(this->imagen);
-	}
-	
+	clearImageObjects();
+
 	if (pathExec == NULL) {
 		return;
 	}
@@ -159,14 +224,15 @@ void CIcono::loadImageFromExec(HDC *hDC, TCHAR *pathExec, int witdh, int heigth)
 
 	// Create HDC
 	int widthTemp = GetSystemMetrics(SM_CXICON);
-	int heigthTemp = GetSystemMetrics(SM_CYICON);
-	hdcTemp = CreateCompatibleDC(GetDC(NULL));
-	hbmTemp = CreateCompatibleBitmap(GetDC(NULL), widthTemp, heigthTemp);
+	int heightTemp = GetSystemMetrics(SM_CYICON);
+	HDC hdcTempNULL = GetDC(NULL);
+	hdcTemp = CreateCompatibleDC(hdcTempNULL);
+	hbmTemp = CreateCompatibleBitmap(hdcTempNULL, widthTemp, heightTemp);
 	hbmTempOld = (HBITMAP)SelectObject(hdcTemp, hbmTemp);
 
 	SetBkMode(hdcTemp, TRANSPARENT);
 
-	RECT rc = {0, 0, widthTemp, heigthTemp};
+	RECT rc = {0, 0, widthTemp, heightTemp};
 	hBrush = CreateSolidBrush(RGBA(0, 0, 0, 0));
 	FillRect(hdcTemp, &rc, hBrush);
 
@@ -189,31 +255,31 @@ void CIcono::loadImageFromExec(HDC *hDC, TCHAR *pathExec, int witdh, int heigth)
 	ZeroMemory(&RGB32BitsBITMAPINFO,sizeof(BITMAPINFO));
 	RGB32BitsBITMAPINFO.bmiHeader.biSize=sizeof(BITMAPINFOHEADER);
 	RGB32BitsBITMAPINFO.bmiHeader.biWidth=witdh;
-	RGB32BitsBITMAPINFO.bmiHeader.biHeight=heigth;
+	RGB32BitsBITMAPINFO.bmiHeader.biHeight=height;
 	RGB32BitsBITMAPINFO.bmiHeader.biPlanes=1;
 	RGB32BitsBITMAPINFO.bmiHeader.biBitCount=32;
 
-    // pointer used for direct Bitmap pixels access
+	// pointer used for direct Bitmap pixels access
 	HDC hdcResult = CreateCompatibleDC(*hDC);
 
 	BYTE *ptPixels;	
 	HBITMAP hbmResult = CreateDIBSection(hdcResult, 
 		(BITMAPINFO *)&RGB32BitsBITMAPINFO, 
-        DIB_RGB_COLORS,
-        (void **)&ptPixels, 
-        NULL, 0);
+		DIB_RGB_COLORS,
+		(void **)&ptPixels, 
+		NULL, 0);
 	HBITMAP hbmResultOld;
 
 	hbmResultOld = (HBITMAP)SelectObject(hdcResult, hbmResult);
 	SetBkMode(hdcResult, TRANSPARENT);
 
 	// Resize hdc
-	StretchBlt(hdcResult, 0, 0, witdh, heigth, hdcTemp, 0, 0, widthTemp, heigthTemp, SRCCOPY);
+	StretchBlt(hdcResult, 0, 0, witdh, height, hdcTemp, 0, 0, widthTemp, heightTemp, SRCCOPY);
 
 	// TCHAR cad[32];
 	// WriteToLog(TEXT("CARGANDO...\n\r"));
-	for (int i = 0; i < witdh * heigth; i += 4)
-    {
+	for (int i = 0; i < witdh * height; i += 4)
+	{
 		// swprintf(cad, TEXT("%x.%x.%x.%x-"), ptPixels[i],ptPixels[i+1],ptPixels[i+2],ptPixels[i+3]);
 		// WriteToLog(cad);
 		
@@ -232,7 +298,7 @@ void CIcono::loadImageFromExec(HDC *hDC, TCHAR *pathExec, int witdh, int heigth)
 		}
 		// swprintf(cad, TEXT("%x.%x.%x.%x\r\n"), ptPixels[i],ptPixels[i+1],ptPixels[i+2],ptPixels[i+3]);
 		// WriteToLog(cad);
-    }
+	}
 	// WriteToLog(TEXT("FIN CARGA...\n\r"));
 
 
@@ -243,12 +309,13 @@ void CIcono::loadImageFromExec(HDC *hDC, TCHAR *pathExec, int witdh, int heigth)
 	DeleteObject(SelectObject(hdcTemp, hbmTempOld));
 	DeleteDC(hdcTemp);
 	DeleteObject(hBrush);
+	ReleaseDC(NULL, hdcTempNULL);
 
 	this->hDC = hdcResult;
 	this->imagen = hbmResult;
 	this->imagenOld = hbmResultOld;
 	this->anchoImagen = witdh;
-	this->altoImagen = heigth;
+	this->altoImagen = height;
 
 }
 
