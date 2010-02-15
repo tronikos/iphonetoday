@@ -14,6 +14,10 @@ char *unicodeToAnsi(BSTR unicodestr);
 // LPWSTR openFileBrowse(HWND hwnd, DWORD flags = OFN_EXFLAG_DETAILSVIEW);
 BOOL openFileBrowse(HWND hwnd, DWORD flags, TCHAR *strResult, TCHAR *strInitialDir);
 
-TCHAR *getStringNotNull(TCHAR *strIn);
+//TCHAR *getStringNotNull(TCHAR *strIn);
 
 BOOL getPathFromFile(TCHAR *strIn, TCHAR *strOut);
+
+BOOL FileOrDirExists(TCHAR *file, BOOL dir);
+BOOL FileExists(TCHAR *file);
+FILETIME FileModifyTime(TCHAR *file);

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "stdafx.h"
 #include "CIcono.h"
 
 class CPantalla
@@ -11,22 +12,20 @@ public:
 
 	FLOAT x;
 	FLOAT y;
-	UINT anchoPantalla;
-	UINT altoPantalla;
+	TCHAR header[MAX_PATH];
+	UINT anchoPantalla;	// screen width
+	UINT altoPantalla;	// screen height
 	HBITMAP imagen;
 	HDC hDC;
 
 	HBITMAP imagenOld;
 	HFONT hFontOld;
 
-
-	HBITMAP imagenMascara;
-	HDC hDCMascara;
-	CIcono *fondoPantalla;
-
 	CPantalla(void);
 	~CPantalla(void);
 
+	// create icon
 	CIcono *creaIcono(int posIcon = -1);
+	// delete icon
 	BOOL borraIcono(int posIcon);
 };

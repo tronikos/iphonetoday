@@ -51,8 +51,19 @@ BOOL				SaveConfiguration();
 BOOL				SaveConfiguration0(HWND);
 BOOL				SaveConfiguration1(HWND);
 BOOL				SaveConfiguration2(HWND);
+BOOL				SaveConfiguration3(HWND);
+BOOL				SaveConfiguration4(HWND);
+BOOL				SaveConfiguration5(HWND);
+BOOL				SaveConfiguration6(HWND);
 
 // Option dialog box procedure functions
 LRESULT	CALLBACK	OptionDialog0(HWND, UINT, WPARAM, LPARAM);
 LRESULT	CALLBACK	OptionDialog1(HWND, UINT, WPARAM, LPARAM);
 LRESULT	CALLBACK	OptionDialog2(HWND, UINT, WPARAM, LPARAM);
+LRESULT	CALLBACK	OptionDialog3(HWND, UINT, WPARAM, LPARAM);
+LRESULT	CALLBACK	OptionDialog4(HWND, UINT, WPARAM, LPARAM);
+LRESULT	CALLBACK	OptionDialog5(HWND, UINT, WPARAM, LPARAM);
+LRESULT	CALLBACK	OptionDialog6(HWND, UINT, WPARAM, LPARAM);
+
+UINT GetDlgItemHex(HWND hDlg, int nIDDlgItem, BOOL* lpTranslated);
+BOOL SetDlgItemHex(HWND hDlg, int nIDDlgItem, UINT uValue);

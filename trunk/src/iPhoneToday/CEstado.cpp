@@ -4,9 +4,6 @@
 CEstado::CEstado(void)
 {
 	hayMovimiento = false;
-	hayLanzamiento = false;
-
-	estadoPantalla = 0;
 
 	pantallaActiva = 0;
 	numLlamadas = 0;
@@ -22,15 +19,10 @@ CEstado::CEstado(void)
 
 	reloadIcons = 0;
 	reloadIcon = 0;
-
-	// fondoPantalla = NULL;
 }
 
 CEstado::~CEstado(void)
 {
-	/*if (fondoPantalla) {
-		delete fondoPantalla;
-	}*/
 }
 
 BOOL CEstado::actualizaNotificaciones() {
@@ -112,9 +104,9 @@ BOOL CEstado::actualizaNotificaciones() {
 	LoadDwordSetting(HKEY_LOCAL_MACHINE, &valorRegistro, 
 		TEXT("System\\State\\Hardware"),
 		TEXT("Wifi"), 
-		0);
+		-1);
 	temp = int(valorRegistro);
-	if (temp == 5 || temp == 1) {
+	if (temp == 5 || temp == 1 || temp == -1) {
 		temp = 0;
 	} else {
 		temp = 1;
@@ -128,9 +120,9 @@ BOOL CEstado::actualizaNotificaciones() {
 	LoadDwordSetting(HKEY_LOCAL_MACHINE, &valorRegistro, 
 		TEXT("System\\State\\Hardware"),
 		TEXT("Bluetooth"), 
-		0);
+		-1);
 	temp = int(valorRegistro);
-	if (temp == 8) {
+	if (temp == 8 || temp == -1) {
 		temp = 0;
 	} else if (temp == 11) {
 		temp = 2;
@@ -277,12 +269,11 @@ BOOL CEstado::LoadRegistryIcon(int nIcon, CReloadIcon *reloadIcon)
 
 	swprintf(subKey, L"Software\\iPhoneToday\\Icon%d", nIcon);
 
-	valorPorDefecto = 0;
 	LoadDwordSetting(HKEY_LOCAL_MACHINE, &reloadIcon->nScreen, 
-		subKey, TEXT("nScreen"), &valorPorDefecto);
+		subKey, TEXT("nScreen"), 0);
 	valorPorDefecto = 9999;
 	LoadDwordSetting(HKEY_LOCAL_MACHINE, &reloadIcon->nIcon, 
-		subKey, TEXT("nIcon"), &valorPorDefecto);
+		subKey, TEXT("nIcon"), 0);
 	LoadTextSetting(HKEY_LOCAL_MACHINE, reloadIcon->strName, 
 		subKey, TEXT("strName"), L"");
 	LoadTextSetting(HKEY_LOCAL_MACHINE, reloadIcon->strImage, 

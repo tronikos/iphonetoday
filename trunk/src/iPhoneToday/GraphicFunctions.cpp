@@ -16,23 +16,35 @@ along with iContact.  If not, see <http://www.gnu.org/licenses/>.
 *******************************************************************/
 
 #include "GraphicFunctions.h"
-#include "macros.h"
-#include <initguid.h>
-#include <imgguids.h>
+#include <commdlg.h>
+
+/*
+typedef BOOL (STDAPICALLTYPE FAR fAlphaBlend)(HDC,int,int,int,int,HDC,int,int,int,int,BLENDFUNCTION);
 
 void BltAlpha(HDC hdcDest, int nXOriginDest, int nYOriginDest,
               int nWidthDest, int nHeightDest,
               HDC hdcSrc, int nXOriginSrc, int nYoriginSrc,
               int nWidthSrc, int nHeightSrc,
               BYTE alpha) {
+	static HMODULE hLib = NULL;
+	static fAlphaBlend *pAlphaBlend = NULL;
 
-	BLENDFUNCTION bf;
-	bf.BlendOp = AC_SRC_OVER;
-	bf.BlendFlags = 0;
-	bf.SourceConstantAlpha = alpha;
-	bf.AlphaFormat = 0;
-	AlphaBlend(hdcDest, nXOriginDest, nYOriginDest, nWidthDest, nHeightDest, 
-		hdcSrc, nXOriginSrc, nYoriginSrc, nWidthSrc, nHeightSrc, bf);
+	if (hLib == NULL) {
+		hLib = LoadLibrary(L"coredll.dll");
+		pAlphaBlend = (fAlphaBlend*)GetProcAddress(hLib, L"pAlphaBlend");
+	}
+	if (pAlphaBlend == NULL) {
+		DWORD dRop = alpha > 0 ? SRCAND : SRCCOPY;
+		BitBlt(hdcDest, nXOriginDest, nYOriginDest, nWidthDest, nHeightDest, hdcSrc, 0, 0, dRop);
+	} else {
+		BLENDFUNCTION bf;
+		bf.BlendOp = AC_SRC_OVER;
+		bf.BlendFlags = 0;
+		bf.SourceConstantAlpha = alpha;
+		bf.AlphaFormat = 0;
+		pAlphaBlend(hdcDest, nXOriginDest, nYOriginDest, nWidthDest, nHeightDest, 
+			hdcSrc, nXOriginSrc, nYoriginSrc, nWidthSrc, nHeightSrc, bf);
+	}
 }
 
 void BltAlpha(HDC hdcDest, int nLeft, int nTop, int nWidth, int nHeight, 
@@ -84,8 +96,9 @@ HBITMAP CreateBitmapMask(HBITMAP hbmColour, COLORREF crTransparent)
 
     return hbmMask;
 }
+*/
 
-// Draw a ellipse
+// Draw an ellipse
 void drawEllipse(HDC hDC, int x, int y, int x2, int y2, COLORREF color, TCHAR *texto) {
 	HPEN hEllipsePen;
 	hEllipsePen = CreatePen(PS_SOLID, 1, RGB(255,255,255));
@@ -112,6 +125,7 @@ void drawEllipse(HDC hDC, int x, int y, int x2, int y2, COLORREF color, TCHAR *t
 	DeleteObject(hBrush);
 }
 
+/*
 HBITMAP HBITMAPFromImage (IImage *pImage) {
 
 	HRESULT hr;
@@ -179,6 +193,7 @@ Error:
 
 	return hbmResult;
 }
+*/
 
 void DrawGradientGDI(HDC tdc, const RECT& iRect, COLORREF StartRGB, COLORREF EndRGB, COLOR16 alpha) {
            

@@ -1,5 +1,6 @@
 #include "Log.h"
 
+/*
 HANDLE	g_hLogFile;
 TCHAR	g_szLogPath[MAX_PATH];
 
@@ -22,3 +23,4 @@ void WriteToLog(LPTSTR tszLine)
     CloseHandle(g_hLogFile);
     LocalFree(ptszSystemDate);
 }
+*/

@@ -1,172 +1,173 @@
-
 #include "RegistryUtils.h"
 
-void SaveDwordSetting(HKEY hKEY, const TCHAR * lpSubKey, const DWORD *szValue,
-                 const TCHAR * szKeyName) {
+BOOL SaveDwordSetting(HKEY hKEY, const TCHAR * lpSubKey, const DWORD *szValue,
+					const TCHAR * szKeyName) {
 
-    HKEY  hkey = 0;
-    DWORD dwDisposition = 0;
-    DWORD dwType = REG_DWORD;
-    DWORD dwSize = 0;
+	HKEY  hkey = 0;
+	DWORD dwDisposition = 0;
+	DWORD dwType = REG_DWORD;
+	DWORD dwSize = 0;
 
-    // create (or open) the specified registry key
-    LONG result = RegCreateKeyEx(hKEY, lpSubKey, 
-        0, NULL, 0, 0, NULL, &hkey, &dwDisposition);
+	// create (or open) the specified registry key
+	LONG result = RegCreateKeyEx(hKEY, lpSubKey,
+		0, NULL, 0, 0, NULL, &hkey, &dwDisposition);
 
-    if (result != ERROR_SUCCESS)
-        return;
+	if (result != ERROR_SUCCESS)
+		return FALSE;
 
-    dwSize = sizeof(DWORD);
-    result = RegSetValueEx(hkey, szKeyName, NULL, dwType, (PBYTE)szValue, dwSize);
+	dwSize = sizeof(DWORD);
+	result = RegSetValueEx(hkey, szKeyName, NULL, dwType, (PBYTE)szValue, dwSize);
 
-    if (hkey != NULL)
-        RegCloseKey(hkey);
+	if (result != ERROR_SUCCESS)
+		return FALSE;
+
+	if (hkey != NULL)
+		RegCloseKey(hkey);
+
+	return TRUE;
 }
 
-void LoadDwordSetting(HKEY hKEY, DWORD * szValue, const TCHAR * lpSubKey,
-                 const TCHAR * szKeyName, const DWORD * szDefault) {
+BOOL LoadDwordSetting(HKEY hKEY, DWORD * szValue, const TCHAR * lpSubKey,
+					const TCHAR * szKeyName, const DWORD dwDefault) {
 
-    HKEY  hkey = 0;
-    DWORD dwDisposition = 0;
+	HKEY  hkey = 0;
+	DWORD dwDisposition = 0;
 	DWORD dwType = REG_DWORD;
-    DWORD dwSize = sizeof(DWORD);
+	DWORD dwSize = sizeof(DWORD);
 	
-	if (szDefault) {
-		*szValue = *szDefault;
-	} else {
-		*szValue = 0;
+	LONG result = RegOpenKeyEx(hKEY, lpSubKey, 0, 0, &hkey);
+
+	// could not open key
+	if (result != ERROR_SUCCESS) {
+		*szValue = dwDefault;
+		return FALSE;
 	}
 
-    LONG result = RegOpenKeyEx(hKEY, lpSubKey, 0, 0, &hkey);
+	// load the value
+	result = RegQueryValueEx(hkey, szKeyName, NULL, &dwType,
+		(PBYTE)szValue, &dwSize);
+	if (result != ERROR_SUCCESS) {
+		RegCloseKey(hkey);
+		*szValue = dwDefault;
+		return FALSE;
+	}
 
-    // could not open key
-    if (result != ERROR_SUCCESS) {
-		return;
-    }
+	if (hkey != NULL)
+		RegCloseKey(hkey);
 
-    // load the value
-    result = RegQueryValueEx(hkey, szKeyName, NULL, &dwType,
-        (PBYTE)szValue, &dwSize);
-    if (result != ERROR_SUCCESS) {
-        RegCloseKey(hkey);
-		if (szDefault) {
-			*szValue = *szDefault;
-		} else {
-			*szValue = 0;
-		}
-        return;
-    }
-
-    RegCloseKey(hkey);
+	return TRUE;
 }
 
 /*
 void LoadDwordSetting(HKEY hKEY, DWORD * szValue, const TCHAR * lpSubKey,
-                 const TCHAR * szKeyName, const DWORD * szDefault) {
+					const TCHAR * szKeyName, const DWORD * szDefault) {
 
-    HKEY  hkey = 0;
-    DWORD dwDisposition = 0;
+	HKEY  hkey = 0;
+	DWORD dwDisposition = 0;
 	DWORD dwType = REG_DWORD;
-    DWORD dwSize = sizeof(DWORD);
-	
+	DWORD dwSize = sizeof(DWORD);
+
 	if (szDefault) {
 		*szValue = *szDefault;
 	} else {
 		*szValue = 0;
 	}
 
-    LONG result = RegOpenKeyEx(hKEY, lpSubKey, 0, 0, &hkey);
+	LONG result = RegOpenKeyEx(hKEY, lpSubKey, 0, 0, &hkey);
 
-    // could not open key
-    if (result != ERROR_SUCCESS) {
+	// could not open key
+	if (result != ERROR_SUCCESS) {
 
-        // no default value exists
-        if (!szDefault)
-            return;
+		// no default value exists
+		if (!szDefault)
+			return;
 
-        // try to create the key instead
-        result = RegCreateKeyEx(hKEY, lpSubKey, 
-            0, NULL, 0, 0, NULL, &hkey, &dwDisposition);
+		// try to create the key instead
+		result = RegCreateKeyEx(hKEY, lpSubKey,
+			0, NULL, 0, 0, NULL, &hkey, &dwDisposition);
 
-        // also couldn't create key, just use default
-        if (result != ERROR_SUCCESS) {
-            // StringCchCopy(szValue, cchValue, szDefault);
+		// also couldn't create key, just use default
+		if (result != ERROR_SUCCESS) {
+			// StringCchCopy(szValue, cchValue, szDefault);
 			*szValue = *szDefault;
-            return;
-        }
-    
-        // opened key (also creating it)
-        if (dwDisposition == REG_CREATED_NEW_KEY) {
-            RegCloseKey(hkey);
-            SaveDwordSetting(hKEY, lpSubKey, szDefault, szKeyName);
-            // StringCchCopy(szValue, cchValue, szDefault);
+			return;
+		}
+
+		// opened key (also creating it)
+		if (dwDisposition == REG_CREATED_NEW_KEY) {
+			RegCloseKey(hkey);
+			SaveDwordSetting(hKEY, lpSubKey, szDefault, szKeyName);
+			// StringCchCopy(szValue, cchValue, szDefault);
 			*szValue = *szDefault;
-            return;
-        }
+			return;
+		}
 
-    }
+	}
 
-    // load the value
-    result = RegQueryValueEx(hkey, szKeyName, NULL, &dwType,
-        (PBYTE)szValue, &dwSize);
-    if (result != ERROR_SUCCESS) {
-        RegCloseKey(hkey);
-        if (szDefault) {
-            SaveDwordSetting(hKEY, lpSubKey, szDefault, szKeyName);
-            // StringCchCopy(szValue, cchValue, szDefault);
+	// load the value
+	result = RegQueryValueEx(hkey, szKeyName, NULL, &dwType,
+		(PBYTE)szValue, &dwSize);
+	if (result != ERROR_SUCCESS) {
+		RegCloseKey(hkey);
+		if (szDefault) {
+			SaveDwordSetting(hKEY, lpSubKey, szDefault, szKeyName);
+			// StringCchCopy(szValue, cchValue, szDefault);
 			*szValue = *szDefault;
-        }
-        return;
-    }
+		}
+		return;
+	}
 
-    RegCloseKey(hkey);
+	RegCloseKey(hkey);
 }
 */
-void LoadTextSetting(HKEY hKEY, TCHAR * szValue, const TCHAR * lpSubKey,
-                 const TCHAR * szKeyName, const TCHAR * szDefault) {
+BOOL LoadTextSetting(HKEY hKEY, TCHAR * szValue, const TCHAR * lpSubKey,
+					const TCHAR * szKeyName, const TCHAR * szDefault) {
 
-    HKEY  hkey = 0;
-    DWORD dwDisposition = 0;
+	HKEY  hkey = 0;
+	DWORD dwDisposition = 0;
 	DWORD dwType;
-    DWORD dwSize = MAX_PATH;
-	
+	DWORD dwSize = MAX_PATH;
+
 	if (szDefault) {
 		wcscpy(szValue, szDefault);
 	} else {
 		wcscpy(szValue, L"");
 	}
 
-    LONG result = RegOpenKeyEx(hKEY, lpSubKey, 0, 0, &hkey);
+	LONG result = RegOpenKeyEx(hKEY, lpSubKey, 0, 0, &hkey);
 
-    // could not open key
-    if (result != ERROR_SUCCESS) {
-		return;
-    }
+	// could not open key
+	if (result != ERROR_SUCCESS) {
+		return FALSE;
+	}
 
-    // load the value
+	// load the value
 	ZeroMemory(szValue, dwSize);
-    result = RegQueryValueEx(hkey, szKeyName, NULL, &dwType,
-        (LPBYTE)szValue, &dwSize);
-    if (result != ERROR_SUCCESS) {
-        RegCloseKey(hkey);
+	result = RegQueryValueEx(hkey, szKeyName, NULL, &dwType,
+		(LPBYTE)szValue, &dwSize);
+	if (result != ERROR_SUCCESS) {
+		RegCloseKey(hkey);
 		if (szDefault) {
 			wcscpy(szValue, szDefault);
 		} else {
 			wcscpy(szValue, L"");
 		}
-        return;
-    }
+		return FALSE;
+	}
 
-    RegCloseKey(hkey);
+	if (hkey != NULL)
+		RegCloseKey(hkey);
+
+	return TRUE;
 }
 
 BOOL DeleteKey(HKEY hKey, const TCHAR * lpSubKey)
 {
 	LONG result = RegDeleteKey(hKey, lpSubKey);
-    // could not open key
-    if (result != ERROR_SUCCESS) {
-		return false;
+	// could not open key
+	if (result != ERROR_SUCCESS) {
+		return FALSE;
 	} else {
-		return true;
+		return TRUE;
 	}
 }

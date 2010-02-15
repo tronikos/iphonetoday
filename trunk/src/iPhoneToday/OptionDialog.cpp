@@ -123,33 +123,27 @@ BOOL CreatePropertySheet(HWND hwnd)
     PROPSHEETPAGE	psp[NUM_CONFIG_SCREENS];
     PROPSHEETHEADER	psh;
 
-	// Load all SheetPages
-	psp[0].dwSize = sizeof(psp[0]);
-    psp[0].dwFlags = PSP_DEFAULT | PSP_USETITLE| PSP_USECALLBACK;
-    psp[0].hInstance = g_hInst;
-	psp[0].pszTemplate = MAKEINTRESOURCE(IDD_DIALOGPAGE0); 
-	psp[0].pszTitle = (LPCTSTR)LoadString(g_hInst, (IDS_TAB0), NULL, 0);
-    psp[0].lParam = (LPARAM)0;
-	psp[0].pfnCallback = PropSheetPageProc;
+    // Fill in default values in property page structures
+    for (int i = 0; i < NUM_CONFIG_SCREENS; i++)
+	{
+		psp[i].dwSize = sizeof(psp[i]);
+		psp[i].dwFlags = PSP_DEFAULT | PSP_USETITLE| PSP_USECALLBACK;
+		psp[i].hInstance = g_hInst;
+		psp[i].pszTemplate = MAKEINTRESOURCE(IDD_DIALOGPAGE0 + i);  // Make sure the Resource Value is in sequence for all the dialog boxes
+		psp[i].pszTitle = (LPCTSTR)LoadString(g_hInst, (IDS_TAB0 + i), NULL, 0);  // Make sure the value of the tab titles in string table is in sequence too
+		psp[i].lParam = (LPARAM)i;
+		psp[i].pfnCallback = PropSheetPageProc;
+	}
+
+
+    // Set the dialog box procedures for each page
 	psp[0].pfnDlgProc = (DLGPROC)&OptionDialog0;
-
-	psp[1].dwSize = sizeof(psp[1]);
-    psp[1].dwFlags = PSP_DEFAULT | PSP_USETITLE| PSP_USECALLBACK;
-    psp[1].hInstance = g_hInst;
-	psp[1].pszTemplate = MAKEINTRESOURCE(IDD_DIALOGPAGE1); 
-	psp[1].pszTitle = (LPCTSTR)LoadString(g_hInst, (IDS_TAB1), NULL, 0);
-    psp[1].lParam = (LPARAM)1;
-	psp[1].pfnCallback = PropSheetPageProc;
 	psp[1].pfnDlgProc = (DLGPROC)&OptionDialog1;
-
-	psp[2].dwSize = sizeof(psp[2]);
-    psp[2].dwFlags = PSP_DEFAULT | PSP_USETITLE| PSP_USECALLBACK;
-    psp[2].hInstance = g_hInst;
-	psp[2].pszTemplate = MAKEINTRESOURCE(IDD_DIALOGPAGE2); 
-	psp[2].pszTitle = (LPCTSTR)LoadString(g_hInst, (IDS_TAB2), NULL, 0);
-    psp[2].lParam = (LPARAM)2;
-	psp[2].pfnCallback = PropSheetPageProc;
 	psp[2].pfnDlgProc = (DLGPROC)&OptionDialog2;
+	psp[3].pfnDlgProc = (DLGPROC)&OptionDialog3;
+	psp[4].pfnDlgProc = (DLGPROC)&OptionDialog4;
+	psp[5].pfnDlgProc = (DLGPROC)&OptionDialog5;
+	psp[6].pfnDlgProc = (DLGPROC)&OptionDialog6;
 
 
     //
@@ -163,7 +157,7 @@ BOOL CreatePropertySheet(HWND hwnd)
     psh.dwFlags = PSH_DEFAULT | PSH_PROPSHEETPAGE | PSH_MAXIMIZE | PSH_NOAPPLYNOW | PSH_USECALLBACK;
     psh.hwndParent = hwnd;
     psh.hInstance = g_hInst;
-    psh.pszCaption = NULL;
+    psh.pszCaption = L"Options";
     psh.nPages = NUM_CONFIG_SCREENS;
     psh.nStartPage = 0;
     psh.ppsp = &psp[0];
@@ -180,20 +174,48 @@ BOOL CreatePropertySheet(HWND hwnd)
 BOOL SaveConfiguration()
 {
 	BOOL result = TRUE;
-	// General (first) dialog
+
 	if (g_hDlg[0])
 		result &= SaveConfiguration0(g_hDlg[0]);
-
-	// Date (second) dialog
 	if (g_hDlg[1])
 		result &= SaveConfiguration1(g_hDlg[1]);
-
-	// Date (third) dialog
 	if (g_hDlg[2])
 		result &= SaveConfiguration2(g_hDlg[2]);
+	if (g_hDlg[3])
+		result &= SaveConfiguration3(g_hDlg[3]);
+	if (g_hDlg[4])
+		result &= SaveConfiguration4(g_hDlg[4]);
+	if (g_hDlg[5])
+		result &= SaveConfiguration5(g_hDlg[5]);
+	if (g_hDlg[6])
+		result &= SaveConfiguration6(g_hDlg[6]);
 
 	if (result) {
 		configuracion->guardaXMLConfig();
 	}
 	return result;
+}
+
+UINT GetDlgItemHex(HWND hDlg, int nIDDlgItem, BOOL* lpTranslated)
+{
+	TCHAR str[MAX_PATH];
+	UINT result = 0;
+	if (GetDlgItemText(hDlg, nIDDlgItem, str, MAX_PATH) > 0) {
+		swscanf(str, L"#%X", &result);
+		if (lpTranslated != NULL) {
+			*lpTranslated = TRUE;
+		}
+	} else {
+		if (lpTranslated != NULL) {
+			*lpTranslated = FALSE;
+		}
+	}
+	return result;
+}
+
+BOOL SetDlgItemHex(HWND hDlg, int nIDDlgItem, UINT uValue)
+{
+	TCHAR str[MAX_PATH];
+	swprintf(str, L"#%X", uValue);
+	return SetDlgItemText(hDlg, nIDDlgItem, str);
 }

@@ -23,16 +23,14 @@
 
 
 #include <windows.h>
-#include "cemapi.h"
 #include "mapiutil.h"
-#include "resource.h"
 #include "macros.h"
-#include "aygshell.h"
 #include "msxml.h"
 
 #include "Log.h"
 
 
+/*
 // Different types that we recognize from the XML:
 //   0 = String
 //   1 = Integer
@@ -66,7 +64,8 @@ typedef struct tagSTOREINFO
 LPTSTR PathFindFileName(LPCTSTR pszPath);
 BOOL GetXMLPathName(LPTSTR pszPath, UINT cMaxPath);
 VALUETYPE ReadNodeType(IXMLDOMNamedNodeMap *pNodeMap, TCHAR *pszNodeName);
-ULONG ReadNodeNumber(IXMLDOMNamedNodeMap *pNodeMap, TCHAR *pszNodeName);
+*/
+ULONG ReadNodeNumber(IXMLDOMNamedNodeMap *pNodeMap, TCHAR *pszNodeName, ULONG defaultValue = 0);
 BOOL ReadNodeString(LPTSTR pszRet, IXMLDOMNamedNodeMap *pNodeMap, TCHAR *pszNodeName, TCHAR *defaultValue = TEXT(""));
 ULONG ReadTextNodeNumber(IXMLDOMNode *pNode, ULONG defaultValue);
 BOOL ReadTextNode(LPTSTR pszRet, IXMLDOMNode *pNode, TCHAR *defaultValue = TEXT(""));
