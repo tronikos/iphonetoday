@@ -122,7 +122,7 @@ BOOL CEstado::actualizaNotificaciones() {
 		TEXT("Bluetooth"), 
 		-1);
 	temp = int(valorRegistro);
-	if (temp == 8 || temp == -1) {
+	if (temp == 8 || temp == -1 || temp == 0) {
 		temp = 0;
 	} else if (temp == 11) {
 		temp = 2;
