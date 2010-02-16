@@ -240,9 +240,11 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lPara
 		PostQuitMessage(0);
 #endif
 		return 0;
-#ifndef EXEC_MODE
 	// this fills in the background with the today screen image
 	case WM_ERASEBKGND:
+#ifdef EXEC_MODE
+		return FALSE;
+#else
 		return cargaFondoPantalla(hwnd);
 #endif
 	}
