@@ -38,8 +38,8 @@ public:
 	int numSyncEmail;	// HKCU\System\State\Messages\sync\Unread\Count
 	int numCitas;		// HKCU\System\State\Appointments\List\Count
 	int numTareas;		// HKCU\System\State\Tasks\Active
-	int estadoWifi;		// HKLM\System\State\Hardware\Wifi\WiFi
-	int estadoBluetooth;// HKLM\System\State\Hardware\Wifi\Bluetooth
+	int estadoWifi;		// HKLM\System\State\Hardware\WiFi
+	int estadoBluetooth;// HKLM\System\State\Hardware\Bluetooth
 	int estadoAlarm;	// HKLM\Software\Microsoft\Clock\0\AlarmFlags HKLM\Software\Microsoft\Clock\1\AlarmFlags HKLM\Software\Microsoft\Clock\2\AlarmFlags
 
 	int diaDelMes;		// day of the month

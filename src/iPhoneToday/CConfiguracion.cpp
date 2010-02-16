@@ -630,8 +630,8 @@ BOOL CConfiguracion::guardaXMLIconos(CListaPantalla *listaPantallas)
 
 	// Create a processing instruction element.
 	bstr = SysAllocString(L"xml");
-	bstr1 = SysAllocString(L"version='1.0'");
-	CHR(pXMLDom->createProcessingInstruction(bstr,bstr1, &pi));
+	bstr1 = SysAllocString(L"version='1.0' encoding='UTF-8'");
+	CHR(pXMLDom->createProcessingInstruction(bstr, bstr1, &pi));
 	AppendChildToParent(pi, pXMLDom);
 	RELEASE_OBJ(pi);
 	SysFreeString(bstr); bstr = NULL;
@@ -788,7 +788,7 @@ BOOL CConfiguracion::guardaXMLConfig()
 
 	// Create a processing instruction element.
 	bstr = SysAllocString(L"xml");
-	bstr1 = SysAllocString(L"version='1.0'");
+	bstr1 = SysAllocString(L"version='1.0' encoding='UTF-8'");
 	CHR(pXMLDom->createProcessingInstruction(bstr, bstr1, &pi));
 	SysFreeString(bstr); bstr = NULL;
 	SysFreeString(bstr1); bstr1 = NULL;
