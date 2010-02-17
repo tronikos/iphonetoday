@@ -1626,6 +1626,22 @@ BOOL LaunchApplication(LPCTSTR pCmdLine, LPCTSTR pParametros)
 		return FALSE;
 	}
 
+	if (wcsncmp(pCmdLine, L"::", 2) == 0) {
+		if (wcscmp(pCmdLine, L"::add") == 0) {
+			PostMessage(g_hWnd, WM_USER_ADD, 0, 0);
+			return TRUE;
+		} else if (wcscmp(pCmdLine, L"::options") == 0) {
+			PostMessage(g_hWnd, WM_USER_OPTIONS, 0, 0);
+			return TRUE;
+		} else if (wcscmp(pCmdLine, L"::close") == 0 || wcscmp(pCmdLine, L"::exit") == 0) {
+			PostMessage(g_hWnd, WM_DESTROY, 0, 0);
+			return TRUE;
+		} else if (wcsncmp(pCmdLine, L"::goto:", wcslen(L"::goto:")) == 0) {
+			PostMessage(g_hWnd, WM_USER_GOTO, _wtoi(pCmdLine + wcslen(L"::goto:")), 0);
+			return TRUE;
+		}
+	}
+
 	TCHAR fullPath[MAX_PATH];
 	configuracion->getAbsolutePath(fullPath, CountOf(fullPath), pCmdLine);
 
