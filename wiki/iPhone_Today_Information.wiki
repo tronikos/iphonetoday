@@ -57,7 +57,8 @@ I will add more here soon
   Name: This is the name that will display under the icon
   Image: this is the location of the picture for the icon
   Type: If this is a special icon, select it, otherwise select normal
-  Execute: This is the program that runs when the icon is pressed. WARNING Do not select any exe, lnk, mscr files with any of these characters !@#$%^&()_+=-<>,./? This will crash iPhoneToday. If you need to use a file with one of these create a shortcut to that file and aim the icon at that shortcut. See Page 6 for creating shortcuts and MortScript files.
+  Execute: This is the program that runs when the icon is pressed. 
+    WARNING Do not select any exe, lnk, mscr files with any of these characters !@#$%^&()+=-<>,./ This will crash iPhoneToday. If you need to use a file with one of these create a shortcut to that file and aim the icon at that shortcut. See below for creating shortcuts and MortScript files.
   Parameters: this is a command or setting used for the program being run. For example if you have a program that dials a number, this is where you would put the phone number (Warning If you add quotations (“) to parameters it will crash the plug-in)
   ExecuteAlt: What runs when the icon (special icon) has a status
   ParamsAlt: this is a command or setting used for the Alt program being run if any. 
