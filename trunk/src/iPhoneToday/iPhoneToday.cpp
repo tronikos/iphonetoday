@@ -1645,7 +1645,7 @@ BOOL LaunchApplication(LPCTSTR pCmdLine, LPCTSTR pParametros)
 		return FALSE;
 	}
 
-	if (wcsncmp(pCmdLine, L"::", 2) == 0) {
+	if (wcsncmp(pCmdLine, L"--", 2) == 0) {
 		if (CommandLineArguements(pCmdLine + 2)) {
 			return TRUE;
 		}
@@ -2373,7 +2373,9 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		LoadString(hInstance, IDS_APPNAME, szWindowClass, MAX_LOADSTRING);
 		g_hWnd = FindWindow(szWindowClass, NULL);
 		if (g_hWnd) {
-			CommandLineArguements(lpCmdLine);
+			if (wcsncmp(lpCmdLine, L"--", 2) == 0) {
+				CommandLineArguements(lpCmdLine + 2);
+			}
 		}
 		return 0;
 	}
