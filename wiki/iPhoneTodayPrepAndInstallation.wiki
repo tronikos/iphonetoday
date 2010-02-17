@@ -1,4 +1,4 @@
-#summary Follow this guid to install and setup iPhone Today
+#summary Follow this guide to install and setup iPhone Today
 #labels Phase-Deploy
 
 =*The Walkthrough *=
