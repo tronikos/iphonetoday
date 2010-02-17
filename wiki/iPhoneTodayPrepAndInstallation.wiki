@@ -1,0 +1,99 @@
+#summary One-sentence summary of this page.
+#labels Phase-Deploy
+=*The Walkthrough *=
+
+= Introduction =
+I will add more here soon
+
+= Preparation =
+*FIRST and MOST IMPORTANT: Back up your phone*
+
+  1. Start by downloading one of the iPhone_Today.zip files from the downloads section
+    
+    a. When you open the ZIP file you will see many files. There is one dll version, and a bunch that are custom to each type of phone resolution. These versions (non-dll versions) will install the program, the icons and settings files.
+
+    b. If this is an update and you have already installed iPT; Install the dll version. The dll version only installs the updated program. Since you already have the icons and settings files, you do not need to reinstall those
+
+=How To Install=
+  1. Copy the iPhone Today cab onto your phone.
+
+  2. On your phone, and navigate to where you placed the cab.
+
+  3. Click the iPhgoneToday.cab file and install it to your phone. *DO NOT INSTALL TO THE STORAGE CARD* 
+
+  4. You will have 2 versions installed; 
+
+    a. the exe version is opened like any program (start menu --> programs --> iPhoneToday.exe) This is full screen mode. It will exit if you press home or end. This works very well with programs that use tabs, like TF3d.
+
+    b. Or you can use iPhoneToday as a today plug-in. Go into "Start --> Settings --> Today --> Today items" and disable all other today plugins except iPhone Today
+
+  5. Use the icon and settings UI managers to add/edit icons (See below for UI instructions)
+
+  6. For advanced functions and the “missing bars” see the next setp
+
+==Setup after install==
+
+  1. Press and hold anywhere on the screen. A menu will pop up
+
+    (If you press and hold on an icon)
+      Add Icon
+      Move Icon
+      Edit Icon 
+      Delete Icon
+      -----------
+      Cancel
+
+    (If you press and hold in a blank area)
+      Add Icon
+      Options
+      -----------
+      Cancel
+
+==When you select *“Add Icon”* or *“Edit Icon”* you will enter the icon edit menu==
+
+===Icon Menu===
+
+  Screen: This should be filled out all ready; to add the icon to a different screen or a new screen, change this number. To set the icon to the bottom static bar (the bottom icons do not move) set screen to -1. Note that the 1st page is number 0, the second page is number 1 and so on. 
+  Icon: Location of the icon on that page. Note that the 1st icon is number 0; the second icon is number 1 and so on. 
+  Name: This is the name that will display under the icon
+  Image: this is the location of the picture for the icon
+  Type: If this is a special icon, select it, otherwise select normal
+  Execute: This is the program that runs when the icon is pressed. 
+    WARNING Do not select any exe, lnk, mscr files with any of these characters !@#$%^&()+=-<>,./ This will crash iPhoneToday. If you need to use a file with one of these create a shortcut to that file and aim the icon at that shortcut. See below for creating shortcuts and MortScript files.
+  Parameters: this is a command or setting used for the program being run. For example if you have a program that dials a number, this is where you would put the phone number (Warning If you add quotations (“) to parameters it will crash the plug-in)
+  ExecuteAlt: What runs when the icon (special icon) has a status
+  ParamsAlt: this is a command or setting used for the Alt program being run if any. 
+  Launch Animation: Check this if you want a simple animation when the icon is pressed
+
+
+==When you select “Options” you will enter settings the edit menu==
+
+(more coming soon)
+
+===Edit Menu===
+
+*"General"*
+
+  Icon: Size of icon
+  Icons for Row: Number of icons per row
+  Portrait Height: Screen height in portait mode (remember you have tital and bottom bars)
+  Landscape Height: Screen height in landscape mode (remember you have tital and bottom bars)
+  Velocity: Leave along
+  Factor Movement: Leave along
+  Font Size: Size of font
+  Time of Vibration: How long in miliseconds phone will vibrate for when you press an icon
+  [ ] Ignore Rotation Screen: Check to not have the icons regroup on landscape mode (use only if you are having issues going back to portrait mode)
+  [ ] Close on launch icon: Use for exe version
+
+*"Wallpaper"*
+
+  Wallpaper: Select a wallpaper background picture (do not select if you are using a transparent background)
+  [ ] Transparent Background: Select if you want the background to be see through
+  [ ] Static Background: This will not "stretch" the background. Every page will have the same background
+
+*"Clock"*
+
+  Font Width: Width of clock font (when using a clock type icon)
+  Font Height: height of clock font (when using a clock type icon)
+  Font" Color of clock font (when using a clock type icon)
+  [ ] 12 Hours Format: 12 or 24 hour mode?
