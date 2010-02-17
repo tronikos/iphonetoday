@@ -123,20 +123,20 @@ Here are the FAQ's:
   <icon name="Icons" image="\iPhoneToday\icons\icons.png" exec="\Windows\Start Menu\File Explorer.lnk" parameters="\windows\start menu\programs\games\" type="0" execAlt="" parametersAlt=""/>
 
 # Create an icon to a SMS and E-mail
-  *You can create a shortcut (See #1 above)
-  *SMS
+  * You can create a shortcut (See #1 above)
+  * SMS
   {{{
   19#:MSINBOX -service "SMS" -open "Inbox"Outlook e-mails
   }}}
-  *ActiveSync
+  * ActiveSync
   {{{  
   54#\windows\tmail.exe -service "ActiveSync" -open "Inbox"Hotmail
   }}}
-  *Hotmail
+  * Hotmail
   {{{
   40#:MSINBOX -service "Hotmail" -open "Inbox"Gmail
   }}}
-  *Gmail
+  * Gmail
   {{{
   38#:MSINBOX -service "Gmail" -open "Inbox"
   }}}
@@ -150,19 +150,19 @@ Here are the FAQ's:
 
 # Link an icon to a Call History
   * To link to call history (files attached):
-  # Download the LaunchMSItem.zip
-  # UnZip the [http://iphonetoday.googlecode.com/files/LaunchMSItem.zip LaunchMSItem.zip] and copy it to your phone; (I reccomend your storage card)
+  # Download the [http://iphonetoday.googlecode.com/files/LaunchMSItem.zip LaunchMSItem.zip] 
+  # Un Zip it and copy it to your phone; (I reccomend your storage card)
   # Edit your "phone" or "call" icon and set the type to "Missed calls" 
-  # Set the ExecuteAlt to LaunchMSItem.exe's location
-  # Set the ParamsAlt to CALLHISTORY_ALL_CALLS_
+  # Set the *Execute Alt* to LaunchMSItem.exe's location
+  # Set the *Params Alt* to CALLHISTORY_ALL_CALLS_
   _This will, when you have a missed call, goto call history_
 
-# Creating MortScript Files
+# Creating Mort Script Files
   * This can be easy or complicated. I recommend vising the new thread dedcated to Mortscript, or tyhe one for icon programs here:
 http://forum.xda-developers.com/show...15#post4308615
 
 # Creating links to contacts
-  *Here is a really cool program that will automatically create the [http://forum.xda-developers.com/showthread.php?t=555574 contact links]
+  * Here is a really cool program that will automatically create the [http://forum.xda-developers.com/showthread.php?t=555574 contact links]
   _oldsap said it perfectly
   {{{
   Manually creating shortcut files for sms and call sending to specific contacts requires using a text editor (in PPC and PC) and then manually typing text codes and memorizing the phone number for that particular contact, then repeating the same procedure again and again for each contact.
