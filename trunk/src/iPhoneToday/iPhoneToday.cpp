@@ -2720,4 +2720,5 @@ BOOL CommandLineArguements(LPCTSTR pCmdLine)
 		}
 		return TRUE;
 	}
+	return FALSE;
 }
