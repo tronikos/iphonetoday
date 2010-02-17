@@ -1,0 +1,15 @@
+#summary One-sentence summary of this page.
+*The Walkthrough *
+
+== Introduction ==
+I will add more here soon
+
+== Preparation ==
+*FIRST and MOST IMPORTANT: Back up your phone*
+
+1. Start by downloading one of the iPhone_Today.zip files from the downloads section
+  a. When you open the ZIP file you will see many files. There is one dll version, and a bunch that are custom to each type of phone resolution. These versions (non-dll versions) will install the program, the icons and settings files.
+
+  b. If this is an update and you have already installed iPT; Install the dll version. The dll version only installs the updated program. Since you already have the icons and settings files, you do not need to reinstall those
+
+==How To Install==
