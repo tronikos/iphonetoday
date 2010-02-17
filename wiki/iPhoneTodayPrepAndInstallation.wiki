@@ -9,9 +9,9 @@ I will add more here soon
 = Preparation =
 *FIRST and MOST IMPORTANT: Back up your phone*
 
-  # Start by downloading one of the iPhone_Today.zip files from the downloads section
-    * When you open the ZIP file you will see many files. There is one dll version, and a bunch that are custom to each type of phone resolution. These versions (non-dll versions) will install the program, the icons and settings files.
-    * If this is an update and you have already installed iPT; Install the dll version. The dll version only installs the updated program. Since you already have the icons and settings files, you do not need to reinstall those
+  # Start by downloading one of the iPhone_Today.cab files from the downloads section
+    * This will install all of the needed files for iPhone Today to work.
+    * If this is an update and you have already installed iPT; backup your icons.xml and settings.xml files. Install the new version and then put your icons and settings files back in. 
 
 =How To Install=
   # Copy the iPhone Today cab onto your phone.
@@ -58,34 +58,8 @@ Press and hold anywhere on the screen. A menu will pop up
 
 ==When you select “Options” you will enter settings the edit menu==
 
-(more coming soon)
+(A LOT more coming soon)
 
 ===Edit Menu===
-
-*"General"*
-
-  * Icon: Size of icon
-  * Icons for Row: Number of icons per row
-  * Portrait Height: Screen height in portait mode (remember you have tital and bottom bars)
-  * Landscape Height: Screen height in landscape mode (remember you have tital and bottom bars)
-  * Velocity: Leave along
-  * Factor Movement: Leave along
-  * Font Size: Size of font
-  * Time of Vibration: How long in miliseconds phone will vibrate for when you press an icon
-  * [ ] Ignore Rotation Screen: Check to not have the icons regroup on landscape mode (use only if you are having issues going back to portrait mode)
-  * [ ] Close on launch icon: Use for exe version
-
-*"Wallpaper"*
-
-  * Wallpaper: Select a wallpaper background picture (do not select if you are using a transparent background)
-  * [ ] Transparent Background: Select if you want the background to be see through
-  * [ ] Static Background: This will not "stretch" the background. Every page will have the same background
-
-*"Clock"*
-
-  * Font Width: Width of clock font (when using a clock type icon)
-  * Font Height: height of clock font (when using a clock type icon)
-  * Font" Color of clock font (when using a clock type icon)
-  * [ ] 12 Hours Format: 12 or 24 hour mode?
 
 Continue on to [http://code.google.com/p/iphonetoday/wiki/FAQsAndAdvanced Faq's]
