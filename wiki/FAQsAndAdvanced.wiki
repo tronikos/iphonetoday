@@ -11,8 +11,8 @@ Here are the FAQ's:
   * I have come across a few solutions. 1st try [http://www.nuerom.com/BlogEngine/page/nueNoBar.aspx NueNoBar], there are 2 versions (v1.3 and v2.0). I recommend downloading both, v1.3 works on some and v2.0 works on others. 
   *Download: [http://iphonetoday.googlecode.com/files/NueNoBar1.3.cab NueNoBar 1.3] and [http://iphonetoday.googlecode.com/files/NueNoBar2.0.cab NueNoBar 2.0]
 
-# NueNoBar does not work at all, no matter what I try!!
-  * Try [http://iphonetoday.googlecode.com/files/DciNoBar.cab dciNoBar], NueNoBar did not work on my second phone, so I tried this and it works perfectly. You can find one verison of it also [http://forum.xda-developers.com/showthread.php?t=356978 here]
+# [http://www.nuerom.com/BlogEngine/page/nueNoBar.aspx NueNoBar] does not work at all, no matter what I try!!
+  * Try [http://iphonetoday.googlecode.com/files/DciNoBar.cab dciNoBar], [http://www.nuerom.com/BlogEngine/page/nueNoBar.aspx NueNoBar] did not work on my second phone, so I tried this and it works perfectly. You can find one verison of it also [http://forum.xda-developers.com/showthread.php?t=356978 here]
 
 # How do I have my calender show the days in my language?
   * I created a file called [http://iphonetoday.googlecode.com/files/Settings%20XML%20files.zip Settings XML files.zip] this file contains the settings.xml files for all 4 phone resolutions and in English, Espanol (Spanish), Deutsch (German) and Français (French). Just replace your current settings.xml file in your *\iPhoneToday* folder on your phone with that one. Then restart iPhoneToday, now the days will be in your language.
