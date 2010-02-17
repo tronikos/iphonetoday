@@ -1636,7 +1636,11 @@ BOOL LaunchApplication(LPCTSTR pCmdLine, LPCTSTR pParametros)
 	memset(&sei, 0, sizeof(sei));
 	sei.cbSize = sizeof(sei);
 
-	sei.lpFile = fullPath;
+	if (FileExists(fullPath)) {
+		sei.lpFile = fullPath;
+	} else {
+		sei.lpFile = pCmdLine;
+	}
 	sei.nShow = SW_SHOWNORMAL;
 	sei.nShow = SW_SHOWNORMAL;
 	sei.lpParameters = pParametros;
@@ -2659,12 +2663,8 @@ void getWindowSize(HWND hwnd, int *windowWidth, int *windowHeight)
 	GetWindowRect(hwnd, &rw);
 	RECT rwp;
 	int cyScreen = GetSystemMetrics(SM_CYSCREEN);
-	if (GetWindowRect(GetParent(hwnd), &rwp)) {
-		if (rwp.bottom <= cyScreen) {
-			*windowHeight = rwp.bottom - rw.top;
-		} else {
-			*windowHeight = cyScreen - rw.top;
-		}
+	if (GetWindowRect(GetParent(hwnd), &rwp) && rwp.bottom <= cyScreen) {
+		*windowHeight = rwp.bottom - rw.top;
 	} else {
 		*windowHeight = cyScreen - rw.top;
 	}
