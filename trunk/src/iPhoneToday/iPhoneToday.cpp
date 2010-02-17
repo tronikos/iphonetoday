@@ -11,10 +11,12 @@
 
 #define MAX_LOADSTRING 100
 
-#define WM_USER_RELAUNCH (WM_USER + 0)
-#define WM_USER_OPTIONS  (WM_USER + 1)
-#define WM_USER_ADD      (WM_USER + 2)
-#define WM_USER_GOTO     (WM_USER + 3)
+#define WM_USER_RELAUNCH	(WM_USER + 0)
+#define WM_USER_OPTIONS		(WM_USER + 1)
+#define WM_USER_ADD			(WM_USER + 2)
+#define WM_USER_GOTO		(WM_USER + 3)
+#define WM_USER_GOTO_NEXT	(WM_USER + 4)
+#define WM_USER_GOTO_PREV	(WM_USER + 5)
 
 
 // Global Variables:
@@ -100,6 +102,7 @@ LRESULT WINAPI CustomItemOptionsDlgProc(HWND, UINT, WPARAM, LPARAM);
 void RightClick(HWND hwnd, POINTS posCursor);
 void calculateConfiguration(int width, int height);
 void getWindowSize(HWND hwnd, int *windowWidth, int *windowHeight);
+BOOL CommandLineArguements(LPCTSTR pCmdLine);
 
 #ifndef EXEC_MODE
 /*************************************************************************/
@@ -217,6 +220,22 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lPara
 	case WM_USER_GOTO:
 		if (estado != NULL && configuracion != NULL && listaPantallas != NULL) {
 			estado->pantallaActiva = min(max((int) wParam, 0), (int)listaPantallas->numPantallas - 1);
+			estado->posObjetivo.x = - (short) (configuracion->anchoPantalla * estado->pantallaActiva);
+			estado->posObjetivo.y = 0;
+			SetTimer(hwnd, TIMER_RECUPERACION, configuracion->refreshTime, NULL);
+		}
+		return 0;
+	case WM_USER_GOTO_NEXT:
+		if (estado != NULL && configuracion != NULL && listaPantallas != NULL) {
+			estado->pantallaActiva = (estado->pantallaActiva + 1) % listaPantallas->numPantallas;
+			estado->posObjetivo.x = - (short) (configuracion->anchoPantalla * estado->pantallaActiva);
+			estado->posObjetivo.y = 0;
+			SetTimer(hwnd, TIMER_RECUPERACION, configuracion->refreshTime, NULL);
+		}
+		return 0;
+	case WM_USER_GOTO_PREV:
+		if (estado != NULL && configuracion != NULL && listaPantallas != NULL) {
+			estado->pantallaActiva = (listaPantallas->numPantallas + estado->pantallaActiva - 1) % listaPantallas->numPantallas;
 			estado->posObjetivo.x = - (short) (configuracion->anchoPantalla * estado->pantallaActiva);
 			estado->posObjetivo.y = 0;
 			SetTimer(hwnd, TIMER_RECUPERACION, configuracion->refreshTime, NULL);
@@ -1627,17 +1646,7 @@ BOOL LaunchApplication(LPCTSTR pCmdLine, LPCTSTR pParametros)
 	}
 
 	if (wcsncmp(pCmdLine, L"::", 2) == 0) {
-		if (wcscmp(pCmdLine, L"::add") == 0) {
-			PostMessage(g_hWnd, WM_USER_ADD, 0, 0);
-			return TRUE;
-		} else if (wcscmp(pCmdLine, L"::options") == 0) {
-			PostMessage(g_hWnd, WM_USER_OPTIONS, 0, 0);
-			return TRUE;
-		} else if (wcscmp(pCmdLine, L"::close") == 0 || wcscmp(pCmdLine, L"::exit") == 0) {
-			PostMessage(g_hWnd, WM_DESTROY, 0, 0);
-			return TRUE;
-		} else if (wcsncmp(pCmdLine, L"::goto:", wcslen(L"::goto:")) == 0) {
-			PostMessage(g_hWnd, WM_USER_GOTO, _wtoi(pCmdLine + wcslen(L"::goto:")), 0);
+		if (CommandLineArguements(pCmdLine + 2)) {
 			return TRUE;
 		}
 	}
@@ -2364,15 +2373,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		LoadString(hInstance, IDS_APPNAME, szWindowClass, MAX_LOADSTRING);
 		g_hWnd = FindWindow(szWindowClass, NULL);
 		if (g_hWnd) {
-			if (lstrcmpi(lpCmdLine, L"close") == 0) {
-				PostMessage(g_hWnd, WM_DESTROY, 0, 0);
-			} else if (lstrcmpi(lpCmdLine, L"options") == 0) {
-				PostMessage(g_hWnd, WM_USER_OPTIONS, 0, 0);
-			} else if (lstrcmpi(lpCmdLine, L"add") == 0) {
-				PostMessage(g_hWnd, WM_USER_ADD, 0, 0);
-			} else {
-				PostMessage(g_hWnd, WM_USER_GOTO, _wtoi(lpCmdLine), 0);
-			}
+			CommandLineArguements(lpCmdLine);
 		}
 		return 0;
 	}
@@ -2691,4 +2692,32 @@ void getWindowSize(HWND hwnd, int *windowWidth, int *windowHeight)
 #ifdef DEBUG1
 	NKDbgPrintfW(L"getWindowSize(%d, %d)\n", *windowWidth, *windowHeight);
 #endif
+}
+
+BOOL CommandLineArguements(LPCTSTR pCmdLine)
+{
+	if (pCmdLine == NULL) {
+		return FALSE;
+	}
+
+	if (wcsicmp(pCmdLine, L"add") == 0) {
+		PostMessage(g_hWnd, WM_USER_ADD, 0, 0);
+		return TRUE;
+	} else if (wcsicmp(pCmdLine, L"options") == 0) {
+		PostMessage(g_hWnd, WM_USER_OPTIONS, 0, 0);
+		return TRUE;
+	} else if (wcsicmp(pCmdLine, L"close") == 0 || wcsicmp(pCmdLine, L"exit") == 0) {
+		PostMessage(g_hWnd, WM_DESTROY, 0, 0);
+		return TRUE;
+	} else if (_wcsnicmp(pCmdLine, L"goto:", wcslen(L"goto:")) == 0) {
+		int l = wcslen(L"goto:");
+		if (wcscmp(pCmdLine + l, L"next") == 0) {
+			PostMessage(g_hWnd, WM_USER_GOTO_NEXT, 0, 0);
+		} else if (wcscmp(pCmdLine + l, L"previous") == 0) {
+			PostMessage(g_hWnd, WM_USER_GOTO_PREV, 0, 0);
+		} else {
+			PostMessage(g_hWnd, WM_USER_GOTO, _wtoi(pCmdLine + l), 0);
+		}
+		return TRUE;
+	}
 }
