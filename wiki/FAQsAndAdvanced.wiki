@@ -9,9 +9,9 @@ Here are the FAQ's:
 ----------------------------------------------------------------
 1. Q. How do I make the bottom bar go away? (aka the soft keys)
 
-  A. I have come across a few solutions. If NueNoBar does not work, try question 2. 1st try NueNoBar, there are 2 versions (v1.3 and v2.0). I recommend downloading both, v1.3 works on some and v2.0 works on others. 
+  A. I have come across a few solutions. If [http://code.google.com/p/iphonetoday/downloads/list NueNoBar] does not work, try question 2. 1st try [http://code.google.com/p/iphonetoday/downloads/list NueNoBar], there are 2 versions (v1.3 and v2.0). I recommend downloading both, v1.3 works on some and v2.0 works on others. 
 
-  I have attached NueNoBar v1.3 & v2.0 to this post at the bottom
+  Download: [http://iphonetoday.googlecode.com/files/NueNoBar1.3.cab NueNoBar 1.3] and [http://iphonetoday.googlecode.com/files/NueNoBar2.0.cab NueNoBar 2.0]
 
 2. Q. NueNoBar does not work at all, no matter what I try!!
 
