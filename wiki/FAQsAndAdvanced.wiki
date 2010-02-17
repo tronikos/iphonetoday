@@ -7,15 +7,15 @@ This page will cover most of the questions that you may have, along with some ad
 =The FAQ's=
 Here are the FAQ's:
 ----------------------------------------------------------------
-1. Q: How do I make the bottom bar go away? (aka the soft keys)
+1. Q. How do I make the bottom bar go away? (aka the soft keys)
 
-  A: I have come across a few solutions; if NueNoBar does not work, try question 2. 1st try NueNoBar, there are 2 versions (v1.3 and v2.0); I recommend downloading both, v1.3 works on some and v2.0 works on others. 
+  A. I have come across a few solutions; if NueNoBar does not work, try question 2. 1st try NueNoBar, there are 2 versions (v1.3 and v2.0); I recommend downloading both, v1.3 works on some and v2.0 works on others. 
 
   I have attached NueNoBar v1.3 & v2.0 to this post at the bottom
 
-2. Q: NueNoBar does not work at all, no matter what I try!!
+2. Q. NueNoBar does not work at all, no matter what I try!!
 
-  A: Here are 2 more options:
+  A. Here are 2 more options:
 
   2a. Try dciNoBar; NueNoBar did not work on my 2ed phone, so I tried this and it works perfectly. You can find one verison of it here http://forum.xda-developers.com/showthread.php?t=356978
 I haver attached dciNoBar to this post at the bottom
@@ -259,5 +259,3 @@ http://forum.xda-developers.com/show...15#post4308615
   Manually creating shortcut files for sms and call sending to specific contacts requires using a text editor (in PPC and PC) and then manually typing text codes and memorizing the phone number for that particular contact, then repeating the same procedure again and again for each contact.
   }}}
   oldsap created a simple application to automate all of this.
-
-
