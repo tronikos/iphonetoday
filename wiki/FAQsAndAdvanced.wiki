@@ -7,31 +7,14 @@ This page will cover most of the questions that you may have, along with some ad
 =The FAQ's=
 Here are the FAQ's:
 ----------------------------------------------------------------
-1. Q. How do I make the bottom bar go away? (aka the soft keys)
-
-  A. I have come across a few solutions. If [http://code.google.com/p/iphonetoday/downloads/list NueNoBar] does not work, try question 2. 1st try [http://code.google.com/p/iphonetoday/downloads/list NueNoBar], there are 2 versions (v1.3 and v2.0). I recommend downloading both, v1.3 works on some and v2.0 works on others. 
-
-  Download: [http://iphonetoday.googlecode.com/files/NueNoBar1.3.cab NueNoBar 1.3] and [http://iphonetoday.googlecode.com/files/NueNoBar2.0.cab NueNoBar 2.0]
-
-2. Q. NueNoBar does not work at all, no matter what I try!!
-
-  A. Here are 2 more options:
-
-  2a. Try dciNoBar; NueNoBar did not work on my 2ed phone, so I tried this and it works perfectly. You can find one verison of it here http://forum.xda-developers.com/showthread.php?t=356978
-I haver attached dciNoBar to this post at the bottom
-
-  2b. Also try a program called Second Today (thank you dustinmcd for this one and how to use it) http://www.chi-tai.info/cs_wm_tools_...tm#SecondToday; It has an option to hide the bottom bar and also gives the flexibility to use another plugin (such as Titanium) easily. Just enable no today plugins, set up iphonetoday as their "Second Today" and run it full time with minimal memory use.
-
-3. Q. How do I have my calender show the days in my language?
-
-  A. Attached at the bottom of this post is a file called Settings XML files.zip this file contains the settings.xml files for all 4 phone resolutions and in English, Espanol (Spanish), Deutsch (German) and Français (French). Just replace your current settings.xml file in your "\iPhoneToday" folder on your phone with that one. Then restart iPhoneToday; now the days will be in your language.
-
-  I only speek English, so if I messed up; please PM me. 
-
-  OR
-
-  You need to edit the settings file (located in: /iPhoneToday/settings.xml). Copy your settings.xml file to your PC. Open the file with notepad (ONLY USE NOTEPAD). Change the text inbetween the bracketed days:
-
+# Q. How do I make the bottom bar go away? (aka the soft keys)
+  * I have come across a few solutions. 1st try [http://www.nuerom.com/BlogEngine/page/nueNoBar.aspx NueNoBar], there are 2 versions (v1.3 and v2.0). I recommend downloading both, v1.3 works on some and v2.0 works on others. 
+  *Download: [http://iphonetoday.googlecode.com/files/NueNoBar1.3.cab NueNoBar 1.3] and [http://iphonetoday.googlecode.com/files/NueNoBar2.0.cab NueNoBar 2.0]
+# Q. NueNoBar does not work at all, no matter what I try!!
+  * Try [http://iphonetoday.googlecode.com/files/DciNoBar.cab dciNoBar], NueNoBar did not work on my second phone, so I tried this and it works perfectly. You can find one verison of it also [http://forum.xda-developers.com/showthread.php?t=356978 here]
+# Q. How do I have my calender show the days in my language?
+  * I created a file called [http://iphonetoday.googlecode.com/files/Settings%20XML%20files.zip Settings XML files.zip] this file contains the settings.xml files for all 4 phone resolutions and in English, Espanol (Spanish), Deutsch (German) and Français (French). Just replace your current settings.xml file in your *\iPhoneToday* folder on your phone with that one. Then restart iPhoneToday, now the days will be in your language.
+  * If You need to edit the settings file (located in: /iPhoneToday/settings.xml). Copy your settings.xml file to your PC. Open the file with notepad (ONLY USE NOTEPAD). Change the text inbetween the bracketed days:
   ie:
   English
   {{{
@@ -43,107 +26,53 @@ I haver attached dciNoBar to this post at the bottom
  <Sunday>Dom</Sunday>
  <Monday>Lun</Mon>or my favorite
  }}}
-
-  Save the file, and copy back to your phone. And reset iPT (disable it and re-enable it)
-
-4. How do I add a new page?
-
-  A:
-  1. Go to your last page 
-
-  2. Press and hold in any blank area to get the pop menu to add a new icon. 
-
-  3. On the icon add/edit page, in the upper left corner is the screen # selection, it should already have a number. (I have 5 pages, and since the 1st page is page #0; it has the number a 4 in it). 
-
-  _3a. If you want to add the icon to the bottom bar, change the screen number to -1; 
-
-  3b. If you want a new page, change the number up by one. For example, I have 5 pages, and I want a 6th page. So I changed the number from 4 to 5 (Remember the 1st page is #0, second page is #1, third page is #2; and so on...)_
-
-  4. Save the icon and now you will have a new page. Also, if you delete all of the icons from a page (like if you are moving them); once the page is blank, it will be deleted. So if you do not want the page to go away, there must be an icon on it.
-
-
-5. Q: I was editing my icons and everything disappered
-
-  A: Chances are your icon's executable path has a special character in it !@#$%^&*(+=-/.,<>; or one of your parameters has a " in it. The extra " in your parameters will crash iPhone Today
-
-
-6. Q: I get a small keyboard at the bottom of the screen
-
-  A: Your screen height is a little too big. For some reason NueNoBar has a bug and causes this issue. Start by shrinking your screen height by 1. Open your text messages and close them. If the screen is still too high, the keyboard will still be there. Keep shrinking the screen height till it goes away. Unfortunatuly this will leave 2-3 lines of background/empty spcae on the bottom.
-
-7. Q: How do I create icons to the settings on my phone
-
-  A: See the advanced walkthrough, link above; Link an icon to a Settings
-
-8. Q: How do I link to my call history
-
-  A: See the advanced walkthrough, link above; Link an icon to a Call History
-
-9. Q: How do I Link to my sms and e-mail
-
-  A: See the advanced walkthrough, link above; Create an icon to a SMS and E-mail
-
-10. Q: My bottom icons are messedup/gone after switching back to portrait after landscape mode
-
-  A: Disable the landscape option in iPhoneToday settings. This is a problem on some phones and there is no real fix yet
-
-11. Q: I have a scroll bar on the side
-
-  A: Your screen height is too large, or you have another today plugin turned on (under or over iPhone Today), or your icons are too big and over laping. You need to lower your screen height.
-
-12. Q: Can we have a clock?
-
-  A:For those having problems to see the digital clock:
-
-  1 add a new icon, a blank one or one with only a colored background
-  2 execute nothing or, if you have, a shortcut to the winmobile clock
-  3 change the Type from 'normal' to 'clock'
-  4 Enjoy your time Thanks CU
-
-13. What is the "dll" version?
-
-  The dll version and the complete version (with the different screen resolutions) are basically the same. The difference is the complete version is the program, icons, and settings files. The dll only version is just the program. If you already have the program installed, read question 12; If this is a 1st install, use the complete version
-
-
-14. I have iPhone Today installed; how do I update
-
-  A: If you are going to install a new vrsion. 
-
-  _1. 1st back up your icons, icons.xml and settings.xml files to your storeage card. 
-
-  2. Uninstall your current iPhoneToday
-
-  3. Restart your phone
-
-  4. Install the dll version (this will not overide your current icons files)
-
-  5. copy your backed up files back to the main iPhoneToday folder_
-
+  Save the file, and copy back to your phone. Again reset iPT 
+# How do I add a new page?
+  # Go to your last page 
+  # Press and hold in any blank area to get the pop menu to add a new icon. 
+  # On the icon add/edit page, in the upper left corner is the screen # selection, it should already have a number. (I have 5 pages, and since the 1st page is page #0; it has the number a 4 in it). 
+    # If you want to add the icon to the bottom bar, change the screen number to -1; 
+    # If you want a new page, change the number up by one. For example, I have 5 pages, and I want a 6th page. So I changed the number from 4 to 5 (Remember the 1st page is #0, second page is #1, third page is #2; and so on...)_
+  # Save the icon and now you will have a new page. Also, if you delete all of the icons from a page (like if you are moving them); once the page is blank, it will be deleted. So if you do not want the page to go away, there must be an icon on it.
+# Q: I was editing my icons and everything disappered
+  * Chances are your icon's executable path has a special character in it !@#$%^&*(+=-/.,<>; or one of your parameters has a " in it. The extra " in your parameters will crash iPhone Today
+# Q: I get a small keyboard at the bottom of the screen
+  * Your screen height is a little too big. For some reason NueNoBar has a bug and causes this issue. Start by shrinking your screen height by 1. Open your text messages and close them. If the screen is still too high, the keyboard will still be there. Keep shrinking the screen height till it goes away. Unfortunatuly this will leave 2-3 lines of background/empty spcae on the bottom.
+# Q: How do I create icons to the settings on my phone
+  * See the advanced walkthrough, link above; Link an icon to a Settings
+# Q: How do I link to my call history
+  * See the advanced walkthrough, link above; Link an icon to a Call History
+# Q: How do I Link to my sms and e-mail
+  * See the advanced walkthrough, link above; Create an icon to a SMS and E-mail
+# Q: My bottom icons are messedup/gone after switching back to portrait after landscape mode
+  * Disable the landscape option in iPhoneToday settings. This is a problem on some phones and there is no real fix yet
+# Q: I have a scroll bar on the side
+  * Your screen height is too large, or you have another today plugin turned on (under or over iPhone Today), or your icons are too big and over laping. You need to lower your screen height.
+# Q: I am having problems with the digital clock
+  *For those having problems to see the digital clock:
+    # add a new icon, a blank one or one with only a colored background
+    # execute nothing or, if you have, a shortcut to the winmobile clock
+    # change the Type from 'normal' to 'clock'
+    # Enjoy your time Thanks CU
+# What is the "dll" version?
+  * The dll version and the complete version (with the different screen resolutions) are basically the same. The difference is the complete version is the program, icons, and settings files. The dll only version is just the program. If you already have the program installed, read question 12; If this is a 1st install, use the complete version
+# I have iPhone Today installed; how do I update
+  * If you are going to install a new vrsion. 
+    # 1st back up your icons, icons.xml and settings.xml files to your storeage card. 
+    # Uninstall your current iPhoneToday
+    # Restart your phone
+    # Install the dll version (this will not overide your current icons files)
+    # copy your backed up files back to the main iPhoneToday folder_
   You have updated your phone
-
-15. During installation it says that the software in compatible with the operation system. I accept and continue the installation. When installation is completed I cant see the today plugin in the list.
-
-  A. {Thanks Jeannette for the answer and cab} you have to install the "RemoveSecurity.CAB " attached at the bottom of this post to remove the security warning. Also you have to install iPhoneToday to the device. If you install to 'My Storage' it doesn't show as a today item
-
-
-16. How do I create icons that turn Bluetooth or Wifi on/off?
-
-  A: Download and install Raiisak`s Bluetooth Button and Raiisak`s WLAN Button from here: http://forum.xda-developers.com/showthread.php?t=398050
-
-  AKToggleWifi is also a great program for WiFi Toggle.
-
-  You can find AKToggleWifi here: http://forum.xda-developers.com/showthread.php?t=442727
-
-  And you always have Sir. John's Toggle scripts:
-
-  http://forum.xda-developers.com/show...12&postcount=2
-
-
-17. Battery icon?
-
-  Check out this post:
-
-  http://forum.xda-developers.com/show...postcount=2148
+# During installation it says that the software in compatible with the operation system. I accept and continue the installation. When installation is completed I cant see the today plugin in the list.
+  * {Thanks Jeannette for the answer and cab} you have to install the "RemoveSecurity.CAB " attached at the bottom of this post to remove the security warning. Also you have to install iPhoneToday to the device. If you install to 'My Storage' it doesn't show as a today item
+# How do I create icons that turn Bluetooth or Wifi on/off?
+  * Download and install Raiisak`s Bluetooth Button and Raiisak`s WLAN Button from [http://forum.xda-developers.com/showthread.php?t=398050 here] 
+  * AKToggleWifi is also a great program for WiFi Toggle.
+  * You can find AKToggleWifi here: http://forum.xda-developers.com/showthread.php?t=442727
+  * And you always have [http://forum.xda-developers.com/showpost.php?p=4308712&postcount=2 Sir. John's Toggle scripts]
+# Battery icon?
+  * Check out this [http://forum.xda-developers.com/showpost.php?p=4408487&postcount=2148 post]
 
 ----
 =Advanced=
