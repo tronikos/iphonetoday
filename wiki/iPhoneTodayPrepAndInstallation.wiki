@@ -4,10 +4,12 @@
 =*The Walkthrough *=
 
 = Introduction =
-I will add more here soon
+This will help you install and do a basic setup of iPhone Today
 
 = Preparation =
 *FIRST and MOST IMPORTANT: Back up your phone*
+
+You can also view a more colorful walkthrough [http://forum.xda-developers.com/showthread.php?t=542727 here]
 
   # Start by downloading one of the iPhone_Today.cab files from the downloads section
     * This will install all of the needed files for iPhone Today to work.
