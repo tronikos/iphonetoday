@@ -10,7 +10,12 @@
 #include "OptionDialog.h"  // CreatePropertySheet includes
 
 #define MAX_LOADSTRING 100
-#define WM_RELAUNCH (WM_USER + 0)
+
+#define WM_USER_RELAUNCH (WM_USER + 0)
+#define WM_USER_OPTIONS  (WM_USER + 1)
+#define WM_USER_ADD      (WM_USER + 2)
+#define WM_USER_GOTO     (WM_USER + 3)
+
 
 // Global Variables:
 HINSTANCE           g_hInst;
@@ -194,9 +199,27 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lPara
 		break;
 #endif
 
-	case WM_RELAUNCH:
-		if (configuracion->hasTimestampChanged()) {
+	case WM_USER_RELAUNCH:
+		if (configuracion!= NULL && configuracion->hasTimestampChanged()) {
 			PostMessage(hwnd, WM_CREATE, 0, 0);
+		}
+		return 0;
+	case WM_USER_ADD:
+		if (estado != NULL) {
+			iconoActual.nIconoActual = -1;
+			iconoActual.nPantallaActual = estado->pantallaActiva;
+			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_MENU_ICON), hwnd, (DLGPROC)editaIconoDlgProc);
+		}
+		return 0;
+	case WM_USER_OPTIONS:
+		DialogBox(g_hInst, MAKEINTRESOURCE(IDD_DIALOGDUMMY), hwnd, (DLGPROC)CustomItemOptionsDlgProc);
+		return 0;
+	case WM_USER_GOTO:
+		if (estado != NULL && configuracion != NULL && listaPantallas != NULL) {
+			estado->pantallaActiva = min(max((int) wParam, 0), (int)listaPantallas->numPantallas - 1);
+			estado->posObjetivo.x = - (short) (configuracion->anchoPantalla * estado->pantallaActiva);
+			estado->posObjetivo.y = 0;
+			SetTimer(hwnd, TIMER_RECUPERACION, configuracion->refreshTime, NULL);
 		}
 		return 0;
 	case WM_CREATE:
@@ -2316,12 +2339,20 @@ int WINAPI WinMain(HINSTANCE hInstance,
 					LPTSTR    lpCmdLine,
 					int       nCmdShow)
 {
-	if (lstrcmpi(lpCmdLine, L"close") == 0) {
+	if (_tcsclen(lpCmdLine) > 0) {
 		TCHAR szWindowClass[MAX_LOADSTRING];
 		LoadString(hInstance, IDS_APPNAME, szWindowClass, MAX_LOADSTRING);
 		g_hWnd = FindWindow(szWindowClass, NULL);
 		if (g_hWnd) {
-			PostMessage(g_hWnd, WM_DESTROY, 0, 0);
+			if (lstrcmpi(lpCmdLine, L"close") == 0) {
+				PostMessage(g_hWnd, WM_DESTROY, 0, 0);
+			} else if (lstrcmpi(lpCmdLine, L"options") == 0) {
+				PostMessage(g_hWnd, WM_USER_OPTIONS, 0, 0);
+			} else if (lstrcmpi(lpCmdLine, L"add") == 0) {
+				PostMessage(g_hWnd, WM_USER_ADD, 0, 0);
+			} else {
+				PostMessage(g_hWnd, WM_USER_GOTO, _wtoi(lpCmdLine), 0);
+			}
 		}
 		return 0;
 	}
@@ -2413,7 +2444,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 		// The "| 0x00000001" is used to bring any owned windows to the foreground and
 		// activate them.
 		SetForegroundWindow((HWND)((ULONG) g_hWnd | 0x00000001));
-		PostMessage(g_hWnd, WM_RELAUNCH, 0, 0);
+		PostMessage(g_hWnd, WM_USER_RELAUNCH, 0, 0);
 		return 0;
 	}
 #endif // WIN32_PLATFORM_PSPC || WIN32_PLATFORM_WFSP
