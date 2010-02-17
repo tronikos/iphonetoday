@@ -32,13 +32,13 @@ Press and hold anywhere on the screen. A menu will pop up
     * Move Icon
     * Edit Icon
     * Delete Icon
-     -----------
+     ---
     * Cancel
 
   (If you press and hold in a blank area)
     * Add Icon
     * Options
-    -----------
+    ---
     * Cancel
 
 ==When you select *“Add Icon”* or *“Edit Icon”* you will enter the icon edit menu==
