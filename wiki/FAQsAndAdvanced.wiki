@@ -80,7 +80,7 @@ Here are the FAQ's:
   *You have updated your phone
 
 # During installation it says that the software in compatible with the operation system. I accept and continue the installation. When installation is completed I cant see the today plugin in the list.
-  * {Thanks Jeannette for the answer and cab} you have to install the "RemoveSecurity.CAB " attached at the bottom of this post to remove the security warning. Also you have to install iPhoneToday to the device. If you install to 'My Storage' it doesn't show as a today item
+  * {Thanks Jeannette for the answer and cab} you have to install the [http://iphonetoday.googlecode.com/files/RemoveSecurity.CAB "RemoveSecurity.CAB"] attached at the bottom of this post to remove the security warning. Also you have to install iPhoneToday to the device. If you install to 'My Storage' it doesn't show as a today item
 
 # How do I create icons that turn Bluetooth or Wifi on/off?
   * Download and install Raiisak`s Bluetooth Button and Raiisak`s WLAN Button from [http://forum.xda-developers.com/showthread.php?t=398050 here] 
