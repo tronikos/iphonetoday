@@ -1,0 +1,263 @@
+#summary FAQ's and Advanced
+
+= Introduction =
+
+This page will cover most of the questions that you may have, along with some advanced ways to make this even better
+
+=The FAQ's=
+Here are the FAQ's:
+----------------------------------------------------------------
+1. Q: How do I make the bottom bar go away? (aka the soft keys)
+
+  A: I have come across a few solutions; if NueNoBar does not work, try question 2. 1st try NueNoBar, there are 2 versions (v1.3 and v2.0); I recommend downloading both, v1.3 works on some and v2.0 works on others. 
+
+  I have attached NueNoBar v1.3 & v2.0 to this post at the bottom
+
+2. Q: NueNoBar does not work at all, no matter what I try!!
+
+  A: Here are 2 more options:
+
+  2a. Try dciNoBar; NueNoBar did not work on my 2ed phone, so I tried this and it works perfectly. You can find one verison of it here http://forum.xda-developers.com/showthread.php?t=356978
+I haver attached dciNoBar to this post at the bottom
+
+  2b. Also try a program called Second Today (thank you dustinmcd for this one and how to use it) http://www.chi-tai.info/cs_wm_tools_...tm#SecondToday; It has an option to hide the bottom bar and also gives the flexibility to use another plugin (such as Titanium) easily. Just enable no today plugins, set up iphonetoday as their "Second Today" and run it full time with minimal memory use.
+
+3. Q. How do I have my calender show the days in my language?
+
+  A. Attached at the bottom of this post is a file called Settings XML files.zip this file contains the settings.xml files for all 4 phone resolutions and in English, Espanol (Spanish), Deutsch (German) and Français (French). Just replace your current settings.xml file in your "\iPhoneToday" folder on your phone with that one. Then restart iPhoneToday; now the days will be in your language.
+
+  I only speek English, so if I messed up; please PM me. 
+
+  OR
+
+  You need to edit the settings file (located in: /iPhoneToday/settings.xml). Copy your settings.xml file to your PC. Open the file with notepad (ONLY USE NOTEPAD). Change the text inbetween the bracketed days:
+
+  ie:
+  English
+  {{{
+  <Sunday>Sun</Sunday>
+  <Monday>Mon</Mon>or Espanol
+  }}}
+  Spanish
+  {{{
+ <Sunday>Dom</Sunday>
+ <Monday>Lun</Mon>or my favorite
+ }}}
+
+  Save the file, and copy back to your phone. And reset iPT (disable it and re-enable it)
+
+4. How do I add a new page?
+
+  A:
+  1. Go to your last page 
+
+  2. Press and hold in any blank area to get the pop menu to add a new icon. 
+
+  3. On the icon add/edit page, in the upper left corner is the screen # selection, it should already have a number. (I have 5 pages, and since the 1st page is page #0; it has the number a 4 in it). 
+
+  _3a. If you want to add the icon to the bottom bar, change the screen number to -1; 
+
+  3b. If you want a new page, change the number up by one. For example, I have 5 pages, and I want a 6th page. So I changed the number from 4 to 5 (Remember the 1st page is #0, second page is #1, third page is #2; and so on...)_
+
+  4. Save the icon and now you will have a new page. Also, if you delete all of the icons from a page (like if you are moving them); once the page is blank, it will be deleted. So if you do not want the page to go away, there must be an icon on it.
+
+
+5. Q: I was editing my icons and everything disappered
+
+  A: Chances are your icon's executable path has a special character in it !@#$%^&*(+=-/.,<>; or one of your parameters has a " in it. The extra " in your parameters will crash iPhone Today
+
+
+6. Q: I get a small keyboard at the bottom of the screen
+
+  A: Your screen height is a little too big. For some reason NueNoBar has a bug and causes this issue. Start by shrinking your screen height by 1. Open your text messages and close them. If the screen is still too high, the keyboard will still be there. Keep shrinking the screen height till it goes away. Unfortunatuly this will leave 2-3 lines of background/empty spcae on the bottom.
+
+7. Q: How do I create icons to the settings on my phone
+
+  A: See the advanced walkthrough, link above; Link an icon to a Settings
+
+8. Q: How do I link to my call history
+
+  A: See the advanced walkthrough, link above; Link an icon to a Call History
+
+9. Q: How do I Link to my sms and e-mail
+
+  A: See the advanced walkthrough, link above; Create an icon to a SMS and E-mail
+
+10. Q: My bottom icons are messedup/gone after switching back to portrait after landscape mode
+
+  A: Disable the landscape option in iPhoneToday settings. This is a problem on some phones and there is no real fix yet
+
+11. Q: I have a scroll bar on the side
+
+  A: Your screen height is too large, or you have another today plugin turned on (under or over iPhone Today), or your icons are too big and over laping. You need to lower your screen height.
+
+12. Q: Can we have a clock?
+
+  A:For those having problems to see the digital clock:
+
+  1 add a new icon, a blank one or one with only a colored background
+  2 execute nothing or, if you have, a shortcut to the winmobile clock
+  3 change the Type from 'normal' to 'clock'
+  4 Enjoy your time Thanks CU
+
+13. What is the "dll" version?
+
+  The dll version and the complete version (with the different screen resolutions) are basically the same. The difference is the complete version is the program, icons, and settings files. The dll only version is just the program. If you already have the program installed, read question 12; If this is a 1st install, use the complete version
+
+
+14. I have iPhone Today installed; how do I update
+
+  A: If you are going to install a new vrsion. 
+
+  _1. 1st back up your icons, icons.xml and settings.xml files to your storeage card. 
+
+  2. Uninstall your current iPhoneToday
+
+  3. Restart your phone
+
+  4. Install the dll version (this will not overide your current icons files)
+
+  5. copy your backed up files back to the main iPhoneToday folder_
+
+  You have updated your phone
+
+15. During installation it says that the software in compatible with the operation system. I accept and continue the installation. When installation is completed I cant see the today plugin in the list.
+
+  A. {Thanks Jeannette for the answer and cab} you have to install the "RemoveSecurity.CAB " attached at the bottom of this post to remove the security warning. Also you have to install iPhoneToday to the device. If you install to 'My Storage' it doesn't show as a today item
+
+
+16. How do I create icons that turn Bluetooth or Wifi on/off?
+
+  A: Download and install Raiisak`s Bluetooth Button and Raiisak`s WLAN Button from here: http://forum.xda-developers.com/showthread.php?t=398050
+
+  AKToggleWifi is also a great program for WiFi Toggle.
+
+  You can find AKToggleWifi here: http://forum.xda-developers.com/showthread.php?t=442727
+
+  And you always have Sir. John's Toggle scripts:
+
+  http://forum.xda-developers.com/show...12&postcount=2
+
+
+17. Battery icon?
+
+  Check out this post:
+
+  http://forum.xda-developers.com/show...postcount=2148
+
+----
+=Advanced=
+
+1. How Create Shortcuts (somewhat advanced)
+
+  1. Open NotePad on your PC
+
+  2. Type a one line command to what the link points to
+
+  a. The number before the # sign is the number of characters after the # sign
+
+  b. The text following the # sign is the location of the command
+
+  _i. If this points to a file, it would look like “\windows\start menu\starfire.lnk”
+
+  ii. Since there is a space in the location, use quotations_
+
+  c. The text after the file location is the paramters for the file; the below example pases the commands to open the SMS account and display it’s inbox location
+
+3. Save the file with .lnk at the end
+
+  19#:MSINBOX -service "SMS" -open "Inbox"
+
+
+2. How to create a link to a phone number
+
+  I found using vj555 phone tools, you can have an icon call a phone number. You can download the phone tools here: [http://www.vijay555.com/ vijay555]
+
+  Just make sure you aim at the dialer.exe and set the phone number as a parameter.
+  For Example:
+  <icon name="Home" image="home.png" exec="\program files\vijay555\vjdialer.exe" parameters="8881234567" type="0" execAlt="" parametersAlt=""/>
+
+  When you hit the button, it will automatically dial that number. Remember no dashes in the phone number.
+  
+3. Create an icon to a website 
+
+  To create a link to a website, select the program you want the site to open in, in mycase, I use Skyfire. Under the parameters, put the exact website. Here is my icon to this forum.
+
+  <icon name="X-divs" image="\iPhoneToday\icons\XDADevs2.png" exec="\Windows\Start Menu\Programs\Skyfire.lnk" parameters="http://forum.xda-developers.com/showthread.php?t=508429" type="0" execAlt="" parametersAlt=""/>
+
+4. Create an icon to a folder
+
+  Set the exe file at your file explorer and set the paramaters to the exact location of the file to open. This is my link to my games folder
+
+  <icon name="Icons" image="\iPhoneToday\icons\icons.png" exec="\Windows\Start Menu\File Explorer.lnk" parameters="\windows\start menu\programs\games\" type="0" execAlt="" parametersAlt=""/>
+
+5. Create an icon to a SMS and E-mail
+  You can create a shortcut (See #1 above)
+
+  SMS
+  19#:MSINBOX -service "SMS" -open "Inbox"Outlook e-mails:
+  ActiveSync
+  {{{  
+  54#\windows\tmail.exe -service "ActiveSync" -open "Inbox"Hotmail
+  }}}
+  Hotmail
+  {{{
+  40#:MSINBOX -service "Hotmail" -open "Inbox"Gmail
+  }}}
+  Gmail
+  {{{
+  38#:MSINBOX -service "Gmail" -open "Inbox"
+  }}}
+
+7. Link an icon to a Settings
+  Attached are my "settings" shortcuts. These shortcuts take you directly to settings and functions on your phone:
+http://forum.xda-developers.com/show...&postcount=547
+
+  I have also attached an all-settings-link zip file that contains all the settings available. They do not have fancy icons, but it covered everything. Please note, that some of the links go to a settings tab. For example the Backlight_Settings.lnk and Backlight_Battery-Power.lnk shortcuts go to the same backlight settings location, the difference is the Backlight_Battery-Power.lnk goes to the Battery-Power tab. Not all of my tab commands will work on all phones (sorry). So for that example, if you click both links and they both take you to the 1st tab; then tab selection is not supported for that settings location. And you only need one of the link files. 
+
+  Coming soon, screenshots of what each link file goes to. See here: http://forum.xda-developers.com/show...94&postcount=7
+
+8. How do I rotate the screen
+
+  I have attached a switchrotation.zip file at the bottom of this thread. That will allow you to rotate the screen. {Thanks Jeannette for the program}
+
+9. Link an icon to a Call History
+
+  To link to call history (files attached):
+
+  _1. Download the LaunchMSItem.zip
+
+  2. UnZip the LaunchMSItem.zip and copy the LaunchMSItem.exe to your phone; (I reccomend your storage card)
+
+  3. Edit your "phone" or "call" icon and set the type to "Missed calls" 
+
+  4. Set the ExecuteAlt to LaunchMSItem.exe's location
+
+  5. Set the ParamsAlt to CALLHISTORY_ALL_CALLS_
+
+  This will, when you have a missed call, goto call history
+
+
+10. moesfeld’s Weather Add-on
+  Here is a really nice weather add on for iPhoneToday
+
+  For program visit: http://forum.xda-developers.com/showthread.php?t=480686
+
+11. Creating MortScript Files
+
+  This can be easy or complicated. I recommend vising the new thread dedcated to Mortscript, or tyhe one for icon programs here:
+http://forum.xda-developers.com/show...15#post4308615
+
+12. Creating links to contacts
+
+  Here is a really cool program that will automatically create the contact links: 
+
+  http://forum.xda-developers.com/showthread.php?t=555574
+
+  oldsap said it perfectly:
+  {{{
+  Manually creating shortcut files for sms and call sending to specific contacts requires using a text editor (in PPC and PC) and then manually typing text codes and memorizing the phone number for that particular contact, then repeating the same procedure again and again for each contact.
+  }}}
+  oldsap created a simple application to automate all of this.
+
+
