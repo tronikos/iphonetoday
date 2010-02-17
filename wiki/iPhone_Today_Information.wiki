@@ -13,3 +13,18 @@ I will add more here soon
   b. If this is an update and you have already installed iPT; Install the dll version. The dll version only installs the updated program. Since you already have the icons and settings files, you do not need to reinstall those
 
 ==How To Install==
+  1. Copy the iPhone Today cab onto your phone.
+
+  2. On your phone, and navigate to where you placed the cab.
+
+  3. Click the iPhgoneToday.cab file and install it to your phone. *DO NOT INSTALL TO THE STORAGE CARD* 
+
+  4. You will have 2 versions installed; 
+
+    a. the exe version is opened like any program (start menu --> programs --> iPhoneToday.exe) This is full screen mode. It will exit if you press home or end. This works very well with programs that use tabs, like TF3d.
+
+    b. Or you can use iPhoneToday as a today plug-in. Go into "Start --> Settings --> Today --> Today items" and disable all other today plugins except iPhone Today
+
+  5. Use the icon and settings UI managers to add/edit icons (See below for UI instructions)
+
+  6. For advanced functions and the “missing bars” see the next setp
