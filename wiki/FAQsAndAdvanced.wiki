@@ -142,7 +142,7 @@ Here are the FAQ's:
   }}}
 
 # Link an icon to a Settings
-  * Here are my [http://iphonetoday.googlecode.com/files/Shortcuts%20with%20icons.zip "settings" shortcuts]. These shortcuts take you directly to settings and functions on your phone
+  * Here are my [http://iphonetoday.googlecode.com/files/Shortcuts%20with%20icons.zip "settings" with icons] and if you want more here is [http://iphonetoday.googlecode.com/files/All-Settings-Links.zip all of the settings links]. These shortcuts take you directly to settings and functions on your phone
   * I have also attached an all-settings-link zip file that contains all the settings available. They do not have fancy icons, but it covered everything. Please note, that some of the links go to a settings tab. For example the Backlight_Settings.lnk and Backlight_Battery-Power.lnk shortcuts go to the same backlight settings location, the difference is the Backlight_Battery-Power.lnk goes to the Battery-Power tab. Not all of my tab commands will work on all phones (sorry). So for that example, if you click both links and they both take you to the 1st tab; then tab selection is not supported for that settings location. And you only need one of the link files. 
 
 # How do I rotate the screen
@@ -151,7 +151,7 @@ Here are the FAQ's:
 # Link an icon to a Call History
   * To link to call history (files attached):
   # Download the LaunchMSItem.zip
-  # UnZip the LaunchMSItem.zip and copy the LaunchMSItem.exe to your phone; (I reccomend your storage card)
+  # UnZip the [http://iphonetoday.googlecode.com/files/LaunchMSItem.zip LaunchMSItem.zip] and copy it to your phone; (I reccomend your storage card)
   # Edit your "phone" or "call" icon and set the type to "Missed calls" 
   # Set the ExecuteAlt to LaunchMSItem.exe's location
   # Set the ParamsAlt to CALLHISTORY_ALL_CALLS_
