@@ -352,23 +352,26 @@ IDI_DISPLAYICON         ICON                    "IconoApp.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
+// CEUX
+//
+
+HI_RES_AWARE CEUX 
+BEGIN
+    0x0001
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
 // String Table
 //
 
 STRINGTABLE 
 BEGIN
     IDS_APPNAME             "iPhoneToday"
-END
-
-STRINGTABLE 
-BEGIN
     IDS_TAB0                "Mainscreen"
     IDS_TAB1                "Bottombar"
     IDS_TAB2                "Background"
-END
-
-STRINGTABLE 
-BEGIN
     IDS_TAB3                "Skin"
     IDS_TAB4                "Movement"
     IDS_TAB5                "Clock"
