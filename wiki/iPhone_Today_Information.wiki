@@ -1,10 +1,10 @@
 #summary One-sentence summary of this page.
-*The Walkthrough *
+=*The Walkthrough *=
 
-== Introduction ==
+= Introduction =
 I will add more here soon
 
-== Preparation ==
+= Preparation =
 *FIRST and MOST IMPORTANT: Back up your phone*
 
   1. Start by downloading one of the iPhone_Today.zip files from the downloads section
@@ -12,7 +12,7 @@ I will add more here soon
 
     b. If this is an update and you have already installed iPT; Install the dll version. The dll version only installs the updated program. Since you already have the icons and settings files, you do not need to reinstall those
 
-==How To Install==
+=How To Install=
   1. Copy the iPhone Today cab onto your phone.
 
   2. On your phone, and navigate to where you placed the cab.
@@ -47,8 +47,8 @@ I will add more here soon
       -----------
       Cancel
 
-===When you select *“Add Icon”* or *“Edit Icon”* you will enter the icon edit menu===
-=Icon Menu=
+==When you select *“Add Icon”* or *“Edit Icon”* you will enter the icon edit menu==
+===Icon Menu===
 *Screen*: This should be filled out all ready; to add the icon to a different screen or a new screen, change this number. To set the icon to the bottom static bar (the bottom icons do not move) set screen to -1. Note that the 1st page is number 0, the second page is number 1 and so on. 
 Icon: Location of the icon on that page. Note that the 1st icon is number 0; the second icon is number 1 and so on. 
 
@@ -62,9 +62,9 @@ Icon: Location of the icon on that page. Note that the 1st icon is number 0; the
 *Launch Animation*: Check this if you want a simple animation when the icon is pressed
 
 
-===When you select “Options” you will enter settings the edit menu===
+==When you select “Options” you will enter settings the edit menu==
 (more coming soon)
-=Edit Menu=
+===Edit Menu===
 *"General"*
   *Icon*: Size of icon
   *Icons for Row*: Number of icons per row
@@ -89,4 +89,3 @@ Icon: Location of the icon on that page. Note that the 1st icon is number 0; the
   *Font Height*: height of clock font (when using a clock type icon)
   *Font*: Color of clock font (when using a clock type icon)
   [ ] *12 Hours Format*: 12 or 24 hour mode?
-
