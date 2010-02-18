@@ -17,6 +17,8 @@
 #define WM_USER_GOTO		(WM_USER + 3)
 #define WM_USER_GOTO_NEXT	(WM_USER + 4)
 #define WM_USER_GOTO_PREV	(WM_USER + 5)
+#define WM_USER_GOTO_UP		(WM_USER + 6)
+#define WM_USER_GOTO_DOWN	(WM_USER + 7)
 
 
 // Global Variables:
@@ -239,6 +241,27 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lPara
 			estado->posObjetivo.x = - (short) (configuracion->anchoPantalla * estado->pantallaActiva);
 			estado->posObjetivo.y = 0;
 			SetTimer(hwnd, TIMER_RECUPERACION, configuracion->refreshTime, NULL);
+		}
+		return 0;
+	case WM_USER_GOTO_UP:
+		if (estado != NULL && configuracion != NULL) {
+			int newy = estado->posObjetivo.y + (configuracion->altoPantalla - configuracion->mainScreenConfig->iconWidth - configuracion->bottomBarConfig->iconWidth);
+			if (newy > 0) {
+				newy = 0;
+			}
+			if (estado->posObjetivo.y != newy) {
+				estado->posObjetivo.y = newy;
+				SetTimer(hwnd, TIMER_RECUPERACION, configuracion->refreshTime, NULL);
+			}
+		}
+		return 0;
+	case WM_USER_GOTO_DOWN:
+		if (estado != NULL && configuracion != NULL) {
+			int newy = estado->posObjetivo.y - (configuracion->altoPantalla - configuracion->mainScreenConfig->iconWidth - configuracion->bottomBarConfig->iconWidth);
+			if (newy > -(int)configuracion->altoPantallaMax) {
+				estado->posObjetivo.y = newy;
+				SetTimer(hwnd, TIMER_RECUPERACION, configuracion->refreshTime, NULL);
+			}
 		}
 		return 0;
 	case WM_CREATE:
@@ -2717,6 +2740,10 @@ BOOL CommandLineArguements(LPCTSTR pCmdLine)
 			PostMessage(g_hWnd, WM_USER_GOTO_NEXT, 0, 0);
 		} else if (wcscmp(pCmdLine + l, L"previous") == 0) {
 			PostMessage(g_hWnd, WM_USER_GOTO_PREV, 0, 0);
+		} else if (wcscmp(pCmdLine + l, L"up") == 0) {
+			PostMessage(g_hWnd, WM_USER_GOTO_UP, 0, 0);
+		} else if (wcscmp(pCmdLine + l, L"down") == 0) {
+			PostMessage(g_hWnd, WM_USER_GOTO_DOWN, 0, 0);
 		} else {
 			PostMessage(g_hWnd, WM_USER_GOTO, _wtoi(pCmdLine + l), 0);
 		}
