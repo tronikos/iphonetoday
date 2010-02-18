@@ -2705,7 +2705,7 @@ void getWindowSize(HWND hwnd, int *windowWidth, int *windowHeight)
 	GetWindowRect(hwnd, &rw);
 	RECT rwp;
 	int cyScreen = GetSystemMetrics(SM_CYSCREEN);
-	if (GetWindowRect(GetParent(hwnd), &rwp) && rwp.bottom <= cyScreen) {
+	if (GetWindowRect(GetParent(hwnd), &rwp) && rwp.bottom > rw.top && rwp.bottom <= cyScreen) {
 		*windowHeight = rwp.bottom - rw.top;
 	} else {
 		*windowHeight = cyScreen - rw.top;
