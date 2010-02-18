@@ -18,8 +18,8 @@ public:
 	// Variables from XML
 	UINT iconWidthXML;
 	UINT iconsPerRowXML;
-	UINT minVerticalSpace;
-	UINT additionalHorizontalSpace;
+	UINT minHorizontalSpace;
+	UINT additionalVerticalSpace;
 	UINT fontSize;
 	COLORREF fontColor;
 	UINT fontBold;
