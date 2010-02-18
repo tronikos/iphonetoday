@@ -407,6 +407,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\iPhoneToday\CmdLine.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\iPhoneToday\CPantalla.cpp"
 				>
 			</File>
@@ -514,6 +518,10 @@
 			</File>
 			<File
 				RelativePath="..\iPhoneToday\CListaPantalla.h"
+				>
+			</File>
+			<File
+				RelativePath="..\iPhoneToday\CmdLine.h"
 				>
 			</File>
 			<File
