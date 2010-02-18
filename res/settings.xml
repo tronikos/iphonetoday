@@ -4,8 +4,8 @@
 	<MainScreen>
 		<IconWidth>45</IconWidth>
 		<IconsPerRow>0</IconsPerRow>
-		<MinVerticalSpace>5</MinVerticalSpace>
-		<AdditionalHorizontalSpace>0</AdditionalHorizontalSpace>
+		<MinHorizontalSpace>5</MinHorizontalSpace>
+		<AdditionalVerticalSpace>0</AdditionalVerticalSpace>
 		<Offset left="0" top="5" right="0" bottom="0"/>
 		<Font size="11" color="16777215" bold="0" offset="0"/>
 		<Background color1="0" color2="0"/>
@@ -13,8 +13,8 @@
 	<BottomBar>
 		<IconWidth>45</IconWidth>
 		<IconsPerRow>0</IconsPerRow>
-		<MinVerticalSpace>0</MinVerticalSpace>
-		<AdditionalHorizontalSpace>0</AdditionalHorizontalSpace>
+		<MinHorizontalSpace>0</MinHorizontalSpace>
+		<AdditionalVerticalSpace>0</AdditionalVerticalSpace>
 		<Offset left="0" top="0" right="0" bottom="0"/>
 		<Font size="11" color="16777215" bold="0" offset="0"/>
 		<Background color1="0" color2="0"/>

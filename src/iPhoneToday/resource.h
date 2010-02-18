@@ -47,8 +47,8 @@
 #define IDC_BUTTON_MS_BACK_COLOR1       1040
 #define IDC_EDIT_MS_BACK_COLOR2         1041
 #define IDC_BUTTON_MS_BACK_COLOR2       1042
-#define IDC_EDIT_MS_MINVSPACE           1043
-#define IDC_EDIT_MS_ADDHSPACE           1044
+#define IDC_EDIT_MS_MINHSPACE           1043
+#define IDC_EDIT_MS_ADDVSPACE           1044
 #define IDC_EDIT_MS_OFFSET_LEFT         1045
 #define IDC_EDIT_MS_OFFSET_TOP          1046
 #define IDC_EDIT_MS_OFFSET_RIGHT        1047
@@ -64,8 +64,8 @@
 #define IDC_BUTTON_BB_BACK_COLOR1       1057
 #define IDC_EDIT_BB_BACK_COLOR2         1058
 #define IDC_BUTTON_BB_BACK_COLOR2       1059
-#define IDC_EDIT_BB_MINVSPACE           1060
-#define IDC_EDIT_BB_ADDHSPACE           1061
+#define IDC_EDIT_BB_MINHSPACE           1060
+#define IDC_EDIT_BB_ADDVSPACE           1061
 #define IDC_EDIT_BB_OFFSET_LEFT         1062
 #define IDC_EDIT_BB_OFFSET_TOP          1063
 #define IDC_EDIT_BB_OFFSET_RIGHT        1064

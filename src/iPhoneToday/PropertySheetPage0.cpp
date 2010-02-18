@@ -59,8 +59,8 @@ LRESULT CALLBACK OptionDialog0(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 				SetDlgItemHex(hDlg, IDC_EDIT_MS_BACK_COLOR1,	cs->backColor1);
 				SetDlgItemHex(hDlg, IDC_EDIT_MS_BACK_COLOR2,	cs->backColor2);
 
-				SetDlgItemInt(hDlg, IDC_EDIT_MS_MINVSPACE,		cs->minVerticalSpace,	TRUE);
-				SetDlgItemInt(hDlg, IDC_EDIT_MS_ADDHSPACE,		cs->additionalHorizontalSpace,	TRUE);
+				SetDlgItemInt(hDlg, IDC_EDIT_MS_MINHSPACE,		cs->minHorizontalSpace,	TRUE);
+				SetDlgItemInt(hDlg, IDC_EDIT_MS_ADDVSPACE,		cs->additionalVerticalSpace,	TRUE);
 
 				SetDlgItemInt(hDlg, IDC_EDIT_MS_OFFSET_LEFT,	cs->offset.left,	TRUE);
 				SetDlgItemInt(hDlg, IDC_EDIT_MS_OFFSET_TOP,		cs->offset.top,		TRUE);
@@ -106,7 +106,7 @@ LRESULT CALLBACK OptionDialog0(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 
 BOOL SaveConfiguration0(HWND hDlg)
 {
-	int iconWidth, iconsPerRow, textHeight, textOffset, textColor, textBold, backColor1, backColor2, minVSpace, addHSpace, offset_left, offset_top, offset_right, offset_bottom;
+	int iconWidth, iconsPerRow, textHeight, textOffset, textColor, textBold, backColor1, backColor2, minHSpace, addVSpace, offset_left, offset_top, offset_right, offset_bottom;
 
 	CConfigurationScreen *cs = configuracion->mainScreenConfig;
 
@@ -122,8 +122,8 @@ BOOL SaveConfiguration0(HWND hDlg)
 	backColor1	= GetDlgItemHex(hDlg, IDC_EDIT_MS_BACK_COLOR1,		NULL);
 	backColor2	= GetDlgItemHex(hDlg, IDC_EDIT_MS_BACK_COLOR2,		NULL);
 
-	minVSpace	= GetDlgItemInt(hDlg, IDC_EDIT_MS_MINVSPACE,		NULL, TRUE);
-	addHSpace	= GetDlgItemInt(hDlg, IDC_EDIT_MS_ADDHSPACE,		NULL, TRUE);
+	minHSpace	= GetDlgItemInt(hDlg, IDC_EDIT_MS_MINHSPACE,		NULL, TRUE);
+	addVSpace	= GetDlgItemInt(hDlg, IDC_EDIT_MS_ADDVSPACE,		NULL, TRUE);
 
 	offset_left		= GetDlgItemInt(hDlg, IDC_EDIT_MS_OFFSET_LEFT,		NULL, TRUE);
 	offset_top		= GetDlgItemInt(hDlg, IDC_EDIT_MS_OFFSET_TOP,		NULL, TRUE);
@@ -146,12 +146,12 @@ BOOL SaveConfiguration0(HWND hDlg)
 		MessageBox(hDlg, TEXT("Text offset value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
-	if (minVSpace < 0 || minVSpace > 256) {
-		MessageBox(hDlg, TEXT("Minimum vertical space value is not valid!"), TEXT("Error"), MB_OK);
+	if (minHSpace < 0 || minHSpace > 256) {
+		MessageBox(hDlg, TEXT("Minimum horizontal space value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
-	if (addHSpace < 0 || addHSpace > 256) {
-		MessageBox(hDlg, TEXT("Additional horizontal space value is not valid!"), TEXT("Error"), MB_OK);
+	if (addVSpace < 0 || addVSpace > 256) {
+		MessageBox(hDlg, TEXT("Additional vertical space value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
 	if (offset_left < 0 || offset_left > 256) {
@@ -171,20 +171,20 @@ BOOL SaveConfiguration0(HWND hDlg)
 		return FALSE;
 	}
 
-	cs->iconWidthXML				= iconWidth;
-	cs->iconsPerRowXML				= iconsPerRow;
-	cs->fontSize					= textHeight;
-	cs->fontOffset					= textOffset;
-	cs->fontColor					= textColor;
-	cs->fontBold					= textBold;
-	cs->backColor1					= backColor1;
-	cs->backColor2					= backColor2;
-	cs->minVerticalSpace			= minVSpace;
-	cs->additionalHorizontalSpace	= addHSpace;
-	cs->offset.left					= offset_left;
-	cs->offset.top					= offset_top;
-	cs->offset.right				= offset_right;
-	cs->offset.bottom				= offset_bottom;
+	cs->iconWidthXML			= iconWidth;
+	cs->iconsPerRowXML			= iconsPerRow;
+	cs->fontSize				= textHeight;
+	cs->fontOffset				= textOffset;
+	cs->fontColor				= textColor;
+	cs->fontBold				= textBold;
+	cs->backColor1				= backColor1;
+	cs->backColor2				= backColor2;
+	cs->minHorizontalSpace		= minHSpace;
+	cs->additionalVerticalSpace	= addVSpace;
+	cs->offset.left				= offset_left;
+	cs->offset.top				= offset_top;
+	cs->offset.right			= offset_right;
+	cs->offset.bottom			= offset_bottom;
 
 	return TRUE;
 }

@@ -2662,7 +2662,7 @@ void autoConfigure()
 		configuracion->bottomBarConfig->iconWidthXML = iconWidth;
 		configuracion->bottomBarConfig->fontSize = iconWidth / 4;
 
-		configuracion->mainScreenConfig->minVerticalSpace = 5;
+		configuracion->mainScreenConfig->minHorizontalSpace = 5;
 		configuracion->mainScreenConfig->offset.top = 5;
 
 		configuracion->circlesDiameter = iconWidth / 6;

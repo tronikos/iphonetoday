@@ -16,7 +16,7 @@ void CConfigurationScreen::calculate(BOOL isBottombar, int maxIcons, UINT screen
 
 	iconWidth = iconWidthXML;
 	if (iconsPerRowXML == 0) {
-		iconsPerRow = w / (iconWidth + minVerticalSpace);
+		iconsPerRow = w / (iconWidth + minHorizontalSpace);
 	} else {
 		iconsPerRow = iconsPerRowXML;
 	}
@@ -33,15 +33,15 @@ void CConfigurationScreen::calculate(BOOL isBottombar, int maxIcons, UINT screen
 		distanceIconsH = screenWidth / iconsPerRow;
 	}
 	posReference.y = SHORT(offset.top);
-	distanceIconsV = UINT(iconWidth + fontSize + fontOffset + additionalHorizontalSpace);
+	distanceIconsV = UINT(iconWidth + fontSize + fontOffset + additionalVerticalSpace);
 }
 
 void CConfigurationScreen::defaultValues()
 {
 	this->iconWidthXML = 48;
 	this->iconsPerRowXML = 0;
-	this->minVerticalSpace = 0;
-	this->additionalHorizontalSpace = 0;
+	this->minHorizontalSpace = 0;
+	this->additionalVerticalSpace = 0;
 
 	this->fontSize = 12;
 	this->fontColor = RGB(255, 255, 255);
@@ -78,10 +78,10 @@ BOOL CConfigurationScreen::loadXMLConfig(IXMLDOMNode *pRootNode)
 			this->iconWidthXML = ReadTextNodeNumber(pNode, this->iconWidthXML);
 		} else if(lstrcmpi(nameNode, TEXT("IconsPerRow")) == 0) {
 			this->iconsPerRowXML = ReadTextNodeNumber(pNode, this->iconsPerRowXML);
-		} else if(lstrcmpi(nameNode, TEXT("MinVerticalSpace")) == 0) {
-			this->minVerticalSpace = ReadTextNodeNumber(pNode, this->minVerticalSpace);
-		} else if(lstrcmpi(nameNode, TEXT("AdditionalHorizontalSpace")) == 0) {
-			this->additionalHorizontalSpace = ReadTextNodeNumber(pNode, this->additionalHorizontalSpace);
+		} else if(lstrcmpi(nameNode, TEXT("MinHorizontalSpace")) == 0) {
+			this->minHorizontalSpace = ReadTextNodeNumber(pNode, this->minHorizontalSpace);
+		} else if(lstrcmpi(nameNode, TEXT("AdditionalVerticalSpace")) == 0) {
+			this->additionalVerticalSpace = ReadTextNodeNumber(pNode, this->additionalVerticalSpace);
 		} else if(lstrcmpi(nameNode, TEXT("Offset")) == 0) {
 			CHR(pNode->get_attributes(&pNodeMap));
 			this->offset.left   = ReadNodeNumber(pNodeMap, TEXT("left"),   this->offset.left);
@@ -137,8 +137,8 @@ BOOL CConfigurationScreen::saveXMLConfig(IXMLDOMDocument* pXMLDom, IXMLDOMElemen
 
 	CConfiguracion::creaNodoXMLConfig(pXMLDom, pRoot, L"IconWidth", this->iconWidthXML, 2);
 	CConfiguracion::creaNodoXMLConfig(pXMLDom, pRoot, L"IconsPerRow", this->iconsPerRowXML, 2);
-	CConfiguracion::creaNodoXMLConfig(pXMLDom, pRoot, L"MinVerticalSpace", this->minVerticalSpace, 2);
-	CConfiguracion::creaNodoXMLConfig(pXMLDom, pRoot, L"AdditionalHorizontalSpace", this->additionalHorizontalSpace, 2);
+	CConfiguracion::creaNodoXMLConfig(pXMLDom, pRoot, L"MinHorizontalSpace", this->minHorizontalSpace, 2);
+	CConfiguracion::creaNodoXMLConfig(pXMLDom, pRoot, L"AdditionalVerticalSpace", this->additionalVerticalSpace, 2);
 
 	AddWhiteSpaceToNode(pXMLDom, bstr_wsntt, pRoot);
 	bstr = SysAllocString(L"Offset");
