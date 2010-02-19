@@ -1,4 +1,5 @@
 #include "CmdLine.h"
+#include "stdafx.h"
 
 BOOL CommandLineArguements(HWND hwnd, LPCTSTR pCmdLine)
 {
@@ -6,7 +7,10 @@ BOOL CommandLineArguements(HWND hwnd, LPCTSTR pCmdLine)
 		return FALSE;
 	}
 
-	if (wcsicmp(pCmdLine, L"relaunch") == 0) {
+	if (wcsicmp(pCmdLine, L"reload") == 0) {
+		SetTimer(hwnd, TIMER_ACTUALIZA_NOTIF, 0, NULL);
+		return TRUE;
+	} else if (wcsicmp(pCmdLine, L"relaunch") == 0) {
 		PostMessage(hwnd, WM_USER_RELAUNCH, 0, 0);
 		return TRUE;
 	} else if (wcsicmp(pCmdLine, L"add") == 0) {
