@@ -8,7 +8,7 @@ BOOL CommandLineArguements(HWND hwnd, LPCTSTR pCmdLine)
 	}
 
 	if (wcsicmp(pCmdLine, L"reload") == 0) {
-		SetTimer(hwnd, TIMER_ACTUALIZA_NOTIF, 0, NULL);
+		PostMessage(hwnd, WM_TIMER, TIMER_ACTUALIZA_NOTIF, 0);
 		return TRUE;
 	} else if (wcsicmp(pCmdLine, L"relaunch") == 0) {
 		PostMessage(hwnd, WM_USER_RELAUNCH, 0, 0);
