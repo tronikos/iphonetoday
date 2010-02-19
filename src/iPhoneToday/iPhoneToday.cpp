@@ -194,6 +194,22 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lPara
 		break;
 #endif
 
+	case WM_KEYDOWN:
+		switch (wParam) {
+			case VK_LEFT:
+				PostMessage(hwnd, WM_USER_GOTO_PREV, 0, 0);
+				break;
+			case VK_RIGHT:
+				PostMessage(hwnd, WM_USER_GOTO_NEXT, 0, 0);
+				break;
+			case VK_DOWN:
+				PostMessage(hwnd, WM_USER_GOTO_DOWN, 0, 0);
+				break;
+			case VK_UP:
+				PostMessage(hwnd, WM_USER_GOTO_UP, 0, 0);
+				break;
+		}
+		return 0;
 	case WM_USER_RELAUNCH:
 		if (configuracion!= NULL && configuracion->hasTimestampChanged()) {
 			PostMessage(hwnd, WM_CREATE, 0, 0);
@@ -235,7 +251,11 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lPara
 		return 0;
 	case WM_USER_GOTO_UP:
 		if (estado != NULL && configuracion != NULL) {
-			int newy = estado->posObjetivo.y + (configuracion->altoPantalla - configuracion->mainScreenConfig->iconWidth - configuracion->bottomBarConfig->iconWidth);
+			int h = configuracion->altoPantalla;
+			if (listaPantallas->barraInferior != NULL && listaPantallas->barraInferior->numIconos > 0 && configuracion->bottomBarConfig->iconWidth > 0) {
+				h -= listaPantallas->barraInferior->altoPantalla;
+			}
+			int newy = estado->posObjetivo.y + ((h + configuracion->mainScreenConfig->offset.top) / configuracion->mainScreenConfig->distanceIconsV) * configuracion->mainScreenConfig->distanceIconsV;
 			if (newy > 0) {
 				newy = 0;
 			}
@@ -246,9 +266,14 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lPara
 		}
 		return 0;
 	case WM_USER_GOTO_DOWN:
-		if (estado != NULL && configuracion != NULL) {
-			int newy = estado->posObjetivo.y - (configuracion->altoPantalla - configuracion->mainScreenConfig->iconWidth - configuracion->bottomBarConfig->iconWidth);
-			if (newy > -(int)configuracion->altoPantallaMax) {
+		if (estado != NULL && configuracion != NULL && listaPantallas != NULL) {
+			int h = configuracion->altoPantalla;
+			if (listaPantallas->barraInferior != NULL && listaPantallas->barraInferior->numIconos > 0 && configuracion->bottomBarConfig->iconWidth > 0) {
+				h -= listaPantallas->barraInferior->altoPantalla;
+			}
+			int newy = estado->posObjetivo.y - ((h - configuracion->mainScreenConfig->offset.top) / configuracion->mainScreenConfig->distanceIconsV) * configuracion->mainScreenConfig->distanceIconsV;
+			int hh = configuracion->mainScreenConfig->offset.top + ((listaPantallas->listaPantalla[estado->pantallaActiva]->numIconos + configuracion->mainScreenConfig->iconsPerRow - 1) / configuracion->mainScreenConfig->iconsPerRow) * configuracion->mainScreenConfig->distanceIconsV;
+			if (newy > -(int)hh) {
 				estado->posObjetivo.y = newy;
 				SetTimer(hwnd, TIMER_RECUPERACION, configuracion->refreshTime, NULL);
 			}
@@ -1543,7 +1568,7 @@ void calculaPosicionObjetivo() {
 		}
 		INT nrows_scroll = (-posImage.y + configuracion->mainScreenConfig->distanceIconsV / 2) / configuracion->mainScreenConfig->distanceIconsV;
 		INT nrows_screen = ((listaPantallas->listaPantalla[estado->pantallaActiva]->numIconos + configuracion->mainScreenConfig->iconsPerRow - 1) / configuracion->mainScreenConfig->iconsPerRow);
-		INT nrows_fit = h / configuracion->mainScreenConfig->distanceIconsV;
+		INT nrows_fit = (h - configuracion->mainScreenConfig->offset.top) / configuracion->mainScreenConfig->distanceIconsV;
 		if (nrows_scroll > nrows_screen - nrows_fit) {
 			nrows_scroll = nrows_screen - nrows_fit;
 			if (nrows_scroll < 0) {
@@ -2654,6 +2679,7 @@ void autoConfigure()
 
 		configuracion->mainScreenConfig->minHorizontalSpace = 5;
 		configuracion->mainScreenConfig->offset.top = 5;
+		configuracion->bottomBarConfig->offset.top = configuracion->mainScreenConfig->offset.top;
 
 		configuracion->circlesDiameter = iconWidth / 6;
 		configuracion->circlesDistance = configuracion->circlesDiameter / 2;
