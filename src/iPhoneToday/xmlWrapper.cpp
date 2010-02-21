@@ -1,166 +1,77 @@
 #include "xmlWrapper.h"
 
-BOOL XMLUtils::GetAttr(IXMLDOMNode *pNode, TCHAR *pszAttrName, INT *value)
-{
-
-	if (pNode == NULL || value == NULL) return FALSE;
-
-	BOOL result = FALSE;
-	HRESULT hr;
-	IXMLDOMNode *pAttribute = NULL;
-	IXMLDOMNamedNodeMap *pNodeMap = NULL;
-	VARIANT vt;
-
-	// Get the appropriate attribute
-	CHR(pNode->get_attributes(&pNodeMap));
-	CHR(pNodeMap->getNamedItem(pszAttrName, &pAttribute));
-	CBR(pAttribute != NULL);
-
-	// Read the value of this attribute
-	VariantInit(&vt);
-	hr = pAttribute->get_nodeValue(&vt);
-	CHR(hr);
-
-	// Convert the string to a number
-	*value = _ttoi(vt.bstrVal);
-	result = TRUE;
-
-Error:
-	RELEASE_OBJ(pNodeMap);
-	RELEASE_OBJ(pAttribute)
-	VariantClear(&vt);
-	return result;
-}
-
-BOOL XMLUtils::GetAttr(IXMLDOMNode *pNode, TCHAR *pszAttrName, UINT *value)
-{
-	return XMLUtils::GetAttr(pNode, pszAttrName, (INT *) value);
-}
-
-BOOL XMLUtils::GetAttr(IXMLDOMNode *pNode, TCHAR *pszAttrName, LONG *value)
+BOOL XMLUtils::GetAttr(TiXmlElement *pElem, const char *pszAttrName, INT *value)
 {
 	int v;
-	if (!XMLUtils::GetAttr(pNode, pszAttrName, &v)) {
+	if (pElem == NULL || value == NULL || TIXML_SUCCESS != pElem->QueryIntAttribute(pszAttrName, &v)) {
 		return FALSE;
 	}
 	*value = v;
 	return TRUE;
 }
 
-BOOL XMLUtils::GetAttr(IXMLDOMNode *pNode, TCHAR *pszAttrName, COLORREF *value)
+BOOL XMLUtils::GetAttr(TiXmlElement *pElem, const char *pszAttrName, UINT *value)
 {
-	return XMLUtils::GetAttr(pNode, pszAttrName, (INT *) value);
+	return XMLUtils::GetAttr(pElem, pszAttrName, (INT *) value);
 }
 
-BOOL XMLUtils::GetAttr(IXMLDOMNode *pNode, TCHAR *pszAttrName, LPTSTR pszRet, size_t bufflen)
+BOOL XMLUtils::GetAttr(TiXmlElement *pElem, const char *pszAttrName, LONG *value)
 {
-	if (pNode == NULL || pszRet == NULL) return FALSE;
-
-	BOOL result = FALSE;
-	HRESULT hr;
-	IXMLDOMNode *pAttribute = NULL;
-	IXMLDOMNamedNodeMap *pNodeMap = NULL;
-	VARIANT vt;
-
-	// Get the appropriate attribute
-	CHR(pNode->get_attributes(&pNodeMap));
-	CHR(pNodeMap->getNamedItem(pszAttrName, &pAttribute));
-	CBR(pAttribute != NULL);
-
-	// Read the value of this attribute
-	VariantInit(&vt);
-	hr = pAttribute->get_nodeValue(&vt);
-	CHR(hr);
-
-	// Allocate memory and copy it
-	//CHR(StringCchLength(vt.bstrVal, STRSAFE_MAX_CCH, &cch));
-	// pszRet = new TCHAR[++cch];
-	// CPR(pszRet);
-	StringCchCopy(pszRet, bufflen, vt.bstrVal);
-
-	result = TRUE;
-Error:
-	RELEASE_OBJ(pAttribute)
-	VariantClear(&vt);
-	
-	return result;
-}
-
-BOOL XMLUtils::GetTextElem(IXMLDOMNode *pNode, UINT *value)
-{
-	if (pNode == NULL || value == NULL) return FALSE;
-
-	TCHAR *v;
-	if (SUCCEEDED(pNode->get_text(&v))) {
-		*value = _ttol(v);
-		SysFreeString(v);
+	int v;
+	if (!XMLUtils::GetAttr(pElem, pszAttrName, &v)) {
+		return FALSE;
 	}
-
+	*value = v;
 	return TRUE;
 }
 
-
-
-
-
-
-// Helper function to create a DOM instance. 
-IXMLDOMDocument *DomFromCOM()
+BOOL XMLUtils::GetAttr(TiXmlElement *pElem, const char *pszAttrName, COLORREF *value)
 {
-	HRESULT hr;
-	IXMLDOMDocument *pxmldoc = NULL;
-	CLSID clsid;
-
-	hr = CLSIDFromProgID(TEXT("Msxml2.DOMDocument"), &clsid);
-	if (FAILED(hr))
-		CHR(CLSIDFromProgID(TEXT("Microsoft.XMLDOM"), &clsid));
-	CHR(CoCreateInstance(clsid, NULL, CLSCTX_INPROC_SERVER, IID_IXMLDOMDocument, (LPVOID *) &pxmldoc));
-
-	CHR(pxmldoc->put_async(VARIANT_FALSE));
-	CHR(pxmldoc->put_validateOnParse(VARIANT_FALSE));
-	CHR(pxmldoc->put_resolveExternals(VARIANT_FALSE));
-	CHR(pxmldoc->put_preserveWhiteSpace(VARIANT_TRUE));
-
-	return pxmldoc;
-Error:
-	RELEASE_OBJ(pxmldoc);
-	return NULL;
+	return XMLUtils::GetAttr(pElem, pszAttrName, (INT *) value);
 }
 
-VARIANT VariantString(BSTR str)
+BOOL XMLUtils::GetAttr(TiXmlElement *pElem, const char *pszAttrName, LPTSTR pszRet, size_t bufflen)
 {
-	VARIANT var;
-	VariantInit(&var);
-	if (str != NULL) {
-		V_BSTR(&var) = SysAllocString(str);
-	} else {
-		V_BSTR(&var) = SysAllocString(L"");
+	if (pElem == NULL || pszRet == NULL) return FALSE;
+	const char *value = pElem->Attribute(pszAttrName);
+	if (value == NULL) {
+		return FALSE;
 	}
-	V_VT(&var) = VT_BSTR;
-	return var;
+	MultiByteToWideChar(CP_UTF8, 0, value, -1, pszRet, bufflen);
+	return TRUE;
 }
 
-
-// Helper function to append a whitespace text node to a 
-// specified element:
-void AddWhiteSpaceToNode(IXMLDOMDocument* pDom, BSTR bstrWs, IXMLDOMNode *pNode)
+void XMLUtils::SetAttr(TiXmlElement *pElem, const char *pszAttrName, UINT value)
 {
-	HRESULT hr;
-	IXMLDOMText *pws=NULL;
-	IXMLDOMNode *pBuf=NULL;
-	CHR(pDom->createTextNode(bstrWs,&pws));
-	CHR(pNode->appendChild(pws,&pBuf));
-Error:
-	RELEASE_OBJ(pws);
-	RELEASE_OBJ(pBuf);
+	if (pElem == NULL) return;
+	pElem->SetAttribute(pszAttrName, (int) value);
 }
 
-// Helper function to append a child to a parent node:
-void AppendChildToParent(IXMLDOMNode *pChild, IXMLDOMNode *pParent)
+void XMLUtils::SetAttr(TiXmlElement *pElem, const char *pszAttrName, LPTSTR psz, size_t bufflen)
 {
-	HRESULT hr;
-	IXMLDOMNode *pNode=NULL;
-	CHR(pParent->appendChild(pChild, &pNode));
-Error:
-	RELEASE_OBJ(pNode);
+	if (pElem == NULL) return;
+	char *buffer = new char[bufflen];
+	WideCharToMultiByte(CP_UTF8, 0, psz, bufflen, buffer, bufflen, NULL, NULL);
+	pElem->SetAttribute(pszAttrName, buffer);
+	delete buffer;
+}
+
+BOOL XMLUtils::GetTextElem(TiXmlElement *pElem, UINT *value)
+{
+	if (pElem == NULL || value == NULL) return FALSE;
+	const char *text = pElem->GetText();
+	if (text == NULL) {
+		return FALSE;
+	}
+	*value = atoi(text);
+	return TRUE;
+}
+
+void XMLUtils::SetTextElem(TiXmlElement *pElem, INT value)
+{
+	if (pElem == NULL) return;
+	char buffer[MAX_PATH];
+	sprintf(buffer, "%d", value);
+	TiXmlText *pText = new TiXmlText(buffer);
+	pElem->LinkEndChild(pText);
 }

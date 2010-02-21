@@ -2,14 +2,24 @@
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "iPhoneToday", "iPhoneToday\iPhoneToday.vcproj", "{E86A05B7-61BA-4F59-A656-ADE7A6424CDB}"
+	ProjectSection(ProjectDependencies) = postProject
+		{EAFA8814-C7E3-41A7-969C-E9F5EFCC42E8} = {EAFA8814-C7E3-41A7-969C-E9F5EFCC42E8}
+	EndProjectSection
 EndProject
 Project("{B900F1C2-3D47-4FEC-85B3-04AAF18C3634}") = "iPhoneTodayCab", "iPhoneTodayCab\iPhoneTodayCab.vddproj", "{E367A166-9BCE-4466-8586-3117B97B9F50}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "iPhoneTodaySetup", "iPhoneTodaySetup\iPhoneTodaySetup.vcproj", "{0F04B3A3-898A-4642-938C-82B47B816ADB}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "iPhoneTodayExe", "iPhoneTodayExe\iPhoneTodayExe.vcproj", "{3BA452DB-E2F2-474D-95D7-CBAC4022F7D3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{EAFA8814-C7E3-41A7-969C-E9F5EFCC42E8} = {EAFA8814-C7E3-41A7-969C-E9F5EFCC42E8}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "iPhoneTodayCmdLine", "iPhoneTodayCmdLine\iPhoneTodayCmdLine.vcproj", "{802BF867-2A60-491A-996A-669B82A79C5D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "libs", "libs", "{1E93E643-60C3-4B48-84FB-1AE72FECD6A0}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tinyxml", "..\libs\tinyxml\tinyxml.vcproj", "{EAFA8814-C7E3-41A7-969C-E9F5EFCC42E8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -75,8 +85,23 @@ Global
 		{802BF867-2A60-491A-996A-669B82A79C5D}.Release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I).ActiveCfg = Release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
 		{802BF867-2A60-491A-996A-669B82A79C5D}.Release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I).Build.0 = Release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
 		{802BF867-2A60-491A-996A-669B82A79C5D}.Release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I).Deploy.0 = Release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
+		{EAFA8814-C7E3-41A7-969C-E9F5EFCC42E8}.Debug|Pocket PC 2003 (ARMV4).ActiveCfg = Debug|Pocket PC 2003 (ARMV4)
+		{EAFA8814-C7E3-41A7-969C-E9F5EFCC42E8}.Debug|Pocket PC 2003 (ARMV4).Build.0 = Debug|Pocket PC 2003 (ARMV4)
+		{EAFA8814-C7E3-41A7-969C-E9F5EFCC42E8}.Debug|Pocket PC 2003 (ARMV4).Deploy.0 = Debug|Pocket PC 2003 (ARMV4)
+		{EAFA8814-C7E3-41A7-969C-E9F5EFCC42E8}.Debug|Windows Mobile 5.0 Pocket PC SDK (ARMV4I).ActiveCfg = Debug|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
+		{EAFA8814-C7E3-41A7-969C-E9F5EFCC42E8}.Debug|Windows Mobile 5.0 Pocket PC SDK (ARMV4I).Build.0 = Debug|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
+		{EAFA8814-C7E3-41A7-969C-E9F5EFCC42E8}.Debug|Windows Mobile 5.0 Pocket PC SDK (ARMV4I).Deploy.0 = Debug|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
+		{EAFA8814-C7E3-41A7-969C-E9F5EFCC42E8}.Release|Pocket PC 2003 (ARMV4).ActiveCfg = Release|Pocket PC 2003 (ARMV4)
+		{EAFA8814-C7E3-41A7-969C-E9F5EFCC42E8}.Release|Pocket PC 2003 (ARMV4).Build.0 = Release|Pocket PC 2003 (ARMV4)
+		{EAFA8814-C7E3-41A7-969C-E9F5EFCC42E8}.Release|Pocket PC 2003 (ARMV4).Deploy.0 = Release|Pocket PC 2003 (ARMV4)
+		{EAFA8814-C7E3-41A7-969C-E9F5EFCC42E8}.Release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I).ActiveCfg = Release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
+		{EAFA8814-C7E3-41A7-969C-E9F5EFCC42E8}.Release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I).Build.0 = Release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
+		{EAFA8814-C7E3-41A7-969C-E9F5EFCC42E8}.Release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I).Deploy.0 = Release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{EAFA8814-C7E3-41A7-969C-E9F5EFCC42E8} = {1E93E643-60C3-4B48-84FB-1AE72FECD6A0}
 	EndGlobalSection
 EndGlobal

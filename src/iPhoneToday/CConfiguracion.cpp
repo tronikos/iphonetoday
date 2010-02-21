@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "CConfiguracion.h"
 #include "RegistryUtils.h"
 
@@ -112,139 +113,81 @@ BOOL CConfiguracion::cargaXMLIconos(CListaPantalla *listaPantallas)
 		return FALSE;
 	}
 
-	BOOL result = false;
-	CPantalla *pantalla = NULL;
-	CIcono *icono = NULL;
-
-	HRESULT hr = S_OK;
-    IXMLDOMDocument *pDOM = NULL;
-    IXMLDOMNode *pRootNode = NULL;
-    IXMLDOMNode *pNodeScreen = NULL;
-    IXMLDOMNode *pNodeIcon = NULL;
-	IXMLDOMNode *pNodeScreenSibling = NULL;
-    IXMLDOMNode *pNodeIconSibling = NULL;
-	
-    VARIANT_BOOL fSuccess;
-    VARIANT vt;
-
-	TCHAR *nameNode;
-
-	// Load the XML DOM
-	pDOM = DomFromCOM();
-	if (!pDOM) goto Error;
-
-	// Load the xml file
-    vt.vt = VT_BSTR;
-    vt.bstrVal = SysAllocString(pathIconsXML);
-    CHR(pDOM->load(vt, &fSuccess));
-    CBR(fSuccess);
+	TiXmlDocument doc;
+	FILE *f = _wfopen(pathIconsXML, L"rb");
+	if (!f) return FALSE;
+	bool loaded = doc.LoadFile(f, TIXML_ENCODING_UTF8);
+	fclose(f);
+	if (!loaded) return FALSE;
+	TiXmlNode* pRoot = doc.FirstChild("root");
+	if (!pRoot) return FALSE;
 
 	lastModifiedIconsXML = FileModifyTime(pathIconsXML);
-
-	// Find the root node
-    CHR(pDOM->selectSingleNode(TEXT("root"), &pRootNode));
-
-	// Walk the children of this node -- each top-level child will be a single store property
-	CHR(pRootNode->get_firstChild(&pNodeScreen));
 
 	if (listaPantallas->barraInferior == NULL) {
 		listaPantallas->barraInferior = new CPantalla();
 	}
-	UINT nScreen = 0;
-    while (pNodeScreen)
-    {
-		pNodeScreen->get_baseName(&nameNode);
 
-		BOOL isScreen = FALSE;
-		if (lstrcmpi(nameNode, TEXT("BottomBar")) == 0) {
+	// for each screen (child of root)
+	UINT nScreen = 0;
+	for (TiXmlElement *pElemScreen = pRoot->FirstChildElement(); pElemScreen; pElemScreen = pElemScreen->NextSiblingElement()) {
+		const char *nameNode = pElemScreen->Value();
+		CPantalla *pantalla = NULL;
+		if (_stricmp(nameNode, "BottomBar") == 0) {
 			pantalla = listaPantallas->barraInferior;
-			isScreen = TRUE;
-		} else if (lstrcmpi(nameNode, TEXT("screen")) == 0) {
+		} else if (_stricmp(nameNode, "screen") == 0) {
 			if (listaPantallas->listaPantalla[nScreen] == NULL) {
 				pantalla = listaPantallas->creaPantalla();
 			} else {
 				pantalla = listaPantallas->listaPantalla[nScreen];
 			}
 			nScreen++;
-			isScreen = TRUE;
+		} else {
+			continue;
 		}
-		if (isScreen) {
-			XMLUtils::GetAttr(pNodeScreen, TEXT("header"), pantalla->header, CountOf(pantalla->header));
 
-			CHR(pNodeScreen->get_firstChild(&pNodeIcon));
+		XMLUtils::GetAttr(pElemScreen, "header", pantalla->header, CountOf(pantalla->header));
 
-			UINT nIcon = 0;
-			while (pNodeIcon) 
-			{
-				pNodeIcon->get_baseName(&nameNode);
+		// for each icon (child of screen)
+		UINT nIcon = 0;
+		for (TiXmlElement* pElemIcon = pElemScreen->FirstChildElement(); pElemIcon; pElemIcon = pElemIcon->NextSiblingElement()) {
+			if (_stricmp(pElemIcon->Value(), "icon") == 0) {
+				CIcono *icono;
 
-				if (lstrcmpi(nameNode, TEXT("icon")) == 0) {
+				if (pantalla->listaIconos[nIcon] == NULL) {
+					icono = pantalla->creaIcono();
+				} else {
+					icono = pantalla->listaIconos[nIcon];
 
-					// Init Icon creation
-					if (pantalla->listaIconos[nIcon] == NULL) {
-						icono = pantalla->creaIcono();
-					} else {
-						icono = pantalla->listaIconos[nIcon];
-
-						wcscpy(icono->nombre, L"");
-						wcscpy(icono->rutaImagen, L"");
-						wcscpy(icono->ejecutable, L"");
-						wcscpy(icono->parametros, L"");
-						wcscpy(icono->ejecutableAlt, L"");
-						wcscpy(icono->parametrosAlt, L"");
-						icono->tipo = NOTIF_NORMAL;
-						icono->launchAnimation = 1;
-					}
-					nIcon++;
-
-					XMLUtils::GetAttr(pNodeIcon, TEXT("name"),          icono->nombre,        CountOf(icono->nombre));
-					XMLUtils::GetAttr(pNodeIcon, TEXT("image"),         icono->rutaImagen,    CountOf(icono->rutaImagen));
-					XMLUtils::GetAttr(pNodeIcon, TEXT("exec"),          icono->ejecutable,    CountOf(icono->ejecutable));
-					XMLUtils::GetAttr(pNodeIcon, TEXT("parameters"),    icono->parametros,    CountOf(icono->parametros));
-					XMLUtils::GetAttr(pNodeIcon, TEXT("execAlt"),       icono->ejecutableAlt, CountOf(icono->ejecutableAlt));
-					XMLUtils::GetAttr(pNodeIcon, TEXT("parametersAlt"), icono->parametrosAlt, CountOf(icono->parametrosAlt));
-					XMLUtils::GetAttr(pNodeIcon, TEXT("type"),          &icono->tipo);
-					XMLUtils::GetAttr(pNodeIcon, TEXT("animation"),     &icono->launchAnimation);
-
-					// WriteToLog(icono->ejecutable);
-
-					// End Icon creation
+					wcscpy(icono->nombre, L"");
+					wcscpy(icono->rutaImagen, L"");
+					wcscpy(icono->ejecutable, L"");
+					wcscpy(icono->parametros, L"");
+					wcscpy(icono->ejecutableAlt, L"");
+					wcscpy(icono->parametrosAlt, L"");
+					icono->tipo = NOTIF_NORMAL;
+					icono->launchAnimation = 1;
 				}
+				nIcon++;
 
-				// Go to the next node
-				CHR(pNodeIcon->get_nextSibling(&pNodeIconSibling));
-
-				pNodeIcon->Release();
-				pNodeIcon = pNodeIconSibling;
-			}
-			while (nIcon < pantalla->numIconos) {
-				pantalla->borraIcono(nIcon);
-				// nIcon++;
+				XMLUtils::GetAttr(pElemIcon, "name",			icono->nombre,			CountOf(icono->nombre));
+				XMLUtils::GetAttr(pElemIcon, "image",			icono->rutaImagen,		CountOf(icono->rutaImagen));
+				XMLUtils::GetAttr(pElemIcon, "exec",			icono->ejecutable,		CountOf(icono->ejecutable));
+				XMLUtils::GetAttr(pElemIcon, "parameters",		icono->parametros,		CountOf(icono->parametros));
+				XMLUtils::GetAttr(pElemIcon, "execAlt",			icono->ejecutableAlt,	CountOf(icono->ejecutableAlt));
+				XMLUtils::GetAttr(pElemIcon, "parametersAlt",	icono->parametrosAlt,	CountOf(icono->parametrosAlt));
+				XMLUtils::GetAttr(pElemIcon, "type",			&icono->tipo);
+				XMLUtils::GetAttr(pElemIcon, "animation",		&icono->launchAnimation);
 			}
 		}
+	}
 
-        // Go to the next node
-		CHR(pNodeScreen->get_nextSibling(&pNodeScreenSibling));
-        
-        pNodeScreen->Release();
-        pNodeScreen = pNodeScreenSibling;
-    }
 	while (nScreen < listaPantallas->numPantallas) {
 		listaPantallas->numPantallas--;
 		delete listaPantallas->listaPantalla[listaPantallas->numPantallas];
 	}
 
-	result = true;
-
-Error:
-    RELEASE_OBJ(pDOM)
-    RELEASE_OBJ(pNodeScreen)
-    RELEASE_OBJ(pNodeIcon)
-	RELEASE_OBJ(pNodeScreenSibling)
-	RELEASE_OBJ(pNodeIconSibling)
-
-    VariantClear(&vt);
-	return result;
+	return TRUE;
 }
 
 BOOL CConfiguracion::cargaIconos(HDC *hDC, CListaPantalla *listaPantallas)
@@ -453,132 +396,94 @@ void CConfiguracion::defaultValues()
 
 BOOL CConfiguracion::cargaXMLConfig()
 {
-	BOOL result = false;
-	HRESULT hr = S_OK;
-	IXMLDOMDocument *pDOM = NULL;
-	IXMLDOMNode *pRootNode = NULL;
-	IXMLDOMNode *pNode = NULL;
-	IXMLDOMNode *pNodeSibling = NULL;
-	TCHAR *nameNode = NULL;
-    VARIANT_BOOL fSuccess;
-    VARIANT vt;
-
-	// Load the XML DOM
-	pDOM = DomFromCOM();
-	if (!pDOM) goto Error;
-
-	// Load the xml file
-    vt.vt = VT_BSTR;
-    vt.bstrVal = SysAllocString(pathSettingsXML);
-    CHR(pDOM->load(vt, &fSuccess));
-    CBR(fSuccess);
+	TiXmlDocument doc;
+	FILE *f = _wfopen(pathSettingsXML, L"rb");
+	if (!f) return FALSE;
+	bool loaded = doc.LoadFile(f, TIXML_ENCODING_UTF8);
+	fclose(f);
+	if (!loaded) return FALSE;
+	TiXmlNode* pRoot = doc.FirstChild("root");
+	if (!pRoot) return FALSE;
 
 	lastModifiedSettingsXML = FileModifyTime(pathSettingsXML);
 
-	// Find the root node
-    CHR(pDOM->selectSingleNode(TEXT("root"), &pRootNode));
+	// for each child of root
+	for (TiXmlElement *pElem = pRoot->FirstChildElement(); pElem; pElem = pElem->NextSiblingElement()) {
+		const char *nameNode = pElem->Value();
 
-
-	// Walk the children of this node -- each top-level child will be a single store property
-	CHR(pRootNode->get_firstChild(&pNode));
-
-    while (pNode)
-    {
-		pNode->get_baseName(&nameNode);
-		// WriteToLog(TEXT("Bucle:\r\n"));
-
-		if(lstrcmpi(nameNode, TEXT("Circles")) == 0) {
-			XMLUtils::GetAttr(pNode, TEXT("diameter"), &this->circlesDiameter);
-			XMLUtils::GetAttr(pNode, TEXT("distance"), &this->circlesDistance);
-		} else if(lstrcmpi(nameNode, TEXT("Header")) == 0) {
-			XMLUtils::GetAttr(pNode, TEXT("size"),   &this->headerFontSize);
-			XMLUtils::GetAttr(pNode, TEXT("color"),  &this->headerFontColor);
-			XMLUtils::GetAttr(pNode, TEXT("weight"), &this->headerFontWeight);
-			XMLUtils::GetAttr(pNode, TEXT("offset"), &this->headerOffset);
-		} else if(lstrcmpi(nameNode, TEXT("Movement")) == 0) {
-			XMLUtils::GetAttr(pNode, TEXT("MoveThreshold"),  &this->umbralMovimiento);
-			XMLUtils::GetAttr(pNode, TEXT("MaxVelocity"),    &this->velMaxima);
-			XMLUtils::GetAttr(pNode, TEXT("MinVelocity"),    &this->velMinima);
-			XMLUtils::GetAttr(pNode, TEXT("RefreshTime"),    &this->refreshTime);
-			XMLUtils::GetAttr(pNode, TEXT("FactorMov"),      &this->factorMovimiento);
-			XMLUtils::GetAttr(pNode, TEXT("VerticalScroll"), &this->verticalScroll);
-		} else if(lstrcmpi(nameNode, TEXT("DayOfWeek")) == 0) {
-			XMLUtils::GetAttr(pNode, TEXT("color"),     &this->dowColor);
-			XMLUtils::GetAttr(pNode, TEXT("width"),     &this->dowWidth);
-			XMLUtils::GetAttr(pNode, TEXT("height"),    &this->dowHeight);
-			XMLUtils::GetAttr(pNode, TEXT("weight"),    &this->dowWeight);
-			XMLUtils::GetAttr(pNode, TEXT("Sunday"),    this->diasSemana[0], CountOf(this->diasSemana[0]));
-			XMLUtils::GetAttr(pNode, TEXT("Monday"),    this->diasSemana[1], CountOf(this->diasSemana[1]));
-			XMLUtils::GetAttr(pNode, TEXT("Tuesday"),   this->diasSemana[2], CountOf(this->diasSemana[2]));
-			XMLUtils::GetAttr(pNode, TEXT("Wednesday"), this->diasSemana[3], CountOf(this->diasSemana[3]));
-			XMLUtils::GetAttr(pNode, TEXT("Thursday"),  this->diasSemana[4], CountOf(this->diasSemana[4]));
-			XMLUtils::GetAttr(pNode, TEXT("Friday"),    this->diasSemana[5], CountOf(this->diasSemana[5]));
-			XMLUtils::GetAttr(pNode, TEXT("Saturday"),  this->diasSemana[6], CountOf(this->diasSemana[6]));
-		} else if(lstrcmpi(nameNode, TEXT("DayOfMonth")) == 0) {
-			XMLUtils::GetAttr(pNode, TEXT("color"),  &this->domColor);
-			XMLUtils::GetAttr(pNode, TEXT("width"),  &this->domWidth);
-			XMLUtils::GetAttr(pNode, TEXT("height"), &this->domHeight);
-			XMLUtils::GetAttr(pNode, TEXT("weight"), &this->domWeight);
-		} else if(lstrcmpi(nameNode, TEXT("Clock")) == 0) {
-			XMLUtils::GetAttr(pNode, TEXT("color"),    &this->clockColor);
-			XMLUtils::GetAttr(pNode, TEXT("width"),    &this->clockWidth);
-			XMLUtils::GetAttr(pNode, TEXT("height"),   &this->clockHeight);
-			XMLUtils::GetAttr(pNode, TEXT("weight"),   &this->clockWeight);
-			XMLUtils::GetAttr(pNode, TEXT("format12"), &this->clock12Format);
-		} else if(lstrcmpi(nameNode, TEXT("Bubbles")) == 0) {
-			XMLUtils::GetAttr(pNode, TEXT("notif"), this->bubble_notif, CountOf(this->bubble_notif));
-			XMLUtils::GetAttr(pNode, TEXT("state"), this->bubble_state, CountOf(this->bubble_state));
-			XMLUtils::GetAttr(pNode, TEXT("alarm"), this->bubble_alarm, CountOf(this->bubble_alarm));
-		} else if(lstrcmpi(nameNode, TEXT("OnLaunchIcon")) == 0) {
-			XMLUtils::GetAttr(pNode, TEXT("close"),   &this->closeOnLaunchIcon);
-			XMLUtils::GetAttr(pNode, TEXT("vibrate"), &this->vibrateOnLaunchIcon);
-			XMLUtils::GetAttr(pNode, TEXT("animate"), &this->allowAnimationOnLaunchIcon);
-		} else if(lstrcmpi(nameNode, TEXT("Background")) == 0) {
-			XMLUtils::GetAttr(pNode, TEXT("transparent"), &this->fondoTransparente);
-			XMLUtils::GetAttr(pNode, TEXT("color"),       &this->fondoColor);
-			XMLUtils::GetAttr(pNode, TEXT("static"),      &this->fondoEstatico);
-			XMLUtils::GetAttr(pNode, TEXT("wallpaper"),   this->strFondoPantalla, CountOf(this->strFondoPantalla));
-		} else if(lstrcmpi(nameNode, TEXT("NotifyTimer")) == 0) {
-			XMLUtils::GetTextElem(pNode, &this->notifyTimer);
-		} else if(lstrcmpi(nameNode, TEXT("IgnoreRotation")) == 0) {
-			XMLUtils::GetTextElem(pNode, &this->ignoreRotation);
-		} else if(lstrcmpi(nameNode, TEXT("DisableRightClick")) == 0) {
-			XMLUtils::GetTextElem(pNode, &this->disableRightClick);
-		} else if(lstrcmpi(nameNode, TEXT("Fullscreen")) == 0) {
-			XMLUtils::GetTextElem(pNode, &this->fullscreen);
-		} else if(lstrcmpi(nameNode, TEXT("NeverShowTaskBar")) == 0) {
-			XMLUtils::GetTextElem(pNode, &this->neverShowTaskBar);
-		} else if(lstrcmpi(nameNode, TEXT("NoWindowTitle")) == 0) {
-			XMLUtils::GetTextElem(pNode, &this->noWindowTitle);
-		} else if(lstrcmpi(nameNode, TEXT("AlreadyConfigured")) == 0) {
-			XMLUtils::GetTextElem(pNode, &this->alreadyConfigured);
-		} else if(lstrcmpi(nameNode, TEXT("MainScreen")) == 0) {
-			mainScreenConfig->loadXMLConfig(pNode);
-		} else if(lstrcmpi(nameNode, TEXT("BottomBar")) == 0) {
-			bottomBarConfig->loadXMLConfig(pNode);
+		if(_stricmp(nameNode, "Circles") == 0) {
+			XMLUtils::GetAttr(pElem, "diameter", &this->circlesDiameter);
+			XMLUtils::GetAttr(pElem, "distance", &this->circlesDistance);
+		} else if(_stricmp(nameNode, "Header") == 0) {
+			XMLUtils::GetAttr(pElem, "size",   &this->headerFontSize);
+			XMLUtils::GetAttr(pElem, "color",  &this->headerFontColor);
+			XMLUtils::GetAttr(pElem, "weight", &this->headerFontWeight);
+			XMLUtils::GetAttr(pElem, "offset", &this->headerOffset);
+		} else if(_stricmp(nameNode, "Movement") == 0) {
+			XMLUtils::GetAttr(pElem, "MoveThreshold",  &this->umbralMovimiento);
+			XMLUtils::GetAttr(pElem, "MaxVelocity",    &this->velMaxima);
+			XMLUtils::GetAttr(pElem, "MinVelocity",    &this->velMinima);
+			XMLUtils::GetAttr(pElem, "RefreshTime",    &this->refreshTime);
+			XMLUtils::GetAttr(pElem, "FactorMov",      &this->factorMovimiento);
+			XMLUtils::GetAttr(pElem, "VerticalScroll", &this->verticalScroll);
+		} else if(_stricmp(nameNode, "DayOfWeek") == 0) {
+			XMLUtils::GetAttr(pElem, "color",     &this->dowColor);
+			XMLUtils::GetAttr(pElem, "width",     &this->dowWidth);
+			XMLUtils::GetAttr(pElem, "height",    &this->dowHeight);
+			XMLUtils::GetAttr(pElem, "weight",    &this->dowWeight);
+			XMLUtils::GetAttr(pElem, "Sunday",    this->diasSemana[0], CountOf(this->diasSemana[0]));
+			XMLUtils::GetAttr(pElem, "Monday",    this->diasSemana[1], CountOf(this->diasSemana[1]));
+			XMLUtils::GetAttr(pElem, "Tuesday",   this->diasSemana[2], CountOf(this->diasSemana[2]));
+			XMLUtils::GetAttr(pElem, "Wednesday", this->diasSemana[3], CountOf(this->diasSemana[3]));
+			XMLUtils::GetAttr(pElem, "Thursday",  this->diasSemana[4], CountOf(this->diasSemana[4]));
+			XMLUtils::GetAttr(pElem, "Friday",    this->diasSemana[5], CountOf(this->diasSemana[5]));
+			XMLUtils::GetAttr(pElem, "Saturday",  this->diasSemana[6], CountOf(this->diasSemana[6]));
+		} else if(_stricmp(nameNode, "DayOfMonth") == 0) {
+			XMLUtils::GetAttr(pElem, "color",  &this->domColor);
+			XMLUtils::GetAttr(pElem, "width",  &this->domWidth);
+			XMLUtils::GetAttr(pElem, "height", &this->domHeight);
+			XMLUtils::GetAttr(pElem, "weight", &this->domWeight);
+		} else if(_stricmp(nameNode, "Clock") == 0) {
+			XMLUtils::GetAttr(pElem, "color",    &this->clockColor);
+			XMLUtils::GetAttr(pElem, "width",    &this->clockWidth);
+			XMLUtils::GetAttr(pElem, "height",   &this->clockHeight);
+			XMLUtils::GetAttr(pElem, "weight",   &this->clockWeight);
+			XMLUtils::GetAttr(pElem, "format12", &this->clock12Format);
+		} else if(_stricmp(nameNode, "Bubbles") == 0) {
+			XMLUtils::GetAttr(pElem, "notif", this->bubble_notif, CountOf(this->bubble_notif));
+			XMLUtils::GetAttr(pElem, "state", this->bubble_state, CountOf(this->bubble_state));
+			XMLUtils::GetAttr(pElem, "alarm", this->bubble_alarm, CountOf(this->bubble_alarm));
+		} else if(_stricmp(nameNode, "OnLaunchIcon") == 0) {
+			XMLUtils::GetAttr(pElem, "close",   &this->closeOnLaunchIcon);
+			XMLUtils::GetAttr(pElem, "vibrate", &this->vibrateOnLaunchIcon);
+			XMLUtils::GetAttr(pElem, "animate", &this->allowAnimationOnLaunchIcon);
+		} else if(_stricmp(nameNode, "Background") == 0) {
+			XMLUtils::GetAttr(pElem, "transparent", &this->fondoTransparente);
+			XMLUtils::GetAttr(pElem, "color",       &this->fondoColor);
+			XMLUtils::GetAttr(pElem, "static",      &this->fondoEstatico);
+			XMLUtils::GetAttr(pElem, "wallpaper",   this->strFondoPantalla, CountOf(this->strFondoPantalla));
+		} else if(_stricmp(nameNode, "NotifyTimer") == 0) {
+			XMLUtils::GetTextElem(pElem, &this->notifyTimer);
+		} else if(_stricmp(nameNode, "IgnoreRotation") == 0) {
+			XMLUtils::GetTextElem(pElem, &this->ignoreRotation);
+		} else if(_stricmp(nameNode, "DisableRightClick") == 0) {
+			XMLUtils::GetTextElem(pElem, &this->disableRightClick);
+		} else if(_stricmp(nameNode, "Fullscreen") == 0) {
+			XMLUtils::GetTextElem(pElem, &this->fullscreen);
+		} else if(_stricmp(nameNode, "NeverShowTaskBar") == 0) {
+			XMLUtils::GetTextElem(pElem, &this->neverShowTaskBar);
+		} else if(_stricmp(nameNode, "NoWindowTitle") == 0) {
+			XMLUtils::GetTextElem(pElem, &this->noWindowTitle);
+		} else if(_stricmp(nameNode, "AlreadyConfigured") == 0) {
+			XMLUtils::GetTextElem(pElem, &this->alreadyConfigured);
+		} else if(_stricmp(nameNode, "MainScreen") == 0) {
+			mainScreenConfig->loadXMLConfig(pElem);
+		} else if(_stricmp(nameNode, "BottomBar") == 0) {
+			bottomBarConfig->loadXMLConfig(pElem);
 		}
-
-		SysFreeString(nameNode);
-        // Go to the next node
-		CHR(pNode->get_nextSibling(&pNodeSibling));
-        
-        pNode->Release();
-        pNode = pNodeSibling;
     }
 
-	result = true;
-
-Error:
-	SysFreeString(nameNode);
-
-    RELEASE_OBJ(pDOM)
-    RELEASE_OBJ(pNode)
-    RELEASE_OBJ(pNodeSibling)
-	RELEASE_OBJ(pRootNode)
-
-    VariantClear(&vt);
-	
-	return result;
+	return TRUE;
 }
 
 BOOL CConfiguracion::guardaXMLIconos(CListaPantalla *listaPantallas)
@@ -587,433 +492,199 @@ BOOL CConfiguracion::guardaXMLIconos(CListaPantalla *listaPantallas)
 		return FALSE;
 	}
 
-    IXMLDOMDocument *pXMLDom = NULL;
-    IXMLDOMProcessingInstruction *pi = NULL;
-    IXMLDOMComment *pc = NULL;
-    IXMLDOMElement *pe = NULL;
-    IXMLDOMElement *pRoot = NULL;
+	TiXmlDocument doc;
 
-	BSTR bstr = NULL;
-	BSTR bstr1 = NULL;
-	BSTR bstr_wsn = SysAllocString(L"\n");
-	BSTR bstr_wsnt= SysAllocString(L"\n\t");
-	BSTR bstr_wsntt=SysAllocString(L"\n\t\t");
+	TiXmlDeclaration *decl = new TiXmlDeclaration("1.0", "UTF-8", "yes");
+	doc.LinkEndChild(decl);
 
-	VARIANT var;
-	HRESULT hr;
+	TiXmlComment *comment = new TiXmlComment("iPhoneToday for Windows Mobile");
+	doc.LinkEndChild(comment);
 
-	VariantInit(&var);
-  
-	pXMLDom = DomFromCOM();
-	if (!pXMLDom) goto Error;
-
-	// Create a processing instruction element.
-	bstr = SysAllocString(L"xml");
-	bstr1 = SysAllocString(L"version='1.0' encoding='UTF-8'");
-	CHR(pXMLDom->createProcessingInstruction(bstr, bstr1, &pi));
-	AppendChildToParent(pi, pXMLDom);
-	RELEASE_OBJ(pi);
-	SysFreeString(bstr); bstr = NULL;
-	SysFreeString(bstr1); bstr1 = NULL;
-
-	// Create a comment element.
-	bstr = SysAllocString(L"iPhoneToday for Windows Mobile");
-	CHR(pXMLDom->createComment(bstr, &pc));
-	AppendChildToParent(pc, pXMLDom);
-	SysFreeString(bstr); bstr = NULL;
-	RELEASE_OBJ(pc);
-
-	// Create the root element.
-	bstr = SysAllocString(L"root");
-	CHR(pXMLDom->createElement(bstr, &pRoot));
-	SysFreeString(bstr); bstr = NULL;
-
-	AppendChildToParent(pRoot, pXMLDom);
-	SysFreeString(bstr); bstr = NULL;
+	TiXmlElement *root = new TiXmlElement("root");
+	doc.LinkEndChild(root);
 
 	CPantalla *pantalla;
-	// Insertamos los nodos hijos.
+	TiXmlElement *pElemScreen;
+
 	for (UINT i = 0; i < listaPantallas->numPantallas; i++) {
-		// Add NEWLINE+TAB.
-		AddWhiteSpaceToNode(pXMLDom, bstr_wsnt, pRoot);
-
-		bstr = SysAllocString(L"screen");
-		CHR(pXMLDom->createElement(bstr, &pe));
-		SysFreeString(bstr); bstr = NULL;
-
 		pantalla = listaPantallas->listaPantalla[i];
-		createAttributeXML(pXMLDom, pe, L"header", pantalla->header);
-		for (UINT j = 0; j < pantalla->numIconos; j++) {
-			creaNodoXMLIcono(pXMLDom, pe, pantalla->listaIconos[j]);
-		}
 
-		// Add NEWLINE+TAB.
-		AddWhiteSpaceToNode(pXMLDom, bstr_wsnt, pe);
-
-		AppendChildToParent(pe, pRoot);
-		RELEASE_OBJ(pe);
+		pElemScreen = new TiXmlElement("screen");
+		XMLUtils::SetAttr(pElemScreen, "header", pantalla->header, CountOf(pantalla->header));
+		saveXMLScreenIcons(pElemScreen, pantalla);
+		root->LinkEndChild(pElemScreen);
 	}
 
 	if (listaPantallas->barraInferior != NULL && listaPantallas->barraInferior->numIconos > 0) {
-		// Add NEWLINE+TAB.
-		AddWhiteSpaceToNode(pXMLDom, bstr_wsnt, pRoot);
-
-		bstr = SysAllocString(L"BottomBar");
-		CHR(pXMLDom->createElement(bstr, &pe));
-		SysFreeString(bstr); bstr = NULL;
-
 		pantalla = listaPantallas->barraInferior;
-		for (UINT j = 0; j < pantalla->numIconos; j++) {
-			creaNodoXMLIcono(pXMLDom, pe, pantalla->listaIconos[j]);
-		}
 
-		// Add NEWLINE+TAB.
-		AddWhiteSpaceToNode(pXMLDom, bstr_wsnt, pe);
-
-		AppendChildToParent(pe, pRoot);
-		RELEASE_OBJ(pe);
+		pElemScreen = new TiXmlElement("BottomBar");
+		saveXMLScreenIcons(pElemScreen, pantalla);
+		root->LinkEndChild(pElemScreen);
 	}
 
-	AddWhiteSpaceToNode(pXMLDom, bstr_wsn, pRoot);
-
-    CHR(pXMLDom->get_xml(&bstr));
-
-    VariantClear(&var);
-    var = VariantString(pathIconsXML);
-    CHR(pXMLDom->save(var));
+	FILE *f = _wfopen(pathIconsXML, L"wb");
+	doc.SaveFile(f);
+	fclose(f);
 
 	lastModifiedIconsXML = FileModifyTime(pathIconsXML);
-
-Error:
-    if (bstr) SysFreeString(bstr);
-    if (bstr1) SysFreeString(bstr1);
-	if (bstr_wsn) SysFreeString(bstr_wsn);
-	if (bstr_wsnt) SysFreeString(bstr_wsnt);
-	if (bstr_wsntt) SysFreeString(bstr_wsntt);
-
-    if (&var) VariantClear(&var);
-
-	RELEASE_OBJ(pXMLDom)
-	RELEASE_OBJ(pRoot)
-	RELEASE_OBJ(pe)
-	RELEASE_OBJ(pi)
-	RELEASE_OBJ(pc)
 
 	return 0;
 }
 
-BOOL CConfiguracion::creaNodoXMLIcono(IXMLDOMDocument *pXMLDom, IXMLDOMElement *parent, CIcono *icono)
+BOOL CConfiguracion::saveXMLScreenIcons(TiXmlElement *pElemScreen, CPantalla *pantalla)
 {
-	IXMLDOMElement *pe = NULL;
+	if (pantalla == NULL) {
+		return FALSE;
+	}
 
-	BSTR bstr = NULL;
-	HRESULT hr;
-	BOOL result = FALSE;
+	for (UINT j = 0; j < pantalla->numIconos; j++) {
+		CIcono *icon = pantalla->listaIconos[j];
+		if (icon == NULL) continue;
 
-	BSTR bstr_wsntt = SysAllocString(L"\n\t\t");
+		TiXmlElement *pElemIcon = new TiXmlElement("icon");
 
-	// Create a <node1> to hold text content.
-    bstr = SysAllocString(L"icon");
-    CHR(pXMLDom->createElement(bstr, &pe));
-    SysFreeString(bstr); bstr = NULL;
+		XMLUtils::SetAttr(pElemIcon, "name",			icon->nombre,			CountOf(icon->nombre));
+		XMLUtils::SetAttr(pElemIcon, "image",			icon->rutaImagen,		CountOf(icon->rutaImagen));
+		XMLUtils::SetAttr(pElemIcon, "exec",			icon->ejecutable,		CountOf(icon->ejecutable));
+		XMLUtils::SetAttr(pElemIcon, "parameters",		icon->parametros,		CountOf(icon->parametros));
+		XMLUtils::SetAttr(pElemIcon, "execAlt",			icon->ejecutableAlt,	CountOf(icon->ejecutableAlt));
+		XMLUtils::SetAttr(pElemIcon, "parametersAlt",	icon->parametrosAlt,	CountOf(icon->parametrosAlt));
+		XMLUtils::SetAttr(pElemIcon, "type",			icon->tipo);
+		XMLUtils::SetAttr(pElemIcon, "animation",		icon->launchAnimation);
 
-	createAttributeXML(pXMLDom, pe, L"name", icono->nombre);
-	createAttributeXML(pXMLDom, pe, L"image", icono->rutaImagen);
-	createAttributeXML(pXMLDom, pe, L"exec", icono->ejecutable);
-	createAttributeXML(pXMLDom, pe, L"parameters", icono->parametros);
-	createAttributeXML(pXMLDom, pe, L"execAlt", icono->ejecutableAlt);
-	createAttributeXML(pXMLDom, pe, L"parametersAlt", icono->parametrosAlt);
-	createAttributeXML(pXMLDom, pe, L"type", icono->tipo);
-	createAttributeXML(pXMLDom, pe, L"animation", icono->launchAnimation);
+		pElemScreen->LinkEndChild(pElemIcon);
+	}
 
-	// Insertamos NEWLINE+TAB+TAB
-    AddWhiteSpaceToNode(pXMLDom, bstr_wsntt, parent);
-
-    // Insertamos el nodo al parent.
-    AppendChildToParent(pe, parent);
-    RELEASE_OBJ(pe);
-
-	result = TRUE;
-Error:
-
-	RELEASE_OBJ(pe);
-
-	SysFreeString(bstr);
-	SysFreeString(bstr_wsntt);
-
-	return result;
+	return TRUE;
 }
 
 BOOL CConfiguracion::guardaXMLConfig()
 {
-	IXMLDOMDocument *pXMLDom = NULL;
-	IXMLDOMProcessingInstruction *pi = NULL;
-	IXMLDOMComment *pc = NULL;
-	IXMLDOMElement *pe = NULL;
-	IXMLDOMElement *pRoot = NULL;
+	TiXmlDocument doc;
 
-	BSTR bstr = NULL;
-	BSTR bstr1 = NULL;
-	BSTR bstr_wsn = SysAllocString(L"\n");
-	BSTR bstr_wsnt= SysAllocString(L"\n\t");
+	TiXmlDeclaration *decl = new TiXmlDeclaration("1.0", "UTF-8", "yes");
+	doc.LinkEndChild(decl);
 
-	VARIANT var;
-	HRESULT hr;
+	TiXmlComment *comment = new TiXmlComment("iPhoneToday for Windows Mobile");
+	doc.LinkEndChild(comment);
 
-	VariantInit(&var);
+	TiXmlElement *root = new TiXmlElement("root");
+	doc.LinkEndChild(root);
 
-	pXMLDom = DomFromCOM();
-	if (!pXMLDom) goto Error;
+	TiXmlElement *pElem;
 
-	// Create a processing instruction element.
-	bstr = SysAllocString(L"xml");
-	bstr1 = SysAllocString(L"version='1.0' encoding='UTF-8'");
-	CHR(pXMLDom->createProcessingInstruction(bstr, bstr1, &pi));
-	SysFreeString(bstr); bstr = NULL;
-	SysFreeString(bstr1); bstr1 = NULL;
-	AppendChildToParent(pi, pXMLDom);
+	pElem = new TiXmlElement("MainScreen");
+	mainScreenConfig->saveXMLConfig(pElem);
+	root->LinkEndChild(pElem);
 
-	// Create a comment element.
-	bstr = SysAllocString(L"iPhoneToday for Windows Mobile");
-	CHR(pXMLDom->createComment(bstr, &pc));
-	SysFreeString(bstr); bstr = NULL;
-	AppendChildToParent(pc, pXMLDom);
+	pElem = new TiXmlElement("BottomBar");
+	bottomBarConfig->saveXMLConfig(pElem);
+	root->LinkEndChild(pElem);
 
-	// Create the root element.
-	bstr = SysAllocString(L"root");
-	CHR(pXMLDom->createElement(bstr, &pRoot));
-	SysFreeString(bstr); bstr = NULL;
-	AppendChildToParent(pRoot, pXMLDom);
+	pElem = new TiXmlElement("Circles");
+	XMLUtils::SetAttr(pElem, "diameter", this->circlesDiameter);
+	XMLUtils::SetAttr(pElem, "distance", this->circlesDistance);
+	root->LinkEndChild(pElem);
 
-	// Insertamos los nodos hijos.
+	pElem = new TiXmlElement("Header");
+	XMLUtils::SetAttr(pElem, "size",   this->headerFontSize);
+	XMLUtils::SetAttr(pElem, "color",  this->headerFontColor);
+	XMLUtils::SetAttr(pElem, "weight", this->headerFontWeight);
+	XMLUtils::SetAttr(pElem, "offset", this->headerOffset);
+	root->LinkEndChild(pElem);
 
-	AddWhiteSpaceToNode(pXMLDom, bstr_wsnt, pRoot);
-	bstr = SysAllocString(L"MainScreen");
-	CHR(pXMLDom->createElement(bstr, &pe));
-	SysFreeString(bstr); bstr = NULL;
-	mainScreenConfig->saveXMLConfig(pXMLDom, pe);
-	AppendChildToParent(pe, pRoot);
-	AddWhiteSpaceToNode(pXMLDom, bstr_wsnt, pe);
+	pElem = new TiXmlElement("Background");
+	XMLUtils::SetAttr(pElem, "transparent", this->fondoTransparente);
+	XMLUtils::SetAttr(pElem, "color",       this->fondoColor);
+	XMLUtils::SetAttr(pElem, "static",      this->fondoEstatico);
+	XMLUtils::SetAttr(pElem, "wallpaper",   this->strFondoPantalla, CountOf(this->strFondoPantalla));
+	root->LinkEndChild(pElem);
 
-	AddWhiteSpaceToNode(pXMLDom, bstr_wsnt, pRoot);
-	bstr = SysAllocString(L"BottomBar");
-	CHR(pXMLDom->createElement(bstr, &pe));
-	bottomBarConfig->saveXMLConfig(pXMLDom, pe);
-	AppendChildToParent(pe, pRoot);
-	SysFreeString(bstr); bstr = NULL;
-	AddWhiteSpaceToNode(pXMLDom, bstr_wsnt, pe);
+	pElem = new TiXmlElement("Movement");
+	XMLUtils::SetAttr(pElem, "MoveThreshold",  this->umbralMovimiento);
+	XMLUtils::SetAttr(pElem, "MaxVelocity",    this->velMaxima);
+	XMLUtils::SetAttr(pElem, "MinVelocity",    this->velMinima);
+	XMLUtils::SetAttr(pElem, "RefreshTime",    this->refreshTime);
+	XMLUtils::SetAttr(pElem, "FactorMov",      this->factorMovimiento);
+	XMLUtils::SetAttr(pElem, "VerticalScroll", this->verticalScroll);
+	root->LinkEndChild(pElem);
 
-	AddWhiteSpaceToNode(pXMLDom, bstr_wsnt, pRoot);
-	bstr = SysAllocString(L"Circles");
-	CHR(pXMLDom->createElement(bstr, &pe));
-	SysFreeString(bstr); bstr = NULL;
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"diameter", this->circlesDiameter);
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"distance", this->circlesDistance);
-	AppendChildToParent(pe, pRoot);
-	RELEASE_OBJ(pe);
+	pElem = new TiXmlElement("DayOfWeek");
+	XMLUtils::SetAttr(pElem, "color",     this->dowColor);
+	XMLUtils::SetAttr(pElem, "width",     this->dowWidth);
+	XMLUtils::SetAttr(pElem, "height",    this->dowHeight);
+	XMLUtils::SetAttr(pElem, "weight",    this->dowWeight);
+	XMLUtils::SetAttr(pElem, "Sunday",    this->diasSemana[0], CountOf(this->diasSemana[0]));
+	XMLUtils::SetAttr(pElem, "Monday",    this->diasSemana[1], CountOf(this->diasSemana[1]));
+	XMLUtils::SetAttr(pElem, "Tuesday",   this->diasSemana[2], CountOf(this->diasSemana[2]));
+	XMLUtils::SetAttr(pElem, "Wednesday", this->diasSemana[3], CountOf(this->diasSemana[3]));
+	XMLUtils::SetAttr(pElem, "Thursday",  this->diasSemana[4], CountOf(this->diasSemana[4]));
+	XMLUtils::SetAttr(pElem, "Friday",    this->diasSemana[5], CountOf(this->diasSemana[5]));
+	XMLUtils::SetAttr(pElem, "Saturday",  this->diasSemana[6], CountOf(this->diasSemana[6]));
+	root->LinkEndChild(pElem);
 
-	AddWhiteSpaceToNode(pXMLDom, bstr_wsnt, pRoot);
-	bstr = SysAllocString(L"Header");
-	CHR(pXMLDom->createElement(bstr, &pe));
-	SysFreeString(bstr); bstr = NULL;
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"size",   this->headerFontSize);
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"color",  this->headerFontColor);
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"weight", this->headerFontWeight);
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"offset", this->headerOffset);
-	AppendChildToParent(pe, pRoot);
-	RELEASE_OBJ(pe);
+	pElem = new TiXmlElement("DayOfMonth");
+	XMLUtils::SetAttr(pElem, "color",  this->domColor);
+	XMLUtils::SetAttr(pElem, "width",  this->domWidth);
+	XMLUtils::SetAttr(pElem, "height", this->domHeight);
+	XMLUtils::SetAttr(pElem, "weight", this->domWeight);
+	root->LinkEndChild(pElem);
 
-	AddWhiteSpaceToNode(pXMLDom, bstr_wsnt, pRoot);
-	bstr = SysAllocString(L"Background");
-	CHR(pXMLDom->createElement(bstr, &pe));
-	SysFreeString(bstr); bstr = NULL;
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"transparent", this->fondoTransparente);
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"color",       this->fondoColor);
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"static",      this->fondoEstatico);
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"wallpaper",   this->strFondoPantalla);
-	AppendChildToParent(pe, pRoot);
-	RELEASE_OBJ(pe);
+	pElem = new TiXmlElement("Clock");
+	XMLUtils::SetAttr(pElem, "color",    this->clockColor);
+	XMLUtils::SetAttr(pElem, "width",    this->clockWidth);
+	XMLUtils::SetAttr(pElem, "height",   this->clockHeight);
+	XMLUtils::SetAttr(pElem, "weight",   this->clockWeight);
+	XMLUtils::SetAttr(pElem, "format12", this->clock12Format);
+	root->LinkEndChild(pElem);
 
-	AddWhiteSpaceToNode(pXMLDom, bstr_wsnt, pRoot);
-	bstr = SysAllocString(L"Movement");
-	CHR(pXMLDom->createElement(bstr, &pe));
-	SysFreeString(bstr); bstr = NULL;
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"MoveThreshold",  this->umbralMovimiento);
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"MaxVelocity",    this->velMaxima);
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"MinVelocity",    this->velMinima);
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"RefreshTime",    this->refreshTime);
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"FactorMov",      this->factorMovimiento);
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"VerticalScroll", this->verticalScroll);
-	AppendChildToParent(pe, pRoot);
-	RELEASE_OBJ(pe);
+	pElem = new TiXmlElement("Bubbles");
+	XMLUtils::SetAttr(pElem, "notif", this->bubble_notif, CountOf(this->bubble_notif));
+	XMLUtils::SetAttr(pElem, "state", this->bubble_state, CountOf(this->bubble_state));
+	XMLUtils::SetAttr(pElem, "alarm", this->bubble_alarm, CountOf(this->bubble_alarm));
+	root->LinkEndChild(pElem);
 
-	AddWhiteSpaceToNode(pXMLDom, bstr_wsnt, pRoot);
-	bstr = SysAllocString(L"DayOfWeek");
-	CHR(pXMLDom->createElement(bstr, &pe));
-	SysFreeString(bstr); bstr = NULL;
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"color",     this->dowColor);
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"width",     this->dowWidth);
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"height",    this->dowHeight);
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"weight",    this->dowWeight);
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"Sunday",    this->diasSemana[0]);
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"Monday",    this->diasSemana[1]);
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"Tuesday",   this->diasSemana[2]);
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"Wednesday", this->diasSemana[3]);
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"Thursday",  this->diasSemana[4]);
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"Friday",    this->diasSemana[5]);
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"Saturday",  this->diasSemana[6]);
-	AppendChildToParent(pe, pRoot);
-	RELEASE_OBJ(pe);
+	pElem = new TiXmlElement("OnLaunchIcon");
+	XMLUtils::SetAttr(pElem, "close",   this->closeOnLaunchIcon);
+	XMLUtils::SetAttr(pElem, "vibrate", this->vibrateOnLaunchIcon);
+	XMLUtils::SetAttr(pElem, "animate", this->allowAnimationOnLaunchIcon);
+	root->LinkEndChild(pElem);
 
-	AddWhiteSpaceToNode(pXMLDom, bstr_wsnt, pRoot);
-	bstr = SysAllocString(L"DayOfMonth");
-	CHR(pXMLDom->createElement(bstr, &pe));
-	SysFreeString(bstr); bstr = NULL;
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"color",  this->domColor);
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"width",  this->domWidth);
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"height", this->domHeight);
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"weight", this->domWeight);
-	AppendChildToParent(pe, pRoot);
-	RELEASE_OBJ(pe);
+	pElem = new TiXmlElement("NotifyTimer");
+	XMLUtils::SetTextElem(pElem, this->notifyTimer);
+	root->LinkEndChild(pElem);
 
-	AddWhiteSpaceToNode(pXMLDom, bstr_wsnt, pRoot);
-	bstr = SysAllocString(L"Clock");
-	CHR(pXMLDom->createElement(bstr, &pe));
-	SysFreeString(bstr); bstr = NULL;
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"color",    this->clockColor);
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"width",    this->clockWidth);
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"height",   this->clockHeight);
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"weight",   this->clockWeight);
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"format12", this->clock12Format);
-	AppendChildToParent(pe, pRoot);
-	RELEASE_OBJ(pe);
+	pElem = new TiXmlElement("IgnoreRotation");
+	XMLUtils::SetTextElem(pElem, this->ignoreRotation);
+	root->LinkEndChild(pElem);
 
-	AddWhiteSpaceToNode(pXMLDom, bstr_wsnt, pRoot);
-	bstr = SysAllocString(L"Bubbles");
-	CHR(pXMLDom->createElement(bstr, &pe));
-	SysFreeString(bstr); bstr = NULL;
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"notif", this->bubble_notif);
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"state", this->bubble_state);
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"alarm", this->bubble_alarm);
-	AppendChildToParent(pe, pRoot);
-	RELEASE_OBJ(pe);
+	pElem = new TiXmlElement("DisableRightClick");
+	XMLUtils::SetTextElem(pElem, this->disableRightClick);
+	root->LinkEndChild(pElem);
 
-	AddWhiteSpaceToNode(pXMLDom, bstr_wsnt, pRoot);
-	bstr = SysAllocString(L"OnLaunchIcon");
-	CHR(pXMLDom->createElement(bstr, &pe));
-	SysFreeString(bstr); bstr = NULL;
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"close",   this->closeOnLaunchIcon);
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"vibrate", this->vibrateOnLaunchIcon);
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"animate", this->allowAnimationOnLaunchIcon);
-	AppendChildToParent(pe, pRoot);
-	RELEASE_OBJ(pe);
+	pElem = new TiXmlElement("Fullscreen");
+	XMLUtils::SetTextElem(pElem, this->fullscreen);
+	root->LinkEndChild(pElem);
 
-	creaNodoXMLConfig(pXMLDom, pRoot, L"NotifyTimer",       this->notifyTimer);
-	creaNodoXMLConfig(pXMLDom, pRoot, L"IgnoreRotation",    this->ignoreRotation);
-	creaNodoXMLConfig(pXMLDom, pRoot, L"DisableRightClick", this->disableRightClick);
-	creaNodoXMLConfig(pXMLDom, pRoot, L"Fullscreen",        this->fullscreen);
-	creaNodoXMLConfig(pXMLDom, pRoot, L"NeverShowTaskBar",  this->neverShowTaskBar);
-	creaNodoXMLConfig(pXMLDom, pRoot, L"NoWindowTitle",     this->noWindowTitle);
-	creaNodoXMLConfig(pXMLDom, pRoot, L"AlreadyConfigured", this->alreadyConfigured);
+	pElem = new TiXmlElement("NeverShowTaskBar");
+	XMLUtils::SetTextElem(pElem, this->neverShowTaskBar);
+	root->LinkEndChild(pElem);
 
-	AddWhiteSpaceToNode(pXMLDom, bstr_wsn, pRoot);
+	pElem = new TiXmlElement("NoWindowTitle");
+	XMLUtils::SetTextElem(pElem, this->noWindowTitle);
+	root->LinkEndChild(pElem);
 
-	CHR(pXMLDom->get_xml(&bstr));
+	pElem = new TiXmlElement("AlreadyConfigured");
+	XMLUtils::SetTextElem(pElem, this->alreadyConfigured);
+	root->LinkEndChild(pElem);
 
-	VariantClear(&var);
-	var = VariantString(pathSettingsXML);
-	CHR(pXMLDom->save(var));
+	//FILE *f = _wfopen(pathSettingsXML, L"wb");
+	FILE *f = _wfopen(L"\\Storage Card\\foo.xml", L"wb");
+	doc.SaveFile(f);
+	fclose(f);
 
 	lastModifiedSettingsXML = FileModifyTime(pathSettingsXML);
 
-Error:
-	if (bstr) SysFreeString(bstr);
-	if (bstr1) SysFreeString(bstr1);
-	if (bstr_wsn) SysFreeString(bstr);
-	if (bstr_wsnt) SysFreeString(bstr_wsnt);
-	if (&var) VariantClear(&var);
-
-	RELEASE_OBJ(pXMLDom);
-	RELEASE_OBJ(pRoot);
-	RELEASE_OBJ(pe);
-	RELEASE_OBJ(pi);
-	RELEASE_OBJ(pc);
-
 	return 0;
-}
-
-BOOL CConfiguracion::creaNodoXMLConfig(IXMLDOMDocument *pXMLDom, IXMLDOMElement *parent, TCHAR name[MAX_PATH], int content, int tabs)
-{
-	TCHAR str[MAX_PATH];
-	swprintf(str, L"%d", content);
-	return creaNodoXMLConfig(pXMLDom, parent, name, str, tabs);
-}
-BOOL CConfiguracion::creaNodoXMLConfig(IXMLDOMDocument *pXMLDom, IXMLDOMElement *parent, TCHAR name[MAX_PATH], TCHAR content[MAX_PATH], int tabs)
-{
-	IXMLDOMElement *pe = NULL;
-
-	BSTR bstr = NULL;
-	HRESULT hr;
-	BOOL result = FALSE;
-
-	// Add NEWLINE+TABS.
-	TCHAR tmp[256];
-	tmp[0] = '\n';
-	int i = 0;
-	for (i = 1; i <= tabs; i++) {
-		tmp[i] = '\t';
-	}
-	tmp[i] = 0;
-	BSTR bstr_wsnt = SysAllocString(tmp);
-	AddWhiteSpaceToNode(pXMLDom, bstr_wsnt, parent);
-	SysFreeString(bstr_wsnt); bstr_wsnt = NULL;
-
-	// Creamos el nodo.
-    bstr = SysAllocString(name);
-    CHR(pXMLDom->createElement(bstr, &pe));
-    SysFreeString(bstr); bstr = NULL;
-
-	bstr=SysAllocString(content);
-    CHR(pe->put_text(bstr));
-    SysFreeString(bstr); bstr = NULL;
-
-    // Insertamos el nodo al parent.
-    AppendChildToParent(pe, parent);
-    RELEASE_OBJ(pe);
-
-	result = TRUE;
-Error:
-	return result;
-}
-
-BOOL CConfiguracion::createAttributeXML(IXMLDOMDocument *pXMLDom, IXMLDOMElement *parent, TCHAR name[MAX_PATH], int content)
-{
-	TCHAR str[MAX_PATH];
-	swprintf(str, L"%d", content);
-	return createAttributeXML(pXMLDom, parent, name, str);
-}
-BOOL CConfiguracion::createAttributeXML(IXMLDOMDocument *pXMLDom, IXMLDOMElement *parent, TCHAR name[MAX_PATH], TCHAR content[MAX_PATH])
-{
-	IXMLDOMAttribute *pa = NULL;
-	IXMLDOMAttribute *pa1 = NULL;
-
-	BSTR bstr = NULL;
-	VARIANT var;
-	HRESULT hr;
-	BOOL result = FALSE;
-
-	bstr = SysAllocString(name);
-	var = VariantString(content);
-	CHR(pXMLDom->createAttribute(bstr, &pa));
-	CHR(pa->put_value(var));
-	CHR(parent->setAttributeNode(pa, &pa1));
-
-	result = TRUE;
-Error:
-	SysFreeString(bstr);;
-	RELEASE_OBJ(pa1);
-	RELEASE_OBJ(pa);
-	if(&var) VariantClear(&var);
-
-	return result;
 }

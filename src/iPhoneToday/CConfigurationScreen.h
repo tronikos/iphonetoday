@@ -10,8 +10,8 @@ public:
 	~CConfigurationScreen(void);
 
 	void defaultValues();
-	BOOL loadXMLConfig(IXMLDOMNode *pRootNode);
-	BOOL saveXMLConfig(IXMLDOMDocument* pXMLDom, IXMLDOMElement *pRoot);
+	BOOL loadXMLConfig(TiXmlElement *pRoot);
+	BOOL saveXMLConfig(TiXmlElement *pRoot);
 
 	void calculate(BOOL isBottombar, int maxIcons, UINT screenWidth, UINT screenHeight);
 

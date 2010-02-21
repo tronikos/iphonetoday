@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "CListaPantalla.h"
 
 CListaPantalla::CListaPantalla(void)
