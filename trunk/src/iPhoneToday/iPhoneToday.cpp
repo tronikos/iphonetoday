@@ -18,6 +18,7 @@ HWND				g_hWndMenuBar = NULL; // menu bar handle
 HWND                g_hWnd;
 TCHAR               g_szTitle[MAX_LOADSTRING];
 IImagingFactory*    g_pImgFactory = NULL;
+HINSTANCE           g_hImgdecmpDll = NULL;
 #ifdef EXEC_MODE
 BOOL				g_bLoading = FALSE;
 BOOL				g_bInitializing = FALSE;
@@ -113,6 +114,9 @@ BOOL APIENTRY DllMain( HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 		{
 			g_pImgFactory = NULL;
 		}
+		if (g_pImgFactory == NULL) {
+			g_hImgdecmpDll = LoadLibrary(L"imgdecmp.dll");
+		}
 
 		// The DLL is being loaded for the first time by a given process.
 		// Perform per-process initialization here.  If the initialization
@@ -133,8 +137,11 @@ BOOL APIENTRY DllMain( HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 		// per-process clean up here, such as undoing what was done in
 		// DLL_PROCESS_ATTACH.    The return value is ignored.
 
-		if( g_pImgFactory != NULL ) g_pImgFactory->Release(); g_pImgFactory = NULL;
+		if( g_pImgFactory != NULL ) {g_pImgFactory->Release(); g_pImgFactory = NULL;}
 		CoUninitialize();
+		if (g_hImgdecmpDll != NULL) {
+			FreeLibrary(g_hImgdecmpDll);
+		}
 
 		UnregisterClass((LPCTSTR)LoadString(g_hInst, IDS_APPNAME, 0, 0), g_hInst);
 		g_hInst = NULL;
@@ -2428,6 +2435,9 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	{
 		g_pImgFactory = NULL;
 	}
+	if (g_pImgFactory == NULL) {
+		g_hImgdecmpDll = LoadLibrary(L"imgdecmp.dll");
+	}
 
 	// duration += GetTickCount();
 	// NKDbgPrintfW(L" *** %d \t to initialize the imaging API.\n", duration);
@@ -2461,10 +2471,13 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	// NKDbgPrintfW(L" *** %d \t to destroy.\n", duration);
 
 	// duration = -(long)GetTickCount();
-	if( g_pImgFactory != NULL ) g_pImgFactory->Release(); g_pImgFactory = NULL;
+	if( g_pImgFactory != NULL ) {g_pImgFactory->Release(); g_pImgFactory = NULL;}
 	CoUninitialize();
 	// duration += GetTickCount();
 	// NKDbgPrintfW(L" *** %d \t to uninitialize the imaging API.\n", duration);
+	if (g_hImgdecmpDll != NULL) {
+		FreeLibrary(g_hImgdecmpDll);
+	}
 
 	return (int) msg.wParam;
 }

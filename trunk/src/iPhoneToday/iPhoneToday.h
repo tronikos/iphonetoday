@@ -11,6 +11,7 @@ extern HINSTANCE           g_hInst;
 extern HWND                g_hWndMenuBar; // menu bar handle
 extern HWND                g_hWnd;
 extern IImagingFactory*    g_pImgFactory;
+extern HINSTANCE           g_hImgdecmpDll;
 
 // Variables 
 extern CConfiguracion *configuracion;
