@@ -1,389 +1,166 @@
-//
-// Copyright (c) Microsoft Corporation.  All rights reserved.
-//
-//
-// Use of this sample source code is subject to the terms of the Microsoft
-// license agreement under which you licensed this sample source code. If
-// you did not accept the terms of the license agreement, you are not
-// authorized to use this sample source code. For the terms of the license,
-// please see the license agreement between you and Microsoft or, if applicable,
-// see the LICENSE.RTF on your install media or the root of your tools installation.
-// THE SAMPLE SOURCE CODE IS PROVIDED "AS IS", WITH NO WARRANTIES OR INDEMNITIES.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// MAILSET.CPP
-//
-// Allows you to set properties on stores
-//
-
-
 #include "xmlWrapper.h"
 
-/*
-// XML Filename
-const TCHAR *kszXMLFileName = TEXT("mailset.xml");
-
-// Node names used in the XML
-const TCHAR *kszMailSetNode = TEXT("mailset");
-const TCHAR *kszStoreNode = TEXT("store");
-
-// Attribute names used in the XML
-const TCHAR *kszDisplay = TEXT("display");
-const TCHAR *kszDefault = TEXT("default");
-const TCHAR *kszType = TEXT("type");
-const TCHAR *kszPropTag = TEXT("proptag");
-const TCHAR *kszPropName = TEXT("propname");
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// PathFindFileName
-//
-// Searches a path for a file name
-//
-// pszPath: IN parameter pointing to a null-terminated string that contains the path to search.
-//
-// Returns a pointer to the address of the string if successful, or a pointer to the beginning of the path otherwise.
-//
-
-LPTSTR PathFindFileName(LPCTSTR pszPath)
+BOOL XMLUtils::GetAttr(IXMLDOMNode *pNode, TCHAR *pszAttrName, INT *value)
 {
-    UINT ichCurrent;
-    const TCHAR *pch;
 
-    ichCurrent = 0;
-    pch = &pszPath[0];
+	if (pNode == NULL || value == NULL) return FALSE;
 
-    // Iterate through the entire string
-    while (pszPath[ichCurrent])
-    {
-        // filename only if char after '\' is not end of path or another '\'
-        if (pszPath[ichCurrent] == TEXT('\\') &&
-            pszPath[ichCurrent + 1] &&
-            pszPath[ichCurrent + 1] != TEXT('\\'))
-        {
-            pch = &pszPath[ichCurrent + 1];
-        }
-        ichCurrent++;
-    }
-
-    return (TCHAR*)pch;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// GetXMLPathName
-//
-// Generate the XML PathName based on the current app directoy and a predefined XML filename
-// 
-// pszPath: IN parameter pointing to a buffer to hold the pathname of the xml file
-// cMaxPath: IN parameter to the length of the buffer
-//
-// Returns BOOL
-//
-
-BOOL GetXMLPathName(LPTSTR pszPath, UINT cMaxPath)
-{
-    TCHAR *pszFileName;
-    BOOL fSuccess;
-    HRESULT hr;
-    DWORD cch;
-
-    ZeroMemory(pszPath, cMaxPath);
-
-    // Assume failure until all steps are done
-    fSuccess = FALSE;
-    
-    // Get the pathname of the exe
-    cch = GetModuleFileName(NULL, pszPath, cMaxPath);
-    CBR(cch != 0);
-
-    // Get the directory that the exe is running from
-    // pszFileName should not point to pszPath, if so it means the filename of the exe cannot be found; pszPath is invalid
-    pszFileName = PathFindFileName(pszPath);
-    CBR(pszFileName != pszPath);
-        
-    // Generate the pathname of the XML file
-    *pszFileName = NULL;
-    hr = StringCchCat(pszPath, cMaxPath, kszXMLFileName);
-    CHR(hr);
-
-    // All steps successful
-    fSuccess = TRUE;
-
-Error:
-    return fSuccess;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// ReadNodeType
-//
-// This function will read in a type node and return the VALUETYPE corresponding to the node value
-// 
-// pNodeMap: IN parameter pointing to the node
-// pszNodeName : IN parameter indicating the property to retrieve from the XML
-//
-// Returns VALUETYPE
-//
-
-VALUETYPE ReadNodeType(IXMLDOMNamedNodeMap *pNodeMap, TCHAR *pszNodeName)
-{
-    HRESULT hr;
-    IXMLDOMNode *pAttribute = NULL;
-    VARIANT vt;
-    VALUETYPE vtRet = vtNone;
-
-    // Get the appropriate attribute
-    hr = pNodeMap->getNamedItem(pszNodeName, &pAttribute);
-    CHR(hr);
-    CBR(pAttribute != NULL);
-
-    // Read the value from this attribute
-    VariantInit(&vt);
-    hr = pAttribute->get_nodeValue(&vt);
-    CHR(hr);
-
-    // The string should be 0 (string), 1 (integer), or 2 (boolean)
-    // If it's not one of these, the return value will be vtNone
-    if (!lstrcmp(vt.bstrVal, TEXT("0")))
-    {
-        vtRet = vtString;
-    }
-    else if (!lstrcmp(vt.bstrVal, TEXT("1")))
-    {
-        vtRet = vtInteger;
-    }
-    else if (!lstrcmp(vt.bstrVal, TEXT("2")))
-    {
-        vtRet = vtBoolean;
-    }
-    
-Error:
-    RELEASE_OBJ(pAttribute)
-
-    VariantClear(&vt);
-
-    return vtRet;
-}
-*/
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// ReadNodeNumber
-//
-// This function will read in a type node and return the ULONG corresponding to the node value
-// 
-// pNodeMap: IN parameter pointing to the node
-// pszNodeName : IN parameter indicating the property to retrieve from the XML
-//
-// Returns ULONG
-//
-
-ULONG ReadNodeNumber(IXMLDOMNamedNodeMap *pNodeMap, TCHAR *pszNodeName, ULONG defaultValue)
-{
-    HRESULT hr;
-    IXMLDOMNode *pAttribute = NULL;
-    VARIANT vt;
-    ULONG ulRet = defaultValue;
-
-	if (pNodeMap == NULL)
-		goto Error;
-
-    // Get the appropriate attribute
-    hr = pNodeMap->getNamedItem(pszNodeName, &pAttribute);
-    CHR(hr);
-    CBR(pAttribute != NULL);
-
-    // Read the value of this attribute
-    VariantInit(&vt);
-    hr = pAttribute->get_nodeValue(&vt);
-    CHR(hr);
-
-    // Convert the string to a number
-    ulRet = _ttoi(vt.bstrVal);
-
-Error:
-    RELEASE_OBJ(pAttribute)
-    VariantClear(&vt);
-
-    return ulRet;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// ReadNodeString
-//
-// This function will read in a type node and return the string corresponding to the node value
-// 
-// pNodeMap: IN parameter pointing to the node
-// pszNodeName : IN parameter indicating the property to retrieve from the XML
-//
-// Returns LPTSTR -- the caller must free this string
-//
-
-BOOL ReadNodeString(LPTSTR pszRet, IXMLDOMNamedNodeMap *pNodeMap, TCHAR *pszNodeName, TCHAR *defaultValue)
-{
 	BOOL result = FALSE;
-    HRESULT hr;
-    IXMLDOMNode *pAttribute = NULL;
-    VARIANT vt;
-    size_t cch;
+	HRESULT hr;
+	IXMLDOMNode *pAttribute = NULL;
+	IXMLDOMNamedNodeMap *pNodeMap = NULL;
+	VARIANT vt;
 
-	if (pNodeMap == NULL)
-		goto Error;
+	// Get the appropriate attribute
+	CHR(pNode->get_attributes(&pNodeMap));
+	CHR(pNodeMap->getNamedItem(pszAttrName, &pAttribute));
+	CBR(pAttribute != NULL);
 
-    // Get the appropriate attribute
-    hr = pNodeMap->getNamedItem(pszNodeName, &pAttribute);
-    CHR(hr);
-    CBR(pAttribute != NULL);
+	// Read the value of this attribute
+	VariantInit(&vt);
+	hr = pAttribute->get_nodeValue(&vt);
+	CHR(hr);
 
-    // Read the value of this attribute
-    VariantInit(&vt);
-    hr = pAttribute->get_nodeValue(&vt);
-    CHR(hr);
+	// Convert the string to a number
+	*value = _ttoi(vt.bstrVal);
+	result = TRUE;
 
-    // Allocate memory and copy it
-    hr = StringCchLength(vt.bstrVal, STRSAFE_MAX_CCH, &cch);
-    CHR(hr);
-    // pszRet = new TCHAR[++cch];
-    // CPR(pszRet);
-	StringCchCopy(pszRet, ++cch, vt.bstrVal);
+Error:
+	RELEASE_OBJ(pNodeMap);
+	RELEASE_OBJ(pAttribute)
+	VariantClear(&vt);
+	return result;
+}
+
+BOOL XMLUtils::GetAttr(IXMLDOMNode *pNode, TCHAR *pszAttrName, UINT *value)
+{
+	return XMLUtils::GetAttr(pNode, pszAttrName, (INT *) value);
+}
+
+BOOL XMLUtils::GetAttr(IXMLDOMNode *pNode, TCHAR *pszAttrName, LONG *value)
+{
+	int v;
+	if (!XMLUtils::GetAttr(pNode, pszAttrName, &v)) {
+		return FALSE;
+	}
+	*value = v;
+	return TRUE;
+}
+
+BOOL XMLUtils::GetAttr(IXMLDOMNode *pNode, TCHAR *pszAttrName, COLORREF *value)
+{
+	return XMLUtils::GetAttr(pNode, pszAttrName, (INT *) value);
+}
+
+BOOL XMLUtils::GetAttr(IXMLDOMNode *pNode, TCHAR *pszAttrName, LPTSTR pszRet, size_t bufflen)
+{
+	if (pNode == NULL || pszRet == NULL) return FALSE;
+
+	BOOL result = FALSE;
+	HRESULT hr;
+	IXMLDOMNode *pAttribute = NULL;
+	IXMLDOMNamedNodeMap *pNodeMap = NULL;
+	VARIANT vt;
+
+	// Get the appropriate attribute
+	CHR(pNode->get_attributes(&pNodeMap));
+	CHR(pNodeMap->getNamedItem(pszAttrName, &pAttribute));
+	CBR(pAttribute != NULL);
+
+	// Read the value of this attribute
+	VariantInit(&vt);
+	hr = pAttribute->get_nodeValue(&vt);
+	CHR(hr);
+
+	// Allocate memory and copy it
+	//CHR(StringCchLength(vt.bstrVal, STRSAFE_MAX_CCH, &cch));
+	// pszRet = new TCHAR[++cch];
+	// CPR(pszRet);
+	StringCchCopy(pszRet, bufflen, vt.bstrVal);
 
 	result = TRUE;
 Error:
-    RELEASE_OBJ(pAttribute)
+	RELEASE_OBJ(pAttribute)
 	VariantClear(&vt);
 	
-	if (result) {
-		return result;
-	}
-
-	hr = StringCchLength(defaultValue, STRSAFE_MAX_CCH, &cch);
-    StringCchCopy(pszRet, ++cch, defaultValue);
-
-    return result;
+	return result;
 }
 
-ULONG ReadTextNodeNumber(IXMLDOMNode *pNode, ULONG defaultValue)
+BOOL XMLUtils::GetTextElem(IXMLDOMNode *pNode, UINT *value)
 {
-	ULONG result = 0;
-	TCHAR *value;
-	size_t cch = 0;
-	if (pNode) {
-		pNode->get_text(&value);
-		StringCchLength(value, STRSAFE_MAX_CCH, &cch);
+	if (pNode == NULL || value == NULL) return FALSE;
 
-		if (cch > 0) {
-			result = _ttol(value);
-		} else {
-			result = defaultValue;
-		}
-	} else {
-		result = defaultValue;
+	TCHAR *v;
+	if (SUCCEEDED(pNode->get_text(&v))) {
+		*value = _ttol(v);
+		SysFreeString(v);
 	}
 
-	SysFreeString(value);
-	value = NULL;
-
-    return result;
+	return TRUE;
 }
 
-BOOL ReadTextNode(LPTSTR pszRet, IXMLDOMNode *pNode, TCHAR *defaultValue)
-{
-	TCHAR *value;
-	if (pNode) {
-		pNode->get_text(&value);
-		wcscpy(pszRet, value);
-	} else {
-		wcscpy(pszRet, defaultValue);
-	}
-	SysFreeString(value);
-	value = NULL;
 
-	return true;
-}
+
+
+
 
 // Helper function to create a DOM instance. 
 IXMLDOMDocument *DomFromCOM()
 {
-    HRESULT hr;
-    IXMLDOMDocument *pxmldoc = NULL;
+	HRESULT hr;
+	IXMLDOMDocument *pxmldoc = NULL;
 	CLSID clsid;
 
 	hr = CLSIDFromProgID(TEXT("Msxml2.DOMDocument"), &clsid);
 	if (FAILED(hr))
 		CHR(CLSIDFromProgID(TEXT("Microsoft.XMLDOM"), &clsid));
-    CHR(CoCreateInstance(clsid, NULL, CLSCTX_INPROC_SERVER, IID_IXMLDOMDocument, (LPVOID *) &pxmldoc));
+	CHR(CoCreateInstance(clsid, NULL, CLSCTX_INPROC_SERVER, IID_IXMLDOMDocument, (LPVOID *) &pxmldoc));
 
-    CHR(pxmldoc->put_async(VARIANT_FALSE));
-    CHR(pxmldoc->put_validateOnParse(VARIANT_FALSE));
-    CHR(pxmldoc->put_resolveExternals(VARIANT_FALSE));
-    CHR(pxmldoc->put_preserveWhiteSpace(VARIANT_TRUE));
+	CHR(pxmldoc->put_async(VARIANT_FALSE));
+	CHR(pxmldoc->put_validateOnParse(VARIANT_FALSE));
+	CHR(pxmldoc->put_resolveExternals(VARIANT_FALSE));
+	CHR(pxmldoc->put_preserveWhiteSpace(VARIANT_TRUE));
 
-    return pxmldoc;
+	return pxmldoc;
 Error:
-    RELEASE_OBJ(pxmldoc);
-    return NULL;
+	RELEASE_OBJ(pxmldoc);
+	return NULL;
 }
 
 VARIANT VariantString(BSTR str)
 {
-    VARIANT var;
-    VariantInit(&var);
+	VARIANT var;
+	VariantInit(&var);
 	if (str != NULL) {
 		V_BSTR(&var) = SysAllocString(str);
 	} else {
 		V_BSTR(&var) = SysAllocString(L"");
 	}
-    V_VT(&var) = VT_BSTR;
-    return var;
+	V_VT(&var) = VT_BSTR;
+	return var;
 }
 
-
-/*
-// Helper function to display xml parse error:
-void ReportParseError(IXMLDOMDocument *pDom, char *desc) {
-    IXMLDOMParseError *pXMLErr=NULL;
-    BSTR bstrReason = NULL;
-    HRESULT hr;
-    CHR(pDom->get_parseError(&pXMLErr));
-    CHR(pXMLErr->get_reason(&bstrReason));
-
-Error:
-    RELEASE_OBJ(pXMLErr);
-    if (bstrReason) SysFreeString(bstrReason);
-}
-*/
 
 // Helper function to append a whitespace text node to a 
 // specified element:
 void AddWhiteSpaceToNode(IXMLDOMDocument* pDom, BSTR bstrWs, IXMLDOMNode *pNode)
 {
-    HRESULT hr;
-    IXMLDOMText *pws=NULL;
-    IXMLDOMNode *pBuf=NULL;
-    CHR(pDom->createTextNode(bstrWs,&pws));
-    CHR(pNode->appendChild(pws,&pBuf));
+	HRESULT hr;
+	IXMLDOMText *pws=NULL;
+	IXMLDOMNode *pBuf=NULL;
+	CHR(pDom->createTextNode(bstrWs,&pws));
+	CHR(pNode->appendChild(pws,&pBuf));
 Error:
-    RELEASE_OBJ(pws);
-    RELEASE_OBJ(pBuf);
+	RELEASE_OBJ(pws);
+	RELEASE_OBJ(pBuf);
 }
 
 // Helper function to append a child to a parent node:
 void AppendChildToParent(IXMLDOMNode *pChild, IXMLDOMNode *pParent)
 {
-    HRESULT hr;
-    IXMLDOMNode *pNode=NULL;
-    CHR(pParent->appendChild(pChild, &pNode));
+	HRESULT hr;
+	IXMLDOMNode *pNode=NULL;
+	CHR(pParent->appendChild(pChild, &pNode));
 Error:
-    RELEASE_OBJ(pNode);
+	RELEASE_OBJ(pNode);
 }
-

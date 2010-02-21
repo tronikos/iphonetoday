@@ -60,8 +60,12 @@ void CConfigurationScreen::defaultValues()
 	this->iconsPerRow = this->iconsPerRowXML;
 }
 
-BOOL CConfigurationScreen::loadXMLConfig(IXMLDOMNode *pRootNode)
+BOOL CConfigurationScreen::loadXMLConfig(IXMLDOMNode *pRoot)
 {
+	if (pRoot == NULL) {
+		return FALSE;
+	}
+
 	BOOL result = false;
 	HRESULT hr = S_OK;
 	IXMLDOMNode *pNode = NULL;
@@ -69,38 +73,32 @@ BOOL CConfigurationScreen::loadXMLConfig(IXMLDOMNode *pRootNode)
 	IXMLDOMNamedNodeMap *pNodeMap = NULL;
 	TCHAR *nameNode = NULL;
 
-	CHR(pRootNode->get_firstChild(&pNode));
+	CHR(pRoot->get_firstChild(&pNode));
 
 	while (pNode) {
 		pNode->get_baseName(&nameNode);
 
 		if(lstrcmpi(nameNode, TEXT("IconWidth")) == 0) {
-			this->iconWidthXML = ReadTextNodeNumber(pNode, this->iconWidthXML);
+			XMLUtils::GetTextElem(pNode, &this->iconWidthXML);
 		} else if(lstrcmpi(nameNode, TEXT("IconsPerRow")) == 0) {
-			this->iconsPerRowXML = ReadTextNodeNumber(pNode, this->iconsPerRowXML);
+			XMLUtils::GetTextElem(pNode, &this->iconsPerRowXML);
 		} else if(lstrcmpi(nameNode, TEXT("MinHorizontalSpace")) == 0) {
-			this->minHorizontalSpace = ReadTextNodeNumber(pNode, this->minHorizontalSpace);
+			XMLUtils::GetTextElem(pNode, &this->minHorizontalSpace);
 		} else if(lstrcmpi(nameNode, TEXT("AdditionalVerticalSpace")) == 0) {
-			this->additionalVerticalSpace = ReadTextNodeNumber(pNode, this->additionalVerticalSpace);
+			XMLUtils::GetTextElem(pNode, &this->additionalVerticalSpace);
 		} else if(lstrcmpi(nameNode, TEXT("Offset")) == 0) {
-			CHR(pNode->get_attributes(&pNodeMap));
-			this->offset.left   = ReadNodeNumber(pNodeMap, TEXT("left"),   this->offset.left);
-			this->offset.top    = ReadNodeNumber(pNodeMap, TEXT("top"),    this->offset.top);
-			this->offset.right  = ReadNodeNumber(pNodeMap, TEXT("right"),  this->offset.right);
-			this->offset.bottom = ReadNodeNumber(pNodeMap, TEXT("bottom"), this->offset.bottom);
-			RELEASE_OBJ(pNodeMap);
+			XMLUtils::GetAttr(pNode, TEXT("left"),   &this->offset.left);
+			XMLUtils::GetAttr(pNode, TEXT("top"),    &this->offset.top);
+			XMLUtils::GetAttr(pNode, TEXT("right"),  &this->offset.right);
+			XMLUtils::GetAttr(pNode, TEXT("bottom"), &this->offset.bottom);
 		} else if(lstrcmpi(nameNode, TEXT("Font")) == 0) {
-			CHR(pNode->get_attributes(&pNodeMap));
-			this->fontSize   = ReadNodeNumber(pNodeMap, TEXT("size"),   this->fontSize);
-			this->fontColor  = ReadNodeNumber(pNodeMap, TEXT("color"),  this->fontColor);
-			this->fontBold   = ReadNodeNumber(pNodeMap, TEXT("bold"),   this->fontBold);
-			this->fontOffset = ReadNodeNumber(pNodeMap, TEXT("offset"), this->fontOffset);
-			RELEASE_OBJ(pNodeMap);
+			XMLUtils::GetAttr(pNode, TEXT("size"),   &this->fontSize);
+			XMLUtils::GetAttr(pNode, TEXT("color"),  &this->fontColor);
+			XMLUtils::GetAttr(pNode, TEXT("bold"),   &this->fontBold);
+			XMLUtils::GetAttr(pNode, TEXT("offset"), &this->fontOffset);
 		} else if(lstrcmpi(nameNode, TEXT("Background")) == 0) {
-			CHR(pNode->get_attributes(&pNodeMap));
-			this->backColor1 = ReadNodeNumber(pNodeMap, TEXT("color1"),  this->backColor1);
-			this->backColor2 = ReadNodeNumber(pNodeMap, TEXT("color2"),  this->backColor2);
-			RELEASE_OBJ(pNodeMap);
+			XMLUtils::GetAttr(pNode, TEXT("color1"),  &this->backColor1);
+			XMLUtils::GetAttr(pNode, TEXT("color2"),  &this->backColor2);
 		}
 
 		SysFreeString(nameNode);
