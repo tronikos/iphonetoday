@@ -679,8 +679,7 @@ BOOL CConfiguracion::guardaXMLConfig()
 	XMLUtils::SetTextElem(pElem, this->alreadyConfigured);
 	root->LinkEndChild(pElem);
 
-	//FILE *f = _wfopen(pathSettingsXML, L"wb");
-	FILE *f = _wfopen(L"\\Storage Card\\foo.xml", L"wb");
+	FILE *f = _wfopen(pathSettingsXML, L"wb");
 	doc.SaveFile(f);
 	fclose(f);
 
