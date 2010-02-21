@@ -91,14 +91,16 @@ void CIcono::loadImage(HDC *hDC, TCHAR *pathImage, int width, int height, int bi
 		StretchBlt(hdcResult, 0, 0, width, height, hdcTemp, 0, 0, widthTemp, heightTemp, SRCCOPY);
 
 
-		// get color of lower left corner pixel
-		COLORREF llc = *(COLORREF*)ptPixels;
-		if (llc != RGBA(0, 0, 0, 0)) {
-			for (int i = 0; i < 4 * width * height; i += 4)
-			{
-				// set all the pixels that have llc color as transparent
-				if (*(COLORREF*)(ptPixels + i) == llc) {
-					*(COLORREF*)(ptPixels + i) = RGBA(0, 0, 0, 0);
+		if (!isBMP) {
+			// get color of lower left corner pixel
+			COLORREF llc = *(COLORREF*)ptPixels;
+			if (llc != RGBA(0, 0, 0, 0)) {
+				for (int i = 0; i < 4 * width * height; i += 4)
+				{
+					// set all the pixels that have llc color as transparent
+					if (*(COLORREF*)(ptPixels + i) == llc) {
+						*(COLORREF*)(ptPixels + i) = RGBA(0, 0, 0, 0);
+					}
 				}
 			}
 		}
@@ -293,6 +295,7 @@ void CIcono::loadImageFromExec(HDC *hDC, TCHAR *pathExec, int width, int height)
 	StretchBlt(hdcResult, 0, 0, width, height, hdcTemp, 0, 0, widthTemp, heightTemp, SRCCOPY);
 
 
+	/*
 	// get color of lower left corner pixel's color
 	COLORREF llc = *(COLORREF*)ptPixels;
 	if (llc != RGBA(0, 0, 0, 0)) {
@@ -304,6 +307,7 @@ void CIcono::loadImageFromExec(HDC *hDC, TCHAR *pathExec, int width, int height)
 			}
 		}
 	}
+	*/
 	/*
 	for (int i = 0; i < 4 * width * height; i += 4)
 	{
