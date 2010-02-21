@@ -47,7 +47,7 @@ public:
 	CIcono(void);
 	~CIcono(void);
 
-	void loadImage(HDC *hDC, TCHAR *pathImage, int witdh = 0, int height = 0, int bitsPerPixel = PIXFMT_32BPP_ARGB);
-	void loadImageFromExec(HDC *hDC, TCHAR *pathExec, int witdh = 0, int height = 0);
+	void loadImage(HDC *hDC, TCHAR *pathImage, int width = 0, int height = 0, int bitsPerPixel = PIXFMT_32BPP_ARGB);
+	void loadImageFromExec(HDC *hDC, TCHAR *pathExec, int width = 0, int height = 0);
 	void clearImageObjects();
 };
