@@ -17,10 +17,10 @@ CConfiguracion::CConfiguracion(void)
 	TCHAR *p = wcsrchr(pathExecutableDir, '\\');
 	if (p != NULL) *(p+1) = '\0';
 
-	p = L"\\iPhoneToday\\";
-	if (!FileOrDirExists(p, TRUE)) {
+	//p = L"\\iPhoneToday\\";
+	//if (!FileOrDirExists(p, TRUE)) {
 		p = pathExecutableDir;
-	}
+	//}
 	StringCchPrintf(pathSettingsXML, CountOf(pathSettingsXML),   L"%s%s", p, L"settings.xml");
 	StringCchPrintf(pathIconsXML,    CountOf(pathIconsXML),      L"%s%s", p, L"icons.xml");
 	StringCchPrintf(pathIconsDir,    CountOf(pathIconsDir),      L"%s%s", p, L"icons\\");
@@ -108,6 +108,10 @@ void CConfiguracion::calculaConfiguracion(int maxIconos, int numIconsInBottomBar
 
 BOOL CConfiguracion::cargaXMLIconos(CListaPantalla *listaPantallas)
 {
+	if (listaPantallas == NULL) {
+		return FALSE;
+	}
+
 	BOOL result = false;
 	CPantalla *pantalla = NULL;
 	CIcono *icono = NULL;
@@ -120,7 +124,6 @@ BOOL CConfiguracion::cargaXMLIconos(CListaPantalla *listaPantallas)
 	IXMLDOMNode *pNodeScreenSibling = NULL;
     IXMLDOMNode *pNodeIconSibling = NULL;
 	
-    IXMLDOMNamedNodeMap *pNodeMap = NULL;
     VARIANT_BOOL fSuccess;
     VARIANT vt;
 
@@ -147,7 +150,6 @@ BOOL CConfiguracion::cargaXMLIconos(CListaPantalla *listaPantallas)
 	if (listaPantallas->barraInferior == NULL) {
 		listaPantallas->barraInferior = new CPantalla();
 	}
-	UINT nIcon = 0;
 	UINT nScreen = 0;
     while (pNodeScreen)
     {
@@ -167,20 +169,16 @@ BOOL CConfiguracion::cargaXMLIconos(CListaPantalla *listaPantallas)
 			isScreen = TRUE;
 		}
 		if (isScreen) {
-			CHR(pNodeScreen->get_attributes(&pNodeMap));
-			ReadNodeString(pantalla->header, pNodeMap, TEXT("header"));
-			RELEASE_OBJ(pNodeMap);
+			XMLUtils::GetAttr(pNodeScreen, TEXT("header"), pantalla->header, CountOf(pantalla->header));
 
 			CHR(pNodeScreen->get_firstChild(&pNodeIcon));
 
-			nIcon = 0;
+			UINT nIcon = 0;
 			while (pNodeIcon) 
 			{
 				pNodeIcon->get_baseName(&nameNode);
 
 				if (lstrcmpi(nameNode, TEXT("icon")) == 0) {
-					// Load in any attributes on this node
-					CHR(pNodeIcon->get_attributes(&pNodeMap));
 
 					// Init Icon creation
 					if (pantalla->listaIconos[nIcon] == NULL) {
@@ -199,14 +197,14 @@ BOOL CConfiguracion::cargaXMLIconos(CListaPantalla *listaPantallas)
 					}
 					nIcon++;
 
-					ReadNodeString(icono->nombre, pNodeMap, TEXT("name"));
-					ReadNodeString(icono->rutaImagen, pNodeMap, TEXT("image"));
-					ReadNodeString(icono->ejecutable, pNodeMap, TEXT("exec"));
-					ReadNodeString(icono->parametros, pNodeMap, TEXT("parameters"));
-					ReadNodeString(icono->ejecutableAlt, pNodeMap, TEXT("execAlt"));
-					ReadNodeString(icono->parametrosAlt, pNodeMap, TEXT("parametersAlt"));
-					icono->tipo = ReadNodeNumber(pNodeMap, TEXT("type"));
-					icono->launchAnimation = ReadNodeNumber(pNodeMap, TEXT("animation"));
+					XMLUtils::GetAttr(pNodeIcon, TEXT("name"),          icono->nombre,        CountOf(icono->nombre));
+					XMLUtils::GetAttr(pNodeIcon, TEXT("image"),         icono->rutaImagen,    CountOf(icono->rutaImagen));
+					XMLUtils::GetAttr(pNodeIcon, TEXT("exec"),          icono->ejecutable,    CountOf(icono->ejecutable));
+					XMLUtils::GetAttr(pNodeIcon, TEXT("parameters"),    icono->parametros,    CountOf(icono->parametros));
+					XMLUtils::GetAttr(pNodeIcon, TEXT("execAlt"),       icono->ejecutableAlt, CountOf(icono->ejecutableAlt));
+					XMLUtils::GetAttr(pNodeIcon, TEXT("parametersAlt"), icono->parametrosAlt, CountOf(icono->parametrosAlt));
+					XMLUtils::GetAttr(pNodeIcon, TEXT("type"),          &icono->tipo);
+					XMLUtils::GetAttr(pNodeIcon, TEXT("animation"),     &icono->launchAnimation);
 
 					// WriteToLog(icono->ejecutable);
 
@@ -218,8 +216,6 @@ BOOL CConfiguracion::cargaXMLIconos(CListaPantalla *listaPantallas)
 
 				pNodeIcon->Release();
 				pNodeIcon = pNodeIconSibling;
-
-				RELEASE_OBJ(pNodeMap);
 			}
 			while (nIcon < pantalla->numIconos) {
 				pantalla->borraIcono(nIcon);
@@ -246,7 +242,6 @@ Error:
     RELEASE_OBJ(pNodeIcon)
 	RELEASE_OBJ(pNodeScreenSibling)
 	RELEASE_OBJ(pNodeIconSibling)
-    RELEASE_OBJ(pNodeMap)
 
     VariantClear(&vt);
 	return result;
@@ -464,7 +459,6 @@ BOOL CConfiguracion::cargaXMLConfig()
 	IXMLDOMNode *pRootNode = NULL;
 	IXMLDOMNode *pNode = NULL;
 	IXMLDOMNode *pNodeSibling = NULL;
-	IXMLDOMNamedNodeMap *pNodeMap = NULL;
 	TCHAR *nameNode = NULL;
     VARIANT_BOOL fSuccess;
     VARIANT vt;
@@ -494,88 +488,70 @@ BOOL CConfiguracion::cargaXMLConfig()
 		// WriteToLog(TEXT("Bucle:\r\n"));
 
 		if(lstrcmpi(nameNode, TEXT("Circles")) == 0) {
-			CHR(pNode->get_attributes(&pNodeMap));
-			this->circlesDiameter = ReadNodeNumber(pNodeMap, TEXT("diameter"), this->circlesDiameter);
-			this->circlesDistance = ReadNodeNumber(pNodeMap, TEXT("distance"), this->circlesDistance);
-			RELEASE_OBJ(pNodeMap);
+			XMLUtils::GetAttr(pNode, TEXT("diameter"), &this->circlesDiameter);
+			XMLUtils::GetAttr(pNode, TEXT("distance"), &this->circlesDistance);
 		} else if(lstrcmpi(nameNode, TEXT("Header")) == 0) {
-			CHR(pNode->get_attributes(&pNodeMap));
-			this->headerFontSize   = ReadNodeNumber(pNodeMap, TEXT("size"),   this->headerFontSize);
-			this->headerFontColor  = ReadNodeNumber(pNodeMap, TEXT("color"),  this->headerFontColor);
-			this->headerFontWeight = ReadNodeNumber(pNodeMap, TEXT("weight"), this->headerFontWeight);
-			this->headerOffset     = ReadNodeNumber(pNodeMap, TEXT("offset"), this->headerOffset);
-			RELEASE_OBJ(pNodeMap);
+			XMLUtils::GetAttr(pNode, TEXT("size"),   &this->headerFontSize);
+			XMLUtils::GetAttr(pNode, TEXT("color"),  &this->headerFontColor);
+			XMLUtils::GetAttr(pNode, TEXT("weight"), &this->headerFontWeight);
+			XMLUtils::GetAttr(pNode, TEXT("offset"), &this->headerOffset);
 		} else if(lstrcmpi(nameNode, TEXT("Movement")) == 0) {
-			CHR(pNode->get_attributes(&pNodeMap));
-			this->umbralMovimiento = ReadNodeNumber(pNodeMap, TEXT("MoveThreshold"),  this->umbralMovimiento);
-			this->velMaxima        = ReadNodeNumber(pNodeMap, TEXT("MaxVelocity"),    this->velMaxima);
-			this->velMinima        = ReadNodeNumber(pNodeMap, TEXT("MinVelocity"),    this->velMinima);
-			this->refreshTime      = ReadNodeNumber(pNodeMap, TEXT("RefreshTime"),    this->refreshTime);
-			this->factorMovimiento = ReadNodeNumber(pNodeMap, TEXT("FactorMov"),      this->factorMovimiento);
-			this->verticalScroll   = ReadNodeNumber(pNodeMap, TEXT("VerticalScroll"), this->verticalScroll);
-			RELEASE_OBJ(pNodeMap);
+			XMLUtils::GetAttr(pNode, TEXT("MoveThreshold"),  &this->umbralMovimiento);
+			XMLUtils::GetAttr(pNode, TEXT("MaxVelocity"),    &this->velMaxima);
+			XMLUtils::GetAttr(pNode, TEXT("MinVelocity"),    &this->velMinima);
+			XMLUtils::GetAttr(pNode, TEXT("RefreshTime"),    &this->refreshTime);
+			XMLUtils::GetAttr(pNode, TEXT("FactorMov"),      &this->factorMovimiento);
+			XMLUtils::GetAttr(pNode, TEXT("VerticalScroll"), &this->verticalScroll);
 		} else if(lstrcmpi(nameNode, TEXT("DayOfWeek")) == 0) {
-			CHR(pNode->get_attributes(&pNodeMap));
-			this->dowColor  = ReadNodeNumber(pNodeMap,    TEXT("color"),     this->dowColor);
-			this->dowWidth  = ReadNodeNumber(pNodeMap,    TEXT("width"),     this->dowWidth);
-			this->dowHeight = ReadNodeNumber(pNodeMap,    TEXT("height"),    this->dowHeight);
-			this->dowWeight = ReadNodeNumber(pNodeMap,    TEXT("weight"),    this->dowWeight);
-			ReadNodeString(this->diasSemana[0], pNodeMap, TEXT("Sunday"),    this->diasSemana[0]);
-			ReadNodeString(this->diasSemana[1], pNodeMap, TEXT("Monday"),    this->diasSemana[1]);
-			ReadNodeString(this->diasSemana[2], pNodeMap, TEXT("Tuesday"),   this->diasSemana[2]);
-			ReadNodeString(this->diasSemana[3], pNodeMap, TEXT("Wednesday"), this->diasSemana[3]);
-			ReadNodeString(this->diasSemana[4], pNodeMap, TEXT("Thursday"),  this->diasSemana[4]);
-			ReadNodeString(this->diasSemana[5], pNodeMap, TEXT("Friday"),    this->diasSemana[5]);
-			ReadNodeString(this->diasSemana[6], pNodeMap, TEXT("Saturday"),  this->diasSemana[6]);
-			RELEASE_OBJ(pNodeMap);
+			XMLUtils::GetAttr(pNode, TEXT("color"),     &this->dowColor);
+			XMLUtils::GetAttr(pNode, TEXT("width"),     &this->dowWidth);
+			XMLUtils::GetAttr(pNode, TEXT("height"),    &this->dowHeight);
+			XMLUtils::GetAttr(pNode, TEXT("weight"),    &this->dowWeight);
+			XMLUtils::GetAttr(pNode, TEXT("Sunday"),    this->diasSemana[0], CountOf(this->diasSemana[0]));
+			XMLUtils::GetAttr(pNode, TEXT("Monday"),    this->diasSemana[1], CountOf(this->diasSemana[1]));
+			XMLUtils::GetAttr(pNode, TEXT("Tuesday"),   this->diasSemana[2], CountOf(this->diasSemana[2]));
+			XMLUtils::GetAttr(pNode, TEXT("Wednesday"), this->diasSemana[3], CountOf(this->diasSemana[3]));
+			XMLUtils::GetAttr(pNode, TEXT("Thursday"),  this->diasSemana[4], CountOf(this->diasSemana[4]));
+			XMLUtils::GetAttr(pNode, TEXT("Friday"),    this->diasSemana[5], CountOf(this->diasSemana[5]));
+			XMLUtils::GetAttr(pNode, TEXT("Saturday"),  this->diasSemana[6], CountOf(this->diasSemana[6]));
 		} else if(lstrcmpi(nameNode, TEXT("DayOfMonth")) == 0) {
-			CHR(pNode->get_attributes(&pNodeMap));
-			this->domColor  = ReadNodeNumber(pNodeMap, TEXT("color"),  this->domColor);
-			this->domWidth  = ReadNodeNumber(pNodeMap, TEXT("width"),  this->domWidth);
-			this->domHeight = ReadNodeNumber(pNodeMap, TEXT("height"), this->domHeight);
-			this->domWeight = ReadNodeNumber(pNodeMap, TEXT("weight"), this->domWeight);
-			RELEASE_OBJ(pNodeMap);
+			XMLUtils::GetAttr(pNode, TEXT("color"),  &this->domColor);
+			XMLUtils::GetAttr(pNode, TEXT("width"),  &this->domWidth);
+			XMLUtils::GetAttr(pNode, TEXT("height"), &this->domHeight);
+			XMLUtils::GetAttr(pNode, TEXT("weight"), &this->domWeight);
 		} else if(lstrcmpi(nameNode, TEXT("Clock")) == 0) {
-			CHR(pNode->get_attributes(&pNodeMap));
-			this->clockColor    = ReadNodeNumber(pNodeMap, TEXT("color"),    this->clockColor);
-			this->clockWidth    = ReadNodeNumber(pNodeMap, TEXT("width"),    this->clockWidth);
-			this->clockHeight   = ReadNodeNumber(pNodeMap, TEXT("height"),   this->clockHeight);
-			this->clockWeight   = ReadNodeNumber(pNodeMap, TEXT("weight"),   this->clockWeight);
-			this->clock12Format = ReadNodeNumber(pNodeMap, TEXT("format12"), this->clock12Format);
-			RELEASE_OBJ(pNodeMap);
+			XMLUtils::GetAttr(pNode, TEXT("color"),    &this->clockColor);
+			XMLUtils::GetAttr(pNode, TEXT("width"),    &this->clockWidth);
+			XMLUtils::GetAttr(pNode, TEXT("height"),   &this->clockHeight);
+			XMLUtils::GetAttr(pNode, TEXT("weight"),   &this->clockWeight);
+			XMLUtils::GetAttr(pNode, TEXT("format12"), &this->clock12Format);
 		} else if(lstrcmpi(nameNode, TEXT("Bubbles")) == 0) {
-			CHR(pNode->get_attributes(&pNodeMap));
-			ReadNodeString(this->bubble_notif, pNodeMap, TEXT("notif"), this->bubble_notif);
-			ReadNodeString(this->bubble_state, pNodeMap, TEXT("state"), this->bubble_state);
-			ReadNodeString(this->bubble_alarm, pNodeMap, TEXT("alarm"), this->bubble_alarm);
-			RELEASE_OBJ(pNodeMap);
+			XMLUtils::GetAttr(pNode, TEXT("notif"), this->bubble_notif, CountOf(this->bubble_notif));
+			XMLUtils::GetAttr(pNode, TEXT("state"), this->bubble_state, CountOf(this->bubble_state));
+			XMLUtils::GetAttr(pNode, TEXT("alarm"), this->bubble_alarm, CountOf(this->bubble_alarm));
 		} else if(lstrcmpi(nameNode, TEXT("OnLaunchIcon")) == 0) {
-			CHR(pNode->get_attributes(&pNodeMap));
-			this->closeOnLaunchIcon          = ReadNodeNumber(pNodeMap, TEXT("close"),   this->closeOnLaunchIcon);
-			this->vibrateOnLaunchIcon        = ReadNodeNumber(pNodeMap, TEXT("vibrate"), this->vibrateOnLaunchIcon);
-			this->allowAnimationOnLaunchIcon = ReadNodeNumber(pNodeMap, TEXT("animate"), this->allowAnimationOnLaunchIcon);
-			RELEASE_OBJ(pNodeMap);
+			XMLUtils::GetAttr(pNode, TEXT("close"),   &this->closeOnLaunchIcon);
+			XMLUtils::GetAttr(pNode, TEXT("vibrate"), &this->vibrateOnLaunchIcon);
+			XMLUtils::GetAttr(pNode, TEXT("animate"), &this->allowAnimationOnLaunchIcon);
 		} else if(lstrcmpi(nameNode, TEXT("Background")) == 0) {
-			CHR(pNode->get_attributes(&pNodeMap));
-			this->fondoTransparente = ReadNodeNumber(pNodeMap, TEXT("transparent"), this->fondoTransparente);
-			this->fondoColor        = ReadNodeNumber(pNodeMap, TEXT("color"),       this->fondoColor);
-			this->fondoEstatico     = ReadNodeNumber(pNodeMap, TEXT("static"),      this->fondoEstatico);
-			ReadNodeString(this->strFondoPantalla,   pNodeMap, TEXT("wallpaper"));
-			RELEASE_OBJ(pNodeMap);
+			XMLUtils::GetAttr(pNode, TEXT("transparent"), &this->fondoTransparente);
+			XMLUtils::GetAttr(pNode, TEXT("color"),       &this->fondoColor);
+			XMLUtils::GetAttr(pNode, TEXT("static"),      &this->fondoEstatico);
+			XMLUtils::GetAttr(pNode, TEXT("wallpaper"),   this->strFondoPantalla, CountOf(this->strFondoPantalla));
 		} else if(lstrcmpi(nameNode, TEXT("NotifyTimer")) == 0) {
-			this->notifyTimer = ReadTextNodeNumber(pNode, this->notifyTimer);
+			XMLUtils::GetTextElem(pNode, &this->notifyTimer);
 		} else if(lstrcmpi(nameNode, TEXT("IgnoreRotation")) == 0) {
-			this->ignoreRotation = ReadTextNodeNumber(pNode, this->ignoreRotation);
+			XMLUtils::GetTextElem(pNode, &this->ignoreRotation);
 		} else if(lstrcmpi(nameNode, TEXT("DisableRightClick")) == 0) {
-			this->disableRightClick = ReadTextNodeNumber(pNode, this->disableRightClick);
+			XMLUtils::GetTextElem(pNode, &this->disableRightClick);
 		} else if(lstrcmpi(nameNode, TEXT("Fullscreen")) == 0) {
-			this->fullscreen = ReadTextNodeNumber(pNode, this->fullscreen);
+			XMLUtils::GetTextElem(pNode, &this->fullscreen);
 		} else if(lstrcmpi(nameNode, TEXT("NeverShowTaskBar")) == 0) {
-			this->neverShowTaskBar = ReadTextNodeNumber(pNode, this->neverShowTaskBar);
+			XMLUtils::GetTextElem(pNode, &this->neverShowTaskBar);
 		} else if(lstrcmpi(nameNode, TEXT("NoWindowTitle")) == 0) {
-			this->noWindowTitle = ReadTextNodeNumber(pNode, this->noWindowTitle);
+			XMLUtils::GetTextElem(pNode, &this->noWindowTitle);
 		} else if(lstrcmpi(nameNode, TEXT("AlreadyConfigured")) == 0) {
-			this->alreadyConfigured = ReadTextNodeNumber(pNode, this->alreadyConfigured);
+			XMLUtils::GetTextElem(pNode, &this->alreadyConfigured);
 		} else if(lstrcmpi(nameNode, TEXT("MainScreen")) == 0) {
 			mainScreenConfig->loadXMLConfig(pNode);
 		} else if(lstrcmpi(nameNode, TEXT("BottomBar")) == 0) {
@@ -599,7 +575,6 @@ Error:
     RELEASE_OBJ(pNode)
     RELEASE_OBJ(pNodeSibling)
 	RELEASE_OBJ(pRootNode)
-	RELEASE_OBJ(pNodeMap);
 
     VariantClear(&vt);
 	
@@ -608,6 +583,10 @@ Error:
 
 BOOL CConfiguracion::guardaXMLIconos(CListaPantalla *listaPantallas)
 {
+	if (listaPantallas == NULL) {
+		return FALSE;
+	}
+
     IXMLDOMDocument *pXMLDom = NULL;
     IXMLDOMProcessingInstruction *pi = NULL;
     IXMLDOMComment *pc = NULL;
@@ -720,7 +699,7 @@ Error:
 	RELEASE_OBJ(pi)
 	RELEASE_OBJ(pc)
 
-    return 0;
+	return 0;
 }
 
 BOOL CConfiguracion::creaNodoXMLIcono(IXMLDOMDocument *pXMLDom, IXMLDOMElement *parent, CIcono *icono)
