@@ -44,6 +44,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_15496D6AAE7E4FD3B98D3A697AF046ED"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_21562089F9214FE8AA7E9BF152D59514"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -384,6 +390,24 @@
             {
             "SourcePath" = "8:..\\..\\res\\icons\\gpstool.png"
             "TargetName" = "8:gpstool.png"
+            "Tag" = "8:"
+            "Folder" = "8:_CB770C7AC2BA431FAE2CC7F1E1214841"
+            "Condition" = "8:"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "Register" = "3:0"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{BA458234-9B71-4F46-8107-E91156377184}:_15496D6AAE7E4FD3B98D3A697AF046ED"
+            {
+            "SourcePath" = "8:..\\..\\res\\icons\\iPT.png"
+            "TargetName" = "8:iPT.png"
             "Tag" = "8:"
             "Folder" = "8:_CB770C7AC2BA431FAE2CC7F1E1214841"
             "Condition" = "8:"
