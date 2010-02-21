@@ -81,3 +81,47 @@ int MulDiv(int a, int b, int c)
 	return (int) ret;
 }
 */
+
+
+typedef HRESULT (STDAPICALLTYPE FAR fCoInitializeEx)(LPVOID,DWORD);
+static fCoInitializeEx *pCoInitializeEx = NULL;
+
+typedef void (STDAPICALLTYPE FAR fCoUninitialize)();
+static fCoUninitialize *pCoUninitialize = NULL;
+
+typedef HRESULT (STDAPICALLTYPE FAR fCoCreateInstance)(REFCLSID,LPUNKNOWN,DWORD,REFIID,LPVOID*);
+static fCoCreateInstance *pCoCreateInstance = NULL;
+
+BOOL InitOle32()
+{
+	static HMODULE hOl32Lib = NULL;
+	if (hOl32Lib != NULL)
+		return TRUE;
+	hOl32Lib = LoadLibrary(L"ole32.dll");
+	if (hOl32Lib == NULL)
+		return FALSE;
+	pCoInitializeEx = (fCoInitializeEx*)GetProcAddress(hOl32Lib, L"CoInitializeEx");
+	pCoUninitialize = (fCoUninitialize*)GetProcAddress(hOl32Lib, L"CoUninitialize");
+	pCoCreateInstance = (fCoCreateInstance*)GetProcAddress(hOl32Lib, L"CoCreateInstance");
+	return TRUE;
+}
+
+HRESULT CoInitializeEx(LPVOID pvReserved, DWORD dwCoInit)
+{
+	if (InitOle32() && pCoInitializeEx != NULL)
+		return pCoInitializeEx(pvReserved, dwCoInit);
+	return S_FALSE;
+}
+
+void CoUninitialize()
+{
+	if (InitOle32() && pCoUninitialize != NULL)
+		pCoUninitialize();
+}
+
+STDAPI CoCreateInstance(REFCLSID rclsid, LPUNKNOWN pUnkOuter, DWORD dwClsContext, REFIID riid, LPVOID* ppv)
+{
+	if (InitOle32() && pCoCreateInstance != NULL)
+		return pCoCreateInstance(rclsid, pUnkOuter, dwClsContext, riid, ppv);
+	return S_FALSE;
+}
