@@ -8,6 +8,8 @@ long loadImage_IImagingFactory_CreateImageFromFile_duration = 0;
 long loadImage_IImagingFactory_CreateBitmapFromImage_duration = 0;
 #endif
 
+HBITMAP LoadImageWithImgdecmp(HDC hDC, LPTSTR strFileName);
+
 CIcono::CIcono(void)
 {
 	imagen = NULL;
@@ -38,8 +40,9 @@ void CIcono::loadImage(HDC *hDC, TCHAR *pathImage, int width, int height, int bi
 	// 	return;
 	// }
 
+	BOOL isBMP = lstrcmpi(wcsrchr(pathImage, '.'), L".bmp") == 0;
 	// If imaging API is not available or it is a .bmp use SHLoadDIBitmap that only supports .bmp images and is faster.
-	if (g_pImgFactory == NULL || lstrcmpi(wcsrchr(pathImage, '.'), L".bmp") == 0) {
+	if (g_pImgFactory == NULL || isBMP) {
 
 		HDC hdcTemp;
 		HBITMAP hbmTemp;
@@ -47,7 +50,11 @@ void CIcono::loadImage(HDC *hDC, TCHAR *pathImage, int width, int height, int bi
 
 		HDC hdcTempNULL = GetDC(NULL);
 		hdcTemp = CreateCompatibleDC(hdcTempNULL);
-		hbmTemp = SHLoadDIBitmap(pathImage);
+		if (g_hImgdecmpDll == NULL || isBMP) {
+			hbmTemp = SHLoadDIBitmap(pathImage);
+		} else {
+			hbmTemp = LoadImageWithImgdecmp(*hDC, pathImage);
+		}
 		BITMAP bm;
 		GetObject(hbmTemp, sizeof(BITMAP), &bm);
 		int widthTemp = bm.bmWidth;
@@ -56,10 +63,10 @@ void CIcono::loadImage(HDC *hDC, TCHAR *pathImage, int width, int height, int bi
 
 		SetBkMode(hdcTemp, TRANSPARENT);
 
-		// create a BITMAPINFO with minimal initilisation 
+		// create a BITMAPINFO with minimal initilisation
 
 		// for the CreateDIBSection
-		BITMAPINFO RGB32BitsBITMAPINFO; 
+		BITMAPINFO RGB32BitsBITMAPINFO;
 		ZeroMemory(&RGB32BitsBITMAPINFO,sizeof(BITMAPINFO));
 		RGB32BitsBITMAPINFO.bmiHeader.biSize=sizeof(BITMAPINFOHEADER);
 		RGB32BitsBITMAPINFO.bmiHeader.biWidth=width;
@@ -70,20 +77,31 @@ void CIcono::loadImage(HDC *hDC, TCHAR *pathImage, int width, int height, int bi
 		// pointer used for direct Bitmap pixels access
 		hdcResult = CreateCompatibleDC(*hDC);
 
-		BYTE *ptPixels;	
-		hbmResult = CreateDIBSection(hdcResult, 
-			(BITMAPINFO *)&RGB32BitsBITMAPINFO, 
+		BYTE *ptPixels;
+		hbmResult = CreateDIBSection(hdcResult,
+			(BITMAPINFO *)&RGB32BitsBITMAPINFO,
 			DIB_RGB_COLORS,
-			(void **)&ptPixels, 
+			(void **)&ptPixels,
 			NULL, 0);
 
-		hbmResultOld = (HBITMAP)SelectObject(hdcResult, hbmResult);		
+		hbmResultOld = (HBITMAP)SelectObject(hdcResult, hbmResult);
 		SetBkMode(hdcResult, TRANSPARENT);
 
 		// Resize hdc
 		StretchBlt(hdcResult, 0, 0, width, height, hdcTemp, 0, 0, widthTemp, heightTemp, SRCCOPY);
 
 
+		// get color of lower left corner pixel
+		COLORREF llc = *(COLORREF*)ptPixels;
+		if (llc != RGBA(0, 0, 0, 0)) {
+			for (int i = 0; i < 4 * width * height; i += 4)
+			{
+				// set all the pixels that have llc color as transparent
+				if (*(COLORREF*)(ptPixels + i) == llc) {
+					*(COLORREF*)(ptPixels + i) = RGBA(0, 0, 0, 0);
+				}
+			}
+		}
 
 		DeleteObject(SelectObject(hdcTemp, hbmTempOld));
 		DeleteDC(hdcTemp);
@@ -100,7 +118,7 @@ void CIcono::loadImage(HDC *hDC, TCHAR *pathImage, int width, int height, int bi
 	}
 
 	IImage* m_pImage = NULL;
-	IImage* m_pImageThumb = NULL;
+	//IImage* m_pImageThumb = NULL;
 	IBitmapImage *m_pBitmap = NULL;
 
 	// load it
@@ -139,9 +157,6 @@ void CIcono::loadImage(HDC *hDC, TCHAR *pathImage, int width, int height, int bi
 
 				for (int x=0; x<width; x++)
 				{
-					if (y == 34 && x == 18) {
-						x = x;
-					}
 					if (pPixel[3] < 25 || (pPixel[0] > 0xFA && pPixel[1] < 0x06 && pPixel[2] > 0xFA)) {
 						pPixel[0] = 0;
 						pPixel[1] = 0;
@@ -166,7 +181,7 @@ void CIcono::loadImage(HDC *hDC, TCHAR *pathImage, int width, int height, int bi
 
 		m_pBitmap->UnlockBits(&lockedBitmapData);
 
-		hbmResultOld = (HBITMAP)SelectObject(hdcResult, hbmResult);		
+		hbmResultOld = (HBITMAP)SelectObject(hdcResult, hbmResult);
 
 		// BITMAP bm;
 		// GetObject(hbmResult, sizeof(BITMAP), &bm);
@@ -185,8 +200,8 @@ void CIcono::loadImage(HDC *hDC, TCHAR *pathImage, int width, int height, int bi
 	}
 
 	// release
-	if( m_pImageThumb != NULL ) m_pImageThumb->Release(); 
-	if( m_pImage != NULL ) m_pImage->Release(); 
+	//if( m_pImageThumb != NULL ) m_pImageThumb->Release();
+	if( m_pImage != NULL ) m_pImage->Release();
 	// if( m_pImgFactory != NULL ) m_pImgFactory->Release();
 	if( m_pBitmap != NULL ) m_pBitmap->Release();
 	// CoUninitialize();
@@ -206,8 +221,8 @@ void CIcono::loadImageFromExec(HDC *hDC, TCHAR *pathExec, int width, int height)
 
 	SHFILEINFO cbFileInfo;
 	SHGetFileInfo(pathExec, 0, &cbFileInfo, sizeof(cbFileInfo), SHGFI_ICON);
-	
-	
+
+
 
 
 
@@ -238,7 +253,6 @@ void CIcono::loadImageFromExec(HDC *hDC, TCHAR *pathExec, int width, int height)
 	FillRect(hdcTemp, &rc, hBrush);
 
 	DrawIcon(hdcTemp, 0, 0, icon);
-	
 
 
 
@@ -248,11 +262,12 @@ void CIcono::loadImageFromExec(HDC *hDC, TCHAR *pathExec, int width, int height)
 
 
 
-			
-	// create a BITMAPINFO with minimal initilisation 
+
+
+	// create a BITMAPINFO with minimal initilisation
 
 	// for the CreateDIBSection
-	BITMAPINFO RGB32BitsBITMAPINFO; 
+	BITMAPINFO RGB32BitsBITMAPINFO;
 	ZeroMemory(&RGB32BitsBITMAPINFO,sizeof(BITMAPINFO));
 	RGB32BitsBITMAPINFO.bmiHeader.biSize=sizeof(BITMAPINFOHEADER);
 	RGB32BitsBITMAPINFO.bmiHeader.biWidth=width;
@@ -263,11 +278,11 @@ void CIcono::loadImageFromExec(HDC *hDC, TCHAR *pathExec, int width, int height)
 	// pointer used for direct Bitmap pixels access
 	HDC hdcResult = CreateCompatibleDC(*hDC);
 
-	BYTE *ptPixels;	
-	HBITMAP hbmResult = CreateDIBSection(hdcResult, 
-		(BITMAPINFO *)&RGB32BitsBITMAPINFO, 
+	BYTE *ptPixels;
+	HBITMAP hbmResult = CreateDIBSection(hdcResult,
+		(BITMAPINFO *)&RGB32BitsBITMAPINFO,
 		DIB_RGB_COLORS,
-		(void **)&ptPixels, 
+		(void **)&ptPixels,
 		NULL, 0);
 	HBITMAP hbmResultOld;
 
@@ -277,15 +292,21 @@ void CIcono::loadImageFromExec(HDC *hDC, TCHAR *pathExec, int width, int height)
 	// Resize hdc
 	StretchBlt(hdcResult, 0, 0, width, height, hdcTemp, 0, 0, widthTemp, heightTemp, SRCCOPY);
 
-	// TCHAR cad[32];
-	// WriteToLog(TEXT("CARGANDO...\n\r"));
-	for (int i = 0; i < width * height; i += 4)
-	{
-		// swprintf(cad, TEXT("%x.%x.%x.%x-"), ptPixels[i],ptPixels[i+1],ptPixels[i+2],ptPixels[i+3]);
-		// WriteToLog(cad);
-		
-		// ptPixels[i]=cNewColor;
 
+	// get color of lower left corner pixel's color
+	COLORREF llc = *(COLORREF*)ptPixels;
+	if (llc != RGBA(0, 0, 0, 0)) {
+		for (int i = 0; i < 4 * width * height; i += 4)
+		{
+			// set all the pixels that have llc color as transparent
+			if (*(COLORREF*)(ptPixels + i) == llc) {
+				*(COLORREF*)(ptPixels + i) = RGBA(0, 0, 0, 0);
+			}
+		}
+	}
+	/*
+	for (int i = 0; i < 4 * width * height; i += 4)
+	{
 		if (ptPixels[i+3] > 230 || (ptPixels[i] > 0xFA && ptPixels[i+1] < 0x06 && ptPixels[i+2] > 0xFA)) {
 			// ptPixels[i] = 0xFF;
 			// ptPixels[i+1] = 0x00;
@@ -297,10 +318,8 @@ void CIcono::loadImageFromExec(HDC *hDC, TCHAR *pathExec, int width, int height)
 			ptPixels[i+2] = 0x00;
 			ptPixels[i+3] = 0x00;
 		}
-		// swprintf(cad, TEXT("%x.%x.%x.%x\r\n"), ptPixels[i],ptPixels[i+1],ptPixels[i+2],ptPixels[i+3]);
-		// WriteToLog(cad);
 	}
-	// WriteToLog(TEXT("FIN CARGA...\n\r"));
+	*/
 
 
 	if (icon != NULL)  {
@@ -330,3 +349,94 @@ void CIcono::clearImageObjects()
 		hDC = NULL;
 	}
 }
+
+
+///////////////////////////////////////////////////////////
+
+static DWORD CALLBACK GetImageData(LPSTR szBuffer, DWORD dwBufferMax, LPARAM lParam)
+{
+   FILE* f = (FILE*)lParam;
+   size_t c = fread(szBuffer, 1, dwBufferMax, f);
+   return c;
+}
+
+#ifndef DecompressImageInfo
+
+class IImageRender;
+typedef void (CALLBACK *PROGRESSFUNC)(IImageRender *pRender, BOOL bComplete, LPARAM lParam);
+typedef DWORD (CALLBACK *GETDATAFUNC)(LPSTR szBuffer, DWORD dwBufferMax, LPARAM lParam);
+
+typedef struct tagDecompressImageInfo {
+   DWORD dwSize;
+   LPBYTE pbBuffer;
+   DWORD dwBufferMax;
+   DWORD dwBufferCurrent;
+   HBITMAP* phBM;
+   IImageRender **ppImageRender;
+   int iBitDepth;
+   LPARAM lParam;
+   HDC hdc;
+   int iScale;
+   int iMaxWidth;
+   int iMaxHeight;
+   GETDATAFUNC pfnGetData;
+   PROGRESSFUNC pfnImageProgress;
+   COLORREF crTransparentOverride;
+} DecompressImageInfo;
+
+#endif
+
+HBITMAP LoadImageWithImgdecmp(HDC hDC, LPTSTR strFileName)
+{
+   FILE* f = _tfopen(strFileName, TEXT("rb"));
+   if (! f) {
+      return 0;
+   }
+
+   DecompressImageInfo dii;
+
+   HBITMAP hBitmap = 0;
+
+   const int nBuffSize = 4096;
+   BYTE buff[nBuffSize];
+
+   dii.dwSize = sizeof(DecompressImageInfo);
+   dii.pbBuffer = buff;
+   dii.dwBufferMax = nBuffSize;
+   dii.dwBufferCurrent = 0;
+   dii.phBM = &hBitmap;
+   dii.ppImageRender = NULL;
+   dii.iBitDepth = GetDeviceCaps(hDC, BITSPIXEL);
+   dii.lParam = LPARAM(f);
+   dii.hdc = 0;
+   dii.iScale = 100;
+   dii.iMaxWidth = 1000;
+   dii.iMaxHeight = 1000;
+   dii.pfnGetData = GetImageData;
+   dii.pfnImageProgress = 0;
+   dii.crTransparentOverride = (UINT) -1;
+
+   //HINSTANCE g_hImgdecmpDll = LoadLibrary(TEXT("imgdecmp.dll"));
+   if (!g_hImgdecmpDll) {
+      fclose(f);
+      return 0;
+   }
+   typedef HRESULT (*DecompressImageIndirect_t)(DecompressImageInfo *pParams);
+   DecompressImageIndirect_t proc = (DecompressImageIndirect_t)GetProcAddress(g_hImgdecmpDll, TEXT("DecompressImageIndirect"));
+   if (! proc) {
+      //FreeLibrary(g_hImgdecmpDll);
+      fclose(f);
+      return 0;
+   }
+   HRESULT hr = proc(&dii);
+
+   fclose(f);
+   //FreeLibrary(g_hImgdecmpDll);
+
+   if (FAILED(hr)) {
+      return 0;
+   } else {
+      return hBitmap;
+   }
+}
+
