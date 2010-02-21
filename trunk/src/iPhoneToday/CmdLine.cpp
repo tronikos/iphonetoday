@@ -1,5 +1,5 @@
-#include "CmdLine.h"
 #include "stdafx.h"
+#include "CmdLine.h"
 
 BOOL CommandLineArguements(HWND hwnd, LPCTSTR pCmdLine)
 {

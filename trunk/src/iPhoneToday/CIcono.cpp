@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "CIcono.h"
 #include "iPhoneToday.h"
 

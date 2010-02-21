@@ -23,12 +23,7 @@ public:
 	BOOL guardaXMLConfig();
 	BOOL guardaXMLIconos(CListaPantalla *listaPantallas);
 
-	BOOL static creaNodoXMLConfig(IXMLDOMDocument *pXMLDom, IXMLDOMElement *parent, TCHAR name[MAX_PATH], int content, int tabs = 1);
-	BOOL static creaNodoXMLConfig(IXMLDOMDocument *pXMLDom, IXMLDOMElement *parent, TCHAR name[MAX_PATH], TCHAR content[MAX_PATH], int tabs = 1);
-	BOOL static createAttributeXML(IXMLDOMDocument *pXMLDom, IXMLDOMElement *parent, TCHAR name[MAX_PATH], int content);
-	BOOL static createAttributeXML(IXMLDOMDocument *pXMLDom, IXMLDOMElement *parent, TCHAR name[MAX_PATH], TCHAR content[MAX_PATH]);
-
-	BOOL creaNodoXMLIcono(IXMLDOMDocument *pXMLDom, IXMLDOMElement *parent, CIcono *icono);
+	BOOL saveXMLScreenIcons(TiXmlElement *pElemScreen, CPantalla *pantalla);
 
 	void getAbsolutePath(LPTSTR pszDest, size_t cchDest, LPCTSTR pszSrc);
 	BOOL hasTimestampChanged();

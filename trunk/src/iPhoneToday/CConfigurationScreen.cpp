@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "CConfigurationScreen.h"
 #include "CConfiguracion.h"
 
@@ -60,119 +61,84 @@ void CConfigurationScreen::defaultValues()
 	this->iconsPerRow = this->iconsPerRowXML;
 }
 
-BOOL CConfigurationScreen::loadXMLConfig(IXMLDOMNode *pRoot)
+BOOL CConfigurationScreen::loadXMLConfig(TiXmlElement *pRoot)
 {
 	if (pRoot == NULL) {
 		return FALSE;
 	}
 
-	BOOL result = false;
-	HRESULT hr = S_OK;
-	IXMLDOMNode *pNode = NULL;
-	IXMLDOMNode *pNodeSibling = NULL;
-	IXMLDOMNamedNodeMap *pNodeMap = NULL;
-	TCHAR *nameNode = NULL;
+	// for each child of root
+	for (TiXmlElement *pElem = pRoot->FirstChildElement(); pElem; pElem = pElem->NextSiblingElement()) {
+		const char *nameNode = pElem->Value();
 
-	CHR(pRoot->get_firstChild(&pNode));
-
-	while (pNode) {
-		pNode->get_baseName(&nameNode);
-
-		if(lstrcmpi(nameNode, TEXT("IconWidth")) == 0) {
-			XMLUtils::GetTextElem(pNode, &this->iconWidthXML);
-		} else if(lstrcmpi(nameNode, TEXT("IconsPerRow")) == 0) {
-			XMLUtils::GetTextElem(pNode, &this->iconsPerRowXML);
-		} else if(lstrcmpi(nameNode, TEXT("MinHorizontalSpace")) == 0) {
-			XMLUtils::GetTextElem(pNode, &this->minHorizontalSpace);
-		} else if(lstrcmpi(nameNode, TEXT("AdditionalVerticalSpace")) == 0) {
-			XMLUtils::GetTextElem(pNode, &this->additionalVerticalSpace);
-		} else if(lstrcmpi(nameNode, TEXT("Offset")) == 0) {
-			XMLUtils::GetAttr(pNode, TEXT("left"),   &this->offset.left);
-			XMLUtils::GetAttr(pNode, TEXT("top"),    &this->offset.top);
-			XMLUtils::GetAttr(pNode, TEXT("right"),  &this->offset.right);
-			XMLUtils::GetAttr(pNode, TEXT("bottom"), &this->offset.bottom);
-		} else if(lstrcmpi(nameNode, TEXT("Font")) == 0) {
-			XMLUtils::GetAttr(pNode, TEXT("size"),   &this->fontSize);
-			XMLUtils::GetAttr(pNode, TEXT("color"),  &this->fontColor);
-			XMLUtils::GetAttr(pNode, TEXT("bold"),   &this->fontBold);
-			XMLUtils::GetAttr(pNode, TEXT("offset"), &this->fontOffset);
-		} else if(lstrcmpi(nameNode, TEXT("Background")) == 0) {
-			XMLUtils::GetAttr(pNode, TEXT("color1"),  &this->backColor1);
-			XMLUtils::GetAttr(pNode, TEXT("color2"),  &this->backColor2);
+		if(_stricmp(nameNode, "IconWidth") == 0) {
+			XMLUtils::GetTextElem(pElem, &this->iconWidthXML);
+		} else if(_stricmp(nameNode, "IconsPerRow") == 0) {
+			XMLUtils::GetTextElem(pElem, &this->iconsPerRowXML);
+		} else if(_stricmp(nameNode, "MinHorizontalSpace") == 0) {
+			XMLUtils::GetTextElem(pElem, &this->minHorizontalSpace);
+		} else if(_stricmp(nameNode, "AdditionalVerticalSpace") == 0) {
+			XMLUtils::GetTextElem(pElem, &this->additionalVerticalSpace);
+		} else if(_stricmp(nameNode, "Offset") == 0) {
+			XMLUtils::GetAttr(pElem, "left",   &this->offset.left);
+			XMLUtils::GetAttr(pElem, "top",    &this->offset.top);
+			XMLUtils::GetAttr(pElem, "right",  &this->offset.right);
+			XMLUtils::GetAttr(pElem, "bottom", &this->offset.bottom);
+		} else if(_stricmp(nameNode, "Font") == 0) {
+			XMLUtils::GetAttr(pElem, "size",   &this->fontSize);
+			XMLUtils::GetAttr(pElem, "color",  &this->fontColor);
+			XMLUtils::GetAttr(pElem, "bold",   &this->fontBold);
+			XMLUtils::GetAttr(pElem, "offset", &this->fontOffset);
+		} else if(_stricmp(nameNode, "Background") == 0) {
+			XMLUtils::GetAttr(pElem, "color1",  &this->backColor1);
+			XMLUtils::GetAttr(pElem, "color2",  &this->backColor2);
 		}
-
-		SysFreeString(nameNode);
-
-		CHR(pNode->get_nextSibling(&pNodeSibling));
-
-		pNode->Release();
-		pNode = pNodeSibling;
 	}
 
 	this->iconWidth = this->iconWidthXML;
 	this->iconsPerRow = this->iconsPerRowXML;
 
-	result = true;
-
-Error:
-	SysFreeString(nameNode);
-	RELEASE_OBJ(pNode)
-	RELEASE_OBJ(pNodeSibling)
-	RELEASE_OBJ(pNodeMap);
-
-	return result;
+	return TRUE;
 }
 
-BOOL CConfigurationScreen::saveXMLConfig(IXMLDOMDocument* pXMLDom, IXMLDOMElement *pRoot)
+BOOL CConfigurationScreen::saveXMLConfig(TiXmlElement *pRoot)
 {
-	IXMLDOMElement *pe = NULL;
+	TiXmlElement *pElem ;
 
-	BSTR bstr = NULL;
-	HRESULT hr;
-	BOOL result = FALSE;
+	pElem = new TiXmlElement("IconWidth");
+	XMLUtils::SetTextElem(pElem, this->iconWidthXML);
+	pRoot->LinkEndChild(pElem);
 
-	BSTR bstr_wsntt = SysAllocString(L"\n\t\t");
+	pElem = new TiXmlElement("IconsPerRow");
+	XMLUtils::SetTextElem(pElem, this->iconsPerRowXML);
+	pRoot->LinkEndChild(pElem);
 
-	CConfiguracion::creaNodoXMLConfig(pXMLDom, pRoot, L"IconWidth", this->iconWidthXML, 2);
-	CConfiguracion::creaNodoXMLConfig(pXMLDom, pRoot, L"IconsPerRow", this->iconsPerRowXML, 2);
-	CConfiguracion::creaNodoXMLConfig(pXMLDom, pRoot, L"MinHorizontalSpace", this->minHorizontalSpace, 2);
-	CConfiguracion::creaNodoXMLConfig(pXMLDom, pRoot, L"AdditionalVerticalSpace", this->additionalVerticalSpace, 2);
+	pElem = new TiXmlElement("MinHorizontalSpace");
+	XMLUtils::SetTextElem(pElem, this->minHorizontalSpace);
+	pRoot->LinkEndChild(pElem);
 
-	AddWhiteSpaceToNode(pXMLDom, bstr_wsntt, pRoot);
-	bstr = SysAllocString(L"Offset");
-	CHR(pXMLDom->createElement(bstr, &pe));
-	SysFreeString(bstr); bstr = NULL;
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"left", this->offset.left);
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"top", this->offset.top);
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"right", this->offset.right);
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"bottom", this->offset.bottom);
-	AppendChildToParent(pe, pRoot);
-	RELEASE_OBJ(pe);
+	pElem = new TiXmlElement("AdditionalVerticalSpace");
+	XMLUtils::SetTextElem(pElem, this->additionalVerticalSpace);
+	pRoot->LinkEndChild(pElem);
 
-	AddWhiteSpaceToNode(pXMLDom, bstr_wsntt, pRoot);
-	bstr = SysAllocString(L"Font");
-	CHR(pXMLDom->createElement(bstr, &pe));
-	SysFreeString(bstr); bstr = NULL;
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"size", this->fontSize);
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"color", this->fontColor);
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"bold", this->fontBold);
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"offset", this->fontOffset);
-	AppendChildToParent(pe, pRoot);
-	RELEASE_OBJ(pe);
+	pElem = new TiXmlElement("Offset");
+	XMLUtils::SetAttr(pElem, "left",   this->offset.left);
+	XMLUtils::SetAttr(pElem, "top",    this->offset.top);
+	XMLUtils::SetAttr(pElem, "right",  this->offset.right);
+	XMLUtils::SetAttr(pElem, "bottom", this->offset.bottom);
+	pRoot->LinkEndChild(pElem);
 
-	AddWhiteSpaceToNode(pXMLDom, bstr_wsntt, pRoot);
-	bstr = SysAllocString(L"Background");
-	CHR(pXMLDom->createElement(bstr, &pe));
-	SysFreeString(bstr); bstr = NULL;
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"color1", this->backColor1);
-	CConfiguracion::createAttributeXML(pXMLDom, pe, L"color2", this->backColor2);
-	AppendChildToParent(pe, pRoot);
-	RELEASE_OBJ(pe);
+	pElem = new TiXmlElement("Font");
+	XMLUtils::SetAttr(pElem, "size",   this->fontSize);
+	XMLUtils::SetAttr(pElem, "color",  this->fontColor);
+	XMLUtils::SetAttr(pElem, "bold",   this->fontBold);
+	XMLUtils::SetAttr(pElem, "offset", this->fontOffset);
+	pRoot->LinkEndChild(pElem);
 
-	result = TRUE;
-Error:
-	RELEASE_OBJ(pe);
-	SysFreeString(bstr);
-	SysFreeString(bstr_wsntt);
-	return result;
+	pElem = new TiXmlElement("Background");
+	XMLUtils::SetAttr(pElem, "color1", this->backColor1);
+	XMLUtils::SetAttr(pElem, "color2", this->backColor2);
+	pRoot->LinkEndChild(pElem);
+
+	return TRUE;
 }
