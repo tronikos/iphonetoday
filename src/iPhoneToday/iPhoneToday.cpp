@@ -413,21 +413,21 @@ LRESULT doTimer (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 
 			if (hayCambiosIcono) {
 				CReloadIcon *reloadIcon = new CReloadIcon();
-				int nIcon = 0;
 				CPantalla *pantalla = NULL;
 				CIcono *icono = NULL;
-				while (estado->LoadRegistryIcon(nIcon, reloadIcon)) {
-					if (reloadIcon->nScreen >= 0 &&
-						reloadIcon->nScreen < listaPantallas->numPantallas) {
-
+				for (int nIcon = 0; estado->LoadRegistryIcon(nIcon, reloadIcon); nIcon++) {
+					if (reloadIcon->nScreen >= 0 && reloadIcon->nScreen < listaPantallas->numPantallas) {
 						pantalla = listaPantallas->listaPantalla[reloadIcon->nScreen];
 					} else if (reloadIcon->nScreen == -1) {
 						pantalla = listaPantallas->barraInferior;
+					} else {
+						continue;
 					}
 					if (pantalla != NULL && reloadIcon->nIcon >= 0 && reloadIcon->nIcon < pantalla->numIconos) {
 						icono = pantalla->listaIconos[reloadIcon->nIcon];
+					} else {
+						continue;
 					}
-
 					if (icono != NULL) {
 						if (_tcslen(reloadIcon->strName) > 0) {
 							wcscpy(icono->nombre, reloadIcon->strName);
@@ -435,16 +435,10 @@ LRESULT doTimer (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 						if (_tcslen(reloadIcon->strImage) > 0) {
 							wcscpy(icono->rutaImagen, reloadIcon->strImage);
 						}
-
 						configuracion->cargaImagenIcono(&hDCMem, icono, (pantalla == listaPantallas->barraInferior));
 						pantalla->debeActualizar = TRUE;
 					}
-
-					pantalla = NULL;
-					icono = NULL;
-					nIcon++;
 				}
-
 				delete reloadIcon;
 				estado->clearReloadIcon();
 			} else if (hayCambiosIconos) {
@@ -999,17 +993,9 @@ INT InitializeClasses()
 #endif
 
 void pintaIconos(HDC *hDC, RECT *rcWindBounds) {
-	UINT i = 0;
-	UINT j = 0;
-
-	CPantalla *pantalla = NULL;
-	CIcono *icono = NULL;
-
-	while (i < listaPantallas->numPantallas) {
-		pantalla = listaPantallas->listaPantalla[i];
-
+	for (UINT i = 0; i < listaPantallas->numPantallas; i++) {
+		CPantalla *pantalla = listaPantallas->listaPantalla[i];
 		pintaPantalla(hDC, pantalla);
-		i++;
 	}
 
 	// Pintamos los circulos para indicar pantalla activa
@@ -1034,7 +1020,7 @@ void pintaIconos(HDC *hDC, RECT *rcWindBounds) {
 		int distanciaMaxima = (int)(((float)listaPantallas->listaPantalla[0]->anchoPantalla) * 1.4f);
 
 		for (int i = 0; i < nCirculos; i++) {
-			pantalla = listaPantallas->listaPantalla[i];
+			CPantalla *pantalla = listaPantallas->listaPantalla[i];
 			colorCircle = min(distanciaMaxima, abs((int) (pantalla->x)));
 			colorCircle = (int) (220.0f - (220.0f / distanciaMaxima) * colorCircle);
 
@@ -1453,14 +1439,9 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, BOOL esBarraInferior) {
 
 		setPosicionesIconos(pantalla, esBarraInferior);
 
-		CIcono *icono = NULL;
-		UINT j = 0;
-		while (j < pantalla->numIconos) {
-			icono = pantalla->listaIconos[j];
-
+		for (UINT j = 0; j < pantalla->numIconos; j++) {
+			CIcono *icono = pantalla->listaIconos[j];
 			pintaIcono(&pantalla->hDC, icono, esBarraInferior);
-
-			j++;
 		}
 	}
 
@@ -1511,12 +1492,8 @@ void setPosicionesIconos(CPantalla *pantalla, BOOL esBarraInferior) {
 }
 
 void setPosiciones(BOOL inicializa, int offsetX, int offsetY) {
-	UINT i = 0;
-	UINT j = 0;
-
-	CPantalla *pantalla = NULL;
-	while (i < listaPantallas->numPantallas) {
-		pantalla = listaPantallas->listaPantalla[i];
+	for (UINT i = 0; i < listaPantallas->numPantallas; i++) {
+		CPantalla *pantalla = listaPantallas->listaPantalla[i];
 
 		if (inicializa) {
 			pantalla->x = estado->posObjetivo.x + float(i * configuracion->anchoPantalla);
@@ -1528,8 +1505,6 @@ void setPosiciones(BOOL inicializa, int offsetX, int offsetY) {
 
 		pantalla->altoPantalla = configuracion->altoPantallaMax;
 		pantalla->anchoPantalla = configuracion->anchoPantalla;
-
-		i++;
 	}
 
 	if (listaPantallas->barraInferior != NULL && listaPantallas->barraInferior->numIconos > 0 && configuracion->bottomBarConfig->iconWidth > 0) {
@@ -1818,6 +1793,7 @@ void procesaPulsacion(HWND hwnd, POINTS posCursor, BOOL doubleClick, BOOL noLanz
 	}
 
 	if (!noLanzar && enc && iconoActual.nIconoActual >= 0) {
+
 		if (_tcsclen(icono->sound) > 0) {
 			TCHAR fullPath[MAX_PATH];
 			configuracion->getAbsolutePath(fullPath, CountOf(fullPath), icono->sound);
