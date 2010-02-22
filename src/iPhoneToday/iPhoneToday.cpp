@@ -477,7 +477,7 @@ LRESULT doTimer (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 							icono = pantalla->listaIconos[j];
 							if (icono->tipo != NOTIF_NORMAL) {
 								pantalla->debeActualizar = TRUE;
-								continue;
+								break;
 							}
 						}
 					}
@@ -489,7 +489,7 @@ LRESULT doTimer (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 						icono = pantalla->listaIconos[j];
 						if (icono->tipo != NOTIF_NORMAL) {
 							pantalla->debeActualizar = TRUE;
-							continue;
+							break;
 						}
 					}
 				}
@@ -1075,7 +1075,7 @@ void pintaIcono(HDC *hDC, CIcono *icono, BOOL esBarraInferior) {
 		icono->hDC, 0, 0, icono->anchoImagen, icono->altoImagen, RGBA(0, 0, 0, 0));
 
 	// Notificaciones
-	if (icono->tipo > 0) {
+	if (icono->tipo != NOTIF_NORMAL) {
 		int numNotif = 0;
 		switch(icono->tipo) {
 			case NOTIF_LLAMADAS:

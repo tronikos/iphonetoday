@@ -261,30 +261,18 @@ BOOL CEstado::clearReloadIcon() {
 
 BOOL CEstado::LoadRegistryIcon(int nIcon, CReloadIcon *reloadIcon)
 {
-	BOOL result = FALSE;
-	DWORD valorRegistro = 0;
-	DWORD valorPorDefecto = 0;
 	TCHAR subKey[MAX_PATH];
 
 	reloadIcon->ClearObject();
 
 	swprintf(subKey, L"Software\\iPhoneToday\\Icon%d", nIcon);
 
-	LoadDwordSetting(HKEY_LOCAL_MACHINE, &reloadIcon->nScreen, 
-		subKey, TEXT("nScreen"), 0);
-	valorPorDefecto = 9999;
-	LoadDwordSetting(HKEY_LOCAL_MACHINE, &reloadIcon->nIcon, 
-		subKey, TEXT("nIcon"), 0);
-	LoadTextSetting(HKEY_LOCAL_MACHINE, reloadIcon->strName, 
-		subKey, TEXT("strName"), L"");
-	LoadTextSetting(HKEY_LOCAL_MACHINE, reloadIcon->strImage, 
-		subKey, TEXT("strImage"), L"");
+	if (!LoadDwordSetting(HKEY_LOCAL_MACHINE, &reloadIcon->nScreen, subKey, TEXT("nScreen"), 0))
+		return FALSE;
+	if (!LoadDwordSetting(HKEY_LOCAL_MACHINE, &reloadIcon->nIcon, subKey, TEXT("nIcon"), 0))
+		return FALSE;
+	LoadTextSetting(HKEY_LOCAL_MACHINE, reloadIcon->strName, subKey, TEXT("strName"), L"");
+	LoadTextSetting(HKEY_LOCAL_MACHINE, reloadIcon->strImage, subKey, TEXT("strImage"), L"");
 
-	if (reloadIcon->nIcon != 9999) {
-		result = TRUE;
-	} else {
-		result = FALSE;
-	}
-	
-	return result;
+	return TRUE;
 }
