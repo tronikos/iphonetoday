@@ -18,13 +18,9 @@ BOOL SaveDwordSetting(HKEY hKEY, const TCHAR * lpSubKey, const DWORD *szValue,
 	dwSize = sizeof(DWORD);
 	result = RegSetValueEx(hkey, szKeyName, NULL, dwType, (PBYTE)szValue, dwSize);
 
-	if (result != ERROR_SUCCESS)
-		return FALSE;
+	RegCloseKey(hkey);
 
-	if (hkey != NULL)
-		RegCloseKey(hkey);
-
-	return TRUE;
+	return (result == ERROR_SUCCESS);
 }
 
 BOOL LoadDwordSetting(HKEY hKEY, DWORD * szValue, const TCHAR * lpSubKey,
@@ -47,15 +43,12 @@ BOOL LoadDwordSetting(HKEY hKEY, DWORD * szValue, const TCHAR * lpSubKey,
 	result = RegQueryValueEx(hkey, szKeyName, NULL, &dwType,
 		(PBYTE)szValue, &dwSize);
 	if (result != ERROR_SUCCESS) {
-		RegCloseKey(hkey);
 		*szValue = dwDefault;
-		return FALSE;
 	}
 
-	if (hkey != NULL)
-		RegCloseKey(hkey);
+	RegCloseKey(hkey);
 
-	return TRUE;
+	return (result == ERROR_SUCCESS);
 }
 
 /*
@@ -146,19 +139,16 @@ BOOL LoadTextSetting(HKEY hKEY, TCHAR * szValue, const TCHAR * lpSubKey,
 	result = RegQueryValueEx(hkey, szKeyName, NULL, &dwType,
 		(LPBYTE)szValue, &dwSize);
 	if (result != ERROR_SUCCESS) {
-		RegCloseKey(hkey);
 		if (szDefault) {
 			wcscpy(szValue, szDefault);
 		} else {
 			wcscpy(szValue, L"");
 		}
-		return FALSE;
 	}
 
-	if (hkey != NULL)
-		RegCloseKey(hkey);
+	RegCloseKey(hkey);
 
-	return TRUE;
+	return (result == ERROR_SUCCESS);
 }
 
 BOOL DeleteKey(HKEY hKey, const TCHAR * lpSubKey)
