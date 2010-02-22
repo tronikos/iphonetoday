@@ -1593,7 +1593,7 @@ void calculaPosicionObjetivo() {
 HWND InitializeCustomItem(TODAYLISTITEM *ptli, HWND hwndParent)
 {
 #ifdef DEBUG1
-	// Inifinite loop to attach the debugger to mstli.exe (Pocket PC) or shell32.exe (Windows Mobile)
+	// Infinite loop to attach the debugger to mstli.exe (Pocket PC) or shell32.exe (Windows Mobile)
 	// Set a breakpoint and change value of skip to TRUE
 	static BOOL skip = FALSE;
 	//while (!skip) {
@@ -2337,7 +2337,7 @@ BOOL inicializaApp(HWND hwnd) {
 	}
 
 	// Establecemos la ruta por defecto para buscar programas
-	if (!SHGetSpecialFolderPath(0, lastPathExec, CSIDL_PROGRAMS, FALSE)) {
+	if (!SHGetSpecialFolderPath(hwnd, lastPathExec, CSIDL_PROGRAMS, FALSE)) {
 		wcscpy(lastPathExec, L"\\");
 	}
 
@@ -2671,8 +2671,12 @@ void autoConfigure()
 	}
 
 	// Check if user wants autoconfigure
-	//int resp = MessageBox(NULL, TEXT("Auto configure icon and font size?"), TEXT("First Run!"), MB_YESNO);
-	//if (resp == IDYES) {
+#if EXEC_MODE
+	int resp = MessageBox(g_hWnd, TEXT("Auto configure icon and font size?"), TEXT("First Run!"), MB_YESNO);
+#else
+	int resp = IDYES;
+#endif
+	if (resp == IDYES) {
 		int width = GetSystemMetrics(SM_CXSCREEN);
 		int height = GetSystemMetrics(SM_CYSCREEN);
 		int tmp;
@@ -2696,7 +2700,7 @@ void autoConfigure()
 
 		configuracion->circlesDiameter = iconWidth / 6;
 		configuracion->circlesDistance = configuracion->circlesDiameter / 2;
-	//}
+	}
 
 	configuracion->alreadyConfigured = 1;
 	configuracion->guardaXMLConfig();
