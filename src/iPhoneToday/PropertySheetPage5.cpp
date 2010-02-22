@@ -50,7 +50,7 @@ LRESULT CALLBACK OptionDialog5(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 
 				SendMessage(GetDlgItem(hDlg, IDC_CHECK_CLOCK_FORMAT12), BM_SETCHECK, configuracion->clock12Format ? BST_CHECKED : BST_UNCHECKED, 0);
 			} else {
-				MessageBox(0, L"Empty Configuration!", 0, MB_OK);
+				MessageBox(hDlg, L"Empty Configuration!", 0, MB_OK);
 			}
 		}
 		return TRUE;

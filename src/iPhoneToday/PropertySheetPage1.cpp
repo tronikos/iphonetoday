@@ -57,7 +57,7 @@ LRESULT CALLBACK OptionDialog1(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 				SetDlgItemInt(hDlg, IDC_EDIT_BB_OFFSET_BOTTOM,	cs->offset.bottom,	TRUE);
 
 			} else {
-				MessageBox(0, L"Empty Configuration!", 0, MB_OK);
+				MessageBox(hDlg, L"Empty Configuration!", 0, MB_OK);
 			}
 		}
 		return TRUE;

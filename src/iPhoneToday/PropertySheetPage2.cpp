@@ -38,7 +38,7 @@ LRESULT CALLBACK OptionDialog2(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 				SendMessage(GetDlgItem(hDlg, IDC_CHECK_BACK_TRANSPARENT), BM_SETCHECK, configuracion->fondoTransparente ? BST_CHECKED : BST_UNCHECKED, 0);
 				SetDlgItemHex(hDlg, IDC_EDIT_BACK_COLOR, configuracion->fondoColor);
 			} else {
-				MessageBox(0, L"Empty Configuration!", 0, MB_OK);
+				MessageBox(hDlg, L"Empty Configuration!", 0, MB_OK);
 			}
 		}
 		return TRUE;

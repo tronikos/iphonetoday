@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "CConfiguracion.h"
 #include "RegistryUtils.h"
+#include "iPhoneToday.h"
 
 CConfiguracion::CConfiguracion(void)
 {
@@ -204,7 +205,9 @@ BOOL CConfiguracion::cargaIconos(HDC *hDC, CListaPantalla *listaPantallas)
 	// NKDbgPrintfW(L" *** %d \t to cargaXMLIconos.\n", duration);
 
 	if (result == false) {
-		MessageBox(0, TEXT("Bad icons.xml, check for errors please. (Remember: No Special Characters and tag well formed)"), TEXT("Error"), MB_OK);
+#if EXEC_MODE
+		MessageBox(g_hWnd, TEXT("Bad icons.xml, check for errors please. (Remember: No Special Characters and tag well formed)"), TEXT("Error"), MB_OK);
+#endif
 		if (listaPantallas->numPantallas == 0) {
 			listaPantallas->creaPantalla();
 		}

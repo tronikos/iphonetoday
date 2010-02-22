@@ -43,7 +43,7 @@ LRESULT CALLBACK OptionDialog3(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 				SetDlgItemText(hDlg, IDC_EDIT_BUBBLE_STATE,			configuracion->bubble_state);
 				SetDlgItemText(hDlg, IDC_EDIT_BUBBLE_ALARM,			configuracion->bubble_alarm);
 			} else {
-				MessageBox(0, L"Empty Configuration!", 0, MB_OK);
+				MessageBox(hDlg, L"Empty Configuration!", 0, MB_OK);
 			}
 		}
 		return TRUE;

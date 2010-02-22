@@ -44,7 +44,7 @@ LRESULT CALLBACK OptionDialog6(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 				SetDlgItemInt(hDlg, IDC_EDIT_ONLAUNCH_VIBRATE,	configuracion->vibrateOnLaunchIcon,	TRUE);
 				SetDlgItemInt(hDlg, IDC_EDIT_NOTIFY_TIMER,		configuracion->notifyTimer,			TRUE);
 			} else {
-				MessageBox(0, L"Empty Configuration!", 0, MB_OK);
+				MessageBox(hDlg, L"Empty Configuration!", 0, MB_OK);
 			}
 		}
 		return TRUE;

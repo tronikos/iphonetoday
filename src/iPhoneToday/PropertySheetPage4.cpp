@@ -39,7 +39,7 @@ LRESULT CALLBACK OptionDialog4(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 				SetDlgItemInt(hDlg, IDC_EDIT_MAX_VELOCITY,		configuracion->velMaxima,			TRUE);
 				SendMessage(GetDlgItem(hDlg, IDC_CHECK_VERTICAL_SCROLL), BM_SETCHECK, configuracion->verticalScroll ? BST_CHECKED : BST_UNCHECKED, 0);
 			} else {
-				MessageBox(0, L"Empty Configuration!", 0, MB_OK);
+				MessageBox(hDlg, L"Empty Configuration!", 0, MB_OK);
 			}
 		}
 		return TRUE;
