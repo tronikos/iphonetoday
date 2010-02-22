@@ -53,6 +53,7 @@ int copyTimeUltimaSeleccion = 0;
 // Variable que almacena las ultimas rutas usadas
 TCHAR lastPathImage[MAX_PATH];
 TCHAR lastPathExec[MAX_PATH];
+TCHAR lastPathSound[MAX_PATH];
 
 // Icono a editar
 IDENT_ICONO iconoActual;
@@ -1817,6 +1818,12 @@ void procesaPulsacion(HWND hwnd, POINTS posCursor, BOOL doubleClick, BOOL noLanz
 	}
 
 	if (!noLanzar && enc && iconoActual.nIconoActual >= 0) {
+		if (_tcsclen(icono->sound) > 0) {
+			TCHAR fullPath[MAX_PATH];
+			configuracion->getAbsolutePath(fullPath, CountOf(fullPath), icono->sound);
+			PlaySound(fullPath, 0, SND_ASYNC | SND_FILENAME | SND_NODEFAULT);
+		}
+
 		// Vibration
 		if (configuracion->vibrateOnLaunchIcon > 0) {
 			vibrate(configuracion->vibrateOnLaunchIcon);
@@ -1969,6 +1976,7 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 
 				SetDlgItemText(hDlg, IDC_MICON_NAME, icono->nombre);
 				SetDlgItemText(hDlg, IDC_MICON_IMAGE, icono->rutaImagen);
+				SetDlgItemText(hDlg, IDC_MICON_SOUND, icono->sound);
 				SetDlgItemText(hDlg, IDC_MICON_EXEC, icono->ejecutable);
 				SetDlgItemText(hDlg, IDC_MICON_PARAMETERS, icono->parametros);
 				SetDlgItemText(hDlg, IDC_MICON_EXECALT, icono->ejecutableAlt);
@@ -2037,6 +2045,7 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 			int nScreen, nIcon, nType;
 			TCHAR strName[MAX_PATH];
 			TCHAR strImage[MAX_PATH];
+			TCHAR strSound[MAX_PATH];
 			TCHAR strType[MAX_PATH];
 			TCHAR strExec[MAX_PATH];
 			TCHAR strParameters[MAX_PATH];
@@ -2048,6 +2057,7 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 			nIcon = GetDlgItemInt(hDlg, IDC_MICON_ICON, NULL, TRUE);
 			GetDlgItemText(hDlg, IDC_MICON_NAME, strName, MAX_PATH);
 			GetDlgItemText(hDlg, IDC_MICON_IMAGE, strImage, MAX_PATH);
+			GetDlgItemText(hDlg, IDC_MICON_SOUND, strSound, MAX_PATH);
 			GetDlgItemText(hDlg, IDC_MICON_TYPE, strType, MAX_PATH);
 			GetDlgItemText(hDlg, IDC_MICON_EXEC, strExec, MAX_PATH);
 			GetDlgItemText(hDlg, IDC_MICON_PARAMETERS, strParameters, MAX_PATH);
@@ -2148,6 +2158,7 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 
 			StringCchCopy(icono->nombre, CountOf(icono->nombre), strName);
 			StringCchCopy(icono->rutaImagen, CountOf(icono->rutaImagen), strImage);
+			StringCchCopy(icono->sound, CountOf(icono->sound), strSound);
 			StringCchCopy(icono->ejecutable, CountOf(icono->ejecutable), strExec);
 			StringCchCopy(icono->parametros, CountOf(icono->parametros), strParameters);
 			StringCchCopy(icono->ejecutableAlt, CountOf(icono->ejecutableAlt), strExecAlt);
@@ -2177,6 +2188,15 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 				getPathFromFile(pathFile, lastPathImage);
 
 				SetDlgItemText(hDlg, IDC_MICON_IMAGE, pathFile);
+			}
+		} else if (LOWORD(wParam) == IDC_MICON_SOUND_B) {
+			TCHAR pathFile[MAX_PATH];
+			if (openFileBrowse(hDlg, OFN_EXFLAG_DETAILSVIEW, pathFile, lastPathSound)) {
+
+				// Extract Path for save lastPath
+				getPathFromFile(pathFile, lastPathSound);
+
+				SetDlgItemText(hDlg, IDC_MICON_SOUND, pathFile);
 			}
 		} else if (LOWORD(wParam) == IDC_MICON_EXEC_B) {
 			TCHAR pathFile[MAX_PATH];
@@ -2342,6 +2362,7 @@ BOOL inicializaApp(HWND hwnd) {
 	}
 
 	StringCchCopy(lastPathImage, CountOf(lastPathImage), configuracion->pathIconsDir);
+	StringCchCopy(lastPathSound, CountOf(lastPathSound), configuracion->pathExecutableDir);
 
 	ReleaseDC(hwnd, hdc);
 

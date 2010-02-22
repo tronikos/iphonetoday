@@ -24,6 +24,7 @@
 #define IDC_MICON_SCREEN                1001
 #define IDC_MICON_NAME                  1002
 #define IDC_MICON_IMAGE                 1003
+#define IDC_MICON_SOUND                 1004
 #define IDC_MICON_EXEC                  1005
 #define IDC_MICON_PARAMETERS            1006
 #define IDC_MICON_EXECALT               1007
@@ -36,6 +37,7 @@
 #define IDC_MICON_EXECALT_B             1016
 #define IDC_MICON_EXEC_B                1017
 #define IDC_MICON_LAUNCHANIMATION       1018
+#define IDC_MICON_SOUND_B               1019
 #define IDC_EDIT_MS_ICON_WIDTH          1032
 #define IDC_EDIT_MS_ICONS_PER_ROW       1033
 #define IDC_EDIT_MS_TEXT_HEIGHT         1034

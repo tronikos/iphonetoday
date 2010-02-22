@@ -30,6 +30,7 @@ public:
 	FLOAT y;
 	TCHAR nombre[MAX_PATH];			// name
 	TCHAR rutaImagen[MAX_PATH];		// image
+	TCHAR sound[MAX_PATH];			// sound
 	TCHAR ejecutable[MAX_PATH];		// exec
 	TCHAR parametros[MAX_PATH];		// parameters
 	TCHAR ejecutableAlt[MAX_PATH];	// execAlt
@@ -47,6 +48,7 @@ public:
 	CIcono(void);
 	~CIcono(void);
 
+	void defaultValues();
 	void loadImage(HDC *hDC, TCHAR *pathImage, int width = 0, int height = 0, int bitsPerPixel = PIXFMT_32BPP_ARGB);
 	void loadImageFromExec(HDC *hDC, TCHAR *pathExec, int width = 0, int height = 0);
 	void clearImageObjects();
