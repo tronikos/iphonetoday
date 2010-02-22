@@ -159,20 +159,13 @@ BOOL CConfiguracion::cargaXMLIconos(CListaPantalla *listaPantallas)
 					icono = pantalla->creaIcono();
 				} else {
 					icono = pantalla->listaIconos[nIcon];
-
-					wcscpy(icono->nombre, L"");
-					wcscpy(icono->rutaImagen, L"");
-					wcscpy(icono->ejecutable, L"");
-					wcscpy(icono->parametros, L"");
-					wcscpy(icono->ejecutableAlt, L"");
-					wcscpy(icono->parametrosAlt, L"");
-					icono->tipo = NOTIF_NORMAL;
-					icono->launchAnimation = 1;
+					icono->defaultValues();
 				}
 				nIcon++;
 
 				XMLUtils::GetAttr(pElemIcon, "name",			icono->nombre,			CountOf(icono->nombre));
 				XMLUtils::GetAttr(pElemIcon, "image",			icono->rutaImagen,		CountOf(icono->rutaImagen));
+				XMLUtils::GetAttr(pElemIcon, "sound",			icono->sound,			CountOf(icono->sound));
 				XMLUtils::GetAttr(pElemIcon, "exec",			icono->ejecutable,		CountOf(icono->ejecutable));
 				XMLUtils::GetAttr(pElemIcon, "parameters",		icono->parametros,		CountOf(icono->parametros));
 				XMLUtils::GetAttr(pElemIcon, "execAlt",			icono->ejecutableAlt,	CountOf(icono->ejecutableAlt));
@@ -549,6 +542,7 @@ BOOL CConfiguracion::saveXMLScreenIcons(TiXmlElement *pElemScreen, CPantalla *pa
 
 		XMLUtils::SetAttr(pElemIcon, "name",			icon->nombre,			CountOf(icon->nombre));
 		XMLUtils::SetAttr(pElemIcon, "image",			icon->rutaImagen,		CountOf(icon->rutaImagen));
+		XMLUtils::SetAttr(pElemIcon, "sound",			icon->sound,			CountOf(icon->sound));
 		XMLUtils::SetAttr(pElemIcon, "exec",			icon->ejecutable,		CountOf(icon->ejecutable));
 		XMLUtils::SetAttr(pElemIcon, "parameters",		icon->parametros,		CountOf(icon->parametros));
 		XMLUtils::SetAttr(pElemIcon, "execAlt",			icon->ejecutableAlt,	CountOf(icon->ejecutableAlt));

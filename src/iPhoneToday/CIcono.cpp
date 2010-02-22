@@ -16,12 +16,25 @@ CIcono::CIcono(void)
 	hDC = NULL;
 	imagenOld = NULL;
 
-	launchAnimation = 1;
+	defaultValues();
 }
 
 CIcono::~CIcono(void)
 {
 	clearImageObjects();
+}
+
+void CIcono::defaultValues()
+{
+	nombre[0] = 0;
+	rutaImagen[0] = 0;
+	sound[0] = 0;
+	ejecutable[0] = 0;
+	parametros[0] = 0;
+	ejecutableAlt[0] = 0;
+	parametrosAlt[0] = 0;
+	tipo = NOTIF_NORMAL;
+	launchAnimation = 1;
 }
 
 void CIcono::loadImage(HDC *hDC, TCHAR *pathImage, int width, int height, int bitsPerPixel) {
