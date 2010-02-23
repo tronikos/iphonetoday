@@ -279,9 +279,15 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lPara
 			if (listaPantallas->barraInferior != NULL && listaPantallas->barraInferior->numIconos > 0 && configuracion->bottomBarConfig->iconWidth > 0) {
 				h -= listaPantallas->barraInferior->altoPantalla;
 			}
-			int newy = estado->posObjetivo.y - ((h - configuracion->mainScreenConfig->offset.top) / configuracion->mainScreenConfig->distanceIconsV) * configuracion->mainScreenConfig->distanceIconsV;
-			int hh = configuracion->mainScreenConfig->offset.top + ((listaPantallas->listaPantalla[estado->pantallaActiva]->numIconos + configuracion->mainScreenConfig->iconsPerRow - 1) / configuracion->mainScreenConfig->iconsPerRow) * configuracion->mainScreenConfig->distanceIconsV;
-			if (newy > -(int)hh) {
+			int newy = estado->posObjetivo.y -
+				((h - configuracion->mainScreenConfig->offset.top)
+				/ configuracion->mainScreenConfig->distanceIconsV)
+				* configuracion->mainScreenConfig->distanceIconsV;
+			int hh = ((listaPantallas->listaPantalla[estado->pantallaActiva]->numIconos
+				+ configuracion->mainScreenConfig->iconsPerRow - 1)
+				/ configuracion->mainScreenConfig->iconsPerRow)
+				* configuracion->mainScreenConfig->distanceIconsV;
+			if (-newy < hh) {
 				estado->posObjetivo.y = newy;
 				SetTimer(hwnd, TIMER_RECUPERACION, configuracion->refreshTime, NULL);
 			}
