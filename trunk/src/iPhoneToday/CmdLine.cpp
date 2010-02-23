@@ -19,9 +19,11 @@ BOOL CommandLineArguements(HWND hwnd, LPCTSTR pCmdLine)
 	} else if (wcsicmp(pCmdLine, L"options") == 0) {
 		PostMessage(hwnd, WM_USER_OPTIONS, 0, 0);
 		return TRUE;
+#ifdef EXEC_MODE
 	} else if (wcsicmp(pCmdLine, L"close") == 0 || wcsicmp(pCmdLine, L"exit") == 0) {
 		PostMessage(hwnd, WM_DESTROY, 0, 0);
 		return TRUE;
+#endif
 	} else if (_wcsnicmp(pCmdLine, L"goto:", wcslen(L"goto:")) == 0) {
 		int l = wcslen(L"goto:");
 		if (wcscmp(pCmdLine + l, L"next") == 0) {
