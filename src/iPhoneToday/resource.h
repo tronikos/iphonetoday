@@ -13,6 +13,7 @@
 #define IDS_TAB5                        114
 #define IDS_TAB6                        115
 #define IDI_DISPLAYICON                 116
+#define IDD_MENU_HEADER                 120
 #define IDD_DIALOGDUMMY                 500
 #define IDD_DIALOGPAGE0                 510
 #define IDD_DIALOGPAGE1                 511
@@ -121,14 +122,15 @@
 #define IDC_BUTTON_BUBBLE_ALARM         1112
 #define IDC_BUTTON_HEADER_COLOR         1113
 #define IDC_CHECK_NO_WINDOW_TITLE       1114
+#define IDC_EDIT_HEADER                 1115
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        120
+#define _APS_NEXT_RESOURCE_VALUE        121
 #define _APS_NEXT_COMMAND_VALUE         40003
-#define _APS_NEXT_CONTROL_VALUE         1115
+#define _APS_NEXT_CONTROL_VALUE         1116
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
