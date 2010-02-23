@@ -90,6 +90,7 @@ BOOL borraObjetosHDC();
 BOOL borraHDC_HBITMPAP(HDC *hdc, HBITMAP *hbm, HBITMAP *hbmOld);
 void drawNotification(HDC hDC, RECT *rect, CIcono *imagen, TCHAR *texto);
 LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
+LRESULT CALLBACK editHeaderDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
 void doDestroy(HWND hwnd);
 void resizeWindow(HWND hwnd, BOOL fullScreen);
 void autoConfigure();
@@ -761,15 +762,21 @@ void RightClick(HWND hwnd, POINTS posCursor)
 
 	procesaPulsacion(hwnd, posCursor, FALSE, TRUE);
 
+	BOOL isClickOnHeader = configuracion->headerFontSize > 0 && posCursor.y < configuracion->mainScreenConfig->offset.top;
+
 	long timeActual = GetTickCount();
 
 	// Add menu
-	AppendMenu(hmenu, MF_STRING, MENU_POPUP_ADD, TEXT("Add Icon"));
-	if (moveIconoActivo.nIconoActual >= 0 && timeActual - moveTimeUltimaSeleccion < 12000) {
-		AppendMenu(hmenu, MF_STRING, MENU_POPUP_MOVE_HERE, TEXT("Move Here"));
-	}
-	if (copyIconoActivo.nIconoActual >= 0 && timeActual - copyTimeUltimaSeleccion < 12000) {
-		AppendMenu(hmenu, MF_STRING, MENU_POPUP_COPY_HERE, TEXT("Copy Here"));
+	if (isClickOnHeader) {
+		AppendMenu(hmenu, MF_STRING, MENU_POPUP_EDIT_HEADER, TEXT("Edit header"));
+	} else {
+		AppendMenu(hmenu, MF_STRING, MENU_POPUP_ADD, TEXT("Add Icon"));
+		if (moveIconoActivo.nIconoActual >= 0 && timeActual - moveTimeUltimaSeleccion < 12000) {
+			AppendMenu(hmenu, MF_STRING, MENU_POPUP_MOVE_HERE, TEXT("Move Here"));
+		}
+		if (copyIconoActivo.nIconoActual >= 0 && timeActual - copyTimeUltimaSeleccion < 12000) {
+			AppendMenu(hmenu, MF_STRING, MENU_POPUP_COPY_HERE, TEXT("Copy Here"));
+		}
 	}
 	if (iconoActual.nIconoActual >= 0) {
 		AppendMenu(hmenu, MF_STRING, MENU_POPUP_EDIT, TEXT("Edit Icon"));
@@ -801,6 +808,9 @@ void RightClick(HWND hwnd, POINTS posCursor)
 
 	switch (iMenuID)
 	{
+		case MENU_POPUP_EDIT_HEADER:
+			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_MENU_HEADER), hwnd, (DLGPROC)editHeaderDlgProc);
+			break;
 		case MENU_POPUP_ADD:
 			iconoActual.nIconoActual = -1;
 			//iconoActual.nPantallaActual = estado->pantallaActiva;
@@ -2187,6 +2197,90 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 
 				SetDlgItemText(hDlg, IDC_MICON_EXECALT, pathFile);
 			}
+		}
+		break;
+	case WM_DESTROY:
+		break;
+	}
+	return FALSE;
+}
+
+LRESULT CALLBACK editHeaderDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	switch (message)
+	{
+	case WM_INITDIALOG:
+		{
+			if (FindWindow(L"MS_SIPBUTTON", NULL) != NULL) {
+				SHMENUBARINFO mbi;
+
+				memset(&mbi, 0, sizeof(SHMENUBARINFO));  // Reset mbi to 0.
+				mbi.cbSize = sizeof(SHMENUBARINFO);
+				mbi.dwFlags = SHCMBF_EMPTYBAR;
+				mbi.hwndParent = hDlg;  // Soft key bar's owner.
+				mbi.nToolBarId = NULL;  // Soft key bar resource.
+				mbi.hInstRes = NULL;  // HINST in which resource is located.
+
+				g_hWndMenuBar = mbi.hwndMB;
+
+				if (g_hWndMenuBar) {
+					CommandBar_Destroy(g_hWndMenuBar);
+				}
+				// Create the Soft key bar.
+				if (!SHCreateMenuBar(&mbi))
+				{
+					g_hWndMenuBar = NULL;
+				}
+				else
+				{
+					g_hWndMenuBar = mbi.hwndMB;
+				}
+			}
+
+			SHINITDLGINFO shidi;
+
+			// Create a Done button and size it.
+			shidi.dwMask = SHIDIM_FLAGS;
+			shidi.dwFlags = SHIDIF_DONEBUTTON | SHIDIF_SIZEDLG | SHIDIF_WANTSCROLLBAR;
+			shidi.hDlg = hDlg;
+			SHInitDialog(&shidi);
+
+			SHInitExtraControls();
+
+			SetDlgItemText(hDlg, IDC_EDIT_HEADER, listaPantallas->listaPantalla[estado->pantallaActiva]->header);
+		}
+		return TRUE;
+
+	case WM_COMMAND:
+		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
+		{
+			int resp = MessageBox(hDlg, TEXT("Save Changes?"), TEXT("Exit"), MB_YESNOCANCEL);
+			if (resp == IDNO) {
+				if (g_hWndMenuBar) {
+					CommandBar_Destroy(g_hWndMenuBar);
+				}
+				EndDialog(hDlg, LOWORD(wParam));
+				return FALSE;
+			} else if (resp == IDCANCEL) {
+				return FALSE;
+			}
+
+			CPantalla *pantalla = listaPantallas->listaPantalla[estado->pantallaActiva];
+
+			TCHAR header[MAX_PATH];
+			GetDlgItemText(hDlg, IDC_EDIT_HEADER, header, MAX_PATH);
+			if (wcscmp(pantalla->header, header) != 0) {
+				StringCchCopy(pantalla->header, CountOf(pantalla->header), header);
+				configuracion->guardaXMLIconos(listaPantallas);
+				pantalla->debeActualizar = TRUE;
+			}
+
+			if (g_hWndMenuBar) {
+				CommandBar_Destroy(g_hWndMenuBar);
+			}
+
+			EndDialog(hDlg, LOWORD(wParam));
+			return FALSE;
 		}
 		break;
 	case WM_DESTROY:
