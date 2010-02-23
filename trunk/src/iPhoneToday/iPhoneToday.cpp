@@ -348,6 +348,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lPara
 
 LRESULT doTimer (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 {
+	BOOL shouldInvalidateRect = FALSE;
 	double movx;
 	double movy;
 	if (wParam == TIMER_LANZANDO_APP) {
@@ -410,6 +411,9 @@ LRESULT doTimer (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 		if (timeInicial > timeLanzamiento) {
 			estado->debeCortarTimeOut = TRUE;
 		}
+
+		shouldInvalidateRect = TRUE;
+
 	} else if (wParam == TIMER_ACTUALIZA_NOTIF) {
 		if (!estado->hayMovimiento) {
 			// Actualizamos las notificaciones
@@ -494,6 +498,7 @@ LRESULT doTimer (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 					}
 				}
 			}
+			shouldInvalidateRect = hayCambios || hayCambiosIcono || hayCambiosIconos;
 		}
 	} else if (wParam == TIMER_LONGTAP) {
 		KillTimer(hwnd, TIMER_LONGTAP);
@@ -556,12 +561,15 @@ LRESULT doTimer (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 				setPosiciones(false, int(movx), int(movy));
 			}
 		}
+		shouldInvalidateRect = TRUE;
 	}
 
-	RECT            rcWindBounds2;
-	GetClientRect( hwnd, &rcWindBounds2);
-	InvalidateRect(hwnd, &rcWindBounds2, FALSE);
-	UpdateWindow(hwnd);
+	if (shouldInvalidateRect) {
+		RECT            rcWindBounds2;
+		GetClientRect( hwnd, &rcWindBounds2);
+		InvalidateRect(hwnd, &rcWindBounds2, FALSE);
+		UpdateWindow(hwnd);
+	}
 
 	return 0;
 }
@@ -795,7 +803,7 @@ void RightClick(HWND hwnd, POINTS posCursor)
 	{
 		case MENU_POPUP_ADD:
 			iconoActual.nIconoActual = -1;
-			iconoActual.nPantallaActual = estado->pantallaActiva;
+			//iconoActual.nPantallaActual = estado->pantallaActiva;
 		case MENU_POPUP_EDIT:
 			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_MENU_ICON), hwnd, (DLGPROC)editaIconoDlgProc);
 			break;
@@ -1052,9 +1060,7 @@ void pintaIconos(HDC *hDC, RECT *rcWindBounds) {
 
 void pintaIcono(HDC *hDC, CIcono *icono, BOOL esBarraInferior) {
 	// Iniciamos el proceso de pintado
-	HDC hdcIconos;
 	RECT posTexto;
-	hdcIconos = CreateCompatibleDC(*hDC);
 	CConfigurationScreen *cs;
 	if (esBarraInferior) {
 		cs = configuracion->bottomBarConfig;
@@ -1361,8 +1367,6 @@ void pintaIcono(HDC *hDC, CIcono *icono, BOOL esBarraInferior) {
 	if (cs->fontSize > 0) {
 		DrawText(*hDC, icono->nombre, -1, &posTexto, DT_CENTER | DT_TOP);
 	}
-
-	DeleteDC(hdcIconos);
 }
 
 void pintaPantalla(HDC *hDC, CPantalla *pantalla, BOOL esBarraInferior) {
@@ -1452,19 +1456,22 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, BOOL esBarraInferior) {
 	}
 
 	// Pintamos la pantalla
-	if (pantalla->x + configuracion->anchoPantalla >= 0
-		&& pantalla->x <= configuracion->anchoPantalla) {
-
+	if (pantalla->x + configuracion->anchoPantalla >= 0 && pantalla->x < configuracion->anchoPantalla) {
 		int posX = int(pantalla->x);
 		int posY = int(pantalla->y);
-		int ancho = pantalla->anchoPantalla;
-		int alto = pantalla->altoPantalla;
-
-		if (posX < 0) {
-			ancho = pantalla->anchoPantalla + posX;
-			posX = 0;
+		int xDestOrg = max(posX, 0);
+		int yDestOrg = max(posY, 0);
+		int xSrcOrg = abs(min(posX, 0));
+		int ySrcOrg = abs(min(posY, 0));
+		int cx = configuracion->anchoPantalla - abs(posX);
+		int cy;
+		if (esBarraInferior) {
+			cy = pantalla->altoPantalla;
 		} else {
-			ancho = pantalla->anchoPantalla - posX;
+			cy = configuracion->altoPantalla - yDestOrg;
+			if (listaPantallas->barraInferior != NULL && listaPantallas->barraInferior->numIconos > 0 && configuracion->bottomBarConfig->iconWidth > 0) {
+				cy -= listaPantallas->barraInferior->altoPantalla;
+			}
 		}
 
 		BOOL isTransparent = configuracion->fondoTransparente;
@@ -1472,11 +1479,9 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, BOOL esBarraInferior) {
 		isTransparent = FALSE;
 #endif
 		if (isTransparent || configuracion->fondoPantalla != NULL) {
-			TransparentBlt(*hDC, int(pantalla->x), int(pantalla->y), pantalla->anchoPantalla, pantalla->altoPantalla,
-				pantalla->hDC, 0, 0, pantalla->anchoPantalla, pantalla->altoPantalla, estado->colorFondo);
+			TransparentBlt(*hDC, xDestOrg, yDestOrg, cx, cy, pantalla->hDC, xSrcOrg, ySrcOrg, cx, cy, estado->colorFondo);
 		} else {
-			BitBlt(*hDC, int(pantalla->x), int(pantalla->y), pantalla->anchoPantalla, pantalla->altoPantalla,
-				pantalla->hDC, 0, 0, SRCCOPY);
+			BitBlt(*hDC, xDestOrg, yDestOrg, cx, cy, pantalla->hDC, xSrcOrg, ySrcOrg, SRCCOPY);
 		}
 	}
 }
@@ -1749,56 +1754,33 @@ void procesaPulsacion(HWND hwnd, POINTS posCursor, BOOL doubleClick, BOOL noLanz
 
 	CPantalla *pantalla;
 	CIcono *icono = NULL;
-	BOOL enc = false;
-	UINT i;
-
-	iconoActual.nPantallaActual = estado->pantallaActiva;
-	iconoActual.nIconoActual = -1;
+	int iconWidth;
 
 	BOOL isClickOnBottomBar = listaPantallas->barraInferior != NULL && listaPantallas->barraInferior->numIconos > 0 && configuracion->bottomBarConfig->iconWidth > 0
 		&& posCursor.x >= listaPantallas->barraInferior->x && posCursor.x <= (listaPantallas->barraInferior->x + listaPantallas->barraInferior->anchoPantalla)
 		&& posCursor.y >= listaPantallas->barraInferior->y && posCursor.y <= (listaPantallas->barraInferior->y + listaPantallas->barraInferior->altoPantalla);
 
-	if (!enc && isClickOnBottomBar) {
+	if (isClickOnBottomBar) {
 		pantalla = listaPantallas->barraInferior;
-		i = 0;
-		while (i < pantalla->numIconos && !enc) {
-			icono = pantalla->listaIconos[i];
-			if (posCursor.x >= pantalla->x + icono->x && posCursor.x <= pantalla->x + icono->x + configuracion->bottomBarConfig->iconWidth &&
-				posCursor.y >= pantalla->y + icono->y && posCursor.y <= pantalla->y + icono->y + configuracion->bottomBarConfig->iconWidth) {
-					enc = true;
-					iconoActual.nPantallaActual = -1;
-					iconoActual.nIconoActual = i;
-			}
-
-			i++;
-		}
-
-		if (noLanzar) {
-			enc = true;
-			iconoActual.nPantallaActual = -1;
-		}
-	}
-
-	pantalla = listaPantallas->listaPantalla[estado->pantallaActiva];
-	i = 0;
-	while (!enc && i < pantalla->numIconos) {
-		icono = pantalla->listaIconos[i];
-		if (posCursor.x >= pantalla->x + icono->x && posCursor.x <= pantalla->x + icono->x + configuracion->mainScreenConfig->iconWidth &&
-			posCursor.y >= pantalla->y + icono->y && posCursor.y <= pantalla->y + icono->y + configuracion->mainScreenConfig->iconWidth) {
-				enc = true;
-				iconoActual.nIconoActual = i;
-		}
-
-		i++;
-	}
-
-	if (!enc && isClickOnBottomBar) {
-		enc = true;
+		iconWidth = configuracion->bottomBarConfig->iconWidth;
 		iconoActual.nPantallaActual = -1;
+	} else {
+		pantalla = listaPantallas->listaPantalla[estado->pantallaActiva];
+		iconWidth = configuracion->mainScreenConfig->iconWidth;
+		iconoActual.nPantallaActual = estado->pantallaActiva;
+	}
+	iconoActual.nIconoActual = -1;
+
+	for (UINT i = 0; i < pantalla->numIconos; i++) {
+		icono = pantalla->listaIconos[i];
+		if (posCursor.x >= pantalla->x + icono->x && posCursor.x <= pantalla->x + icono->x + iconWidth &&
+			posCursor.y >= pantalla->y + icono->y && posCursor.y <= pantalla->y + icono->y + iconWidth) {
+				iconoActual.nIconoActual = i;
+				break;
+		}
 	}
 
-	if (!noLanzar && enc && iconoActual.nIconoActual >= 0) {
+	if (!noLanzar && iconoActual.nIconoActual >= 0) {
 
 		if (_tcsclen(icono->sound) > 0) {
 			TCHAR fullPath[MAX_PATH];
