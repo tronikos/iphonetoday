@@ -17,7 +17,11 @@ void CConfigurationScreen::calculate(BOOL isBottombar, int maxIcons, UINT screen
 
 	iconWidth = iconWidthXML;
 	if (iconsPerRowXML == 0) {
-		iconsPerRow = w / (iconWidth + minHorizontalSpace);
+		if (iconWidth == 0) {
+			iconsPerRow = maxIcons;
+		} else {
+			iconsPerRow = w / (iconWidth + minHorizontalSpace);
+		}
 	} else {
 		iconsPerRow = iconsPerRowXML;
 	}
