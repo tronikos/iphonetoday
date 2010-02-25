@@ -2438,18 +2438,22 @@ BOOL inicializaApp(HWND hwnd) {
 BOOL borraObjetosHDC() {
 	borraHDC_HBITMPAP(&hDCMem, &hbmMem, &hbmMemOld);
 
-	borraHDC_HBITMPAP(
-		&listaPantallas->barraInferior->hDC,
-		&listaPantallas->barraInferior->imagen,
-		&listaPantallas->barraInferior->imagenOld);
-	listaPantallas->barraInferior->debeActualizar = TRUE;
-
-	for (UINT i = 0; i < listaPantallas->numPantallas; i++) {
+	if (listaPantallas->barraInferior != NULL) {
 		borraHDC_HBITMPAP(
-			&listaPantallas->listaPantalla[i]->hDC,
-			&listaPantallas->listaPantalla[i]->imagen,
-			&listaPantallas->listaPantalla[i]->imagenOld);
-		listaPantallas->listaPantalla[i]->debeActualizar = TRUE;
+			&listaPantallas->barraInferior->hDC,
+			&listaPantallas->barraInferior->imagen,
+			&listaPantallas->barraInferior->imagenOld);
+		listaPantallas->barraInferior->debeActualizar = TRUE;
+	}
+
+	if (listaPantallas != NULL) {
+		for (UINT i = 0; i < listaPantallas->numPantallas; i++) {
+			borraHDC_HBITMPAP(
+				&listaPantallas->listaPantalla[i]->hDC,
+				&listaPantallas->listaPantalla[i]->imagen,
+				&listaPantallas->listaPantalla[i]->imagenOld);
+			listaPantallas->listaPantalla[i]->debeActualizar = TRUE;
+		}
 	}
 
 	if(hBrushFondo) {
