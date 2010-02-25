@@ -174,6 +174,9 @@ BOOL CConfiguracion::cargaXMLIconos(CListaPantalla *listaPantallas)
 				XMLUtils::GetAttr(pElemIcon, "animation",		&icono->launchAnimation);
 			}
 		}
+		while (nIcon < pantalla->numIconos) {
+			pantalla->borraIcono(nIcon);
+		}
 	}
 
 	while (nScreen < listaPantallas->numPantallas) {
