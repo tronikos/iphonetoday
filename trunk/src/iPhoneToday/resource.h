@@ -123,6 +123,7 @@
 #define IDC_BUTTON_HEADER_COLOR         1113
 #define IDC_CHECK_NO_WINDOW_TITLE       1114
 #define IDC_EDIT_HEADER                 1115
+#define IDC_EDIT_CIRCLES_OFFSET         1116
 
 // Next default values for new objects
 // 
@@ -130,7 +131,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        121
 #define _APS_NEXT_COMMAND_VALUE         40003
-#define _APS_NEXT_CONTROL_VALUE         1116
+#define _APS_NEXT_CONTROL_VALUE         1117
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

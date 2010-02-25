@@ -1022,6 +1022,12 @@ void pintaIconos(HDC *hDC, RECT *rcWindBounds) {
 		pintaPantalla(hDC, pantalla);
 	}
 
+	// Pintamos la barra inferior de botones
+	BOOL hasBottomBar = listaPantallas->barraInferior != NULL && listaPantallas->barraInferior->numIconos > 0 && configuracion->bottomBarConfig->iconWidth > 0;
+	if (hasBottomBar) {
+		pintaPantalla(hDC, listaPantallas->barraInferior, TRUE);
+	}
+
 	// Pintamos los circulos para indicar pantalla activa
 	RECT posCirculos;
 	COLORREF color;
@@ -1033,10 +1039,9 @@ void pintaIconos(HDC *hDC, RECT *rcWindBounds) {
 	if (nCirculos > 1) {
 		xReferencia = int((configuracion->anchoPantalla / 2) - ((nCirculos - 1) * (anchoCirculo + distanciaCirculo) + anchoCirculo) / 2);
 
-		if (listaPantallas->barraInferior != NULL && listaPantallas->barraInferior->numIconos > 0 && configuracion->bottomBarConfig->iconWidth > 0) {
-			posCirculos.top = int(configuracion->altoPantalla - listaPantallas->barraInferior->altoPantalla - anchoCirculo);
-		} else {
-			posCirculos.top = int(configuracion->altoPantalla - anchoCirculo - distanciaCirculo);
+		posCirculos.top = int(configuracion->altoPantalla) - anchoCirculo - configuracion->circlesOffset;
+		if (hasBottomBar) {
+			posCirculos.top -= listaPantallas->barraInferior->altoPantalla;
 		}
 		posCirculos.bottom = posCirculos.top + anchoCirculo;
 
@@ -1062,10 +1067,6 @@ void pintaIconos(HDC *hDC, RECT *rcWindBounds) {
 		}
 	}
 
-	// Pintamos la barra inferior de botones
-	if (listaPantallas->barraInferior != NULL && listaPantallas->barraInferior->numIconos > 0 && configuracion->bottomBarConfig->iconWidth > 0) {
-		pintaPantalla(hDC, listaPantallas->barraInferior, TRUE);
-	}
 }
 
 void pintaIcono(HDC *hDC, CIcono *icono, BOOL esBarraInferior) {
@@ -1725,6 +1726,8 @@ BOOL LaunchApplication(LPCTSTR pCmdLine, LPCTSTR pParametros)
 
 void procesaPulsacion(HWND hwnd, POINTS posCursor, BOOL doubleClick, BOOL noLanzar) {
 
+	BOOL hasBottomBar = listaPantallas->barraInferior != NULL && listaPantallas->barraInferior->numIconos > 0 && configuracion->bottomBarConfig->iconWidth > 0;
+
 	int nCirculos = listaPantallas->numPantallas;
 	int anchoCirculo = configuracion->circlesDiameter;
 	int distanciaCirculo = configuracion->circlesDistance;
@@ -1734,10 +1737,9 @@ void procesaPulsacion(HWND hwnd, POINTS posCursor, BOOL doubleClick, BOOL noLanz
 	xLeft = int((configuracion->anchoPantalla / 2) - ((nCirculos - 1) * (anchoCirculo + distanciaCirculo) + anchoCirculo) / 2);
 	xRight = xLeft + (nCirculos - 1) * (anchoCirculo + distanciaCirculo) + anchoCirculo;
 
-	if (listaPantallas->barraInferior != NULL && listaPantallas->barraInferior->numIconos > 0 && configuracion->bottomBarConfig->iconWidth > 0) {
-		yTop = int(configuracion->altoPantalla - listaPantallas->barraInferior->altoPantalla - anchoCirculo);
-	} else {
-		yTop = int(configuracion->altoPantalla - anchoCirculo - distanciaCirculo);
+	yTop = int(configuracion->altoPantalla) - anchoCirculo - configuracion->circlesOffset;
+	if (hasBottomBar) {
+		yTop -= listaPantallas->barraInferior->altoPantalla;
 	}
 	yBottom = yTop + anchoCirculo;
 
@@ -1766,7 +1768,7 @@ void procesaPulsacion(HWND hwnd, POINTS posCursor, BOOL doubleClick, BOOL noLanz
 	CIcono *icono = NULL;
 	int iconWidth;
 
-	BOOL isClickOnBottomBar = listaPantallas->barraInferior != NULL && listaPantallas->barraInferior->numIconos > 0 && configuracion->bottomBarConfig->iconWidth > 0
+	BOOL isClickOnBottomBar = hasBottomBar
 		&& posCursor.x >= listaPantallas->barraInferior->x && posCursor.x <= (listaPantallas->barraInferior->x + listaPantallas->barraInferior->anchoPantalla)
 		&& posCursor.y >= listaPantallas->barraInferior->y && posCursor.y <= (listaPantallas->barraInferior->y + listaPantallas->barraInferior->altoPantalla);
 
@@ -2779,6 +2781,7 @@ void autoConfigure()
 
 		configuracion->circlesDiameter = iconWidth / 6;
 		configuracion->circlesDistance = configuracion->circlesDiameter / 2;
+		configuracion->circlesOffset = configuracion->circlesDistance;
 	}
 
 	configuracion->alreadyConfigured = 1;

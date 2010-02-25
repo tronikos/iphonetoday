@@ -57,6 +57,7 @@ public:
 	// Circles
 	UINT circlesDiameter;
 	UINT circlesDistance;
+	INT circlesOffset;
 
 	// Header
 	UINT headerFontSize;
