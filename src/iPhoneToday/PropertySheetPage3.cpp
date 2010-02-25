@@ -39,9 +39,10 @@ LRESULT CALLBACK OptionDialog3(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 				SetDlgItemInt(hDlg, IDC_EDIT_HEADER_OFFSET,		configuracion->headerOffset,		TRUE);
 				SetDlgItemInt(hDlg, IDC_EDIT_CIRCLES_DIAMETER,	configuracion->circlesDiameter,		TRUE);
 				SetDlgItemInt(hDlg, IDC_EDIT_CIRCLES_DISTANCE,	configuracion->circlesDistance,		TRUE);
-				SetDlgItemText(hDlg, IDC_EDIT_BUBBLE_NOTIF,			configuracion->bubble_notif);
-				SetDlgItemText(hDlg, IDC_EDIT_BUBBLE_STATE,			configuracion->bubble_state);
-				SetDlgItemText(hDlg, IDC_EDIT_BUBBLE_ALARM,			configuracion->bubble_alarm);
+				SetDlgItemInt(hDlg, IDC_EDIT_CIRCLES_OFFSET,	configuracion->circlesOffset,		TRUE);
+				SetDlgItemText(hDlg, IDC_EDIT_BUBBLE_NOTIF,		configuracion->bubble_notif);
+				SetDlgItemText(hDlg, IDC_EDIT_BUBBLE_STATE,		configuracion->bubble_state);
+				SetDlgItemText(hDlg, IDC_EDIT_BUBBLE_ALARM,		configuracion->bubble_alarm);
 			} else {
 				MessageBox(hDlg, L"Empty Configuration!", 0, MB_OK);
 			}
@@ -92,7 +93,7 @@ LRESULT CALLBACK OptionDialog3(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 
 BOOL SaveConfiguration3(HWND hDlg)
 {
-	int headerHeight, headerColor, headerWeight, headerOffset, circlesDiameter, circlesDistance;
+	int headerHeight, headerColor, headerWeight, headerOffset, circlesDiameter, circlesDistance, circlesOffset;
 
 	headerHeight	= GetDlgItemInt(hDlg, IDC_EDIT_HEADER_HEIGHT,	NULL, TRUE);
 	headerColor		= GetDlgItemHex(hDlg, IDC_EDIT_HEADER_COLOR,	NULL);
@@ -100,6 +101,7 @@ BOOL SaveConfiguration3(HWND hDlg)
 	headerOffset	= GetDlgItemInt(hDlg, IDC_EDIT_HEADER_OFFSET,	NULL, TRUE);
 	circlesDiameter	= GetDlgItemInt(hDlg, IDC_EDIT_CIRCLES_DIAMETER,NULL, TRUE);
 	circlesDistance	= GetDlgItemInt(hDlg, IDC_EDIT_CIRCLES_DISTANCE,NULL, TRUE);
+	circlesOffset	= GetDlgItemInt(hDlg, IDC_EDIT_CIRCLES_OFFSET,	NULL, TRUE);
 
 	if (headerHeight < 0 || headerHeight > 128) {
 		MessageBox(hDlg, TEXT("Header height value is not valid!"), TEXT("Error"), MB_OK);
@@ -121,6 +123,10 @@ BOOL SaveConfiguration3(HWND hDlg)
 		MessageBox(hDlg, TEXT("Circles distance value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
+	if (circlesOffset < -800 || circlesDistance > 800) {
+		MessageBox(hDlg, TEXT("Circles offset value is not valid!"), TEXT("Error"), MB_OK);
+		return FALSE;
+	}
 
 	configuracion->headerFontSize = headerHeight;
 	configuracion->headerFontColor = headerColor;
@@ -128,6 +134,7 @@ BOOL SaveConfiguration3(HWND hDlg)
 	configuracion->headerOffset = headerOffset;
 	configuracion->circlesDiameter = circlesDiameter;
 	configuracion->circlesDistance = circlesDistance;
+	configuracion->circlesOffset = circlesOffset;
 
 	GetDlgItemText(hDlg, IDC_EDIT_BUBBLE_NOTIF, configuracion->bubble_notif, CountOf(configuracion->bubble_notif));
 	GetDlgItemText(hDlg, IDC_EDIT_BUBBLE_STATE, configuracion->bubble_state, CountOf(configuracion->bubble_state));

@@ -330,6 +330,7 @@ void CConfiguracion::defaultValues()
 
 	this->circlesDiameter = 15;
 	this->circlesDistance = 7;
+	this->circlesOffset = 7;
 
 	this->headerFontSize = 0;
 	this->headerFontWeight = 900;
@@ -338,7 +339,7 @@ void CConfiguracion::defaultValues()
 
 	this->fondoTransparente = 1;
 	this->fondoColor = RGB(0, 0, 0);
-	this->fondoEstatico = 0;
+	this->fondoEstatico = 1;
 	StringCchCopy(this->strFondoPantalla, CountOf(this->strFondoPantalla), L"");
 
 	this->umbralMovimiento = 15;
@@ -410,6 +411,7 @@ BOOL CConfiguracion::cargaXMLConfig()
 		if(_stricmp(nameNode, "Circles") == 0) {
 			XMLUtils::GetAttr(pElem, "diameter", &this->circlesDiameter);
 			XMLUtils::GetAttr(pElem, "distance", &this->circlesDistance);
+			XMLUtils::GetAttr(pElem, "offset", &this->circlesOffset);
 		} else if(_stricmp(nameNode, "Header") == 0) {
 			XMLUtils::GetAttr(pElem, "size",   &this->headerFontSize);
 			XMLUtils::GetAttr(pElem, "color",  &this->headerFontColor);
@@ -582,6 +584,7 @@ BOOL CConfiguracion::guardaXMLConfig()
 	pElem = new TiXmlElement("Circles");
 	XMLUtils::SetAttr(pElem, "diameter", this->circlesDiameter);
 	XMLUtils::SetAttr(pElem, "distance", this->circlesDistance);
+	XMLUtils::SetAttr(pElem, "offset",   this->circlesOffset);
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("Header");
