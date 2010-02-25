@@ -204,6 +204,9 @@ BOOL CConfiguracion::cargaIconos(HDC *hDC, CListaPantalla *listaPantallas)
 		if (listaPantallas->numPantallas == 0) {
 			listaPantallas->creaPantalla();
 		}
+		if (listaPantallas->barraInferior == NULL) {
+			listaPantallas->barraInferior = new CPantalla();
+		}
 		return result;
 	}
 
