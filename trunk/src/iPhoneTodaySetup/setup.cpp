@@ -23,6 +23,70 @@ BOOL APIENTRY DllMain(
 	return TRUE;
 }
 
+BOOL FileOrDirExists(TCHAR *file, BOOL dir)
+{
+	BOOL rc = 0;
+
+	DWORD attribs = GetFileAttributes(file);
+	if (attribs != -1) {
+		if ( (attribs & FILE_ATTRIBUTE_DIRECTORY) != 0) {
+			if (dir) rc = 1;
+		} else {
+			if (!dir) rc = 1;
+		}
+	}
+
+	return rc;
+}
+
+BOOL FileExists(TCHAR *file)
+{
+	return FileOrDirExists(file, FALSE);
+}
+
+void BackupOrRestoreSettings(HWND hwndParent, LPCTSTR pszInstallDir, BOOL backup)
+{
+	TCHAR pszSettingsXML[MAX_PATH];
+	TCHAR pszSettingsBAK[MAX_PATH];
+
+	TCHAR pszIconsXML[MAX_PATH];
+	TCHAR pszIconsBAK[MAX_PATH];
+
+	StringCchPrintf(pszSettingsXML, MAX_PATH, L"%s\\%s", pszInstallDir, L"settings.xml");
+	StringCchPrintf(pszSettingsBAK, MAX_PATH, L"%s\\%s", pszInstallDir, L"settings.bak");
+
+	StringCchPrintf(pszIconsXML, MAX_PATH, L"%s\\%s", pszInstallDir, L"icons.xml");
+	StringCchPrintf(pszIconsBAK, MAX_PATH, L"%s\\%s", pszInstallDir, L"icons.bak");
+
+	BOOL bSettingsXMLExists = FileExists(pszSettingsXML);
+
+	BOOL bIconsXMLExists = FileExists(pszIconsXML);
+
+	if (backup) {
+		if (bSettingsXMLExists || bIconsXMLExists) {
+			if (MessageBox(hwndParent,
+					L"A previous version was detected. Do you want to keep your current icons.xml and settings.xml?",
+					L"Keep settings?", MB_YESNO | MB_ICONQUESTION) == IDYES) {
+				if (bSettingsXMLExists) {
+					CopyFile(pszSettingsXML, pszSettingsBAK, FALSE);
+				}
+				if (bIconsXMLExists) {
+					CopyFile(pszIconsXML, pszIconsBAK, FALSE);
+				}
+			}
+		}
+	} else {
+		if (FileExists(pszSettingsBAK)) {
+			CopyFile(pszSettingsBAK, pszSettingsXML, FALSE);
+			DeleteFile(pszSettingsBAK);
+		}
+		if (FileExists(pszIconsBAK)) {
+			CopyFile(pszIconsBAK, pszIconsXML, FALSE);
+			DeleteFile(pszIconsBAK);
+		}
+	}
+}
+
 void RemoveRegistry() {
 	HKEY myKey;
 	if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, L"Software\\Microsoft\\Today\\Items", 0, 0, &myKey) == ERROR_SUCCESS) {
@@ -111,7 +175,11 @@ SETUP_API codeINSTALL_INIT Install_Init(
     LPCTSTR     pszInstallDir
     )
 {
-	// Not going to use fPreviouslyInstalled because it produce some unexpected behavior like program unsuccessfully installed
+//	NKDbgPrintfW(L"Install_Init (fFirstCall = %d, fPreviouslyInstalled = %d, pszInstallDir = %s)\n", fFirstCall, fPreviouslyInstalled, pszInstallDir);
+
+	if (fPreviouslyInstalled) {
+		BackupOrRestoreSettings(hwndParent, pszInstallDir, TRUE);
+	}
 
 	if (fFirstCall) {  // Disable the plug-in once will do
 		ToggleTodayPlugin(FALSE);
@@ -150,6 +218,10 @@ SETUP_API codeINSTALL_EXIT Install_Exit(
     WORD    cFailedShortcuts
     )
 {
+//	NKDbgPrintfW(L"Install_Exit\n");
+
+	BackupOrRestoreSettings(hwndParent, pszInstallDir, FALSE);
+
 	if (MessageBox(hwndParent, L"Would you like to enable today plugin?", L"Installation", MB_YESNO | MB_ICONQUESTION) == IDYES) {
 		DisableAllTodayPlugins();
 		ToggleTodayPlugin(TRUE);
@@ -187,6 +259,8 @@ SETUP_API codeUNINSTALL_INIT Uninstall_Init(
     LPCTSTR     pszInstallDir
     )
 {
+//	NKDbgPrintfW(L"Uninstall_Init\n");
+
 	ToggleTodayPlugin(FALSE);
 	RemoveRegistry();
 
@@ -215,6 +289,8 @@ SETUP_API codeUNINSTALL_EXIT Uninstall_Exit(
     HWND    hwndParent
     )
 {
+//	NKDbgPrintfW(L"Uninstall_Exit\n");
+
 /*
 	TCHAR InstallInfo[255];
 
