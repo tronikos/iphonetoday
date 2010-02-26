@@ -86,6 +86,8 @@ LRESULT CALLBACK OptionDialog3(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 			}
 		}
 		return 0;
+	case WM_CTLCOLORSTATIC:
+		return (LRESULT)GetStockObject(WHITE_BRUSH);
 	}
 
 	return DefWindowProc(hDlg, uMsg, wParam, lParam);

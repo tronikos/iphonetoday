@@ -87,7 +87,7 @@ typedef struct
 #define MAX_PANTALLAS 32
 #define MAX_ICONOS_PANTALLA 64
 
-#define NUM_CONFIG_SCREENS 7
+#define NUM_CONFIG_SCREENS 8
 
 #define TIMER_RECUPERACION		10000
 #define TIMER_ACTUALIZA_NOTIF	10001
@@ -125,6 +125,7 @@ typedef struct
 #define NOTIF_ALARM			11
 #define NOTIF_CLOCK			12
 #define NOTIF_CLOCK_ALARM	13
+#define NOTIF_BATTERY		14
 
 #define NOTIF_NORMAL_TXT		TEXT("Normal")
 #define NOTIF_LLAMADAS_TXT		TEXT("Missed Calls")
@@ -142,3 +143,4 @@ typedef struct
 #define NOTIF_ALARM_TXT			TEXT("Alarm State")
 #define NOTIF_CLOCK_TXT			TEXT("Clock")
 #define NOTIF_CLOCK_ALARM_TXT	TEXT("Clock & Alarm State")
+#define NOTIF_BATTERY_TXT		TEXT("Battery")

@@ -36,6 +36,7 @@
         <icon name="PsShutXP" image="psshutxp.png" sound="" exec="\Windows\Start Menu\Programs\Sistema\psShutXP.lnk" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
         <icon name="RAM Settings" image="ramsweeper.png" sound="" exec="\Windows\Start Menu\Programs\Sistema\RAM Sweeper.lnk" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
         <icon name="Registry" image="registry.png" sound="" exec="\Windows\Start Menu\Programs\Sistema\PHM Registry Editor.lnk" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
+        <icon name="Battery" image="battery.png" sound="" exec="ctlpnl" parameters="cplmain.cpl,3" execAlt="" parametersAlt="" type="14" animation="1" />
     </screen>
     <BottomBar>
         <icon name="Phone" image="phone.png" sound="" exec="\Windows\cprog.exe" parameters="" execAlt="" parametersAlt="" type="1" animation="1" />

@@ -60,7 +60,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				AdditionalOptions="-n"
-				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES)"
+				PreprocessorDefinitions="EXEC_MODE;_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES)"
 				Culture="1033"
 				AdditionalIncludeDirectories="$(IntDir)"
 			/>
@@ -150,7 +150,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				AdditionalOptions="-n"
-				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES)"
+				PreprocessorDefinitions="EXEC_MODE;_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES)"
 				Culture="1033"
 				AdditionalIncludeDirectories="$(IntDir)"
 			/>
@@ -240,7 +240,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				AdditionalOptions="-n"
-				PreprocessorDefinitions="NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES)"
+				PreprocessorDefinitions="EXEC_MODE;NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES)"
 				Culture="1033"
 				AdditionalIncludeDirectories="$(IntDir)"
 			/>
@@ -332,7 +332,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				AdditionalOptions="-n"
-				PreprocessorDefinitions="NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES)"
+				PreprocessorDefinitions="EXEC_MODE;NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES)"
 				Culture="1033"
 				AdditionalIncludeDirectories="$(IntDir)"
 			/>
@@ -481,6 +481,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\iPhoneToday\PropertySheetPage7.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\iPhoneToday\RegistryUtils.cpp"
 				>
 			</File>
@@ -579,6 +583,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\iPhoneToday\VersionNo.h"
+				>
+			</File>
+			<File
 				RelativePath="..\iPhoneToday\vibrate.h"
 				>
 			</File>
@@ -594,6 +602,10 @@
 			>
 			<File
 				RelativePath="..\iPhoneToday\IconoApp.ico"
+				>
+			</File>
+			<File
+				RelativePath="..\iPhoneToday\iPhoneToday.rc2"
 				>
 			</File>
 			<File

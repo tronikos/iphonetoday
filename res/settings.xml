@@ -19,13 +19,14 @@
         <Font size="11" color="16777215" bold="0" offset="0" />
         <Background color1="0" color2="0" />
     </BottomBar>
-    <Circles diameter="7" distance="3" offset="3"/>
+    <Circles diameter="7" distance="3" offset="3" />
     <Header size="0" color="16777215" weight="900" offset="0" />
     <Background transparent="1" color="0" static="1" wallpaper="" />
     <Movement MoveThreshold="15" MaxVelocity="140" MinVelocity="20" RefreshTime="20" FactorMov="4" VerticalScroll="0" />
     <DayOfWeek color="16777215" width="18" height="40" weight="400" Sunday="Sun" Monday="Mon" Tuesday="Tue" Wednesday="Wed" Thursday="Thu" Friday="Fri" Saturday="Sat" />
     <DayOfMonth color="1973790" width="30" height="80" weight="800" />
     <Clock color="15132390" width="13" height="60" weight="900" format12="0" />
+    <Battery color="15132390" width="25" height="70" weight="900" />
     <Bubbles notif="bubble_notif.png" state="bubble_state.png" alarm="bubble_alarm.png" />
     <OnLaunchIcon close="0" vibrate="40" animate="1" />
     <NotifyTimer>2000</NotifyTimer>

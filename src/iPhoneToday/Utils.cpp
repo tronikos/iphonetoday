@@ -132,3 +132,27 @@ FILETIME FileModifyTime(TCHAR *file)
 
 	return filetime;
 }
+
+BOOL ExternalPowered()
+{
+	SYSTEM_POWER_STATUS_EX pwrStatus;
+	if (GetSystemPowerStatusEx(&pwrStatus,TRUE)) {
+		if (pwrStatus.ACLineStatus == 1
+		|| pwrStatus.BatteryFlag == 8 // charging
+		|| pwrStatus.BatteryFlag == 128 // no battery
+		|| pwrStatus.BatteryLifePercent > 100) {
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
+
+int BatteryPercentage()
+{
+	int b = -1;
+	SYSTEM_POWER_STATUS_EX pwrStatus;
+	if (GetSystemPowerStatusEx(&pwrStatus, TRUE)) {
+		b = pwrStatus.BatteryLifePercent;
+	}
+	return b;
+}

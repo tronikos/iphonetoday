@@ -12,7 +12,8 @@
 #define IDS_TAB4                        113
 #define IDS_TAB5                        114
 #define IDS_TAB6                        115
-#define IDI_DISPLAYICON                 116
+#define IDS_TAB7                        116
+#define IDI_DISPLAYICON                 117
 #define IDD_MENU_HEADER                 120
 #define IDD_DIALOGDUMMY                 500
 #define IDD_DIALOGPAGE0                 510
@@ -22,6 +23,7 @@
 #define IDD_DIALOGPAGE4                 514
 #define IDD_DIALOGPAGE5                 515
 #define IDD_DIALOGPAGE6                 516
+#define IDD_DIALOGPAGE7                 517
 #define IDC_MICON_SCREEN                1001
 #define IDC_MICON_NAME                  1002
 #define IDC_MICON_IMAGE                 1003
@@ -124,6 +126,13 @@
 #define IDC_CHECK_NO_WINDOW_TITLE       1114
 #define IDC_EDIT_HEADER                 1115
 #define IDC_EDIT_CIRCLES_OFFSET         1116
+#define IDC_STATICAPPVER                1117
+#define IDC_STATICURL                   1118
+#define IDC_EDIT_BATT_HEIGHT            1119
+#define IDC_EDIT_BATT_WIDTH             1120
+#define IDC_EDIT_BATT_WEIGHT            1121
+#define IDC_EDIT_BATT_COLOR             1122
+#define IDC_BUTTON_BATT_COLOR           1123
 
 // Next default values for new objects
 // 
@@ -131,7 +140,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        121
 #define _APS_NEXT_COMMAND_VALUE         40003
-#define _APS_NEXT_CONTROL_VALUE         1117
+#define _APS_NEXT_CONTROL_VALUE         1124
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
