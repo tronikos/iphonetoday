@@ -33,6 +33,11 @@ LRESULT CALLBACK OptionDialog5(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 				configuracion->cargaXMLConfig();
 			}
 			if (configuracion != NULL) {
+				SetDlgItemInt(hDlg, IDC_EDIT_BATT_HEIGHT,	configuracion->battHeight,	TRUE);
+				SetDlgItemInt(hDlg, IDC_EDIT_BATT_WIDTH,	configuracion->battWidth,	TRUE);
+				SetDlgItemInt(hDlg, IDC_EDIT_BATT_WEIGHT,	configuracion->battWeight,	TRUE);
+				SetDlgItemHex(hDlg, IDC_EDIT_BATT_COLOR,	configuracion->battColor);
+
 				SetDlgItemInt(hDlg, IDC_EDIT_DOW_HEIGHT,	configuracion->dowHeight,	TRUE);
 				SetDlgItemInt(hDlg, IDC_EDIT_DOW_WIDTH,		configuracion->dowWidth,	TRUE);
 				SetDlgItemInt(hDlg, IDC_EDIT_DOW_WEIGHT,	configuracion->dowWeight,	TRUE);
@@ -60,6 +65,12 @@ LRESULT CALLBACK OptionDialog5(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 			COLORREF nextColor;
 			switch (LOWORD(wParam))
 			{
+			case IDC_BUTTON_BATT_COLOR:
+				rgbCurrent = GetDlgItemHex(hDlg, IDC_EDIT_BATT_COLOR, NULL);
+				if (ColorSelector(rgbCurrent, &nextColor)) {
+					SetDlgItemHex(hDlg, IDC_EDIT_BATT_COLOR, nextColor);
+				}
+				break;
 			case IDC_BUTTON_DOW_COLOR:
 				rgbCurrent = GetDlgItemHex(hDlg, IDC_EDIT_DOW_COLOR, NULL);
 				if (ColorSelector(rgbCurrent, &nextColor)) {
@@ -81,6 +92,8 @@ LRESULT CALLBACK OptionDialog5(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 			}
 		}
 		return 0;
+	case WM_CTLCOLORSTATIC:
+		return (LRESULT)GetStockObject(WHITE_BRUSH);
 	}
 
 	return DefWindowProc(hDlg, uMsg, wParam, lParam);
@@ -88,9 +101,15 @@ LRESULT CALLBACK OptionDialog5(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 
 BOOL SaveConfiguration5(HWND hDlg)
 {
+	int battHeight, battWidth, battWeight, battColor;
 	int dowHeight, dowWidth, dowWeight, dowColor;
 	int domHeight, domWidth, domWeight, domColor;
 	int clockHeight, clockWidth, clockWeight, clockColor;
+
+	battHeight	= GetDlgItemInt(hDlg, IDC_EDIT_BATT_HEIGHT,	NULL, TRUE);
+	battWidth	= GetDlgItemInt(hDlg, IDC_EDIT_BATT_WIDTH,	NULL, TRUE);
+	battWeight	= GetDlgItemInt(hDlg, IDC_EDIT_BATT_WEIGHT,	NULL, TRUE);
+	battColor	= GetDlgItemHex(hDlg, IDC_EDIT_BATT_COLOR,	NULL);
 
 	dowHeight	= GetDlgItemInt(hDlg, IDC_EDIT_DOW_HEIGHT,	NULL, TRUE);
 	dowWidth	= GetDlgItemInt(hDlg, IDC_EDIT_DOW_WIDTH,	NULL, TRUE);
@@ -107,6 +126,18 @@ BOOL SaveConfiguration5(HWND hDlg)
 	clockWeight	= GetDlgItemInt(hDlg, IDC_EDIT_CLOCK_WEIGHT,NULL, TRUE);
 	clockColor = GetDlgItemHex(hDlg, IDC_EDIT_CLOCK_COLOR,	NULL);
 
+	if (battHeight < 0 || battHeight > 100) {
+		MessageBox(hDlg, TEXT("Battery height value is not valid!"), TEXT("Error"), MB_OK);
+		return FALSE;
+	}
+	if (battWidth < 0 || battWidth > 100) {
+		MessageBox(hDlg, TEXT("Battery width value is not valid!"), TEXT("Error"), MB_OK);
+		return FALSE;
+	}
+	if (battWeight < 0 || battWeight > 1000) {
+		MessageBox(hDlg, TEXT("Battery weight value is not valid!"), TEXT("Error"), MB_OK);
+		return FALSE;
+	}
 	if (dowHeight < 0 || dowHeight > 100) {
 		MessageBox(hDlg, TEXT("Day of week height value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
@@ -143,6 +174,11 @@ BOOL SaveConfiguration5(HWND hDlg)
 		MessageBox(hDlg, TEXT("Clock weight value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
+
+	configuracion->battHeight = battHeight;
+	configuracion->battWidth  = battWidth;
+	configuracion->battWeight = battWeight;
+	configuracion->battColor  = battColor;
 
 	configuracion->dowHeight = dowHeight;
 	configuracion->dowWidth  = dowWidth;

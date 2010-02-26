@@ -52,7 +52,7 @@ int copyTimeUltimaSeleccion = 0;
 
 // Variable que almacena las ultimas rutas usadas
 TCHAR lastPathImage[MAX_PATH];
-TCHAR lastPathExec[MAX_PATH];
+TCHAR lastPathExec[MAX_PATH] = {0};
 TCHAR lastPathSound[MAX_PATH];
 
 // Icono a editar
@@ -441,10 +441,10 @@ LRESULT doTimer (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 					}
 					if (icono != NULL) {
 						if (_tcslen(reloadIcon->strName) > 0) {
-							wcscpy(icono->nombre, reloadIcon->strName);
+							StringCchCopy(icono->nombre, CountOf(icono->nombre), reloadIcon->strName);
 						}
 						if (_tcslen(reloadIcon->strImage) > 0) {
-							wcscpy(icono->rutaImagen, reloadIcon->strImage);
+							StringCchCopy(icono->rutaImagen, CountOf(icono->rutaImagen), reloadIcon->strImage);
 						}
 						configuracion->cargaImagenIcono(&hDCMem, icono, (pantalla == listaPantallas->barraInferior));
 						pantalla->debeActualizar = TRUE;
@@ -626,7 +626,7 @@ LRESULT WndProcLoading (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 
 		SetTextColor(hDC, RGB(0,0,0));
 		TCHAR elementText[MAX_PATH];
-		wcscpy(elementText, L"Loading...");
+		StringCchCopy(elementText, CountOf(elementText), L"Loading...");
 		DrawText(hDC, elementText, _tcslen( elementText ), &rcWindBounds,
 			DT_SINGLELINE | DT_VCENTER | DT_CENTER );
 
@@ -661,17 +661,17 @@ LRESULT doPaint (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 	GetClientRect(hwnd, &rcWindBounds);
 
 	hDC = BeginPaint(hwnd, &ps);
+
 	if (hDCMem == NULL) {
 		hDCMem = CreateCompatibleDC(hDC);
 		hbmMem = CreateCompatibleBitmap(hDC, rcWindBounds.right - rcWindBounds.left, rcWindBounds.bottom - rcWindBounds.top);
 		hbmMemOld = (HBITMAP)SelectObject(hDCMem, hbmMem);
 
+		SetBkMode(hDCMem, TRANSPARENT);
+
 		hBrushFondo = CreateSolidBrush(estado->colorFondo);
 		hBrushWhite = CreateSolidBrush(RGB(255,255,255));
 	}
-
-	// draw the icon on the screen
-	SetBkMode(hDCMem, TRANSPARENT);
 
 	BOOL isTransparent = configuracion->fondoTransparente;
 #ifdef EXEC_MODE
@@ -1113,7 +1113,7 @@ void pintaIcono(HDC *hDC, CIcono *icono, BOOL esBarraInferior) {
 				SYSTEMTIME st;
 				GetLocalTime(&st);
 				TCHAR dayOfMonth[16];
-				wsprintf(dayOfMonth, TEXT("%i"), st.wDay);
+				StringCchPrintf(dayOfMonth, CountOf(dayOfMonth), TEXT("%i"), st.wDay);
 
 				LOGFONT lf;
 				HFONT hFont;
@@ -1220,9 +1220,53 @@ void pintaIcono(HDC *hDC, CIcono *icono, BOOL esBarraInferior) {
 				} else {
 					swprintf(strMinute, L"%i", st.wMinute);
 				}
-				wsprintf(strTime, TEXT("%s:%s"), strHour, strMinute);
+				StringCchPrintf(strTime, CountOf(strTime), TEXT("%s:%s"), strHour, strMinute);
 
 				DrawText(*hDC, strTime, -1, &posTexto, DT_CENTER | DT_VCENTER);
+
+				// Select the previous font back into the device context
+				DeleteObject(SelectObject(*hDC, hFontOld));
+				SetTextColor(*hDC, colorOld);
+
+				}
+				break;
+			case NOTIF_BATTERY:
+				{
+
+				TCHAR strBattery[8];
+				LOGFONT lf;
+				HFONT hFont;
+				HFONT hFontOld;
+				COLORREF colorOld;
+				HFONT hSysFont = (HFONT) GetStockObject(SYSTEM_FONT);
+				GetObject(hSysFont, sizeof(LOGFONT), &lf);
+
+				lf.lfWeight = configuracion->battWeight;
+				lf.lfWidth = LONG(configuracion->battWidth / 100.0 * cs->iconWidth);
+				lf.lfHeight = LONG(configuracion->battHeight / 100.0 * cs->iconWidth);
+				lf.lfQuality = DEFAULT_QUALITY;
+
+				// create the font
+				hFont = CreateFontIndirect(&lf);
+
+				// Select the system font into the device context
+				hFontOld = (HFONT) SelectObject(*hDC, hFont);
+
+				// set that color
+				colorOld = SetTextColor(*hDC, configuracion->battColor);
+
+				posTexto.left = int(icono->x);
+				posTexto.right = int(icono->x + width);
+				posTexto.top = int(icono->y);
+				posTexto.bottom = int(icono->y + width);
+
+				if (ExternalPowered()) {
+					StringCchCopy(strBattery, CountOf(strBattery), L"AC");
+				} else {
+					StringCchPrintf(strBattery, CountOf(strBattery), L"%d", BatteryPercentage());
+				}
+
+				DrawText(*hDC, strBattery, -1, &posTexto, DT_CENTER | DT_VCENTER);
 
 				// Select the previous font back into the device context
 				DeleteObject(SelectObject(*hDC, hFontOld));
@@ -1263,7 +1307,7 @@ void pintaIcono(HDC *hDC, CIcono *icono, BOOL esBarraInferior) {
 				case NOTIF_TAREAS:
 				case NOTIF_SMS_MMS:
 					if (numNotif >= 100) {
-						wcscpy(notif, TEXT("+"));
+						StringCchCopy(notif, CountOf(notif), TEXT("+"));
 					} else {
 						swprintf(notif, TEXT("%i"), numNotif);
 					}
@@ -1275,7 +1319,7 @@ void pintaIcono(HDC *hDC, CIcono *icono, BOOL esBarraInferior) {
 
 					break;
 				case NOTIF_CLOCK_ALARM:
-					wcscpy(notif, TEXT(""));
+					StringCchCopy(notif, CountOf(notif), TEXT(""));
 
 					/* Bubble with same size that icon and text in top right*/
 					posTexto.left = int(icono->x + (width * 0.44));
@@ -1285,7 +1329,7 @@ void pintaIcono(HDC *hDC, CIcono *icono, BOOL esBarraInferior) {
 
 					break;
 				case NOTIF_ALARM:
-					wcscpy(notif, TEXT(""));
+					StringCchCopy(notif, CountOf(notif), TEXT(""));
 
 					/* Bubble with same size that icon and text in top right*/
 					posTexto.left = int(icono->x + (width * 0.44));
@@ -1295,7 +1339,7 @@ void pintaIcono(HDC *hDC, CIcono *icono, BOOL esBarraInferior) {
 
 					break;
 				case NOTIF_WIFI:
-					wcscpy(notif, TEXT("On"));
+					StringCchCopy(notif, CountOf(notif), TEXT("On"));
 
 					/* Centrado grande */
 					posTexto.left = int(icono->x);
@@ -1306,9 +1350,9 @@ void pintaIcono(HDC *hDC, CIcono *icono, BOOL esBarraInferior) {
 					break;
 				case NOTIF_BLUETOOTH:
 					if (numNotif == 2) {
-						wcscpy(notif, TEXT("Disc"));
+						StringCchCopy(notif, CountOf(notif), TEXT("Disc"));
 					} else {
-						wcscpy(notif, TEXT("On"));
+						StringCchCopy(notif, CountOf(notif), TEXT("On"));
 					}
 
 					/* Centrado grande */
@@ -1645,10 +1689,6 @@ LRESULT WINAPI CustomItemOptionsDlgProc(HWND hDlg, UINT message, WPARAM wParam, 
 					SHInitExtraControls();
 					// In addition, we must include this line at the end of each affected dialog in the .rc file:
 					// CONTROL         "",-1,"SIPPREF",NOT WS_VISIBLE,-10,-10,6,6
-					// Currently included in:
-					// PropertySheetPage0.cpp
-					// PropertySheetPage3.cpp
-					// PropertySheetPage4.cpp
 
 
 					// Create property sheet for option dialogs
@@ -1937,6 +1977,7 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_ALARM_TXT);
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_CLOCK_TXT);
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_CLOCK_ALARM_TXT);
+			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_BATTERY_TXT);
 
 			// Configuramos los checks
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_LAUNCHANIMATION), BM_SETCHECK, BST_CHECKED, 0);
@@ -1992,6 +2033,8 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_CLOCK_TXT);
 				} else if (icono->tipo == NOTIF_CLOCK_ALARM) {
 					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_CLOCK_ALARM_TXT);
+				} else if (icono->tipo == NOTIF_BATTERY) {
+					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_BATTERY_TXT);
 				} else {
 					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_NORMAL_TXT);
 				}
@@ -2104,6 +2147,8 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 				nType = NOTIF_CLOCK;
 			} else if (lstrcmpi(strType, NOTIF_CLOCK_ALARM_TXT) == 0) {
 				nType = NOTIF_CLOCK_ALARM;
+			} else if (lstrcmpi(strType, NOTIF_BATTERY_TXT) == 0) {
+				nType = NOTIF_BATTERY;
 			} else {
 				MessageBox(hDlg, TEXT("Type not valid!"), TEXT("Error"), MB_OK);
 				return FALSE;
@@ -2175,6 +2220,11 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 				SetDlgItemText(hDlg, IDC_MICON_SOUND, pathFile);
 			}
 		} else if (LOWORD(wParam) == IDC_MICON_EXEC_B) {
+			if (lastPathExec[0] == 0) {
+				if (!SHGetSpecialFolderPath(hDlg, lastPathExec, CSIDL_PROGRAMS, FALSE)) {
+					StringCchCopy(lastPathExec, CountOf(lastPathExec), L"\\");
+				}
+			}
 			TCHAR pathFile[MAX_PATH];
 			if (openFileBrowse(hDlg, OFN_EXFLAG_DETAILSVIEW, pathFile, lastPathExec)) {
 
@@ -2191,6 +2241,11 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 				SetDlgItemText(hDlg, IDC_MICON_EXEC, pathFile);
 			}
 		} else if (LOWORD(wParam) == IDC_MICON_EXECALT_B) {
+			if (lastPathExec[0] == 0) {
+				if (!SHGetSpecialFolderPath(hDlg, lastPathExec, CSIDL_PROGRAMS, FALSE)) {
+					StringCchCopy(lastPathExec, CountOf(lastPathExec), L"\\");
+				}
+			}
 			TCHAR pathFile[MAX_PATH];
 			if (openFileBrowse(hDlg, OFN_EXFLAG_DETAILSVIEW, pathFile, lastPathExec)) {
 
@@ -2417,9 +2472,9 @@ BOOL inicializaApp(HWND hwnd) {
 	}
 
 	// Establecemos la ruta por defecto para buscar programas
-	if (!SHGetSpecialFolderPath(hwnd, lastPathExec, CSIDL_PROGRAMS, FALSE)) {
-		wcscpy(lastPathExec, L"\\");
-	}
+	//if (!SHGetSpecialFolderPath(hwnd, lastPathExec, CSIDL_PROGRAMS, FALSE)) {
+	//	StringCchCopy(lastPathExec, CountOf(lastPathExec), L"\\");
+	//}
 
 	StringCchCopy(lastPathImage, CountOf(lastPathImage), configuracion->pathIconsDir);
 	StringCchCopy(lastPathSound, CountOf(lastPathSound), configuracion->pathExecutableDir);

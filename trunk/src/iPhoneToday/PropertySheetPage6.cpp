@@ -43,11 +43,20 @@ LRESULT CALLBACK OptionDialog6(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 
 				SetDlgItemInt(hDlg, IDC_EDIT_ONLAUNCH_VIBRATE,	configuracion->vibrateOnLaunchIcon,	TRUE);
 				SetDlgItemInt(hDlg, IDC_EDIT_NOTIFY_TIMER,		configuracion->notifyTimer,			TRUE);
+
+#ifndef EXEC_MODE
+				EnableWindow(GetDlgItem(hDlg, IDC_CHECK_FULLSCREEN), FALSE);
+				EnableWindow(GetDlgItem(hDlg, IDC_CHECK_NEVER_SHOW_TASKBAR), FALSE);
+				EnableWindow(GetDlgItem(hDlg, IDC_CHECK_NO_WINDOW_TITLE), FALSE);
+				EnableWindow(GetDlgItem(hDlg, IDC_CHECK_ONLAUNCH_CLOSE), FALSE);
+#endif
 			} else {
 				MessageBox(hDlg, L"Empty Configuration!", 0, MB_OK);
 			}
 		}
 		return TRUE;
+	case WM_CTLCOLORSTATIC:
+		return (LRESULT)GetStockObject(WHITE_BRUSH);
 	}
 
 	return DefWindowProc(hDlg, uMsg, wParam, lParam);

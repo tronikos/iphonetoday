@@ -99,6 +99,12 @@ public:
 	UINT clockWeight;
 	UINT clock12Format;
 
+	// Battery
+	COLORREF battColor;
+	UINT battWidth;
+	UINT battHeight;
+	UINT battWeight;
+
 	// Bubbles
 	TCHAR bubble_notif[MAX_PATH];
 	TCHAR bubble_state[MAX_PATH];

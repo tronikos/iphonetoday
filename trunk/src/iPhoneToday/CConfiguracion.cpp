@@ -380,6 +380,11 @@ void CConfiguracion::defaultValues()
 	this->clockWeight = 900;
 	this->clock12Format = 0;
 
+	this->battColor = RGB(230,230,230);
+	this->battWidth = 25;
+	this->battHeight = 70;
+	this->battWeight = 900;
+
 	StringCchCopy(this->bubble_notif, CountOf(this->bubble_notif), TEXT("bubble_notif.png"));
 	StringCchCopy(this->bubble_state, CountOf(this->bubble_notif), TEXT("bubble_state.png"));
 	StringCchCopy(this->bubble_alarm, CountOf(this->bubble_notif), TEXT("bubble_alarm.png"));
@@ -453,6 +458,11 @@ BOOL CConfiguracion::cargaXMLConfig()
 			XMLUtils::GetAttr(pElem, "height",   &this->clockHeight);
 			XMLUtils::GetAttr(pElem, "weight",   &this->clockWeight);
 			XMLUtils::GetAttr(pElem, "format12", &this->clock12Format);
+		} else if(_stricmp(nameNode, "Battery") == 0) {
+			XMLUtils::GetAttr(pElem, "color",    &this->battColor);
+			XMLUtils::GetAttr(pElem, "width",    &this->battWidth);
+			XMLUtils::GetAttr(pElem, "height",   &this->battHeight);
+			XMLUtils::GetAttr(pElem, "weight",   &this->battWeight);
 		} else if(_stricmp(nameNode, "Bubbles") == 0) {
 			XMLUtils::GetAttr(pElem, "notif", this->bubble_notif, CountOf(this->bubble_notif));
 			XMLUtils::GetAttr(pElem, "state", this->bubble_state, CountOf(this->bubble_state));
@@ -643,6 +653,13 @@ BOOL CConfiguracion::guardaXMLConfig()
 	XMLUtils::SetAttr(pElem, "height",   this->clockHeight);
 	XMLUtils::SetAttr(pElem, "weight",   this->clockWeight);
 	XMLUtils::SetAttr(pElem, "format12", this->clock12Format);
+	root->LinkEndChild(pElem);
+
+	pElem = new TiXmlElement("Battery");
+	XMLUtils::SetAttr(pElem, "color",    this->battColor);
+	XMLUtils::SetAttr(pElem, "width",    this->battWidth);
+	XMLUtils::SetAttr(pElem, "height",   this->battHeight);
+	XMLUtils::SetAttr(pElem, "weight",   this->battWeight);
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("Bubbles");

@@ -489,6 +489,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\iPhoneToday\PropertySheetPage7.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\iPhoneToday\RegistryUtils.cpp"
 				>
 			</File>
@@ -587,6 +591,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\iPhoneToday\VersionNo.h"
+				>
+			</File>
+			<File
 				RelativePath="..\iPhoneToday\vibrate.h"
 				>
 			</File>
@@ -602,6 +610,10 @@
 			>
 			<File
 				RelativePath="..\iPhoneToday\IconoApp.ico"
+				>
+			</File>
+			<File
+				RelativePath="..\iPhoneToday\iPhoneToday.rc2"
 				>
 			</File>
 			<File

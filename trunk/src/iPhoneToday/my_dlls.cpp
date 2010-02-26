@@ -3,6 +3,9 @@
 typedef BOOL (STDAPICALLTYPE FAR fSipShowIM)(DWORD);
 static fSipShowIM *pSipShowIM = NULL;
 
+typedef BOOL (STDAPICALLTYPE FAR fGetSystemPowerStatusEx)(PSYSTEM_POWER_STATUS_EX,BOOL);
+static fGetSystemPowerStatusEx *pGetSystemPowerStatusEx = NULL;
+
 BOOL InitCoredll()
 {
 	static HMODULE hCoredllLib = NULL;
@@ -12,6 +15,7 @@ BOOL InitCoredll()
 	if (hCoredllLib == NULL)
 		return FALSE;
 	pSipShowIM = (fSipShowIM*)GetProcAddress(hCoredllLib, L"SipShowIM");
+	pGetSystemPowerStatusEx = (fGetSystemPowerStatusEx*)GetProcAddress(hCoredllLib, L"GetSystemPowerStatusEx");
 	return TRUE;
 }
 
@@ -19,6 +23,13 @@ BOOL WINAPI SipShowIM(DWORD dwFlag)
 {
 	if (InitCoredll() && pSipShowIM != NULL)
 		return pSipShowIM(dwFlag);
+	return FALSE;
+}
+
+BOOL WINAPI GetSystemPowerStatusEx(PSYSTEM_POWER_STATUS_EX pSystemPowerStatusEx, BOOL fUpdate)
+{
+	if (InitCoredll() && pGetSystemPowerStatusEx != NULL)
+		return pGetSystemPowerStatusEx(pSystemPowerStatusEx, fUpdate);
 	return FALSE;
 }
 

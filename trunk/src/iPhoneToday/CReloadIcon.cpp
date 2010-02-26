@@ -13,6 +13,6 @@ void CReloadIcon::ClearObject(void)
 {
 	this->nScreen = 0;
 	this->nIcon = -1;
-	wcscpy(this->strName, L"");
-	wcscpy(this->strImage, L"");
+	this->strName[0] = 0;
+	this->strImage[0] = 0;
 }

@@ -144,6 +144,7 @@ BOOL CreatePropertySheet(HWND hwnd)
 	psp[4].pfnDlgProc = (DLGPROC)&OptionDialog4;
 	psp[5].pfnDlgProc = (DLGPROC)&OptionDialog5;
 	psp[6].pfnDlgProc = (DLGPROC)&OptionDialog6;
+	psp[7].pfnDlgProc = (DLGPROC)&OptionDialog7;
 
 
     //

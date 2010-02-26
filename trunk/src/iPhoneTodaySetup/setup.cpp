@@ -123,7 +123,7 @@ void DisableAllTodayPlugins()
 			DWORD itemNameLen = sizeof(itemName) / sizeof(itemName[0]);
 			while (RegEnumKeyEx(hKeyItems, index, itemName, &itemNameLen, 0, 0, 0, 0) == ERROR_SUCCESS) {
 				TCHAR subkey[MAX_PATH];
-				wsprintf(subkey, L"Software\\Microsoft\\Today\\Items\\%s", itemName);
+				StringCchPrintf(subkey, MAX_PATH, L"Software\\Microsoft\\Today\\Items\\%s", itemName);
 				HKEY hKeyItem;
 				if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, subkey, 0, 0, &hKeyItem) == ERROR_SUCCESS) {
 					DWORD dwValue;
