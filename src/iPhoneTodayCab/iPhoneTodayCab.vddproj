@@ -248,6 +248,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_C7EB0D69213C445D8D37CC94518BF3BA"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_CE60DE0E23884C868FD26B05EE410E58"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -966,6 +972,24 @@
             {
             "SourcePath" = "8:..\\..\\res\\icons\\coreplayer.png"
             "TargetName" = "8:coreplayer.png"
+            "Tag" = "8:"
+            "Folder" = "8:_CB770C7AC2BA431FAE2CC7F1E1214841"
+            "Condition" = "8:"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "Register" = "3:0"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{BA458234-9B71-4F46-8107-E91156377184}:_C7EB0D69213C445D8D37CC94518BF3BA"
+            {
+            "SourcePath" = "8:..\\..\\res\\icons\\battery.png"
+            "TargetName" = "8:battery.png"
             "Tag" = "8:"
             "Folder" = "8:_CB770C7AC2BA431FAE2CC7F1E1214841"
             "Condition" = "8:"
