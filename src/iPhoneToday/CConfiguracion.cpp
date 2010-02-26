@@ -354,6 +354,7 @@ void CConfiguracion::defaultValues()
 	this->refreshTime = 20;
 	this->factorMovimiento = 4;
 	this->verticalScroll = 0;
+	this->freestyleScroll = 0;
 
 	StringCchCopy(this->diasSemana[0], CountOf(this->diasSemana[0]), TEXT("Sun"));
 	StringCchCopy(this->diasSemana[1], CountOf(this->diasSemana[1]), TEXT("Mon"));
@@ -435,6 +436,7 @@ BOOL CConfiguracion::cargaXMLConfig()
 			XMLUtils::GetAttr(pElem, "RefreshTime",    &this->refreshTime);
 			XMLUtils::GetAttr(pElem, "FactorMov",      &this->factorMovimiento);
 			XMLUtils::GetAttr(pElem, "VerticalScroll", &this->verticalScroll);
+			XMLUtils::GetAttr(pElem, "FreestyleScroll", &this->freestyleScroll);
 		} else if(_stricmp(nameNode, "DayOfWeek") == 0) {
 			XMLUtils::GetAttr(pElem, "color",     &this->dowColor);
 			XMLUtils::GetAttr(pElem, "width",     &this->dowWidth);
@@ -624,6 +626,7 @@ BOOL CConfiguracion::guardaXMLConfig()
 	XMLUtils::SetAttr(pElem, "RefreshTime",    this->refreshTime);
 	XMLUtils::SetAttr(pElem, "FactorMov",      this->factorMovimiento);
 	XMLUtils::SetAttr(pElem, "VerticalScroll", this->verticalScroll);
+	XMLUtils::SetAttr(pElem, "FreestyleScroll", this->freestyleScroll);
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("DayOfWeek");

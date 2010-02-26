@@ -78,6 +78,7 @@ public:
 	UINT refreshTime;
 	UINT factorMovimiento;
 	UINT verticalScroll;
+	UINT freestyleScroll;
 
 	// DayOfWeek
 	COLORREF dowColor;
