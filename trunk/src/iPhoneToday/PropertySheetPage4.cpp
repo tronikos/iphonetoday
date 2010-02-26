@@ -38,11 +38,22 @@ LRESULT CALLBACK OptionDialog4(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 				SetDlgItemInt(hDlg, IDC_EDIT_MIN_VELOCITY,		configuracion->velMinima,			TRUE);
 				SetDlgItemInt(hDlg, IDC_EDIT_MAX_VELOCITY,		configuracion->velMaxima,			TRUE);
 				SendMessage(GetDlgItem(hDlg, IDC_CHECK_VERTICAL_SCROLL), BM_SETCHECK, configuracion->verticalScroll ? BST_CHECKED : BST_UNCHECKED, 0);
+				SendMessage(GetDlgItem(hDlg, IDC_CHECK_FREESTYLE_SCROLL), BM_SETCHECK, configuracion->freestyleScroll ? BST_CHECKED : BST_UNCHECKED, 0);
+
+				EnableWindow(GetDlgItem(hDlg, IDC_CHECK_FREESTYLE_SCROLL), configuracion->verticalScroll);
 			} else {
 				MessageBox(hDlg, L"Empty Configuration!", 0, MB_OK);
 			}
 		}
 		return TRUE;
+	case WM_COMMAND:
+		switch (LOWORD(wParam))
+		{
+		case IDC_CHECK_VERTICAL_SCROLL:
+			EnableWindow(GetDlgItem(hDlg, IDC_CHECK_FREESTYLE_SCROLL), SendMessage(GetDlgItem(hDlg, IDC_CHECK_VERTICAL_SCROLL), BM_GETCHECK, 0, 0) == BST_CHECKED);
+			break;
+		}
+		return 0;
 	case WM_CTLCOLORSTATIC:
 		return (LRESULT)GetStockObject(WHITE_BRUSH);
 	}
@@ -82,6 +93,7 @@ BOOL SaveConfiguration4(HWND hDlg)
 	configuracion->velMaxima = maxVelocity;
 
 	configuracion->verticalScroll = SendMessage(GetDlgItem(hDlg, IDC_CHECK_VERTICAL_SCROLL), BM_GETCHECK, 0, 0) == BST_CHECKED;
+	configuracion->freestyleScroll = SendMessage(GetDlgItem(hDlg, IDC_CHECK_FREESTYLE_SCROLL), BM_GETCHECK, 0, 0) == BST_CHECKED;
 
 	return TRUE;
 }

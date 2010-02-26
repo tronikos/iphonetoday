@@ -718,6 +718,7 @@ LRESULT doMove (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 	// Cogemos la posicion del raton
 	POINTS posCursor2;
 	posCursor2 = MAKEPOINTS(lParam);
+	static BOOL movementInitiatedByVertical = FALSE;
 
 	if (!posCursorInitialized) {
 		posCursor = posCursor2;
@@ -725,17 +726,24 @@ LRESULT doMove (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 	}
 
 	// Comprobamos si se ha superado el umbral para considerar que es movimiento
-	BOOL flag = estado->hayMovimiento || abs(posCursor.x - posCursor2.x) > int(configuracion->umbralMovimiento);
+	BOOL flag = estado->hayMovimiento;
 	if (configuracion->verticalScroll) {
-		flag = flag || abs(posCursor.y - posCursor2.y) > int(configuracion->umbralMovimiento);
+		if (!flag) {
+			movementInitiatedByVertical = abs(posCursor.y - posCursor2.y) > int(configuracion->umbralMovimiento);
+		}
+		flag = flag || movementInitiatedByVertical;
 	}
+	flag = flag || abs(posCursor.x - posCursor2.x) > int(configuracion->umbralMovimiento);
 	if (flag) {
 		KillTimer(hwnd, TIMER_LONGTAP);
 		estado->hayMovimiento = true;
-		int movx = int((posCursor2.x - posCursor.x)*(1 + float(configuracion->factorMovimiento) / 10));
+		int movx = 0;
 		int movy = 0;
-		if (configuracion->verticalScroll) {
+		if (configuracion->verticalScroll && movementInitiatedByVertical) {
 			movy = int((posCursor2.y - posCursor.y)*(1 + float(configuracion->factorMovimiento) / 10));
+		}
+		if (!movementInitiatedByVertical || configuracion->freestyleScroll) {
+			movx = int((posCursor2.x - posCursor.x)*(1 + float(configuracion->factorMovimiento) / 10));
 		}
 		posImage.x += movx;
 		posImage.y += movy;

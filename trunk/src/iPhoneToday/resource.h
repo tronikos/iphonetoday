@@ -133,6 +133,7 @@
 #define IDC_EDIT_BATT_WEIGHT            1121
 #define IDC_EDIT_BATT_COLOR             1122
 #define IDC_BUTTON_BATT_COLOR           1123
+#define IDC_CHECK_FREESTYLE_SCROLL      1124
 
 // Next default values for new objects
 // 
@@ -140,7 +141,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        121
 #define _APS_NEXT_COMMAND_VALUE         40003
-#define _APS_NEXT_CONTROL_VALUE         1124
+#define _APS_NEXT_CONTROL_VALUE         1125
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
