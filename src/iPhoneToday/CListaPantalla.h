@@ -9,6 +9,7 @@ public:
 	UINT numPantallas;
 
 	CPantalla *barraInferior;
+	CPantalla *topBar;
 
 	CListaPantalla(void);
 	~CListaPantalla(void);

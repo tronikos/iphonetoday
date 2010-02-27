@@ -13,7 +13,8 @@
 #define IDS_TAB5                        114
 #define IDS_TAB6                        115
 #define IDS_TAB7                        116
-#define IDI_DISPLAYICON                 117
+#define IDS_TAB8                        117
+#define IDI_DISPLAYICON                 118
 #define IDD_MENU_HEADER                 120
 #define IDD_DIALOGDUMMY                 500
 #define IDD_DIALOGPAGE0                 510
@@ -24,6 +25,7 @@
 #define IDD_DIALOGPAGE5                 515
 #define IDD_DIALOGPAGE6                 516
 #define IDD_DIALOGPAGE7                 517
+#define IDD_DIALOGPAGE8                 518
 #define IDC_MICON_SCREEN                1001
 #define IDC_MICON_NAME                  1002
 #define IDC_MICON_IMAGE                 1003
@@ -134,6 +136,23 @@
 #define IDC_EDIT_BATT_COLOR             1122
 #define IDC_BUTTON_BATT_COLOR           1123
 #define IDC_CHECK_FREESTYLE_SCROLL      1124
+#define IDC_EDIT_TB_ICON_WIDTH          1125
+#define IDC_EDIT_TB_ICONS_PER_ROW       1126
+#define IDC_EDIT_TB_TEXT_HEIGHT         1127
+#define IDC_EDIT_TB_TEXT_OFFSET         1128
+#define IDC_EDIT_TB_TEXT_COLOR          1129
+#define IDC_BUTTON_TB_TEXT_COLOR        1130
+#define IDC_CHECK_TB_TEXT_BOLD          1131
+#define IDC_EDIT_TB_BACK_COLOR1         1132
+#define IDC_BUTTON_TB_BACK_COLOR1       1133
+#define IDC_EDIT_TB_BACK_COLOR2         1134
+#define IDC_BUTTON_TB_BACK_COLOR2       1135
+#define IDC_EDIT_TB_MINHSPACE           1136
+#define IDC_EDIT_TB_ADDVSPACE           1137
+#define IDC_EDIT_TB_OFFSET_LEFT         1138
+#define IDC_EDIT_TB_OFFSET_TOP          1139
+#define IDC_EDIT_TB_OFFSET_RIGHT        1140
+#define IDC_EDIT_TB_OFFSET_BOTTOM       1141
 
 // Next default values for new objects
 // 
@@ -141,7 +160,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        121
 #define _APS_NEXT_COMMAND_VALUE         40003
-#define _APS_NEXT_CONTROL_VALUE         1125
+#define _APS_NEXT_CONTROL_VALUE         1142
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

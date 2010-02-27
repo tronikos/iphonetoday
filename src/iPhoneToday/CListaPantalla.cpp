@@ -9,11 +9,11 @@ CListaPantalla::CListaPantalla(void)
 	}
 
 	barraInferior = NULL;
+	topBar = NULL;
 }
 
 CListaPantalla::~CListaPantalla(void)
 {
-	// WriteToLog(TEXT("CListaPantalla 1!\r\n"));
 	for (int i = 0; i < MAX_PANTALLAS; i++) {
 		if (listaPantalla[i] != NULL) {
 			delete listaPantalla[i];
@@ -22,7 +22,9 @@ CListaPantalla::~CListaPantalla(void)
 	if (barraInferior != NULL) {
 		delete barraInferior;
 	}
-	// WriteToLog(TEXT("CListaPantalla 2!\r\n"));
+	if (topBar != NULL) {
+		delete topBar;
+	}
 }
 
 CPantalla *CListaPantalla::creaPantalla()
@@ -41,6 +43,8 @@ CIcono *CListaPantalla::mueveIcono(int nPantallaActual, int nIconoActual, int nS
 
 	if (nPantallaActual == -1) {
 		pantalla = barraInferior;
+	} else if (nPantallaActual == -2) {
+		pantalla = topBar;
 	} else {
 		pantalla = listaPantalla[nPantallaActual];
 	}
@@ -59,6 +63,8 @@ CIcono *CListaPantalla::mueveIcono(int nPantallaActual, int nIconoActual, int nS
 
 	if (nScreen == -1) {
 		pantalla = barraInferior;
+	} else if (nScreen == -2) {
+		pantalla = topBar;
 	} else {
 		pantalla = listaPantalla[nScreen];
 	}
@@ -74,7 +80,7 @@ CIcono *CListaPantalla::mueveIcono(int nPantallaActual, int nIconoActual, int nS
 	pantalla->numIconos++;
 	pantalla->debeActualizar = TRUE;
 
-	if (nPantallaActual != -1) {
+	if (nPantallaActual >= 0) {
 		if (listaPantalla[nPantallaActual]->numIconos == 0 && numPantallas > 1) {
 			delete listaPantalla[nPantallaActual];
 			for (int i = nPantallaActual; i < int(numPantallas - 1); i++) {
@@ -97,6 +103,8 @@ CIcono *CListaPantalla::copyIcono(int nPantallaActual, int nIconoActual, int nSc
 
 	if (nPantallaActual == -1) {
 		pantalla = barraInferior;
+	} else if (nPantallaActual == -2) {
+		pantalla = topBar;
 	} else {
 		pantalla = listaPantalla[nPantallaActual];
 	}
@@ -108,6 +116,8 @@ CIcono *CListaPantalla::copyIcono(int nPantallaActual, int nIconoActual, int nSc
 
 	if (nScreen == -1) {
 		pantalla = barraInferior;
+	} else if (nScreen == -2) {
+		pantalla = topBar;
 	} else {
 		pantalla = listaPantalla[nScreen];
 	}
@@ -146,6 +156,8 @@ BOOL CListaPantalla::borraIcono(int posScreen, int posIcon)
 
 	if (posScreen == -1) {
 		barraInferior->borraIcono(posIcon);
+	} else if (posScreen == -2) {
+		topBar->borraIcono(posIcon);
 	} else {
 		listaPantalla[posScreen]->borraIcono(posIcon);
 

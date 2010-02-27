@@ -34,6 +34,7 @@ CConfiguracion::CConfiguracion(void)
 	fondoPantalla = NULL;
 	mainScreenConfig = new CConfigurationScreen();
 	bottomBarConfig = new CConfigurationScreen();
+	topBarConfig = new CConfigurationScreen();
 	altoPantallaMax = 0;
 
 	this->defaultValues();
@@ -58,6 +59,9 @@ CConfiguracion::~CConfiguracion(void)
 	}
 	if (bottomBarConfig != NULL) {
 		delete bottomBarConfig;
+	}
+	if (topBarConfig != NULL) {
+		delete topBarConfig;
 	}
 }
 
@@ -92,7 +96,7 @@ void CConfiguracion::getAbsolutePath(LPTSTR pszDest, size_t cchDest, LPCTSTR psz
 }
 
 // maxIconos = Maximo de iconos que hay en una pantalla
-void CConfiguracion::calculaConfiguracion(int maxIconos, int numIconsInBottomBar, int width, int height)
+void CConfiguracion::calculaConfiguracion(int maxIconos, int numIconsInBottomBar, int numIconsInTopBar, int width, int height)
 {
 	if (width > 0) {
 		anchoPantalla = width;
@@ -103,6 +107,7 @@ void CConfiguracion::calculaConfiguracion(int maxIconos, int numIconsInBottomBar
 	}
 
 	bottomBarConfig->calculate(TRUE, numIconsInBottomBar, anchoPantalla, altoPantalla);
+	topBarConfig->calculate(TRUE, numIconsInTopBar, anchoPantalla, altoPantalla);
 	mainScreenConfig->calculate(FALSE, maxIconos, anchoPantalla, altoPantalla);
 
 	altoPantallaMax = max(((maxIconos + mainScreenConfig->iconsPerRow - 1) / mainScreenConfig->iconsPerRow) * mainScreenConfig->distanceIconsV + mainScreenConfig->posReference.y * 2, altoPantalla);
@@ -128,6 +133,9 @@ BOOL CConfiguracion::cargaXMLIconos(CListaPantalla *listaPantallas)
 	if (listaPantallas->barraInferior == NULL) {
 		listaPantallas->barraInferior = new CPantalla();
 	}
+	if (listaPantallas->topBar == NULL) {
+		listaPantallas->topBar = new CPantalla();
+	}
 
 	// for each screen (child of root)
 	UINT nScreen = 0;
@@ -136,6 +144,8 @@ BOOL CConfiguracion::cargaXMLIconos(CListaPantalla *listaPantallas)
 		CPantalla *pantalla = NULL;
 		if (_stricmp(nameNode, "BottomBar") == 0) {
 			pantalla = listaPantallas->barraInferior;
+		} else if (_stricmp(nameNode, "TopBar") == 0) {
+			pantalla = listaPantallas->topBar;
 		} else if (_stricmp(nameNode, "screen") == 0) {
 			if (listaPantallas->listaPantalla[nScreen] == NULL) {
 				pantalla = listaPantallas->creaPantalla();
@@ -210,6 +220,9 @@ BOOL CConfiguracion::cargaIconos(HDC *hDC, CListaPantalla *listaPantallas)
 		if (listaPantallas->barraInferior == NULL) {
 			listaPantallas->barraInferior = new CPantalla();
 		}
+		if (listaPantallas->topBar == NULL) {
+			listaPantallas->topBar = new CPantalla();
+		}
 		return result;
 	}
 
@@ -227,7 +240,7 @@ BOOL CConfiguracion::cargaIconos(HDC *hDC, CListaPantalla *listaPantallas)
 		for (int j = 0; j < nIconos; j++) {
 
 			icono = pantalla->listaIconos[j];
-			cargaImagenIcono(hDC, icono, FALSE);
+			cargaImagenIcono(hDC, icono, MAINSCREEN);
 		}
 	}
 
@@ -238,7 +251,17 @@ BOOL CConfiguracion::cargaIconos(HDC *hDC, CListaPantalla *listaPantallas)
 	for (int j = 0; j < nIconos; j++) {
 
 		icono = pantalla->listaIconos[j];
-		cargaImagenIcono(hDC, icono, TRUE);
+		cargaImagenIcono(hDC, icono, BOTTOMBAR);
+	}
+
+	// Load icons for the top bar
+	pantalla = listaPantallas->topBar;
+
+	nIconos = pantalla->numIconos;
+	for (int j = 0; j < nIconos; j++) {
+
+		icono = pantalla->listaIconos[j];
+		cargaImagenIcono(hDC, icono, TOPBAR);
 	}
 
 	// duration += GetTickCount();
@@ -254,13 +277,15 @@ BOOL CConfiguracion::cargaIconos(HDC *hDC, CListaPantalla *listaPantallas)
 	return result;
 }
 
-BOOL CConfiguracion::cargaImagenIcono(HDC *hDC, CIcono *icono, BOOL esBarraInferior)
+BOOL CConfiguracion::cargaImagenIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type)
 {
 	BOOL result;
 	TCHAR rutaImgCompleta[MAX_PATH];
 	UINT width;
-	if (esBarraInferior) {
+	if (screen_type == BOTTOMBAR) {
 		width = bottomBarConfig->iconWidth;
+	} else if (screen_type == TOPBAR) {
+		width = topBarConfig->iconWidth;
 	} else {
 		width = mainScreenConfig->iconWidth;
 	}
@@ -333,6 +358,7 @@ void CConfiguracion::defaultValues()
 {
 	this->mainScreenConfig->defaultValues();
 	this->bottomBarConfig->defaultValues();
+	this->topBarConfig->defaultValues();
 
 	this->circlesDiameter = 15;
 	this->circlesDistance = 7;
@@ -496,6 +522,8 @@ BOOL CConfiguracion::cargaXMLConfig()
 			mainScreenConfig->loadXMLConfig(pElem);
 		} else if(_stricmp(nameNode, "BottomBar") == 0) {
 			bottomBarConfig->loadXMLConfig(pElem);
+		} else if(_stricmp(nameNode, "TopBar") == 0) {
+			topBarConfig->loadXMLConfig(pElem);
 		}
     }
 
@@ -535,6 +563,14 @@ BOOL CConfiguracion::guardaXMLIconos(CListaPantalla *listaPantallas)
 		pantalla = listaPantallas->barraInferior;
 
 		pElemScreen = new TiXmlElement("BottomBar");
+		saveXMLScreenIcons(pElemScreen, pantalla);
+		root->LinkEndChild(pElemScreen);
+	}
+
+	if (listaPantallas->topBar != NULL && listaPantallas->topBar->numIconos > 0) {
+		pantalla = listaPantallas->topBar;
+
+		pElemScreen = new TiXmlElement("TopBar");
 		saveXMLScreenIcons(pElemScreen, pantalla);
 		root->LinkEndChild(pElemScreen);
 	}
@@ -597,6 +633,10 @@ BOOL CConfiguracion::guardaXMLConfig()
 
 	pElem = new TiXmlElement("BottomBar");
 	bottomBarConfig->saveXMLConfig(pElem);
+	root->LinkEndChild(pElem);
+
+	pElem = new TiXmlElement("TopBar");
+	topBarConfig->saveXMLConfig(pElem);
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("Circles");

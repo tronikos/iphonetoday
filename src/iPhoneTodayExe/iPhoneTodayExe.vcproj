@@ -485,6 +485,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\iPhoneToday\PropertySheetPage8.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\iPhoneToday\RegistryUtils.cpp"
 				>
 			</File>

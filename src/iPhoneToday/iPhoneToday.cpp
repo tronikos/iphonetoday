@@ -78,9 +78,9 @@ LRESULT doMouseUp (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam);
 LRESULT doActivate (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam);
 BOOL LaunchApplication(LPCTSTR pCmdLine, LPCTSTR pParameters);
 void pintaIconos(HDC *hDC, RECT *rcWindBounds);
-void pintaIcono(HDC *hDC, CIcono *icono, BOOL esBarraInferior);
-void pintaPantalla(HDC *hDC, CPantalla *pantalla, BOOL esBarraInferior = FALSE);
-void setPosicionesIconos(CPantalla *pantalla, BOOL esBarraInferior);
+void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type);
+void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type = MAINSCREEN);
+void setPosicionesIconos(CPantalla *pantalla, SCREEN_TYPE screen_type);
 void setPosiciones(BOOL inicializa, int offsetX, int offsetY);
 void calculaPosicionObjetivo();
 void procesaPulsacion(HWND hwnd, POINTS posCursor, BOOL doubleClick, BOOL noLanzar = FALSE);
@@ -264,6 +264,9 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lPara
 			if (listaPantallas->barraInferior != NULL && listaPantallas->barraInferior->numIconos > 0 && configuracion->bottomBarConfig->iconWidth > 0) {
 				h -= listaPantallas->barraInferior->altoPantalla;
 			}
+			if (listaPantallas->topBar != NULL && listaPantallas->topBar->numIconos > 0 && configuracion->topBarConfig->iconWidth > 0) {
+				h -= listaPantallas->topBar->altoPantalla;
+			}
 			int newy = estado->posObjetivo.y + ((h + configuracion->mainScreenConfig->offset.top) / configuracion->mainScreenConfig->distanceIconsV) * configuracion->mainScreenConfig->distanceIconsV;
 			if (newy > 0) {
 				newy = 0;
@@ -279,6 +282,9 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lPara
 			int h = configuracion->altoPantalla;
 			if (listaPantallas->barraInferior != NULL && listaPantallas->barraInferior->numIconos > 0 && configuracion->bottomBarConfig->iconWidth > 0) {
 				h -= listaPantallas->barraInferior->altoPantalla;
+			}
+			if (listaPantallas->topBar != NULL && listaPantallas->topBar->numIconos > 0 && configuracion->topBarConfig->iconWidth > 0) {
+				h -= listaPantallas->topBar->altoPantalla;
 			}
 			int newy = estado->posObjetivo.y -
 				((h - configuracion->mainScreenConfig->offset.top)
@@ -431,6 +437,8 @@ LRESULT doTimer (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 						pantalla = listaPantallas->listaPantalla[reloadIcon->nScreen];
 					} else if (reloadIcon->nScreen == -1) {
 						pantalla = listaPantallas->barraInferior;
+					} else if (reloadIcon->nScreen == -2) {
+						pantalla = listaPantallas->topBar;
 					} else {
 						continue;
 					}
@@ -446,7 +454,13 @@ LRESULT doTimer (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 						if (_tcslen(reloadIcon->strImage) > 0) {
 							StringCchCopy(icono->rutaImagen, CountOf(icono->rutaImagen), reloadIcon->strImage);
 						}
-						configuracion->cargaImagenIcono(&hDCMem, icono, (pantalla == listaPantallas->barraInferior));
+						SCREEN_TYPE st = MAINSCREEN;
+						if (pantalla == listaPantallas->barraInferior) {
+							st = BOTTOMBAR;
+						} else if (pantalla == listaPantallas->topBar) {
+							st = TOPBAR;
+						}
+						configuracion->cargaImagenIcono(&hDCMem, icono, st);
 						pantalla->debeActualizar = TRUE;
 					}
 				}
@@ -470,6 +484,11 @@ LRESULT doTimer (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 					pantalla->debeActualizar = TRUE;
 				}
 
+				pantalla = listaPantallas->topBar;
+				if (pantalla != NULL) {
+					pantalla->debeActualizar = TRUE;
+				}
+
 				estado->clearReloadIcons();
 			} else if (hayCambios) {
 				// Marcamos aquellas pantallas que haya que actualizar
@@ -489,6 +508,17 @@ LRESULT doTimer (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 				}
 
 				pantalla = listaPantallas->barraInferior;
+				if (pantalla != NULL) {
+					for (UINT j = 0; j < pantalla->numIconos; j++) {
+						icono = pantalla->listaIconos[j];
+						if (icono->tipo != NOTIF_NORMAL) {
+							pantalla->debeActualizar = TRUE;
+							break;
+						}
+					}
+				}
+
+				pantalla = listaPantallas->topBar;
 				if (pantalla != NULL) {
 					for (UINT j = 0; j < pantalla->numIconos; j++) {
 						icono = pantalla->listaIconos[j];
@@ -770,32 +800,30 @@ void RightClick(HWND hwnd, POINTS posCursor)
 
 	procesaPulsacion(hwnd, posCursor, FALSE, TRUE);
 
-	BOOL isClickOnHeader = configuracion->headerFontSize > 0 && posCursor.y < configuracion->mainScreenConfig->offset.top;
-
 	long timeActual = GetTickCount();
 
 	// Add menu
-	if (isClickOnHeader) {
-		AppendMenu(hmenu, MF_STRING, MENU_POPUP_EDIT_HEADER, TEXT("Edit header"));
-	} else {
-		AppendMenu(hmenu, MF_STRING, MENU_POPUP_ADD, TEXT("Add Icon"));
-		if (moveIconoActivo.nIconoActual >= 0 && timeActual - moveTimeUltimaSeleccion < 12000) {
-			AppendMenu(hmenu, MF_STRING, MENU_POPUP_MOVE_HERE, TEXT("Move Here"));
-		}
-		if (copyIconoActivo.nIconoActual >= 0 && timeActual - copyTimeUltimaSeleccion < 12000) {
-			AppendMenu(hmenu, MF_STRING, MENU_POPUP_COPY_HERE, TEXT("Copy Here"));
-		}
+	AppendMenu(hmenu, MF_STRING, MENU_POPUP_ADD, TEXT("Add Icon"));
+	if (moveIconoActivo.nIconoActual >= 0 && timeActual - moveTimeUltimaSeleccion < 12000) {
+		AppendMenu(hmenu, MF_STRING, MENU_POPUP_MOVE_HERE, TEXT("Move Here"));
 	}
+	if (copyIconoActivo.nIconoActual >= 0 && timeActual - copyTimeUltimaSeleccion < 12000) {
+		AppendMenu(hmenu, MF_STRING, MENU_POPUP_COPY_HERE, TEXT("Copy Here"));
+	}
+	AppendMenu(hmenu, MF_SEPARATOR, 0, 0);
 	if (iconoActual.nIconoActual >= 0) {
 		AppendMenu(hmenu, MF_STRING, MENU_POPUP_EDIT, TEXT("Edit Icon"));
 		AppendMenu(hmenu, MF_STRING, MENU_POPUP_DELETE, TEXT("Delete Icon"));
-		if (moveIconoActivo.nIconoActual == -1 || timeActual - moveTimeUltimaSeleccion >= 12000) {
+		//if (moveIconoActivo.nIconoActual == -1 || timeActual - moveTimeUltimaSeleccion >= 12000) {
 			AppendMenu(hmenu, MF_STRING, MENU_POPUP_MOVE, TEXT("Move Icon"));
-		}
-		if (copyIconoActivo.nIconoActual == -1 || timeActual - copyTimeUltimaSeleccion >= 12000) {
+		//}
+		//if (copyIconoActivo.nIconoActual == -1 || timeActual - copyTimeUltimaSeleccion >= 12000) {
 			AppendMenu(hmenu, MF_STRING, MENU_POPUP_COPY, TEXT("Copy Icon"));
-		}
+		//}
 	} else {
+		if (configuracion->headerFontSize > 0) {
+			AppendMenu(hmenu, MF_STRING, MENU_POPUP_EDIT_HEADER, TEXT("Edit header"));
+		}
 		AppendMenu(hmenu, MF_STRING, MENU_POPUP_OPTIONS, TEXT("Options"));
 	}
 	AppendMenu(hmenu, MF_SEPARATOR, 0, 0);
@@ -873,7 +901,13 @@ void RightClick(HWND hwnd, POINTS posCursor)
 				StringCchCopy(destIcon->parametrosAlt, CountOf(destIcon->parametrosAlt), srcIcon->parametrosAlt);
 				destIcon->tipo = srcIcon->tipo;
 				destIcon->launchAnimation = srcIcon->launchAnimation;
-				configuracion->cargaImagenIcono(&hDCMem, destIcon, (iconoActual.nPantallaActual == -1));
+				SCREEN_TYPE st = MAINSCREEN;
+				if (iconoActual.nPantallaActual == -1) {
+					st = BOTTOMBAR;
+				} else if (iconoActual.nPantallaActual == -2) {
+					st = TOPBAR;
+				}
+				configuracion->cargaImagenIcono(&hDCMem, destIcon, st);
 
 				configuracion->guardaXMLIconos(listaPantallas);
 				copyIconoActivo.nIconoActual = -1;
@@ -1027,13 +1061,18 @@ INT InitializeClasses()
 void pintaIconos(HDC *hDC, RECT *rcWindBounds) {
 	for (UINT i = 0; i < listaPantallas->numPantallas; i++) {
 		CPantalla *pantalla = listaPantallas->listaPantalla[i];
-		pintaPantalla(hDC, pantalla);
+		pintaPantalla(hDC, pantalla, MAINSCREEN);
 	}
 
 	// Pintamos la barra inferior de botones
 	BOOL hasBottomBar = listaPantallas->barraInferior != NULL && listaPantallas->barraInferior->numIconos > 0 && configuracion->bottomBarConfig->iconWidth > 0;
 	if (hasBottomBar) {
-		pintaPantalla(hDC, listaPantallas->barraInferior, TRUE);
+		pintaPantalla(hDC, listaPantallas->barraInferior, BOTTOMBAR);
+	}
+
+	BOOL hasTopBar = listaPantallas->topBar != NULL && listaPantallas->topBar->numIconos > 0 && configuracion->topBarConfig->iconWidth > 0;
+	if (hasTopBar) {
+		pintaPantalla(hDC, listaPantallas->topBar, TOPBAR);
 	}
 
 	// Pintamos los circulos para indicar pantalla activa
@@ -1077,12 +1116,14 @@ void pintaIconos(HDC *hDC, RECT *rcWindBounds) {
 
 }
 
-void pintaIcono(HDC *hDC, CIcono *icono, BOOL esBarraInferior) {
+void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 	// Iniciamos el proceso de pintado
 	RECT posTexto;
 	CConfigurationScreen *cs;
-	if (esBarraInferior) {
+	if (screen_type == BOTTOMBAR) {
 		cs = configuracion->bottomBarConfig;
+	} else if (screen_type == TOPBAR) {
+		cs = configuracion->topBarConfig;
 	} else {
 		cs = configuracion->mainScreenConfig;
 	}
@@ -1432,10 +1473,12 @@ void pintaIcono(HDC *hDC, CIcono *icono, BOOL esBarraInferior) {
 	}
 }
 
-void pintaPantalla(HDC *hDC, CPantalla *pantalla, BOOL esBarraInferior) {
+void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type) {
 	CConfigurationScreen *cs;
-	if (esBarraInferior) {
+	if (screen_type == BOTTOMBAR) {
 		cs = configuracion->bottomBarConfig;
+	} else if (screen_type == TOPBAR) {
+		cs = configuracion->topBarConfig;
 	} else {
 		cs = configuracion->mainScreenConfig;
 	}
@@ -1510,11 +1553,11 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, BOOL esBarraInferior) {
 			SetTextColor(pantalla->hDC, colorOld);
 		}
 
-		setPosicionesIconos(pantalla, esBarraInferior);
+		setPosicionesIconos(pantalla, screen_type);
 
 		for (UINT j = 0; j < pantalla->numIconos; j++) {
 			CIcono *icono = pantalla->listaIconos[j];
-			pintaIcono(&pantalla->hDC, icono, esBarraInferior);
+			pintaIcono(&pantalla->hDC, icono, screen_type);
 		}
 	}
 
@@ -1528,9 +1571,13 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, BOOL esBarraInferior) {
 		int ySrcOrg = abs(min(posY, 0));
 		int cx = configuracion->anchoPantalla - abs(posX);
 		int cy;
-		if (esBarraInferior) {
+		if (screen_type != MAINSCREEN) {
 			cy = pantalla->altoPantalla;
 		} else {
+			if (listaPantallas->topBar != NULL && listaPantallas->topBar->numIconos > 0 && configuracion->topBarConfig->iconWidth > 0) {
+				yDestOrg = max(posY, int(listaPantallas->topBar->altoPantalla));
+				ySrcOrg = abs(min(posY - int(listaPantallas->topBar->altoPantalla), 0));
+			}
 			cy = configuracion->altoPantalla - yDestOrg;
 			if (listaPantallas->barraInferior != NULL && listaPantallas->barraInferior->numIconos > 0 && configuracion->bottomBarConfig->iconWidth > 0) {
 				cy -= listaPantallas->barraInferior->altoPantalla;
@@ -1549,10 +1596,12 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, BOOL esBarraInferior) {
 	}
 }
 
-void setPosicionesIconos(CPantalla *pantalla, BOOL esBarraInferior) {
+void setPosicionesIconos(CPantalla *pantalla, SCREEN_TYPE screen_type) {
 	CConfigurationScreen *cs;
-	if (esBarraInferior) {
+	if (screen_type == BOTTOMBAR) {
 		cs = configuracion->bottomBarConfig;
+	} else if (screen_type == TOPBAR) {
+		cs = configuracion->topBarConfig;
 	} else {
 		cs = configuracion->mainScreenConfig;
 	}
@@ -1566,12 +1615,32 @@ void setPosicionesIconos(CPantalla *pantalla, BOOL esBarraInferior) {
 }
 
 void setPosiciones(BOOL inicializa, int offsetX, int offsetY) {
+	BOOL hasBottomBar = listaPantallas->barraInferior != NULL && listaPantallas->barraInferior->numIconos > 0 && configuracion->bottomBarConfig->iconWidth > 0;
+	BOOL hasTopBar = listaPantallas->topBar != NULL && listaPantallas->topBar->numIconos > 0 && configuracion->topBarConfig->iconWidth > 0;
+
+	if (hasBottomBar) {
+		listaPantallas->barraInferior->altoPantalla = configuracion->bottomBarConfig->distanceIconsV + configuracion->bottomBarConfig->offset.top + configuracion->bottomBarConfig->offset.bottom;
+		listaPantallas->barraInferior->anchoPantalla = configuracion->anchoPantalla;
+		listaPantallas->barraInferior->x = 0;
+		listaPantallas->barraInferior->y = float(configuracion->altoPantalla - listaPantallas->barraInferior->altoPantalla);
+	}
+
+	if (hasTopBar) {
+		listaPantallas->topBar->altoPantalla = configuracion->topBarConfig->distanceIconsV + configuracion->topBarConfig->offset.top + configuracion->topBarConfig->offset.bottom;
+		listaPantallas->topBar->anchoPantalla = configuracion->anchoPantalla;
+		listaPantallas->topBar->x = 0;
+		listaPantallas->topBar->y = 0;
+	}
+
 	for (UINT i = 0; i < listaPantallas->numPantallas; i++) {
 		CPantalla *pantalla = listaPantallas->listaPantalla[i];
 
 		if (inicializa) {
 			pantalla->x = estado->posObjetivo.x + float(i * configuracion->anchoPantalla);
 			pantalla->y = estado->posObjetivo.y;
+			if (hasTopBar) {
+				pantalla->y += listaPantallas->topBar->altoPantalla;
+			}
 		} else {
 			pantalla->x += offsetX;
 			pantalla->y += offsetY;
@@ -1579,13 +1648,6 @@ void setPosiciones(BOOL inicializa, int offsetX, int offsetY) {
 
 		pantalla->altoPantalla = configuracion->altoPantallaMax;
 		pantalla->anchoPantalla = configuracion->anchoPantalla;
-	}
-
-	if (listaPantallas->barraInferior != NULL && listaPantallas->barraInferior->numIconos > 0 && configuracion->bottomBarConfig->iconWidth > 0) {
-		listaPantallas->barraInferior->altoPantalla = configuracion->bottomBarConfig->distanceIconsV + configuracion->bottomBarConfig->offset.top + configuracion->bottomBarConfig->offset.bottom;
-		listaPantallas->barraInferior->anchoPantalla = configuracion->anchoPantalla;
-		listaPantallas->barraInferior->x = 0;
-		listaPantallas->barraInferior->y = float(configuracion->altoPantalla - listaPantallas->barraInferior->altoPantalla);
 	}
 }
 
@@ -1622,6 +1684,9 @@ void calculaPosicionObjetivo() {
 		INT h = configuracion->altoPantalla;
 		if (listaPantallas->barraInferior != NULL && listaPantallas->barraInferior->numIconos > 0 && configuracion->bottomBarConfig->iconWidth > 0) {
 			h -= listaPantallas->barraInferior->altoPantalla;
+		}
+		if (listaPantallas->topBar != NULL && listaPantallas->topBar->numIconos > 0 && configuracion->topBarConfig->iconWidth > 0) {
+			h -= listaPantallas->topBar->altoPantalla;
 		}
 		INT nrows_scroll = (-posImage.y + configuracion->mainScreenConfig->distanceIconsV / 2) / configuracion->mainScreenConfig->distanceIconsV;
 		INT nrows_screen = ((listaPantallas->listaPantalla[estado->pantallaActiva]->numIconos + configuracion->mainScreenConfig->iconsPerRow - 1) / configuracion->mainScreenConfig->iconsPerRow);
@@ -1775,6 +1840,7 @@ BOOL LaunchApplication(LPCTSTR pCmdLine, LPCTSTR pParametros)
 void procesaPulsacion(HWND hwnd, POINTS posCursor, BOOL doubleClick, BOOL noLanzar) {
 
 	BOOL hasBottomBar = listaPantallas->barraInferior != NULL && listaPantallas->barraInferior->numIconos > 0 && configuracion->bottomBarConfig->iconWidth > 0;
+	BOOL hasTopBar = listaPantallas->topBar != NULL && listaPantallas->topBar->numIconos > 0 && configuracion->topBarConfig->iconWidth > 0;
 
 	int nCirculos = listaPantallas->numPantallas;
 	int anchoCirculo = configuracion->circlesDiameter;
@@ -1819,11 +1885,18 @@ void procesaPulsacion(HWND hwnd, POINTS posCursor, BOOL doubleClick, BOOL noLanz
 	BOOL isClickOnBottomBar = hasBottomBar
 		&& posCursor.x >= listaPantallas->barraInferior->x && posCursor.x <= (listaPantallas->barraInferior->x + listaPantallas->barraInferior->anchoPantalla)
 		&& posCursor.y >= listaPantallas->barraInferior->y && posCursor.y <= (listaPantallas->barraInferior->y + listaPantallas->barraInferior->altoPantalla);
+	BOOL isClickOnTopBar = hasTopBar
+		&& posCursor.x >= listaPantallas->topBar->x && posCursor.x <= (listaPantallas->topBar->x + listaPantallas->topBar->anchoPantalla)
+		&& posCursor.y >= listaPantallas->topBar->y && posCursor.y <= (listaPantallas->topBar->y + listaPantallas->topBar->altoPantalla);
 
 	if (isClickOnBottomBar) {
 		pantalla = listaPantallas->barraInferior;
 		iconWidth = configuracion->bottomBarConfig->iconWidth;
 		iconoActual.nPantallaActual = -1;
+	} else if (isClickOnTopBar) {
+		pantalla = listaPantallas->topBar;
+		iconWidth = configuracion->topBarConfig->iconWidth;
+		iconoActual.nPantallaActual = -2;
 	} else {
 		pantalla = listaPantallas->listaPantalla[estado->pantallaActiva];
 		iconWidth = configuracion->mainScreenConfig->iconWidth;
@@ -1960,7 +2033,7 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 
 			// Configuramos el elemento Screen
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_SPIN_SCREEN), UDM_SETBUDDY, (WPARAM) GetDlgItem(hDlg, IDC_MICON_SCREEN), 0);
-			SendMessage(GetDlgItem(hDlg, IDC_MICON_SPIN_SCREEN), UDM_SETRANGE, 0, MAKELPARAM(-1, MAX_PANTALLAS - 1));
+			SendMessage(GetDlgItem(hDlg, IDC_MICON_SPIN_SCREEN), UDM_SETRANGE, 0, MAKELPARAM(-2, MAX_PANTALLAS - 1));
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_SPIN_SCREEN), UDM_SETPOS, 0, iconoActual.nPantallaActual);
 
 			// Configuramos el elemento Icon
@@ -1995,6 +2068,8 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 				CIcono *icono = NULL;
 				if (iconoActual.nPantallaActual == -1) {
 					icono = listaPantallas->barraInferior->listaIconos[iconoActual.nIconoActual];
+				} else if (iconoActual.nPantallaActual == -2) {
+					icono = listaPantallas->topBar->listaIconos[iconoActual.nIconoActual];
 				} else {
 					icono = listaPantallas->listaPantalla[iconoActual.nPantallaActual]->listaIconos[iconoActual.nIconoActual];
 				}
@@ -2111,6 +2186,11 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 						listaPantallas->barraInferior = new CPantalla();
 					}
 					pantalla = listaPantallas->barraInferior;
+				} else if (nScreen == -2) {
+					if (listaPantallas->topBar == NULL) {
+						listaPantallas->topBar = new CPantalla();
+					}
+					pantalla = listaPantallas->topBar;
 				} else {
 					pantalla = listaPantallas->listaPantalla[nScreen];
 				}
@@ -2175,6 +2255,11 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 						listaPantallas->barraInferior = new CPantalla();
 					}
 					pantalla = listaPantallas->barraInferior;
+				} else if (nScreen == -2) {
+					if (listaPantallas->topBar == NULL) {
+						listaPantallas->topBar = new CPantalla();
+					}
+					pantalla = listaPantallas->topBar;
 				} else {
 					pantalla = listaPantallas->listaPantalla[nScreen];
 				}
@@ -2194,7 +2279,13 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 			StringCchCopy(icono->parametrosAlt, CountOf(icono->parametrosAlt), strParametersAlt);
 			icono->tipo = nType;
 			icono->launchAnimation = launchAnimation;
-			configuracion->cargaImagenIcono(&hDCMem, icono, (pantalla == listaPantallas->barraInferior));
+			SCREEN_TYPE st = MAINSCREEN;
+			if (pantalla == listaPantallas->barraInferior) {
+				st = BOTTOMBAR;
+			} else if (pantalla == listaPantallas->topBar) {
+				st = TOPBAR;
+			}
+			configuracion->cargaImagenIcono(&hDCMem, icono, st);
 
 			setPosiciones(true, 0, 0);
 
@@ -2507,6 +2598,14 @@ BOOL borraObjetosHDC() {
 			&listaPantallas->barraInferior->imagen,
 			&listaPantallas->barraInferior->imagenOld);
 		listaPantallas->barraInferior->debeActualizar = TRUE;
+	}
+
+	if (listaPantallas->topBar != NULL) {
+		borraHDC_HBITMPAP(
+			&listaPantallas->topBar->hDC,
+			&listaPantallas->topBar->imagen,
+			&listaPantallas->topBar->imagenOld);
+		listaPantallas->topBar->debeActualizar = TRUE;
 	}
 
 	if (listaPantallas != NULL) {
@@ -2867,6 +2966,7 @@ void calculateConfiguration(int width, int height)
 	configuracion->calculaConfiguracion(
 		maxIconos,
 		listaPantallas->barraInferior == NULL ? 0 : listaPantallas->barraInferior->numIconos,
+		listaPantallas->topBar == NULL ? 0 : listaPantallas->topBar->numIconos,
 		width,
 		height);
 	if (altoPantallaMax_old != 0 && configuracion->altoPantallaMax > altoPantallaMax_old) {

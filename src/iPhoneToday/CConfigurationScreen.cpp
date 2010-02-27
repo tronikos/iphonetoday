@@ -11,7 +11,7 @@ CConfigurationScreen::~CConfigurationScreen(void)
 {
 }
 
-void CConfigurationScreen::calculate(BOOL isBottombar, int maxIcons, UINT screenWidth, UINT screenHeight)
+void CConfigurationScreen::calculate(BOOL isStaticbar, int maxIcons, UINT screenWidth, UINT screenHeight)
 {
 	UINT w = screenWidth - offset.left - offset.right;
 
@@ -25,7 +25,7 @@ void CConfigurationScreen::calculate(BOOL isBottombar, int maxIcons, UINT screen
 	} else {
 		iconsPerRow = iconsPerRowXML;
 	}
-	if (isBottombar) {
+	if (isStaticbar) {
 		iconsPerRow = min(iconsPerRow, UINT(maxIcons));
 	}
 

@@ -11,9 +11,9 @@ public:
 	CConfiguracion(void);
 	~CConfiguracion(void);
 
-	void calculaConfiguracion(int maxIconos, int numIconsInBottomBar, int width, int height);
+	void calculaConfiguracion(int maxIconos, int numIconsInBottomBar, int numIconsInTopBar, int width, int height);
 	BOOL cargaIconos(HDC *hDC, CListaPantalla *listaPantallas);
-	BOOL cargaImagenIcono(HDC *hDC, CIcono *icono, BOOL esBarraInferior);
+	BOOL cargaImagenIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type);
 	BOOL cargaImagenes(HDC *hDC);
 	BOOL cargaFondo(HDC *hDC);
 
@@ -53,6 +53,7 @@ public:
 	// Screens
 	CConfigurationScreen *mainScreenConfig;
 	CConfigurationScreen *bottomBarConfig;
+	CConfigurationScreen *topBarConfig;
 
 	// Circles
 	UINT circlesDiameter;
