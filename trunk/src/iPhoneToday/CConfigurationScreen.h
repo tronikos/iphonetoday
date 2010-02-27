@@ -13,7 +13,7 @@ public:
 	BOOL loadXMLConfig(TiXmlElement *pRoot);
 	BOOL saveXMLConfig(TiXmlElement *pRoot);
 
-	void calculate(BOOL isBottombar, int maxIcons, UINT screenWidth, UINT screenHeight);
+	void calculate(BOOL isStaticbar, int maxIcons, UINT screenWidth, UINT screenHeight);
 
 	// Variables from XML
 	UINT iconWidthXML;

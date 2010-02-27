@@ -84,10 +84,17 @@ typedef struct
 	int nIconoActual;
 } IDENT_ICONO;
 
-#define MAX_PANTALLAS 32
-#define MAX_ICONOS_PANTALLA 64
+typedef enum
+{
+    MAINSCREEN  = 0,
+    BOTTOMBAR,
+	TOPBAR
+} SCREEN_TYPE;
 
-#define NUM_CONFIG_SCREENS 8
+#define MAX_PANTALLAS			32
+#define MAX_ICONOS_PANTALLA		64
+
+#define NUM_CONFIG_SCREENS		9
 
 #define TIMER_RECUPERACION		10000
 #define TIMER_ACTUALIZA_NOTIF	10001
