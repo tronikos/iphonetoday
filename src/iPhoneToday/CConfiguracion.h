@@ -70,6 +70,7 @@ public:
 	UINT fondoTransparente;
 	COLORREF fondoColor;
 	UINT fondoEstatico;
+	float fondoFactor;
 	TCHAR strFondoPantalla[MAX_PATH];
 
 	// Movement

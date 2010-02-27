@@ -36,6 +36,7 @@ HDC		hDCMem = NULL;
 HBITMAP	hbmMem = NULL;
 HBITMAP	hbmMemOld = NULL;
 HBRUSH  hBrushFondo = NULL;
+HBRUSH  hBrushTrans = NULL;
 HBRUSH  hBrushWhite = NULL;
 
 // Variables para detectar doble click
@@ -699,8 +700,9 @@ LRESULT doPaint (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 
 		SetBkMode(hDCMem, TRANSPARENT);
 
-		hBrushFondo = CreateSolidBrush(estado->colorFondo);
-		hBrushWhite = CreateSolidBrush(RGB(255,255,255));
+		hBrushFondo = CreateSolidBrush(configuracion->fondoColor);
+		hBrushTrans = CreateSolidBrush(RGBA(0, 0, 0, 0));
+		hBrushWhite = CreateSolidBrush(RGB(255, 255, 255));
 	}
 
 	BOOL isTransparent = configuracion->fondoTransparente;
@@ -710,14 +712,23 @@ LRESULT doPaint (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 	if ((isTransparent || configuracion->fondoEstatico) && configuracion->fondoPantalla != NULL && configuracion->fondoPantalla->hDC != NULL) {
 		BitBlt(hDCMem, 0, 0, configuracion->fondoPantalla->anchoImagen, configuracion->fondoPantalla->altoImagen, configuracion->fondoPantalla->hDC, 0, 0, SRCCOPY);
 	} else if (configuracion->fondoPantalla && configuracion->fondoPantalla->hDC) {
-		int posMin = 0;
-		int posMax = (listaPantallas->numPantallas - 1) * configuracion->anchoPantalla;
-		double posX = -1 * listaPantallas->listaPantalla[0]->x;
-		posX = max(posMin, min(posMax, posX));
-		posX = posX / ((listaPantallas->numPantallas - 1) * configuracion->anchoPantalla);
-		posX = posX * (configuracion->fondoPantalla->anchoImagen - configuracion->anchoPantalla);
+		FillRect(hDCMem, &rcWindBounds, hBrushFondo);
 
-		BitBlt(hDCMem, 0, 0, configuracion->anchoPantalla, configuracion->altoPantalla, configuracion->fondoPantalla->hDC, int(posX), 0, SRCCOPY);
+		int posXMin = 0;
+		int posXMax = (listaPantallas->numPantallas - 1) * configuracion->anchoPantalla;
+		double posX = -1 * posImage.x;
+		posX = max(posXMin, min(posXMax, posX));
+		posX = posX / posXMax;
+		posX = max(posX * ((int)configuracion->fondoPantalla->anchoImagen - (int)configuracion->anchoPantalla), 0);
+
+		int posYMin = 0;
+		int posYMax = configuracion->altoPantallaMax - configuracion->altoPantalla;
+		double posY = -1 * posImage.y;
+		posY = max(posYMin, min(posYMax, posY));
+		posY = posY / posYMax;
+		posY = max(posY * ((int)configuracion->fondoPantalla->altoImagen - (int)configuracion->altoPantalla), 0);
+
+		BitBlt(hDCMem, 0, 0, configuracion->anchoPantalla, configuracion->altoPantalla, configuracion->fondoPantalla->hDC, int(posX), int(posY), SRCCOPY);
 	} else {
 		FillRect(hDCMem, &rcWindBounds, hBrushFondo);
 	}
@@ -759,7 +770,7 @@ LRESULT doMove (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 	BOOL flag = estado->hayMovimiento;
 	if (configuracion->verticalScroll) {
 		if (!flag) {
-			movementInitiatedByVertical = abs(posCursor.y - posCursor2.y) > int(configuracion->umbralMovimiento);
+			movementInitiatedByVertical = abs(posCursor.y - posCursor2.y) > abs(posCursor.x - posCursor2.x) && abs(posCursor.y - posCursor2.y) > int(configuracion->umbralMovimiento);
 		}
 		flag = flag || movementInitiatedByVertical;
 	}
@@ -1483,6 +1494,11 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type) {
 		cs = configuracion->mainScreenConfig;
 	}
 
+	BOOL isTransparent = configuracion->fondoTransparente;
+#ifdef EXEC_MODE
+	isTransparent = FALSE;
+#endif
+
 	// Si debemos recalcular la pantalla
 	if (pantalla->debeActualizar) {
 		pantalla->debeActualizar = FALSE;
@@ -1516,14 +1532,11 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type) {
 		rc.right = pantalla->anchoPantalla;
 		rc.bottom = pantalla->altoPantalla;
 
-		FillRect(pantalla->hDC, &rc, hBrushFondo);
 
-		BOOL isTransparent = configuracion->fondoTransparente;
-#ifdef EXEC_MODE
-		isTransparent = FALSE;
-#endif
 		if (_tcsclen(configuracion->strFondoPantalla) == 0 && !isTransparent) {
 			DrawGradientGDI(pantalla->hDC, rc, cs->backColor1,  cs->backColor2,  0xAAAA);
+		} else {
+			FillRect(pantalla->hDC, &rc, hBrushTrans);
 		}
 
 		if (configuracion->headerFontSize > 0 && _tcslen(pantalla->header) > 0) {
@@ -1584,12 +1597,8 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type) {
 			}
 		}
 
-		BOOL isTransparent = configuracion->fondoTransparente;
-#ifdef EXEC_MODE
-		isTransparent = FALSE;
-#endif
 		if (isTransparent || configuracion->fondoPantalla != NULL) {
-			TransparentBlt(*hDC, xDestOrg, yDestOrg, cx, cy, pantalla->hDC, xSrcOrg, ySrcOrg, cx, cy, estado->colorFondo);
+			TransparentBlt(*hDC, xDestOrg, yDestOrg, cx, cy, pantalla->hDC, xSrcOrg, ySrcOrg, cx, cy, RGBA(0, 0, 0, 0));
 		} else {
 			BitBlt(*hDC, xDestOrg, yDestOrg, cx, cy, pantalla->hDC, xSrcOrg, ySrcOrg, SRCCOPY);
 		}
@@ -2559,17 +2568,6 @@ BOOL inicializaApp(HWND hwnd) {
 
 	configuracion->cargaImagenes(&hdc);
 
-	BOOL isTransparent = configuracion->fondoTransparente;
-#ifdef EXEC_MODE
-	isTransparent = FALSE;
-#endif
-	if (isTransparent || _tcsclen(configuracion->strFondoPantalla) > 0) {
-		// estado->colorFondo = RGB(255, 0, 255);
-		estado->colorFondo = RGBA(0, 0, 0, 0);
-	} else {
-		estado->colorFondo = configuracion->fondoColor;
-	}
-
 	// Establecemos la ruta por defecto para buscar programas
 	//if (!SHGetSpecialFolderPath(hwnd, lastPathExec, CSIDL_PROGRAMS, FALSE)) {
 	//	StringCchCopy(lastPathExec, CountOf(lastPathExec), L"\\");
@@ -2621,6 +2619,11 @@ BOOL borraObjetosHDC() {
 	if(hBrushFondo) {
 		DeleteObject(hBrushFondo);
 		hBrushFondo = NULL;
+	}
+
+	if(hBrushTrans) {
+		DeleteObject(hBrushTrans);
+		hBrushTrans = NULL;
 	}
 
 	if(hBrushWhite) {
@@ -2865,6 +2868,10 @@ void doDestroy(HWND hwnd) {
 		DeleteObject(hBrushFondo);
 	}
 
+	if(hBrushTrans != NULL) {
+		DeleteObject(hBrushTrans);
+	}
+
 	if(hBrushWhite != NULL) {
 		DeleteObject(hBrushWhite);
 	}
@@ -2934,12 +2941,16 @@ void autoConfigure()
 		}
 
 		int iconWidth = int(float(width) * 0.1875);
+		int fontSize = iconWidth / 4;
 
 		configuracion->mainScreenConfig->iconWidthXML = iconWidth;
-		configuracion->mainScreenConfig->fontSize = iconWidth / 4;
+		configuracion->mainScreenConfig->fontSize = fontSize;
 
 		configuracion->bottomBarConfig->iconWidthXML = iconWidth;
-		configuracion->bottomBarConfig->fontSize = iconWidth / 4;
+		configuracion->bottomBarConfig->fontSize = fontSize;
+
+		configuracion->topBarConfig->iconWidthXML = iconWidth;
+		configuracion->topBarConfig->fontSize = fontSize;
 
 		configuracion->mainScreenConfig->minHorizontalSpace = 5;
 		configuracion->mainScreenConfig->offset.top = 5;

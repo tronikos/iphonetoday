@@ -25,6 +25,16 @@ BOOL XMLUtils::GetAttr(TiXmlElement *pElem, const char *pszAttrName, LONG *value
 	return TRUE;
 }
 
+BOOL XMLUtils::GetAttr(TiXmlElement *pElem, const char *pszAttrName, float *value)
+{
+	float v;
+	if (pElem == NULL || value == NULL || TIXML_SUCCESS != pElem->QueryFloatAttribute(pszAttrName, &v)) {
+		return FALSE;
+	}
+	*value = v;
+	return TRUE;
+}
+
 BOOL XMLUtils::GetAttr(TiXmlElement *pElem, const char *pszAttrName, COLORREF *value)
 {
 	return XMLUtils::GetAttr(pElem, pszAttrName, (INT *) value);
@@ -41,10 +51,33 @@ BOOL XMLUtils::GetAttr(TiXmlElement *pElem, const char *pszAttrName, LPTSTR pszR
 	return TRUE;
 }
 
-void XMLUtils::SetAttr(TiXmlElement *pElem, const char *pszAttrName, UINT value)
+void XMLUtils::SetAttr(TiXmlElement *pElem, const char *pszAttrName, INT value)
 {
 	if (pElem == NULL) return;
-	pElem->SetAttribute(pszAttrName, (int) value);
+	pElem->SetAttribute(pszAttrName, value);
+}
+
+void XMLUtils::SetAttr(TiXmlElement *pElem, const char *pszAttrName, UINT value)
+{
+	XMLUtils::SetAttr(pElem, pszAttrName, (INT) value);
+}
+
+void XMLUtils::SetAttr(TiXmlElement *pElem, const char *pszAttrName, LONG value)
+{
+	XMLUtils::SetAttr(pElem, pszAttrName, (INT) value);
+}
+
+void XMLUtils::SetAttr(TiXmlElement *pElem, const char *pszAttrName, COLORREF value)
+{
+	XMLUtils::SetAttr(pElem, pszAttrName, (INT) value);
+}
+
+void XMLUtils::SetAttr(TiXmlElement *pElem, const char *pszAttrName, float value)
+{
+	if (pElem == NULL) return;
+	char buf[40];
+	sprintf(buf, "%.3f", value);
+	pElem->SetAttribute(pszAttrName, buf);
 }
 
 void XMLUtils::SetAttr(TiXmlElement *pElem, const char *pszAttrName, LPTSTR psz, size_t bufflen)

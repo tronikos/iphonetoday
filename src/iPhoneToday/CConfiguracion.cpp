@@ -312,14 +312,14 @@ BOOL CConfiguracion::cargaFondo(HDC *hDC)
 			delete fondoPantalla;
 		}
 		fondoPantalla = new CIcono();
-		float factor = 1.75;
-		if (this->fondoEstatico) {
-			factor = 1.0;
+		float factor = 0;
+		if (!this->fondoEstatico) {
+			factor = this->fondoFactor;
 		}
 
 		TCHAR rutaImgCompleta[MAX_PATH];
 		getAbsolutePath(rutaImgCompleta, CountOf(rutaImgCompleta), strFondoPantalla);
-		fondoPantalla->loadImage(hDC, rutaImgCompleta, UINT(anchoPantalla * factor), altoPantalla, PIXFMT_16BPP_RGB565);
+		fondoPantalla->loadImage(hDC, rutaImgCompleta, anchoPantalla, altoPantalla, PIXFMT_16BPP_RGB565, factor);
 	} else {
 		if (fondoPantalla != NULL) {
 			delete fondoPantalla;
@@ -372,6 +372,7 @@ void CConfiguracion::defaultValues()
 	this->fondoTransparente = 1;
 	this->fondoColor = RGB(0, 0, 0);
 	this->fondoEstatico = 1;
+	this->fondoFactor = 1;
 	StringCchCopy(this->strFondoPantalla, CountOf(this->strFondoPantalla), L"");
 
 	this->umbralMovimiento = 15;
@@ -503,6 +504,7 @@ BOOL CConfiguracion::cargaXMLConfig()
 			XMLUtils::GetAttr(pElem, "transparent", &this->fondoTransparente);
 			XMLUtils::GetAttr(pElem, "color",       &this->fondoColor);
 			XMLUtils::GetAttr(pElem, "static",      &this->fondoEstatico);
+			XMLUtils::GetAttr(pElem, "factor",      &this->fondoFactor);
 			XMLUtils::GetAttr(pElem, "wallpaper",   this->strFondoPantalla, CountOf(this->strFondoPantalla));
 		} else if(_stricmp(nameNode, "NotifyTimer") == 0) {
 			XMLUtils::GetTextElem(pElem, &this->notifyTimer);
@@ -656,6 +658,7 @@ BOOL CConfiguracion::guardaXMLConfig()
 	XMLUtils::SetAttr(pElem, "transparent", this->fondoTransparente);
 	XMLUtils::SetAttr(pElem, "color",       this->fondoColor);
 	XMLUtils::SetAttr(pElem, "static",      this->fondoEstatico);
+	XMLUtils::SetAttr(pElem, "factor",      this->fondoFactor);
 	XMLUtils::SetAttr(pElem, "wallpaper",   this->strFondoPantalla, CountOf(this->strFondoPantalla));
 	root->LinkEndChild(pElem);
 
