@@ -55,6 +55,23 @@ LRESULT CALLBACK OptionDialog7(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 			}
 		}
 		return TRUE;
+	case WM_COMMAND:
+		switch (LOWORD(wParam))
+		{
+		case IDC_CHECK_NEVER_SHOW_TASKBAR:
+			if (SendMessage(GetDlgItem(hDlg, IDC_CHECK_NEVER_SHOW_TASKBAR), BM_GETCHECK, 0, 0) == BST_CHECKED) {
+				int resp = MessageBox(hDlg,
+					L"Are you really sure you never want to show the taskbar?\n"
+					L"This option is meant for Pocket Navigation Devices.\n"
+					L"The fullscreen option already hides the taskbar.",
+					L"Are you sure?", MB_YESNO);
+				if (resp == IDNO) {
+					SendMessage(GetDlgItem(hDlg, IDC_CHECK_NEVER_SHOW_TASKBAR), BM_SETCHECK, BST_UNCHECKED, 0);
+				}
+			}
+			break;
+		}
+		return 0;
 	case WM_CTLCOLORSTATIC:
 		return (LRESULT)GetStockObject(WHITE_BRUSH);
 	}
