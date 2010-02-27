@@ -38,6 +38,8 @@ LRESULT CALLBACK OptionDialog3(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 				SendMessage(GetDlgItem(hDlg, IDC_CHECK_BACK_TRANSPARENT), BM_SETCHECK, configuracion->fondoTransparente ? BST_CHECKED : BST_UNCHECKED, 0);
 				SetDlgItemHex(hDlg, IDC_EDIT_BACK_COLOR, configuracion->fondoColor);
 
+				SetDlgItemFloat(hDlg, IDC_EDIT_BACK_FACTOR, configuracion->fondoFactor);
+				EnableWindow(GetDlgItem(hDlg, IDC_EDIT_BACK_FACTOR), !configuracion->fondoEstatico);
 #ifdef EXEC_MODE
 				EnableWindow(GetDlgItem(hDlg, IDC_CHECK_BACK_TRANSPARENT), FALSE);
 #endif
@@ -67,6 +69,9 @@ LRESULT CALLBACK OptionDialog3(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 					SetDlgItemHex(hDlg, IDC_EDIT_BACK_COLOR, nextColor);
 				}
 				break;
+			case IDC_CHECK_BACK_STATIC:
+				EnableWindow(GetDlgItem(hDlg, IDC_EDIT_BACK_FACTOR), SendMessage(GetDlgItem(hDlg, IDC_CHECK_BACK_STATIC), BM_GETCHECK, 0, 0) == BST_UNCHECKED);
+				break;
 			}
 		}
 		return 0;
@@ -83,6 +88,7 @@ BOOL SaveConfiguration3(HWND hDlg)
 	configuracion->fondoEstatico = SendMessage(GetDlgItem(hDlg, IDC_CHECK_BACK_STATIC), BM_GETCHECK, 0, 0) == BST_CHECKED;
 	configuracion->fondoTransparente = SendMessage(GetDlgItem(hDlg, IDC_CHECK_BACK_TRANSPARENT), BM_GETCHECK, 0, 0) == BST_CHECKED;
 	configuracion->fondoColor = GetDlgItemHex(hDlg, IDC_EDIT_BACK_COLOR, NULL);
+	configuracion->fondoFactor = GetDlgItemFloat(hDlg, IDC_EDIT_BACK_FACTOR, NULL);
 
 	return TRUE;
 }

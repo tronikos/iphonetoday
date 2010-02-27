@@ -153,6 +153,7 @@
 #define IDC_EDIT_TB_OFFSET_TOP          1139
 #define IDC_EDIT_TB_OFFSET_RIGHT        1140
 #define IDC_EDIT_TB_OFFSET_BOTTOM       1141
+#define IDC_EDIT_BACK_FACTOR            1142
 
 // Next default values for new objects
 // 
@@ -160,7 +161,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        121
 #define _APS_NEXT_COMMAND_VALUE         40003
-#define _APS_NEXT_CONTROL_VALUE         1142
+#define _APS_NEXT_CONTROL_VALUE         1143
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

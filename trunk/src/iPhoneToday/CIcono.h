@@ -49,7 +49,7 @@ public:
 	~CIcono(void);
 
 	void defaultValues();
-	void loadImage(HDC *hDC, TCHAR *pathImage, int width = 0, int height = 0, int bitsPerPixel = PIXFMT_32BPP_ARGB);
+	void loadImage(HDC *hDC, TCHAR *pathImage, int width = 0, int height = 0, int bitsPerPixel = PIXFMT_32BPP_ARGB, float factor = 0);
 	void loadImageFromExec(HDC *hDC, TCHAR *pathExec, int width = 0, int height = 0);
 	void clearImageObjects();
 };

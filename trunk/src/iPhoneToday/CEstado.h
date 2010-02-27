@@ -22,7 +22,6 @@ public:
 	POINTS posObjetivo; // Posicion Objetivo en una transicion
 	UINT pantallaActiva;
 	BOOL hayMovimiento;
-	COLORREF colorFondo;
 	CIcono *iconoActivo;
 
 	RECT cuadroLanzando;	// Posicion Objetivo en una transicion de lanzamiento

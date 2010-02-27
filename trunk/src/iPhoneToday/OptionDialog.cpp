@@ -223,3 +223,27 @@ BOOL SetDlgItemHex(HWND hDlg, int nIDDlgItem, UINT uValue)
 	swprintf(str, L"#%X", uValue);
 	return SetDlgItemText(hDlg, nIDDlgItem, str);
 }
+
+float GetDlgItemFloat(HWND hDlg, int nIDDlgItem, BOOL* lpTranslated)
+{
+	TCHAR str[MAX_PATH];
+	float result = 0;
+	if (GetDlgItemText(hDlg, nIDDlgItem, str, MAX_PATH) > 0) {
+		swscanf(str, L"%f", &result);
+		if (lpTranslated != NULL) {
+			*lpTranslated = TRUE;
+		}
+	} else {
+		if (lpTranslated != NULL) {
+			*lpTranslated = FALSE;
+		}
+	}
+	return result;
+}
+
+BOOL SetDlgItemFloat(HWND hDlg, int nIDDlgItem, float fValue)
+{
+	TCHAR str[MAX_PATH];
+	swprintf(str, L"%.3f", fValue);
+	return SetDlgItemText(hDlg, nIDDlgItem, str);
+}

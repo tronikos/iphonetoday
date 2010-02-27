@@ -70,3 +70,6 @@ LRESULT	CALLBACK	OptionDialog8(HWND, UINT, WPARAM, LPARAM);
 
 UINT GetDlgItemHex(HWND hDlg, int nIDDlgItem, BOOL* lpTranslated);
 BOOL SetDlgItemHex(HWND hDlg, int nIDDlgItem, UINT uValue);
+
+float GetDlgItemFloat(HWND hDlg, int nIDDlgItem, BOOL* lpTranslated);
+BOOL SetDlgItemFloat(HWND hDlg, int nIDDlgItem, float fValue);
