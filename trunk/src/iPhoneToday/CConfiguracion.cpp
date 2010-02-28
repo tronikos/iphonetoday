@@ -392,26 +392,43 @@ void CConfiguracion::defaultValues()
 	StringCchCopy(this->diasSemana[6], CountOf(this->diasSemana[6]), TEXT("Sat"));
 	StringCchCopy(this->strFondoPantalla, CountOf(this->strFondoPantalla), TEXT(""));
 
-	this->dowColor = RGB(255,255,255);
-	this->dowWidth = 18;
-	this->dowHeight = 40;
-	this->dowWeight = 400;
+	this->dow.color = RGB(255,255,255);
+	this->dow.width = 18;
+	this->dow.height = 40;
+	this->dow.weight = 400;
+	this->dow.offset.left = 0;
+	this->dow.offset.top = 0;
+	this->dow.offset.right = 0;
+	this->dow.offset.bottom = 72;
 
-	this->domColor = RGB(30,30,30);
-	this->domWidth = 30;
-	this->domHeight = 80;
-	this->domWeight = 800;
+	this->dom.color = RGB(30,30,30);
+	this->dom.width = 30;
+	this->dom.height = 80;
+	this->dom.weight = 800;
+	this->dom.offset.left = 0;
+	this->dom.offset.top = 25;
+	this->dom.offset.right = 0;
+	this->dom.offset.bottom = 0;
 
-	this->clockColor = RGB(230,230,230);
-	this->clockWidth = 13;
-	this->clockHeight = 60;
-	this->clockWeight = 900;
+	this->clck.color = RGB(230,230,230);
+	this->clck.width = 13;
+	this->clck.height = 60;
+	this->clck.weight = 900;
+	this->clck.offset.left = 0;
+	this->clck.offset.top = 0;
+	this->clck.offset.right = 0;
+	this->clck.offset.bottom = 0;
+
 	this->clock12Format = 0;
 
-	this->battColor = RGB(230,230,230);
-	this->battWidth = 25;
-	this->battHeight = 70;
-	this->battWeight = 900;
+	this->batt.color = RGB(230,230,230);
+	this->batt.width = 25;
+	this->batt.height = 70;
+	this->batt.weight = 900;
+	this->batt.offset.left = 0;
+	this->batt.offset.top = 0;
+	this->batt.offset.right = 0;
+	this->batt.offset.bottom = 0;
 
 	StringCchCopy(this->bubble_notif, CountOf(this->bubble_notif), TEXT("bubble_notif.png"));
 	StringCchCopy(this->bubble_state, CountOf(this->bubble_notif), TEXT("bubble_state.png"));
@@ -428,6 +445,30 @@ void CConfiguracion::defaultValues()
 	this->neverShowTaskBar = 0;
 	this->noWindowTitle = 0;
 	this->alreadyConfigured = 0;
+}
+
+void SpecialIconSettingsLoad(TiXmlElement *pElem, SpecialIconSettings *sis)
+{
+	XMLUtils::GetAttr(pElem, "color",  &sis->color);
+	XMLUtils::GetAttr(pElem, "width",  &sis->width);
+	XMLUtils::GetAttr(pElem, "height", &sis->height);
+	XMLUtils::GetAttr(pElem, "weight", &sis->weight);
+	XMLUtils::GetAttr(pElem, "left",   &sis->offset.left);
+	XMLUtils::GetAttr(pElem, "top",    &sis->offset.top);
+	XMLUtils::GetAttr(pElem, "right",  &sis->offset.right);
+	XMLUtils::GetAttr(pElem, "bottom", &sis->offset.bottom);
+}
+
+void SpecialIconSettingsSave(TiXmlElement *pElem, SpecialIconSettings *sis)
+{
+	XMLUtils::SetAttr(pElem, "color",  sis->color);
+	XMLUtils::SetAttr(pElem, "width",  sis->width);
+	XMLUtils::SetAttr(pElem, "height", sis->height);
+	XMLUtils::SetAttr(pElem, "weight", sis->weight);
+	XMLUtils::SetAttr(pElem, "left",   sis->offset.left);
+	XMLUtils::SetAttr(pElem, "top",    sis->offset.top);
+	XMLUtils::SetAttr(pElem, "right",  sis->offset.right);
+	XMLUtils::SetAttr(pElem, "bottom", sis->offset.bottom);
 }
 
 BOOL CConfiguracion::cargaXMLConfig()
@@ -465,10 +506,7 @@ BOOL CConfiguracion::cargaXMLConfig()
 			XMLUtils::GetAttr(pElem, "VerticalScroll", &this->verticalScroll);
 			XMLUtils::GetAttr(pElem, "FreestyleScroll", &this->freestyleScroll);
 		} else if(_stricmp(nameNode, "DayOfWeek") == 0) {
-			XMLUtils::GetAttr(pElem, "color",     &this->dowColor);
-			XMLUtils::GetAttr(pElem, "width",     &this->dowWidth);
-			XMLUtils::GetAttr(pElem, "height",    &this->dowHeight);
-			XMLUtils::GetAttr(pElem, "weight",    &this->dowWeight);
+			SpecialIconSettingsLoad(pElem, &this->dow);
 			XMLUtils::GetAttr(pElem, "Sunday",    this->diasSemana[0], CountOf(this->diasSemana[0]));
 			XMLUtils::GetAttr(pElem, "Monday",    this->diasSemana[1], CountOf(this->diasSemana[1]));
 			XMLUtils::GetAttr(pElem, "Tuesday",   this->diasSemana[2], CountOf(this->diasSemana[2]));
@@ -477,21 +515,12 @@ BOOL CConfiguracion::cargaXMLConfig()
 			XMLUtils::GetAttr(pElem, "Friday",    this->diasSemana[5], CountOf(this->diasSemana[5]));
 			XMLUtils::GetAttr(pElem, "Saturday",  this->diasSemana[6], CountOf(this->diasSemana[6]));
 		} else if(_stricmp(nameNode, "DayOfMonth") == 0) {
-			XMLUtils::GetAttr(pElem, "color",  &this->domColor);
-			XMLUtils::GetAttr(pElem, "width",  &this->domWidth);
-			XMLUtils::GetAttr(pElem, "height", &this->domHeight);
-			XMLUtils::GetAttr(pElem, "weight", &this->domWeight);
+			SpecialIconSettingsLoad(pElem, &this->dom);
 		} else if(_stricmp(nameNode, "Clock") == 0) {
-			XMLUtils::GetAttr(pElem, "color",    &this->clockColor);
-			XMLUtils::GetAttr(pElem, "width",    &this->clockWidth);
-			XMLUtils::GetAttr(pElem, "height",   &this->clockHeight);
-			XMLUtils::GetAttr(pElem, "weight",   &this->clockWeight);
+			SpecialIconSettingsLoad(pElem, &this->clck);
 			XMLUtils::GetAttr(pElem, "format12", &this->clock12Format);
 		} else if(_stricmp(nameNode, "Battery") == 0) {
-			XMLUtils::GetAttr(pElem, "color",    &this->battColor);
-			XMLUtils::GetAttr(pElem, "width",    &this->battWidth);
-			XMLUtils::GetAttr(pElem, "height",   &this->battHeight);
-			XMLUtils::GetAttr(pElem, "weight",   &this->battWeight);
+			SpecialIconSettingsLoad(pElem, &this->batt);
 		} else if(_stricmp(nameNode, "Bubbles") == 0) {
 			XMLUtils::GetAttr(pElem, "notif", this->bubble_notif, CountOf(this->bubble_notif));
 			XMLUtils::GetAttr(pElem, "state", this->bubble_state, CountOf(this->bubble_state));
@@ -673,10 +702,7 @@ BOOL CConfiguracion::guardaXMLConfig()
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("DayOfWeek");
-	XMLUtils::SetAttr(pElem, "color",     this->dowColor);
-	XMLUtils::SetAttr(pElem, "width",     this->dowWidth);
-	XMLUtils::SetAttr(pElem, "height",    this->dowHeight);
-	XMLUtils::SetAttr(pElem, "weight",    this->dowWeight);
+	SpecialIconSettingsSave(pElem, &this->dow);
 	XMLUtils::SetAttr(pElem, "Sunday",    this->diasSemana[0], CountOf(this->diasSemana[0]));
 	XMLUtils::SetAttr(pElem, "Monday",    this->diasSemana[1], CountOf(this->diasSemana[1]));
 	XMLUtils::SetAttr(pElem, "Tuesday",   this->diasSemana[2], CountOf(this->diasSemana[2]));
@@ -687,25 +713,16 @@ BOOL CConfiguracion::guardaXMLConfig()
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("DayOfMonth");
-	XMLUtils::SetAttr(pElem, "color",  this->domColor);
-	XMLUtils::SetAttr(pElem, "width",  this->domWidth);
-	XMLUtils::SetAttr(pElem, "height", this->domHeight);
-	XMLUtils::SetAttr(pElem, "weight", this->domWeight);
+	SpecialIconSettingsSave(pElem, &this->dom);
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("Clock");
-	XMLUtils::SetAttr(pElem, "color",    this->clockColor);
-	XMLUtils::SetAttr(pElem, "width",    this->clockWidth);
-	XMLUtils::SetAttr(pElem, "height",   this->clockHeight);
-	XMLUtils::SetAttr(pElem, "weight",   this->clockWeight);
+	SpecialIconSettingsSave(pElem, &this->clck);
 	XMLUtils::SetAttr(pElem, "format12", this->clock12Format);
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("Battery");
-	XMLUtils::SetAttr(pElem, "color",    this->battColor);
-	XMLUtils::SetAttr(pElem, "width",    this->battWidth);
-	XMLUtils::SetAttr(pElem, "height",   this->battHeight);
-	XMLUtils::SetAttr(pElem, "weight",   this->battWeight);
+	SpecialIconSettingsSave(pElem, &this->batt);
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("Bubbles");
