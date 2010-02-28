@@ -1127,6 +1127,39 @@ void pintaIconos(HDC *hDC, RECT *rcWindBounds) {
 
 }
 
+void DrawSpecialIconText(HDC hDC, TCHAR *str, CIcono *icon, int iconWidth, SpecialIconSettings sis)
+{
+	RECT posText;
+	LOGFONT lf;
+	HFONT hFont;
+	HFONT hFontOld;
+	COLORREF colorOld;
+	HFONT hSysFont = (HFONT) GetStockObject(SYSTEM_FONT);
+
+	GetObject(hSysFont, sizeof(LOGFONT), &lf);
+
+	lf.lfWeight = sis.weight;
+	lf.lfWidth = LONG(sis.width / 100.0 * iconWidth);
+	lf.lfHeight = LONG(sis.height / 100.0 * iconWidth);
+	lf.lfQuality = DEFAULT_QUALITY;
+
+	hFont = CreateFontIndirect(&lf);
+
+	hFontOld = (HFONT) SelectObject(hDC, hFont);
+
+	colorOld = SetTextColor(hDC, sis.color);
+
+	posText.left = int(icon->x + sis.offset.left / 100.0 * iconWidth);
+	posText.top = int(icon->y + sis.offset.top / 100.0 * iconWidth);
+	posText.right = int(icon->x + iconWidth - sis.offset.right / 100.0 * iconWidth);
+	posText.bottom = int(icon->y + iconWidth - sis.offset.bottom / 100.0 * iconWidth);
+
+	DrawText(hDC, str, -1, &posText, DT_CENTER | DT_VCENTER);
+
+	DeleteObject(SelectObject(hDC, hFontOld));
+	SetTextColor(hDC, colorOld);
+}
+
 void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 	// Iniciamos el proceso de pintado
 	RECT posTexto;
@@ -1175,52 +1208,9 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 				TCHAR dayOfMonth[16];
 				StringCchPrintf(dayOfMonth, CountOf(dayOfMonth), TEXT("%i"), st.wDay);
 
-				LOGFONT lf;
-				HFONT hFont;
-				HFONT hFontOld;
-				COLORREF colorOld;
-				HFONT hSysFont = (HFONT) GetStockObject(SYSTEM_FONT);
-				GetObject(hSysFont, sizeof(LOGFONT), &lf);
+				DrawSpecialIconText(*hDC, configuracion->diasSemana[st.wDayOfWeek], icono, width, configuracion->dow);
 
-				// Print day of week
-				lf.lfWeight = configuracion->dowWeight;
-				lf.lfWidth = LONG(configuracion->dowWidth / 100.0 * cs->iconWidth);
-				lf.lfHeight = LONG(configuracion->dowHeight / 100.0 * cs->iconWidth);
-				lf.lfQuality = DEFAULT_QUALITY;
-
-				hFont = CreateFontIndirect(&lf);
-				hFontOld = (HFONT) SelectObject(*hDC, hFont);
-				colorOld = SetTextColor(*hDC, configuracion->dowColor);
-
-				posTexto.left = int(icono->x);
-				posTexto.right = int(icono->x + width);
-				posTexto.top = int(icono->y);
-				posTexto.bottom = int(icono->y + (width * 0.28));
-
-				DrawText(*hDC, configuracion->diasSemana[st.wDayOfWeek], -1, &posTexto, DT_CENTER | DT_VCENTER);
-
-				DeleteObject(SelectObject(*hDC, hFontOld));
-				SetTextColor(*hDC, colorOld);
-
-				// Print day of month
-				lf.lfWeight = configuracion->domWeight;
-				lf.lfWidth = LONG(configuracion->domWidth / 100.0 * cs->iconWidth);
-				lf.lfHeight = LONG(configuracion->domHeight / 100.0 * cs->iconWidth);
-				lf.lfQuality = DEFAULT_QUALITY;
-
-				hFont = CreateFontIndirect(&lf);
-				hFontOld = (HFONT) SelectObject(*hDC, hFont);
-				colorOld = SetTextColor(*hDC, configuracion->domColor);
-
-				posTexto.left = int(icono->x);
-				posTexto.right = int(icono->x + width);
-				posTexto.top = int(icono->y + (width * 0.25));
-				posTexto.bottom = int(icono->y + width);
-
-				DrawText(*hDC, dayOfMonth, -1, &posTexto, DT_CENTER | DT_VCENTER);
-
-				DeleteObject(SelectObject(*hDC, hFontOld));
-				SetTextColor(*hDC, colorOld);
+				DrawSpecialIconText(*hDC, dayOfMonth, icono, width, configuracion->dom);
 
 				}
 				break;
@@ -1233,60 +1223,13 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 				GetLocalTime(&st);
 
 				TCHAR strTime[8];
-				LOGFONT lf;
-				HFONT hFont;
-				HFONT hFontOld;
-				COLORREF colorOld;
-				HFONT hSysFont = (HFONT) GetStockObject(SYSTEM_FONT);
-				GetObject(hSysFont, sizeof(LOGFONT), &lf);
-
-				lf.lfWeight = configuracion->clockWeight;
-				lf.lfWidth = LONG(configuracion->clockWidth / 100.0 * cs->iconWidth);
-				lf.lfHeight = LONG(configuracion->clockHeight / 100.0 * cs->iconWidth);
-				lf.lfQuality = DEFAULT_QUALITY;
-
-				// create the font
-				hFont = CreateFontIndirect(&lf);
-
-				// Select the system font into the device context
-				hFontOld = (HFONT) SelectObject(*hDC, hFont);
-
-				// set that color
-				colorOld = SetTextColor(*hDC, configuracion->clockColor);
-
-				posTexto.left = int(icono->x);
-				posTexto.right = int(icono->x + width);
-				posTexto.top = int(icono->y);
-				posTexto.bottom = int(icono->y + width);
-
-				TCHAR strHour[4];
-				TCHAR strMinute[4];
-				int hour = st.wHour;
 				if (configuracion->clock12Format) {
-					if (hour == 0) {
-						hour = 12;
-					} else if (hour > 12) {
-						hour -= 12;
-					}
-				}
-
-				if (hour < 10 && !configuracion->clock12Format) {
-					swprintf(strHour, L"0%i", hour);
+					StringCchPrintf(strTime, CountOf(strTime), TEXT("%d:%02d"), (st.wHour == 0 ? 12 : (st.wHour > 12 ? (st.wHour - 12) : st.wHour)), st.wMinute);
 				} else {
-					swprintf(strHour, L"%i", hour);
+					StringCchPrintf(strTime, CountOf(strTime), TEXT("%02d:%02d"), st.wHour, st.wMinute);
 				}
-				if (st.wMinute < 10) {
-					swprintf(strMinute, L"0%i", st.wMinute);
-				} else {
-					swprintf(strMinute, L"%i", st.wMinute);
-				}
-				StringCchPrintf(strTime, CountOf(strTime), TEXT("%s:%s"), strHour, strMinute);
 
-				DrawText(*hDC, strTime, -1, &posTexto, DT_CENTER | DT_VCENTER);
-
-				// Select the previous font back into the device context
-				DeleteObject(SelectObject(*hDC, hFontOld));
-				SetTextColor(*hDC, colorOld);
+				DrawSpecialIconText(*hDC, strTime, icono, width, configuracion->clck);
 
 				}
 				break;
@@ -1294,43 +1237,13 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 				{
 
 				TCHAR strBattery[8];
-				LOGFONT lf;
-				HFONT hFont;
-				HFONT hFontOld;
-				COLORREF colorOld;
-				HFONT hSysFont = (HFONT) GetStockObject(SYSTEM_FONT);
-				GetObject(hSysFont, sizeof(LOGFONT), &lf);
-
-				lf.lfWeight = configuracion->battWeight;
-				lf.lfWidth = LONG(configuracion->battWidth / 100.0 * cs->iconWidth);
-				lf.lfHeight = LONG(configuracion->battHeight / 100.0 * cs->iconWidth);
-				lf.lfQuality = DEFAULT_QUALITY;
-
-				// create the font
-				hFont = CreateFontIndirect(&lf);
-
-				// Select the system font into the device context
-				hFontOld = (HFONT) SelectObject(*hDC, hFont);
-
-				// set that color
-				colorOld = SetTextColor(*hDC, configuracion->battColor);
-
-				posTexto.left = int(icono->x);
-				posTexto.right = int(icono->x + width);
-				posTexto.top = int(icono->y);
-				posTexto.bottom = int(icono->y + width);
-
 				if (ExternalPowered()) {
 					StringCchCopy(strBattery, CountOf(strBattery), L"AC");
 				} else {
 					StringCchPrintf(strBattery, CountOf(strBattery), L"%d", BatteryPercentage());
 				}
 
-				DrawText(*hDC, strBattery, -1, &posTexto, DT_CENTER | DT_VCENTER);
-
-				// Select the previous font back into the device context
-				DeleteObject(SelectObject(*hDC, hFontOld));
-				SetTextColor(*hDC, colorOld);
+				DrawSpecialIconText(*hDC, strBattery, icono, width, configuracion->batt);
 
 				}
 				break;

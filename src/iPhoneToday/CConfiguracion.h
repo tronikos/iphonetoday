@@ -5,6 +5,14 @@
 #include "GraphicFunctions.h"
 #include "xmlWrapper.h"
 
+typedef struct SpecialIconSettings {
+	INT height;
+	INT width;
+	INT weight;
+	COLORREF color;
+	RECT offset;
+} SpecialIconSettings;
+
 class CConfiguracion
 {
 public:
@@ -83,30 +91,18 @@ public:
 	UINT freestyleScroll;
 
 	// DayOfWeek
-	COLORREF dowColor;
-	UINT dowWidth;
-	UINT dowHeight;
-	UINT dowWeight;
+	SpecialIconSettings dow;
 	TCHAR diasSemana[7][16];
 
 	// DayOfMonth
-	COLORREF domColor;
-	UINT domWidth;
-	UINT domHeight;
-	UINT domWeight;
+	SpecialIconSettings dom;
 
 	// Clock
-	COLORREF clockColor;
-	UINT clockWidth;
-	UINT clockHeight;
-	UINT clockWeight;
+	SpecialIconSettings clck;
 	UINT clock12Format;
 
 	// Battery
-	COLORREF battColor;
-	UINT battWidth;
-	UINT battHeight;
-	UINT battWeight;
+	SpecialIconSettings batt;
 
 	// Bubbles
 	TCHAR bubble_notif[MAX_PATH];
