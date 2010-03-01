@@ -388,6 +388,10 @@
 				RelativePath="..\iPhoneToday\iPhoneTodayCmdLine.cpp"
 				>
 			</File>
+			<File
+				RelativePath="..\iPhoneToday\Utils2.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"

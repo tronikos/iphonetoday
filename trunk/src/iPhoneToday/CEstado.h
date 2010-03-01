@@ -16,8 +16,6 @@ public:
 	BOOL clearReloadIcon();
 	BOOL LoadRegistryIcon(int nIcon, CReloadIcon *reloadIcon);
 
-	BOOL actualizaDateTime();
-
 	// Variables 
 	POINTS posObjetivo; // Posicion Objetivo en una transicion
 	UINT pantallaActiva;
@@ -41,8 +39,10 @@ public:
 	int estadoBluetooth;// HKLM\System\State\Hardware\Bluetooth
 	int estadoAlarm;	// HKLM\Software\Microsoft\Clock\0\AlarmFlags HKLM\Software\Microsoft\Clock\1\AlarmFlags HKLM\Software\Microsoft\Clock\2\AlarmFlags
 
-	int diaDelMes;		// day of the month
-	int hora;			// hours+mins
+	SYSTEMTIME st;
+	BOOL externalPowered;
+	int batteryPercentage;
+	int volumePercentage;
 
 	int reloadIcons;	// HKLM\Software\iPhoneToday\reloadIcons
 	int reloadIcon;		// HKLM\Software\iPhoneToday\reloadIcon
