@@ -72,6 +72,7 @@
 
 #include "resource.h"
 #include "Utils.h"
+#include "Utils2.h"
 #include "Log.h"
 #include "GraphicFunctions.h"
 #include "CReloadIcon.h"
@@ -133,6 +134,7 @@ typedef enum
 #define NOTIF_CLOCK			12
 #define NOTIF_CLOCK_ALARM	13
 #define NOTIF_BATTERY		14
+#define NOTIF_VOLUME		15
 
 #define NOTIF_NORMAL_TXT		TEXT("Normal")
 #define NOTIF_LLAMADAS_TXT		TEXT("Missed Calls")
@@ -151,3 +153,4 @@ typedef enum
 #define NOTIF_CLOCK_TXT			TEXT("Clock")
 #define NOTIF_CLOCK_ALARM_TXT	TEXT("Clock & Alarm State")
 #define NOTIF_BATTERY_TXT		TEXT("Battery")
+#define NOTIF_VOLUME_TXT		TEXT("Volume")

@@ -104,6 +104,9 @@ public:
 	// Battery
 	SpecialIconSettings batt;
 
+	// Volume
+	SpecialIconSettings vol;
+
 	// Bubbles
 	TCHAR bubble_notif[MAX_PATH];
 	TCHAR bubble_state[MAX_PATH];

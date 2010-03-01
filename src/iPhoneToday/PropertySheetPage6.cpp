@@ -6,7 +6,7 @@
 #include "iPhoneToday.h"
 #include "OptionDialog.h"
 
-SpecialIconSettings batt, dow, dom, clck;
+SpecialIconSettings batt, dow, dom, clck, vol;
 SpecialIconSettings *cur_sis;
 
 void enable(HWND hDlg, BOOL bEnable)
@@ -87,11 +87,13 @@ LRESULT CALLBACK OptionDialog6(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 				SendMessage(GetDlgItem(hDlg, IDC_COMBO_SIS), CB_ADDSTRING, 0, (LPARAM)L"Clock");
 				SendMessage(GetDlgItem(hDlg, IDC_COMBO_SIS), CB_ADDSTRING, 0, (LPARAM)L"Day of month");
 				SendMessage(GetDlgItem(hDlg, IDC_COMBO_SIS), CB_ADDSTRING, 0, (LPARAM)L"Day of week");
+				SendMessage(GetDlgItem(hDlg, IDC_COMBO_SIS), CB_ADDSTRING, 0, (LPARAM)L"Volume");
 
 				memcpy(&batt, &configuracion->batt, sizeof(SpecialIconSettings));
 				memcpy(&clck, &configuracion->clck, sizeof(SpecialIconSettings));
 				memcpy(&dom,  &configuracion->dom,  sizeof(SpecialIconSettings));
 				memcpy(&dow,  &configuracion->dow,  sizeof(SpecialIconSettings));
+				memcpy(&vol,  &configuracion->vol,  sizeof(SpecialIconSettings));
 
 				SendMessage(GetDlgItem(hDlg, IDC_CHECK_CLOCK_FORMAT12), BM_SETCHECK, configuracion->clock12Format ? BST_CHECKED : BST_UNCHECKED, 0);
 				ShowWindow(GetDlgItem(hDlg, IDC_CHECK_CLOCK_FORMAT12), SW_HIDE);
@@ -121,6 +123,9 @@ LRESULT CALLBACK OptionDialog6(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 					load(hDlg, cur_sis);
 				} else if (lstrcmpi(str, L"Day of week") == 0) {
 					cur_sis = &dow;
+					load(hDlg, cur_sis);
+				} else if (lstrcmpi(str, L"Volume") == 0) {
+					cur_sis = &vol;
 					load(hDlg, cur_sis);
 				} else {
 					enable(hDlg, FALSE);
@@ -184,11 +189,13 @@ BOOL SaveConfiguration6(HWND hDlg)
 	if (!check(hDlg, &clck)) return FALSE;
 	if (!check(hDlg, &dom)) return FALSE;
 	if (!check(hDlg, &dow)) return FALSE;
+	if (!check(hDlg, &vol)) return FALSE;
 
 	memcpy(&configuracion->batt, &batt, sizeof(SpecialIconSettings));
 	memcpy(&configuracion->clck, &clck, sizeof(SpecialIconSettings));
 	memcpy(&configuracion->dom,  &dom,  sizeof(SpecialIconSettings));
 	memcpy(&configuracion->dow,  &dow,  sizeof(SpecialIconSettings));
+	memcpy(&configuracion->vol,  &vol,  sizeof(SpecialIconSettings));
 
 	configuracion->clock12Format = SendMessage(GetDlgItem(hDlg, IDC_CHECK_CLOCK_FORMAT12), BM_GETCHECK, 0, 0) == BST_CHECKED;
 

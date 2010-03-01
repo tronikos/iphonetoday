@@ -7,6 +7,7 @@ CEstado::CEstado(void)
 	hayMovimiento = false;
 
 	pantallaActiva = 0;
+
 	numLlamadas = 0;
 	numSMS = 0;
 	numMMS = 0;
@@ -17,6 +18,10 @@ CEstado::CEstado(void)
 	estadoWifi = 0;
 	estadoBluetooth = 0;
 	estadoAlarm = 0;
+
+	externalPowered = 0;
+	batteryPercentage = 0;
+	volumePercentage = 0;
 
 	reloadIcons = 0;
 	reloadIcon = 0;
@@ -160,26 +165,31 @@ BOOL CEstado::actualizaNotificaciones() {
 		hayCambios = TRUE;
 	}
 
-	hayCambios = hayCambios || actualizaDateTime();
+	SYSTEMTIME st_new;
+	GetLocalTime(&st_new);
 
-	return hayCambios;
-}
+	if (st.wMinute != st_new.wMinute ||
+		st.wHour != st_new.wHour ||
+		st.wDay != st_new.wDay) {
+			memcpy(&st, &st_new, sizeof(SYSTEMTIME));
+			hayCambios = TRUE;
+	}
 
-BOOL CEstado::actualizaDateTime() {
-
-	BOOL hayCambios = FALSE;
-
-	SYSTEMTIME st;
-	GetLocalTime(&st);
-
-	if (diaDelMes != st.wDay) {
-		diaDelMes = st.wDay;
+	int newValue = ExternalPowered();
+	if (externalPowered != newValue) {
+		externalPowered = newValue;
 		hayCambios = TRUE;
 	}
 
-	int tmp = st.wHour + st.wMinute;
-	if (hora != tmp) {
-		hora = tmp;
+	newValue = BatteryPercentage();
+	if (batteryPercentage != newValue) {
+		batteryPercentage = newValue;
+		hayCambios = TRUE;
+	}
+
+	newValue = GetVolumePercentage();
+	if (volumePercentage != newValue) {
+		volumePercentage = newValue;
 		hayCambios = TRUE;
 	}
 

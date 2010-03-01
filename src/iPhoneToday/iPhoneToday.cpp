@@ -1203,12 +1203,10 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 			case NOTIF_CALENDAR:
 				{
 
-				SYSTEMTIME st;
-				GetLocalTime(&st);
-				TCHAR dayOfMonth[16];
-				StringCchPrintf(dayOfMonth, CountOf(dayOfMonth), TEXT("%i"), st.wDay);
+				DrawSpecialIconText(*hDC, configuracion->diasSemana[estado->st.wDayOfWeek], icono, width, configuracion->dow);
 
-				DrawSpecialIconText(*hDC, configuracion->diasSemana[st.wDayOfWeek], icono, width, configuracion->dow);
+				TCHAR dayOfMonth[8];
+				StringCchPrintf(dayOfMonth, CountOf(dayOfMonth), TEXT("%i"), estado->st.wDay);
 
 				DrawSpecialIconText(*hDC, dayOfMonth, icono, width, configuracion->dom);
 
@@ -1219,14 +1217,11 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 			case NOTIF_CLOCK:
 				{
 
-				SYSTEMTIME st;
-				GetLocalTime(&st);
-
 				TCHAR strTime[8];
 				if (configuracion->clock12Format) {
-					StringCchPrintf(strTime, CountOf(strTime), TEXT("%d:%02d"), (st.wHour == 0 ? 12 : (st.wHour > 12 ? (st.wHour - 12) : st.wHour)), st.wMinute);
+					StringCchPrintf(strTime, CountOf(strTime), TEXT("%d:%02d"), (estado->st.wHour == 0 ? 12 : (estado->st.wHour > 12 ? (estado->st.wHour - 12) : estado->st.wHour)), estado->st.wMinute);
 				} else {
-					StringCchPrintf(strTime, CountOf(strTime), TEXT("%02d:%02d"), st.wHour, st.wMinute);
+					StringCchPrintf(strTime, CountOf(strTime), TEXT("%02d:%02d"), estado->st.wHour, estado->st.wMinute);
 				}
 
 				DrawSpecialIconText(*hDC, strTime, icono, width, configuracion->clck);
@@ -1237,13 +1232,23 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 				{
 
 				TCHAR strBattery[8];
-				if (ExternalPowered()) {
+				if (estado->externalPowered) {
 					StringCchCopy(strBattery, CountOf(strBattery), L"AC");
 				} else {
-					StringCchPrintf(strBattery, CountOf(strBattery), L"%d", BatteryPercentage());
+					StringCchPrintf(strBattery, CountOf(strBattery), L"%d", estado->batteryPercentage);
 				}
 
 				DrawSpecialIconText(*hDC, strBattery, icono, width, configuracion->batt);
+
+				}
+				break;
+			case NOTIF_VOLUME:
+				{
+
+				TCHAR strVolume[8];
+				StringCchPrintf(strVolume, CountOf(strVolume), L"%d", estado->volumePercentage);
+
+				DrawSpecialIconText(*hDC, strVolume, icono, width, configuracion->vol);
 
 				}
 				break;
@@ -1981,6 +1986,7 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_CLOCK_TXT);
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_CLOCK_ALARM_TXT);
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_BATTERY_TXT);
+			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_VOLUME_TXT);
 
 			// Configuramos los checks
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_LAUNCHANIMATION), BM_SETCHECK, BST_CHECKED, 0);
@@ -2040,6 +2046,8 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_CLOCK_ALARM_TXT);
 				} else if (icono->tipo == NOTIF_BATTERY) {
 					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_BATTERY_TXT);
+				} else if (icono->tipo == NOTIF_VOLUME) {
+					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_VOLUME_TXT);
 				} else {
 					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_NORMAL_TXT);
 				}
@@ -2159,6 +2167,8 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 				nType = NOTIF_CLOCK_ALARM;
 			} else if (lstrcmpi(strType, NOTIF_BATTERY_TXT) == 0) {
 				nType = NOTIF_BATTERY;
+			} else if (lstrcmpi(strType, NOTIF_VOLUME_TXT) == 0) {
+				nType = NOTIF_VOLUME;
 			} else {
 				MessageBox(hDlg, TEXT("Type not valid!"), TEXT("Error"), MB_OK);
 				return FALSE;
@@ -2424,6 +2434,7 @@ BOOL inicializaApp(HWND hwnd) {
 
 	configuracion = new CConfiguracion();
 	estado = new CEstado();
+	estado->actualizaNotificaciones();
 
 	HDC hdc = GetDC(hwnd);
 
