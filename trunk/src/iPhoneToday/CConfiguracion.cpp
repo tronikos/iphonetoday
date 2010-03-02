@@ -439,6 +439,15 @@ void CConfiguracion::defaultValues()
 	this->vol.offset.right = 0;
 	this->vol.offset.bottom = 0;
 
+	this->mem.color = RGB(230,230,230);
+	this->mem.width = 25;
+	this->mem.height = 70;
+	this->mem.weight = 900;
+	this->mem.offset.left = 0;
+	this->mem.offset.top = 0;
+	this->mem.offset.right = 0;
+	this->mem.offset.bottom = 0;
+
 	StringCchCopy(this->bubble_notif, CountOf(this->bubble_notif), TEXT("bubble_notif.png"));
 	StringCchCopy(this->bubble_state, CountOf(this->bubble_notif), TEXT("bubble_state.png"));
 	StringCchCopy(this->bubble_alarm, CountOf(this->bubble_notif), TEXT("bubble_alarm.png"));
@@ -532,6 +541,8 @@ BOOL CConfiguracion::cargaXMLConfig()
 			SpecialIconSettingsLoad(pElem, &this->batt);
 		} else if(_stricmp(nameNode, "Volume") == 0) {
 			SpecialIconSettingsLoad(pElem, &this->vol);
+		} else if(_stricmp(nameNode, "MemoryLoad") == 0) {
+			SpecialIconSettingsLoad(pElem, &this->mem);
 		} else if(_stricmp(nameNode, "Bubbles") == 0) {
 			XMLUtils::GetAttr(pElem, "notif", this->bubble_notif, CountOf(this->bubble_notif));
 			XMLUtils::GetAttr(pElem, "state", this->bubble_state, CountOf(this->bubble_state));
@@ -738,6 +749,10 @@ BOOL CConfiguracion::guardaXMLConfig()
 
 	pElem = new TiXmlElement("Volume");
 	SpecialIconSettingsSave(pElem, &this->vol);
+	root->LinkEndChild(pElem);
+
+	pElem = new TiXmlElement("MemoryLoad");
+	SpecialIconSettingsSave(pElem, &this->mem);
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("Bubbles");

@@ -43,6 +43,7 @@ public:
 	BOOL externalPowered;
 	int batteryPercentage;
 	int volumePercentage;
+	int memoryLoad;
 
 	int reloadIcons;	// HKLM\Software\iPhoneToday\reloadIcons
 	int reloadIcon;		// HKLM\Software\iPhoneToday\reloadIcon
