@@ -25,3 +25,5 @@ FILETIME FileModifyTime(TCHAR *file);
 BOOL ExternalPowered();
 int BatteryPercentage();
 int MemoryLoad();
+DWORD MemoryFree();
+DWORD MemoryUsed();

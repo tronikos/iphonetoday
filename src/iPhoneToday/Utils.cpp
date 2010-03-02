@@ -165,10 +165,18 @@ int MemoryLoad()
 	return mems.dwMemoryLoad;
 }
 
-/*DWORD MemoryAvailPhys()
+DWORD MemoryFree()
 {
 	MEMORYSTATUS mems;
 	mems.dwLength = sizeof(MEMORYSTATUS);
 	GlobalMemoryStatus(&mems);
 	return mems.dwAvailPhys;
-}*/
+}
+
+DWORD MemoryUsed()
+{
+	MEMORYSTATUS mems;
+	mems.dwLength = sizeof(MEMORYSTATUS);
+	GlobalMemoryStatus(&mems);
+	return mems.dwTotalPhys - mems.dwAvailPhys;
+}

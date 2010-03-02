@@ -107,8 +107,13 @@ public:
 	// Volume
 	SpecialIconSettings vol;
 
-	// Memory Load
-	SpecialIconSettings mem;
+	// Memory load,free,used
+	SpecialIconSettings meml;
+	SpecialIconSettings memf;
+	SpecialIconSettings memu;
+
+	// Signal strength
+	SpecialIconSettings sign;
 
 	// Bubbles
 	TCHAR bubble_notif[MAX_PATH];
