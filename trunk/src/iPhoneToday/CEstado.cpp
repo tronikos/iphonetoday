@@ -15,17 +15,23 @@ CEstado::CEstado(void)
 	numSyncEmail = 0;
 	numCitas = 0;
 	numTareas = 0;
-	estadoWifi = 0;
+	estadoWifi = FALSE;
 	estadoBluetooth = 0;
-	estadoAlarm = 0;
+	estadoGPRS = FALSE;
+	estadoAlarm = FALSE;
 
-	externalPowered = 0;
+	signalStrength = 0;
+	externalPowered = FALSE;
 	batteryPercentage = 0;
 	volumePercentage = 0;
 	memoryLoad = 0;
+	memoryFree = 0;
+	memoryUsed = 0;
 
 	reloadIcons = 0;
 	reloadIcon = 0;
+
+	operatorName[0] = 0;
 }
 
 CEstado::~CEstado(void)
@@ -35,16 +41,16 @@ CEstado::~CEstado(void)
 BOOL CEstado::actualizaNotificaciones() {
 
 	BOOL hayCambios = FALSE;
-	int temp;
-
 	DWORD valorRegistro = 0;
+	int newValue;
+
 	LoadDwordSetting(HKEY_CURRENT_USER, &valorRegistro, 
 		TEXT("System\\State\\Phone"),
 		TEXT("Missed Call Count"), 
 		0);
 
-	if (numLlamadas != int(valorRegistro)) {
-		numLlamadas = int(valorRegistro);
+	if (numLlamadas != valorRegistro) {
+		numLlamadas = valorRegistro;
 		hayCambios = TRUE;
 	}
 
@@ -53,8 +59,8 @@ BOOL CEstado::actualizaNotificaciones() {
 		TEXT("Count"), 
 		0);
 
-	if (numSMS != int(valorRegistro)) {
-		numSMS = int(valorRegistro);
+	if (numSMS != valorRegistro) {
+		numSMS = valorRegistro;
 		hayCambios = TRUE;
 	}
 
@@ -63,8 +69,8 @@ BOOL CEstado::actualizaNotificaciones() {
 		TEXT("Count"), 
 		0);
 
-	if (numMMS != int(valorRegistro)) {
-		numMMS = int(valorRegistro);
+	if (numMMS != valorRegistro) {
+		numMMS = valorRegistro;
 		hayCambios = TRUE;
 	}
 
@@ -73,8 +79,8 @@ BOOL CEstado::actualizaNotificaciones() {
 		TEXT("Count"), 
 		0);
 
-	if (numOtherEmail != int(valorRegistro)) {
-		numOtherEmail = int(valorRegistro);
+	if (numOtherEmail != valorRegistro) {
+		numOtherEmail = valorRegistro;
 		hayCambios = TRUE;
 	}
 
@@ -83,8 +89,8 @@ BOOL CEstado::actualizaNotificaciones() {
 		TEXT("Count"), 
 		0);
 
-	if (numSyncEmail != int(valorRegistro)) {
-		numSyncEmail = int(valorRegistro);
+	if (numSyncEmail != valorRegistro) {
+		numSyncEmail = valorRegistro;
 		hayCambios = TRUE;
 	}
 
@@ -93,8 +99,8 @@ BOOL CEstado::actualizaNotificaciones() {
 		TEXT("Count"), 
 		0);
 
-	if (numCitas != int(valorRegistro)) {
-		numCitas = int(valorRegistro);
+	if (numCitas != valorRegistro) {
+		numCitas = valorRegistro;
 		hayCambios = TRUE;
 	}
 
@@ -103,42 +109,46 @@ BOOL CEstado::actualizaNotificaciones() {
 		TEXT("Active"), 
 		0);
 
-	if (numTareas != int(valorRegistro)) {
-		numTareas = int(valorRegistro);
+	if (numTareas != valorRegistro) {
+		numTareas = valorRegistro;
 		hayCambios = TRUE;
 	}
 
 	LoadDwordSetting(HKEY_LOCAL_MACHINE, &valorRegistro, 
 		TEXT("System\\State\\Hardware"),
 		TEXT("Wifi"), 
-		-1);
-	temp = int(valorRegistro);
-	if (temp == 5 || temp == 1 || temp == -1) {
-		temp = 0;
-	} else {
-		temp = 1;
+		0);
+
+	if (valorRegistro == 5 || valorRegistro == 1) {
+		valorRegistro = 0;
 	}
 
-	if (estadoWifi != temp) {
-		estadoWifi = temp;
+	if (estadoWifi != (valorRegistro > 0)) {
+		estadoWifi = (valorRegistro > 0);
 		hayCambios = TRUE;
 	}
 
 	LoadDwordSetting(HKEY_LOCAL_MACHINE, &valorRegistro, 
 		TEXT("System\\State\\Hardware"),
 		TEXT("Bluetooth"), 
-		-1);
-	temp = int(valorRegistro);
-	if (temp == 8 || temp == -1 || temp == 0) {
-		temp = 0;
-	} else if (temp == 11) {
-		temp = 2;
-	} else {
-		temp = 1;
+		0);
+
+	if (valorRegistro == 8) {
+		valorRegistro = 0;
 	}
 
-	if (estadoBluetooth != temp) {
-		estadoBluetooth = temp;
+	if (estadoBluetooth != valorRegistro) {
+		estadoBluetooth = valorRegistro;
+		hayCambios = TRUE;
+	}
+
+	LoadDwordSetting(HKEY_LOCAL_MACHINE, &valorRegistro, 
+		TEXT("System\\State\\Connections\\Cellular"),
+		TEXT("Count"), 
+		0);
+
+	if (estadoGPRS != (valorRegistro > 0)) {
+		estadoGPRS = (valorRegistro > 0);
 		hayCambios = TRUE;
 	}
 
@@ -161,10 +171,25 @@ BOOL CEstado::actualizaNotificaciones() {
 		0);
 	}
 
-	if (estadoAlarm != int(valorRegistro)) {
-		estadoAlarm = int(valorRegistro);
+	if (estadoAlarm != (valorRegistro > 0)) {
+		estadoAlarm = (valorRegistro > 0);
 		hayCambios = TRUE;
 	}
+
+	LoadDwordSetting(HKEY_LOCAL_MACHINE, &valorRegistro, 
+		TEXT("System\\State\\Phone"),
+		TEXT("Signal Strength"), 
+		0);
+
+	if (signalStrength != valorRegistro) {
+		signalStrength = valorRegistro;
+		hayCambios = TRUE;
+	}
+
+	LoadTextSetting(HKEY_LOCAL_MACHINE, operatorName,
+		TEXT("System\\State\\Phone"),
+		TEXT("Current Operator Name"), 
+		TEXT(""));
 
 	SYSTEMTIME st_new;
 	GetLocalTime(&st_new);
@@ -176,7 +201,7 @@ BOOL CEstado::actualizaNotificaciones() {
 			hayCambios = TRUE;
 	}
 
-	int newValue = ExternalPowered();
+	newValue = ExternalPowered();
 	if (externalPowered != newValue) {
 		externalPowered = newValue;
 		hayCambios = TRUE;
@@ -200,6 +225,18 @@ BOOL CEstado::actualizaNotificaciones() {
 		hayCambios = TRUE;
 	}
 
+	newValue = MemoryFree();
+	if (memoryFree != newValue) {
+		memoryFree = newValue;
+		hayCambios = TRUE;
+	}
+
+	newValue = MemoryUsed();
+	if (memoryUsed != newValue) {
+		memoryUsed = newValue;
+		hayCambios = TRUE;
+	}
+
 	return hayCambios;
 }
 
@@ -214,8 +251,8 @@ BOOL CEstado::checkReloadIcons() {
 		TEXT("reloadIcons"), 
 		0);
 
-	if (reloadIcons != int(valorRegistro)) {
-		reloadIcons = int(valorRegistro);
+	if (reloadIcons != valorRegistro) {
+		reloadIcons = valorRegistro;
 		hayCambios = TRUE;
 	}
 
@@ -246,8 +283,8 @@ BOOL CEstado::checkReloadIcon() {
 		TEXT("reloadIcon"), 
 		0);
 
-	if (reloadIcon != int(valorRegistro)) {
-		reloadIcon = int(valorRegistro);
+	if (reloadIcon != valorRegistro) {
+		reloadIcon = valorRegistro;
 		hayCambios = TRUE;
 	}
 

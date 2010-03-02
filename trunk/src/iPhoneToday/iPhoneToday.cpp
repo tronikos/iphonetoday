@@ -1172,6 +1172,7 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 		cs = configuracion->mainScreenConfig;
 	}
 	UINT width = cs->iconWidth;
+	TCHAR str[16];
 
 	TransparentBlt(*hDC, int(icono->x), int(icono->y), width, width,
 		icono->hDC, 0, 0, icono->anchoImagen, icono->altoImagen, RGBA(0, 0, 0, 0));
@@ -1201,66 +1202,48 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 			case NOTIF_CITAS:
 				numNotif = estado->numCitas;
 			case NOTIF_CALENDAR:
-				{
-
 				DrawSpecialIconText(*hDC, configuracion->diasSemana[estado->st.wDayOfWeek], icono, width, configuracion->dow);
-
-				TCHAR dayOfMonth[8];
-				StringCchPrintf(dayOfMonth, CountOf(dayOfMonth), TEXT("%i"), estado->st.wDay);
-
-				DrawSpecialIconText(*hDC, dayOfMonth, icono, width, configuracion->dom);
-
-				}
+				StringCchPrintf(str, CountOf(str), TEXT("%i"), estado->st.wDay);
+				DrawSpecialIconText(*hDC, str, icono, width, configuracion->dom);
 				break;
 			case NOTIF_CLOCK_ALARM:
 				numNotif = estado->estadoAlarm;
 			case NOTIF_CLOCK:
-				{
-
-				TCHAR strTime[8];
 				if (configuracion->clock12Format) {
-					StringCchPrintf(strTime, CountOf(strTime), TEXT("%d:%02d"), (estado->st.wHour == 0 ? 12 : (estado->st.wHour > 12 ? (estado->st.wHour - 12) : estado->st.wHour)), estado->st.wMinute);
+					StringCchPrintf(str, CountOf(str), TEXT("%d:%02d"), (estado->st.wHour == 0 ? 12 : (estado->st.wHour > 12 ? (estado->st.wHour - 12) : estado->st.wHour)), estado->st.wMinute);
 				} else {
-					StringCchPrintf(strTime, CountOf(strTime), TEXT("%02d:%02d"), estado->st.wHour, estado->st.wMinute);
+					StringCchPrintf(str, CountOf(str), TEXT("%02d:%02d"), estado->st.wHour, estado->st.wMinute);
 				}
-
-				DrawSpecialIconText(*hDC, strTime, icono, width, configuracion->clck);
-
-				}
+				DrawSpecialIconText(*hDC, str, icono, width, configuracion->clck);
 				break;
 			case NOTIF_BATTERY:
-				{
-
-				TCHAR strBattery[8];
 				if (estado->externalPowered) {
-					StringCchCopy(strBattery, CountOf(strBattery), L"AC");
+					StringCchCopy(str, CountOf(str), L"AC");
 				} else {
-					StringCchPrintf(strBattery, CountOf(strBattery), L"%d", estado->batteryPercentage);
+					StringCchPrintf(str, CountOf(str), L"%d", estado->batteryPercentage);
 				}
-
-				DrawSpecialIconText(*hDC, strBattery, icono, width, configuracion->batt);
-
-				}
+				DrawSpecialIconText(*hDC, str, icono, width, configuracion->batt);
 				break;
 			case NOTIF_VOLUME:
-				{
-
-				TCHAR strVolume[8];
-				StringCchPrintf(strVolume, CountOf(strVolume), L"%d", estado->volumePercentage);
-
-				DrawSpecialIconText(*hDC, strVolume, icono, width, configuracion->vol);
-
-				}
+				StringCchPrintf(str, CountOf(str), L"%d", estado->volumePercentage);
+				DrawSpecialIconText(*hDC, str, icono, width, configuracion->vol);
 				break;
 			case NOTIF_MEMORYLOAD:
-				{
-
-				TCHAR strMemoryLoad[8];
-				StringCchPrintf(strMemoryLoad, CountOf(strMemoryLoad), L"%d", estado->memoryLoad);
-
-				DrawSpecialIconText(*hDC, strMemoryLoad, icono, width, configuracion->mem);
-
-				}
+				StringCchPrintf(str, CountOf(str), L"%d", estado->memoryLoad);
+				DrawSpecialIconText(*hDC, str, icono, width, configuracion->meml);
+				break;
+			case NOTIF_MEMORYFREE:
+				StringCchPrintf(str, CountOf(str), L"%.1f", estado->memoryFree / 1024.0 / 1024.0);
+				DrawSpecialIconText(*hDC, str, icono, width, configuracion->memf);
+				break;
+			case NOTIF_MEMORYUSED:
+				StringCchPrintf(str, CountOf(str), L"%.1f", estado->memoryUsed / 1024.0 / 1024.0);
+				DrawSpecialIconText(*hDC, str, icono, width, configuracion->memu);
+				break;
+			case NOTIF_SIGNAL:
+			case NOTIF_SIGNAL_OPER:
+				StringCchPrintf(str, CountOf(str), L"%d", estado->signalStrength);
+				DrawSpecialIconText(*hDC, str, icono, width, configuracion->sign);
 				break;
 			case NOTIF_TAREAS:
 				numNotif = estado->numTareas;
@@ -1273,6 +1256,9 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 				break;
 			case NOTIF_BLUETOOTH:
 				numNotif = estado->estadoBluetooth;
+				break;
+			case NOTIF_GPRS:
+				numNotif = estado->estadoGPRS;
 				break;
 			case NOTIF_ALARM:
 				numNotif = estado->estadoAlarm;
@@ -1307,15 +1293,15 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 
 					break;
 				case NOTIF_CLOCK_ALARM:
-					StringCchCopy(notif, CountOf(notif), TEXT(""));
+					//StringCchCopy(notif, CountOf(notif), TEXT(""));
 
 					/* Bubble with same size that icon and text in top right*/
-					posTexto.left = int(icono->x + (width * 0.44));
-					posTexto.top = int(icono->y - (width * 0.36));
-					posTexto.right = int(posTexto.left + width * 0.80);
-					posTexto.bottom = int(posTexto.top + width * 0.80);
+					//posTexto.left = int(icono->x + (width * 0.44));
+					//posTexto.top = int(icono->y - (width * 0.36));
+					//posTexto.right = int(posTexto.left + width * 0.80);
+					//posTexto.bottom = int(posTexto.top + width * 0.80);
 
-					break;
+					//break;
 				case NOTIF_ALARM:
 					StringCchCopy(notif, CountOf(notif), TEXT(""));
 
@@ -1326,6 +1312,7 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 					posTexto.bottom = int(posTexto.top + width * 0.80);
 
 					break;
+				case NOTIF_GPRS:
 				case NOTIF_WIFI:
 					StringCchCopy(notif, CountOf(notif), TEXT("On"));
 
@@ -1337,7 +1324,7 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 
 					break;
 				case NOTIF_BLUETOOTH:
-					if (numNotif == 2) {
+					if (numNotif == 11) {
 						StringCchCopy(notif, CountOf(notif), TEXT("Disc"));
 					} else {
 						StringCchCopy(notif, CountOf(notif), TEXT("On"));
@@ -1373,7 +1360,7 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 					if (configuracion->bubbleNotif->hDC) {
 						drawNotification(*hDC, &posTexto, configuracion->bubbleNotif, notif);
 					} else {
-						drawEllipse(*hDC, posTexto.left, posTexto.top, posTexto.right, posTexto.bottom, RGB(200, 0, 0), notif);
+						drawEllipse(*hDC, posTexto.left + int(width * 0.2), posTexto.top + int(width * 0.2), posTexto.right - int(width * 0.2), posTexto.bottom - int(width * 0.2), RGB(200, 0, 0), notif);
 					}
 					break;
 
@@ -1383,17 +1370,18 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 					if (configuracion->bubbleAlarm->hDC) {
 						drawNotification(*hDC, &posTexto, configuracion->bubbleAlarm, notif);
 					} else {
-						drawEllipse(*hDC, posTexto.left, posTexto.top, posTexto.right, posTexto.bottom, RGB(200, 0, 0), notif);
+						drawEllipse(*hDC, posTexto.left + int(width * 0.2), posTexto.top + int(width * 0.2), posTexto.right - int(width * 0.2), posTexto.bottom - int(width * 0.2), RGB(200, 0, 0), L"*");
 					}
 					break;
 
+				case NOTIF_GPRS:
 				case NOTIF_WIFI:
 				case NOTIF_BLUETOOTH:
 					// Pintamos la notificacion
 					if (configuracion->bubbleState->hDC) {
 						drawNotification(*hDC, &posTexto, configuracion->bubbleState, notif);
 					} else {
-						drawEllipse(*hDC, posTexto.left, posTexto.top, posTexto.right, posTexto.bottom, RGB(0, 200, 0), notif);
+						drawEllipse(*hDC, posTexto.left + int(width * 0.2), posTexto.top + int(width * 0.1), posTexto.right - int(width * 0.2), posTexto.bottom - int(width * 0.1), RGB(0, 200, 0), notif);
 					}
 					break;
 			}
@@ -1408,7 +1396,11 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 	posTexto.right = int(icono->x + width + (cs->distanceIconsH * 0.5));
 
 	if (cs->fontSize > 0) {
-		DrawText(*hDC, icono->nombre, -1, &posTexto, DT_CENTER | DT_TOP);
+		if (icono->tipo == NOTIF_OPERATOR || icono->tipo == NOTIF_SIGNAL_OPER) {
+			DrawText(*hDC, estado->operatorName, -1, &posTexto, DT_CENTER | DT_TOP);
+		} else {
+			DrawText(*hDC, icono->nombre, -1, &posTexto, DT_CENTER | DT_TOP);
+		}
 	}
 }
 
@@ -1915,6 +1907,9 @@ int hayNotificacion(int tipo) {
 		case NOTIF_BLUETOOTH:
 			numNotif = estado->estadoBluetooth;
 			break;
+		case NOTIF_GPRS:
+			numNotif = estado->estadoGPRS;
+			break;
 		case NOTIF_CLOCK_ALARM:
 		case NOTIF_ALARM:
 			numNotif = estado->estadoAlarm;
@@ -1998,6 +1993,12 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_BATTERY_TXT);
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_VOLUME_TXT);
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_MEMORYLOAD_TXT);
+			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_MEMORYFREE_TXT);
+			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_MEMORYUSED_TXT);
+			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_GPRS_TXT);
+			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_SIGNAL_TXT);
+			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_OPERATOR_TXT);
+			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_SIGNAL_OPER_TXT);
 
 			// Configuramos los checks
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_LAUNCHANIMATION), BM_SETCHECK, BST_CHECKED, 0);
@@ -2061,6 +2062,18 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_VOLUME_TXT);
 				} else if (icono->tipo == NOTIF_MEMORYLOAD) {
 					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_MEMORYLOAD_TXT);
+				} else if (icono->tipo == NOTIF_MEMORYFREE) {
+					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_MEMORYFREE_TXT);
+				} else if (icono->tipo == NOTIF_MEMORYUSED) {
+					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_MEMORYUSED_TXT);
+				} else if (icono->tipo == NOTIF_GPRS) {
+					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_GPRS_TXT);
+				} else if (icono->tipo == NOTIF_SIGNAL) {
+					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_SIGNAL_TXT);
+				} else if (icono->tipo == NOTIF_OPERATOR) {
+					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_OPERATOR_TXT);
+				} else if (icono->tipo == NOTIF_SIGNAL_OPER) {
+					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_SIGNAL_OPER_TXT);
 				} else {
 					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_NORMAL_TXT);
 				}
@@ -2184,6 +2197,18 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 				nType = NOTIF_VOLUME;
 			} else if (lstrcmpi(strType, NOTIF_MEMORYLOAD_TXT) == 0) {
 				nType = NOTIF_MEMORYLOAD;
+			} else if (lstrcmpi(strType, NOTIF_MEMORYFREE_TXT) == 0) {
+				nType = NOTIF_MEMORYFREE;
+			} else if (lstrcmpi(strType, NOTIF_MEMORYUSED_TXT) == 0) {
+				nType = NOTIF_MEMORYUSED;
+			} else if (lstrcmpi(strType, NOTIF_GPRS_TXT) == 0) {
+				nType = NOTIF_GPRS;
+			} else if (lstrcmpi(strType, NOTIF_SIGNAL_TXT) == 0) {
+				nType = NOTIF_SIGNAL;
+			} else if (lstrcmpi(strType, NOTIF_OPERATOR_TXT) == 0) {
+				nType = NOTIF_OPERATOR;
+			} else if (lstrcmpi(strType, NOTIF_SIGNAL_OPER_TXT) == 0) {
+				nType = NOTIF_SIGNAL_OPER;
 			} else {
 				MessageBox(hDlg, TEXT("Type not valid!"), TEXT("Error"), MB_OK);
 				return FALSE;

@@ -439,14 +439,41 @@ void CConfiguracion::defaultValues()
 	this->vol.offset.right = 0;
 	this->vol.offset.bottom = 0;
 
-	this->mem.color = RGB(230,230,230);
-	this->mem.width = 25;
-	this->mem.height = 70;
-	this->mem.weight = 900;
-	this->mem.offset.left = 0;
-	this->mem.offset.top = 0;
-	this->mem.offset.right = 0;
-	this->mem.offset.bottom = 0;
+	this->meml.color = RGB(230,230,230);
+	this->meml.width = 25;
+	this->meml.height = 70;
+	this->meml.weight = 900;
+	this->meml.offset.left = 0;
+	this->meml.offset.top = 0;
+	this->meml.offset.right = 0;
+	this->meml.offset.bottom = 0;
+
+	this->memf.color = RGB(230,230,230);
+	this->memf.width = 20;
+	this->memf.height = 70;
+	this->memf.weight = 600;
+	this->memf.offset.left = 0;
+	this->memf.offset.top = 0;
+	this->memf.offset.right = 0;
+	this->memf.offset.bottom = 0;
+
+	this->memu.color = RGB(230,230,230);
+	this->memu.width = 20;
+	this->memu.height = 70;
+	this->memu.weight = 600;
+	this->memu.offset.left = 0;
+	this->memu.offset.top = 0;
+	this->memu.offset.right = 0;
+	this->memu.offset.bottom = 0;
+
+	this->sign.color = RGB(230,230,230);
+	this->sign.width = 25;
+	this->sign.height = 70;
+	this->sign.weight = 900;
+	this->sign.offset.left = 0;
+	this->sign.offset.top = 0;
+	this->sign.offset.right = 0;
+	this->sign.offset.bottom = 0;
 
 	StringCchCopy(this->bubble_notif, CountOf(this->bubble_notif), TEXT("bubble_notif.png"));
 	StringCchCopy(this->bubble_state, CountOf(this->bubble_notif), TEXT("bubble_state.png"));
@@ -542,7 +569,13 @@ BOOL CConfiguracion::cargaXMLConfig()
 		} else if(_stricmp(nameNode, "Volume") == 0) {
 			SpecialIconSettingsLoad(pElem, &this->vol);
 		} else if(_stricmp(nameNode, "MemoryLoad") == 0) {
-			SpecialIconSettingsLoad(pElem, &this->mem);
+			SpecialIconSettingsLoad(pElem, &this->meml);
+		} else if(_stricmp(nameNode, "MemoryFree") == 0) {
+			SpecialIconSettingsLoad(pElem, &this->memf);
+		} else if(_stricmp(nameNode, "MemoryUsed") == 0) {
+			SpecialIconSettingsLoad(pElem, &this->memu);
+		} else if(_stricmp(nameNode, "SignalStrength") == 0) {
+			SpecialIconSettingsLoad(pElem, &this->sign);
 		} else if(_stricmp(nameNode, "Bubbles") == 0) {
 			XMLUtils::GetAttr(pElem, "notif", this->bubble_notif, CountOf(this->bubble_notif));
 			XMLUtils::GetAttr(pElem, "state", this->bubble_state, CountOf(this->bubble_state));
@@ -752,7 +785,19 @@ BOOL CConfiguracion::guardaXMLConfig()
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("MemoryLoad");
-	SpecialIconSettingsSave(pElem, &this->mem);
+	SpecialIconSettingsSave(pElem, &this->meml);
+	root->LinkEndChild(pElem);
+
+	pElem = new TiXmlElement("MemoryFree");
+	SpecialIconSettingsSave(pElem, &this->memf);
+	root->LinkEndChild(pElem);
+
+	pElem = new TiXmlElement("MemoryUsed");
+	SpecialIconSettingsSave(pElem, &this->memu);
+	root->LinkEndChild(pElem);
+
+	pElem = new TiXmlElement("SignalStrength");
+	SpecialIconSettingsSave(pElem, &this->sign);
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("Bubbles");

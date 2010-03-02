@@ -24,6 +24,9 @@ BOOL CommandLineArguements(HWND hwnd, LPCTSTR pCmdLine)
 	} else if (wcsicmp(pCmdLine, L"close") == 0 || wcsicmp(pCmdLine, L"exit") == 0) {
 		PostMessage(hwnd, WM_DESTROY, 0, 0);
 		return TRUE;
+	} else if (wcsicmp(pCmdLine, L"minimize") == 0) {
+		ShowWindow(hwnd, SW_MINIMIZE);
+		return TRUE;
 	} else if (wcsicmp(pCmdLine, L"taskbar") == 0) {
 		HWND hWndTaskbar = FindWindow(L"HHTaskBar", NULL);
 		if (hWndTaskbar != NULL) {
