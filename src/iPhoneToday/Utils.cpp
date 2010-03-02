@@ -156,3 +156,19 @@ int BatteryPercentage()
 	}
 	return b;
 }
+
+int MemoryLoad()
+{
+	MEMORYSTATUS mems;
+	mems.dwLength = sizeof(MEMORYSTATUS);
+	GlobalMemoryStatus(&mems);
+	return mems.dwMemoryLoad;
+}
+
+/*DWORD MemoryAvailPhys()
+{
+	MEMORYSTATUS mems;
+	mems.dwLength = sizeof(MEMORYSTATUS);
+	GlobalMemoryStatus(&mems);
+	return mems.dwAvailPhys;
+}*/

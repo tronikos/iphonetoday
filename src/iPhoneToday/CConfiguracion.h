@@ -107,6 +107,9 @@ public:
 	// Volume
 	SpecialIconSettings vol;
 
+	// Memory Load
+	SpecialIconSettings mem;
+
 	// Bubbles
 	TCHAR bubble_notif[MAX_PATH];
 	TCHAR bubble_state[MAX_PATH];

@@ -26,8 +26,6 @@ void SetVolumePercentage(WORD vol)
 
 void Rotate(int angle)
 {
-	BOOL rc = TRUE;
-
 	DEVMODE mode;
 	mode.dmSize = sizeof(DEVMODE);
 	mode.dmFields = DM_DISPLAYORIENTATION;

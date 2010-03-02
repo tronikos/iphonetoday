@@ -22,6 +22,7 @@ CEstado::CEstado(void)
 	externalPowered = 0;
 	batteryPercentage = 0;
 	volumePercentage = 0;
+	memoryLoad = 0;
 
 	reloadIcons = 0;
 	reloadIcon = 0;
@@ -190,6 +191,12 @@ BOOL CEstado::actualizaNotificaciones() {
 	newValue = GetVolumePercentage();
 	if (volumePercentage != newValue) {
 		volumePercentage = newValue;
+		hayCambios = TRUE;
+	}
+
+	newValue = MemoryLoad();
+	if (memoryLoad != newValue) {
+		memoryLoad = newValue;
 		hayCambios = TRUE;
 	}
 

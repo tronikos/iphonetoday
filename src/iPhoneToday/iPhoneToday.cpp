@@ -1252,6 +1252,16 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 
 				}
 				break;
+			case NOTIF_MEMORYLOAD:
+				{
+
+				TCHAR strMemoryLoad[8];
+				StringCchPrintf(strMemoryLoad, CountOf(strMemoryLoad), L"%d", estado->memoryLoad);
+
+				DrawSpecialIconText(*hDC, strMemoryLoad, icono, width, configuracion->mem);
+
+				}
+				break;
 			case NOTIF_TAREAS:
 				numNotif = estado->numTareas;
 				break;
@@ -1987,6 +1997,7 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_CLOCK_ALARM_TXT);
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_BATTERY_TXT);
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_VOLUME_TXT);
+			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_MEMORYLOAD_TXT);
 
 			// Configuramos los checks
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_LAUNCHANIMATION), BM_SETCHECK, BST_CHECKED, 0);
@@ -2048,6 +2059,8 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_BATTERY_TXT);
 				} else if (icono->tipo == NOTIF_VOLUME) {
 					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_VOLUME_TXT);
+				} else if (icono->tipo == NOTIF_MEMORYLOAD) {
+					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_MEMORYLOAD_TXT);
 				} else {
 					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_NORMAL_TXT);
 				}
@@ -2169,6 +2182,8 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 				nType = NOTIF_BATTERY;
 			} else if (lstrcmpi(strType, NOTIF_VOLUME_TXT) == 0) {
 				nType = NOTIF_VOLUME;
+			} else if (lstrcmpi(strType, NOTIF_MEMORYLOAD_TXT) == 0) {
+				nType = NOTIF_MEMORYLOAD;
 			} else {
 				MessageBox(hDlg, TEXT("Type not valid!"), TEXT("Error"), MB_OK);
 				return FALSE;
