@@ -28,7 +28,7 @@ void CConfigurationScreen::calculate(BOOL isStaticbar, int maxIcons, UINT screen
 	if (isStaticbar) {
 		if (cs.shrinkToFit && maxIcons != 0) {
 			iconsPerRow = maxIcons;
-			iconWidth = (w - maxIcons * cs.minHorizontalSpace) / iconsPerRow;
+			iconWidth = min(cs.iconWidthXML, (w - maxIcons * cs.minHorizontalSpace) / iconsPerRow);
 		} else {
 			iconsPerRow = min(iconsPerRow, UINT(maxIcons));
 		}
