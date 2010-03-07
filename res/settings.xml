@@ -7,7 +7,7 @@
         <MinHorizontalSpace>5</MinHorizontalSpace>
         <AdditionalVerticalSpace>0</AdditionalVerticalSpace>
         <Offset left="0" top="5" right="0" bottom="0" />
-        <Font size="11" color="16777215" bold="0" offset="0" />
+        <Font size="11" color="16777215" bold="0" offset="0" shadow="0" />
         <Background color1="0" color2="0" />
     </MainScreen>
     <BottomBar>
@@ -16,7 +16,7 @@
         <MinHorizontalSpace>0</MinHorizontalSpace>
         <AdditionalVerticalSpace>0</AdditionalVerticalSpace>
         <Offset left="0" top="5" right="0" bottom="0" />
-        <Font size="11" color="16777215" bold="0" offset="0" />
+        <Font size="11" color="16777215" bold="0" offset="0" shadow="0" />
         <Background color1="0" color2="0" />
     </BottomBar>
     <TopBar>
@@ -25,7 +25,7 @@
         <MinHorizontalSpace>0</MinHorizontalSpace>
         <AdditionalVerticalSpace>0</AdditionalVerticalSpace>
         <Offset left="0" top="0" right="0" bottom="0" />
-        <Font size="11" color="16777215" bold="0" offset="0" />
+        <Font size="11" color="16777215" bold="0" offset="0" shadow="0" />
         <Background color1="0" color2="0" />
     </TopBar>
     <Circles diameter="7" distance="3" offset="3" />
