@@ -6,6 +6,7 @@ CPantalla::CPantalla(void)
 	header[0] = '\0';
 	imagen = NULL;
 	hDC = NULL;
+	pBits = NULL;
 
 	numIconos = 0;
 	for (int i = 0; i < MAX_ICONOS_PANTALLA; i++) {

@@ -11,4 +11,4 @@ void drawEllipse(HDC hDC, int x, int y, int x2, int y2, COLORREF color, TCHAR *t
 //HBITMAP HBITMAPFromImage (IImage *pImage);
 void DrawGradientGDI(HDC, const RECT&, COLORREF, COLORREF, COLOR16 alpha = 0x0000);
 
-BOOL ColorSelector(COLORREF rgbCurrent, COLORREF *nextColor);
+BOOL ColorSelector(HWND hwndOwner, COLORREF rgbCurrent, COLORREF *nextColor);

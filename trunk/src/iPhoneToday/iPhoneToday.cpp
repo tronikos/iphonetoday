@@ -37,7 +37,7 @@ HBITMAP	hbmMem = NULL;
 HBITMAP	hbmMemOld = NULL;
 HBRUSH  hBrushFondo = NULL;
 HBRUSH  hBrushTrans = NULL;
-HBRUSH  hBrushWhite = NULL;
+HBRUSH  hBrushAnimation = NULL;
 
 // Variables para detectar doble click
 POINTS posUltimoClick = {0};
@@ -268,7 +268,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lPara
 			if (listaPantallas->topBar != NULL && listaPantallas->topBar->numIconos > 0 && configuracion->topBarConfig->iconWidth > 0) {
 				h -= listaPantallas->topBar->altoPantalla;
 			}
-			int newy = estado->posObjetivo.y + ((h + configuracion->mainScreenConfig->offset.top) / configuracion->mainScreenConfig->distanceIconsV) * configuracion->mainScreenConfig->distanceIconsV;
+			int newy = estado->posObjetivo.y + ((h + configuracion->mainScreenConfig->cs.offset.top) / configuracion->mainScreenConfig->distanceIconsV) * configuracion->mainScreenConfig->distanceIconsV;
 			if (newy > 0) {
 				newy = 0;
 			}
@@ -288,7 +288,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lPara
 				h -= listaPantallas->topBar->altoPantalla;
 			}
 			int newy = estado->posObjetivo.y -
-				((h - configuracion->mainScreenConfig->offset.top)
+				((h - configuracion->mainScreenConfig->cs.offset.top)
 				/ configuracion->mainScreenConfig->distanceIconsV)
 				* configuracion->mainScreenConfig->distanceIconsV;
 			int hh = ((listaPantallas->listaPantalla[estado->pantallaActiva]->numIconos
@@ -616,7 +616,7 @@ LRESULT doSize (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 		// SetWindowPos(hwnd, NULL, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 #endif
 	} else {
-		if (configuracion != NULL) {
+		if (configuracion != NULL && !configuracion->ignoreRotation) {
 			int windowWidth;
 			int windowHeight;
 			getWindowSize(hwnd, &windowWidth, &windowHeight);
@@ -702,7 +702,7 @@ LRESULT doPaint (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 
 		hBrushFondo = CreateSolidBrush(configuracion->fondoColor);
 		hBrushTrans = CreateSolidBrush(RGBA(0, 0, 0, 0));
-		hBrushWhite = CreateSolidBrush(RGB(255, 255, 255));
+		hBrushAnimation = CreateSolidBrush(configuracion->colorOfAnimationOnLaunchIcon);
 	}
 
 	BOOL isTransparent = configuracion->fondoTransparente;
@@ -738,9 +738,9 @@ LRESULT doPaint (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 
 
 	if (estado->estadoCuadro == 1 || estado->estadoCuadro == 3) {
-		FillRect(hDCMem, &estado->cuadroLanzando, hBrushWhite);
+		FillRect(hDCMem, &estado->cuadroLanzando, hBrushAnimation);
 	} else if (estado->estadoCuadro == 2) {
-		FillRect(hDCMem, &estado->cuadroLanzando, hBrushWhite);
+		FillRect(hDCMem, &estado->cuadroLanzando, hBrushAnimation);
 		if (GetTickCount() - estado->timeUltimoLanzamiento >= 2000) {
 			SetTimer(hwnd, TIMER_LANZANDO_APP, configuracion->refreshTime, NULL);
 			estado->timeUltimoLanzamiento = GetTickCount();
@@ -1174,8 +1174,18 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 	UINT width = cs->iconWidth;
 	TCHAR str[16];
 
-	TransparentBlt(*hDC, int(icono->x), int(icono->y), width, width,
-		icono->hDC, 0, 0, icono->anchoImagen, icono->altoImagen, RGBA(0, 0, 0, 0));
+	if (configuracion->alphaBlend) {
+		if (icono->anchoImagen == width && icono->altoImagen == width) {
+			BitBlt(*hDC, int(icono->x), int(icono->y), width, width,
+				icono->hDC, 0, 0, SRCCOPY);
+		} else {
+			StretchBlt(*hDC, int(icono->x), int(icono->y), width, width,
+				icono->hDC, 0, 0, icono->anchoImagen, icono->altoImagen, SRCCOPY);
+		}
+	} else {
+		TransparentBlt(*hDC, int(icono->x), int(icono->y), width, width,
+			icono->hDC, 0, 0, icono->anchoImagen, icono->altoImagen, RGBA(0, 0, 0, 0));
+	}
 
 	// Notificaciones
 	if (icono->tipo != NOTIF_NORMAL) {
@@ -1390,12 +1400,12 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 	}
 
 	// Pintamos el nombre del icono
-	posTexto.top = int(icono->y + width + cs->fontOffset);
-	posTexto.bottom = posTexto.top + cs->fontSize;
+	posTexto.top = int(icono->y + width + cs->cs.fontOffset);
+	posTexto.bottom = posTexto.top + cs->cs.fontSize;
 	posTexto.left = int(icono->x - (cs->distanceIconsH * 0.5));
 	posTexto.right = int(icono->x + width + (cs->distanceIconsH * 0.5));
 
-	if (cs->fontSize > 0) {
+	if (cs->cs.fontSize > 0) {
 		if (icono->tipo == NOTIF_OPERATOR || icono->tipo == NOTIF_SIGNAL_OPER) {
 			DrawText(*hDC, estado->operatorName, -1, &posTexto, DT_CENTER | DT_TOP);
 		} else {
@@ -1424,29 +1434,39 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type) {
 		pantalla->debeActualizar = FALSE;
 		if (pantalla->hDC == NULL) {
 			pantalla->hDC = CreateCompatibleDC(*hDC);
-			pantalla->imagen = CreateCompatibleBitmap(*hDC, pantalla->anchoPantalla, pantalla->altoPantalla);
+			if (configuracion->alphaBlend) {
+				BITMAPINFO bmInfo;
+				memset(&bmInfo.bmiHeader, 0, sizeof(BITMAPINFOHEADER));
+				bmInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+				bmInfo.bmiHeader.biWidth = pantalla->anchoPantalla;
+				bmInfo.bmiHeader.biHeight = pantalla->altoPantalla;
+				bmInfo.bmiHeader.biPlanes = 1;
+				bmInfo.bmiHeader.biBitCount = 32;
+				pantalla->imagen = CreateDIBSection(*hDC, &bmInfo, DIB_RGB_COLORS, (void**)&pantalla->pBits, 0, 0);
+			} else {
+				pantalla->imagen = CreateCompatibleBitmap(*hDC, pantalla->anchoPantalla, pantalla->altoPantalla);
+			}
 			pantalla->imagenOld = (HBITMAP)SelectObject(pantalla->hDC, pantalla->imagen);
 
 			HFONT hSysFont = (HFONT) GetStockObject(SYSTEM_FONT);
 			LOGFONT lf;
 			GetObject(hSysFont, sizeof(LOGFONT), &lf);
 
-			if (cs->fontBold) {
+			if (cs->cs.fontBold) {
 				lf.lfWeight = FW_BOLD;
 			} else {
 				lf.lfWeight = FW_NORMAL;
 			}
-			lf.lfHeight = cs->fontSize;
+			lf.lfHeight = cs->cs.fontSize;
 			lf.lfQuality = DEFAULT_QUALITY;
 
 			HFONT hFont = CreateFontIndirect(&lf);
 
 			pantalla->hFontOld = (HFONT)SelectObject(pantalla->hDC, hFont);
 
-			SetTextColor(pantalla->hDC, cs->fontColor);
+			SetTextColor(pantalla->hDC, cs->cs.fontColor);
 		}
 		SetBkMode(pantalla->hDC, TRANSPARENT);
-		// SetBkColor(pantalla->hDC, RGB(0,0,0));
 
 		RECT rc = {0};
 		rc.right = pantalla->anchoPantalla;
@@ -1454,7 +1474,7 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type) {
 
 
 		if (_tcsclen(configuracion->strFondoPantalla) == 0 && !isTransparent) {
-			DrawGradientGDI(pantalla->hDC, rc, cs->backColor1,  cs->backColor2,  0xAAAA);
+			DrawGradientGDI(pantalla->hDC, rc, cs->cs.backColor1,  cs->cs.backColor2,  0xAAAA);
 		} else {
 			FillRect(pantalla->hDC, &rc, hBrushTrans);
 		}
@@ -1492,6 +1512,23 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type) {
 			CIcono *icono = pantalla->listaIconos[j];
 			pintaIcono(&pantalla->hDC, icono, screen_type);
 		}
+
+		if (configuracion->alphaBlend) {
+			if (pantalla->pBits) {
+				BYTE *p = pantalla->pBits;
+				for (UINT i = 0; i < pantalla->anchoPantalla * pantalla->altoPantalla; i++) {
+					BYTE A = p[3];
+					if (A == 0 && (p[0] != 0 || p[1] != 0 || p[2] != 0)) {
+						p[3] = 0xFF;
+					} else {
+						p[0] = (BYTE)((p[0] * A) >> 8);
+						p[1] = (BYTE)((p[1] * A) >> 8);
+						p[2] = (BYTE)((p[2] * A) >> 8);
+					}
+					p += 4;
+				}
+			}
+		}
 	}
 
 	// Pintamos la pantalla
@@ -1517,10 +1554,21 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type) {
 			}
 		}
 
-		if (isTransparent || configuracion->fondoPantalla != NULL) {
-			TransparentBlt(*hDC, xDestOrg, yDestOrg, cx, cy, pantalla->hDC, xSrcOrg, ySrcOrg, cx, cy, RGBA(0, 0, 0, 0));
-		} else {
-			BitBlt(*hDC, xDestOrg, yDestOrg, cx, cy, pantalla->hDC, xSrcOrg, ySrcOrg, SRCCOPY);
+		BOOL ab = FALSE;
+		if (configuracion->alphaBlend) {
+			BLENDFUNCTION bf;
+			bf.BlendOp = AC_SRC_OVER;
+			bf.BlendFlags = 0;
+			bf.SourceConstantAlpha = 255;
+			bf.AlphaFormat = AC_SRC_ALPHA;
+			ab = AlphaBlend(*hDC, xDestOrg, yDestOrg, cx, cy, pantalla->hDC, xSrcOrg, ySrcOrg, cx, cy, bf);
+		}
+		if (!ab) {
+			if (isTransparent || configuracion->fondoPantalla != NULL) {
+				TransparentBlt(*hDC, xDestOrg, yDestOrg, cx, cy, pantalla->hDC, xSrcOrg, ySrcOrg, cx, cy, RGBA(0, 0, 0, 0));
+			} else {
+				BitBlt(*hDC, xDestOrg, yDestOrg, cx, cy, pantalla->hDC, xSrcOrg, ySrcOrg, SRCCOPY);
+			}
 		}
 	}
 }
@@ -1548,14 +1596,14 @@ void setPosiciones(BOOL inicializa, int offsetX, int offsetY) {
 	BOOL hasTopBar = listaPantallas->topBar != NULL && listaPantallas->topBar->numIconos > 0 && configuracion->topBarConfig->iconWidth > 0;
 
 	if (hasBottomBar) {
-		listaPantallas->barraInferior->altoPantalla = configuracion->bottomBarConfig->distanceIconsV + configuracion->bottomBarConfig->offset.top + configuracion->bottomBarConfig->offset.bottom;
+		listaPantallas->barraInferior->altoPantalla = configuracion->bottomBarConfig->distanceIconsV + configuracion->bottomBarConfig->cs.offset.top + configuracion->bottomBarConfig->cs.offset.bottom;
 		listaPantallas->barraInferior->anchoPantalla = configuracion->anchoPantalla;
 		listaPantallas->barraInferior->x = 0;
 		listaPantallas->barraInferior->y = float(configuracion->altoPantalla - listaPantallas->barraInferior->altoPantalla);
 	}
 
 	if (hasTopBar) {
-		listaPantallas->topBar->altoPantalla = configuracion->topBarConfig->distanceIconsV + configuracion->topBarConfig->offset.top + configuracion->topBarConfig->offset.bottom;
+		listaPantallas->topBar->altoPantalla = configuracion->topBarConfig->distanceIconsV + configuracion->topBarConfig->cs.offset.top + configuracion->topBarConfig->cs.offset.bottom;
 		listaPantallas->topBar->anchoPantalla = configuracion->anchoPantalla;
 		listaPantallas->topBar->x = 0;
 		listaPantallas->topBar->y = 0;
@@ -1582,7 +1630,6 @@ void setPosiciones(BOOL inicializa, int offsetX, int offsetY) {
 
 void calculaPosicionObjetivo() {
 	CPantalla *pantalla = NULL;
-	CIcono *icono = NULL;
 	UINT distanciaMinima = 0xFFFF;
 	UINT distAux;
 	UINT pantallaActivaOld = estado->pantallaActiva;
@@ -1600,13 +1647,26 @@ void calculaPosicionObjetivo() {
 
 	if (distanciaMinima >= configuracion->anchoPantalla * 4 / 5) {
 		if (estado->pantallaActiva == 0) {
-			estado->pantallaActiva = listaPantallas->numPantallas - 1;
+			if (_tcsclen(configuracion->outOfScreenLeft) > 0) {
+				LaunchApplication(configuracion->outOfScreenLeft, L"");
+			} else {
+				estado->pantallaActiva = listaPantallas->numPantallas - 1;
+			}
 		} else {
-			estado->pantallaActiva = 0;
+			if (_tcsclen(configuracion->outOfScreenRight) > 0) {
+				LaunchApplication(configuracion->outOfScreenRight, L"");
+			} else {
+				estado->pantallaActiva = 0;
+			}
 		}
 	}
 
 	estado->posObjetivo.x = 0 - (estado->pantallaActiva * configuracion->anchoPantalla);
+	if (posImage.y >= int(configuracion->altoPantalla) * 4 / 5) {
+		if (_tcsclen(configuracion->outOfScreenTop) > 0) {
+			LaunchApplication(configuracion->outOfScreenTop, L"");
+		}
+	}
 	if (posImage.y >= 0 || pantallaActivaOld != estado->pantallaActiva) {
 		estado->posObjetivo.y = 0;
 	} else {
@@ -1619,7 +1679,7 @@ void calculaPosicionObjetivo() {
 		}
 		INT nrows_scroll = (-posImage.y + configuracion->mainScreenConfig->distanceIconsV / 2) / configuracion->mainScreenConfig->distanceIconsV;
 		INT nrows_screen = ((listaPantallas->listaPantalla[estado->pantallaActiva]->numIconos + configuracion->mainScreenConfig->iconsPerRow - 1) / configuracion->mainScreenConfig->iconsPerRow);
-		INT nrows_fit = (h - configuracion->mainScreenConfig->offset.top) / configuracion->mainScreenConfig->distanceIconsV;
+		INT nrows_fit = (h - configuracion->mainScreenConfig->cs.offset.top) / configuracion->mainScreenConfig->distanceIconsV;
 		if (nrows_scroll > nrows_screen - nrows_fit) {
 			nrows_scroll = nrows_screen - nrows_fit;
 			if (nrows_scroll < 0) {
@@ -1627,6 +1687,11 @@ void calculaPosicionObjetivo() {
 			}
 		}
 		estado->posObjetivo.y = - nrows_scroll * (int) configuracion->mainScreenConfig->distanceIconsV;
+		if (-posImage.y >= int(nrows_screen * configuracion->mainScreenConfig->distanceIconsV)) {
+			if (_tcsclen(configuracion->outOfScreenBottom) > 0) {
+				LaunchApplication(configuracion->outOfScreenBottom, L"");
+			}
+		}
 	}
 }
 
@@ -1844,10 +1909,16 @@ void procesaPulsacion(HWND hwnd, POINTS posCursor, BOOL doubleClick, BOOL noLanz
 
 	if (!noLanzar && iconoActual.nIconoActual >= 0) {
 
-		if (_tcsclen(icono->sound) > 0) {
-			TCHAR fullPath[MAX_PATH];
-			configuracion->getAbsolutePath(fullPath, CountOf(fullPath), icono->sound);
-			PlaySound(fullPath, 0, SND_ASYNC | SND_FILENAME | SND_NODEFAULT);
+		if (configuracion->allowSoundOnLaunchIcon) {
+			if (_tcsclen(icono->sound) > 0) {
+				TCHAR fullPath[MAX_PATH];
+				configuracion->getAbsolutePath(fullPath, CountOf(fullPath), icono->sound);
+				PlaySound(fullPath, 0, SND_ASYNC | SND_FILENAME | SND_NODEFAULT);
+			} else if (_tcsclen(configuracion->soundOnLaunchIcon) > 0) {
+				TCHAR fullPath[MAX_PATH];
+				configuracion->getAbsolutePath(fullPath, CountOf(fullPath), configuracion->soundOnLaunchIcon);
+				PlaySound(fullPath, 0, SND_ASYNC | SND_FILENAME | SND_NODEFAULT);
+			}
 		}
 
 		// Vibration
@@ -2290,6 +2361,10 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 
 				SetDlgItemText(hDlg, IDC_MICON_SOUND, pathFile);
 			}
+		} else if (LOWORD(wParam) == IDC_BUTTON_WAV_PLAY) {
+			TCHAR pathFile[MAX_PATH];
+			GetDlgItemText(hDlg, IDC_MICON_SOUND, pathFile, MAX_PATH);
+			PlaySound(pathFile, 0, SND_ASYNC | SND_FILENAME | SND_NODEFAULT);
 		} else if (LOWORD(wParam) == IDC_MICON_EXEC_B) {
 			if (lastPathExec[0] == 0) {
 				if (!SHGetSpecialFolderPath(hDlg, lastPathExec, CSIDL_PROGRAMS, FALSE)) {
@@ -2590,9 +2665,9 @@ BOOL borraObjetosHDC() {
 		hBrushTrans = NULL;
 	}
 
-	if(hBrushWhite) {
-		DeleteObject(hBrushWhite);
-		hBrushWhite = NULL;
+	if(hBrushAnimation) {
+		DeleteObject(hBrushAnimation);
+		hBrushAnimation = NULL;
 	}
 
 	return true;
@@ -2666,17 +2741,17 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	// duration += GetTickCount();
 	// NKDbgPrintfW(L" *** %d \t to InitInstance.\n", duration);
 
-	HACCEL hAccelTable;
-	hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDR_ACCELERATORS));
+	//HACCEL hAccelTable;
+	//hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDR_ACCELERATORS));
 
 	// Main message loop:
 	while (GetMessage(&msg, NULL, 0, 0))
 	{
-		if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
-		{
+		//if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
+		//{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
-		}
+		//}
 	}
 
 	// duration = -(long)GetTickCount();
@@ -2836,8 +2911,8 @@ void doDestroy(HWND hwnd) {
 		DeleteObject(hBrushTrans);
 	}
 
-	if(hBrushWhite != NULL) {
-		DeleteObject(hBrushWhite);
+	if(hBrushAnimation != NULL) {
+		DeleteObject(hBrushAnimation);
 	}
 }
 
@@ -2907,18 +2982,18 @@ void autoConfigure()
 		int iconWidth = int(float(width) * 0.1875);
 		int fontSize = iconWidth / 4;
 
-		configuracion->mainScreenConfig->iconWidthXML = iconWidth;
-		configuracion->mainScreenConfig->fontSize = fontSize;
+		configuracion->mainScreenConfig->cs.iconWidthXML = iconWidth;
+		configuracion->mainScreenConfig->cs.fontSize = fontSize;
 
-		configuracion->bottomBarConfig->iconWidthXML = iconWidth;
-		configuracion->bottomBarConfig->fontSize = fontSize;
+		configuracion->bottomBarConfig->cs.iconWidthXML = iconWidth;
+		configuracion->bottomBarConfig->cs.fontSize = fontSize;
 
-		configuracion->topBarConfig->iconWidthXML = iconWidth;
-		configuracion->topBarConfig->fontSize = fontSize;
+		configuracion->topBarConfig->cs.iconWidthXML = iconWidth;
+		configuracion->topBarConfig->cs.fontSize = fontSize;
 
-		configuracion->mainScreenConfig->minHorizontalSpace = 5;
-		configuracion->mainScreenConfig->offset.top = 5;
-		configuracion->bottomBarConfig->offset.top = configuracion->mainScreenConfig->offset.top;
+		configuracion->mainScreenConfig->cs.minHorizontalSpace = 5;
+		configuracion->mainScreenConfig->cs.offset.top = 5;
+		configuracion->bottomBarConfig->cs.offset.top = configuracion->mainScreenConfig->cs.offset.top;
 
 		configuracion->circlesDiameter = iconWidth / 6;
 		configuracion->circlesDistance = configuracion->circlesDiameter / 2;
@@ -2960,15 +3035,26 @@ void getWindowSize(HWND hwnd, int *windowWidth, int *windowHeight)
 #else
 	RECT rw;
 	GetWindowRect(hwnd, &rw);
-	RECT rwp;
+	int cxScreen = GetSystemMetrics(SM_CXSCREEN);
 	int cyScreen = GetSystemMetrics(SM_CYSCREEN);
-	if (GetWindowRect(GetParent(hwnd), &rwp) && rwp.bottom > rw.top && rwp.bottom <= cyScreen) {
-		*windowHeight = rwp.bottom - rw.top;
+	int h = 0;
+	if (cyScreen > cxScreen) {
+		h = configuracion->heightP;
 	} else {
-		*windowHeight = cyScreen - rw.top;
+		h = configuracion->heightL;
 	}
-	*windowHeight = *windowHeight - GetSystemMetrics(SM_CYBORDER);
-	*windowWidth = GetSystemMetrics(SM_CXSCREEN);
+	if (h == 0) {
+		RECT rwp;
+		if (GetWindowRect(GetParent(hwnd), &rwp) && rwp.bottom > rw.top && rwp.bottom <= cyScreen) {
+			*windowHeight = rwp.bottom - rw.top;
+		} else {
+			*windowHeight = cyScreen - rw.top;
+		}
+		*windowHeight = *windowHeight - GetSystemMetrics(SM_CYBORDER);
+	} else {
+		*windowHeight = h;
+	}
+	*windowWidth = cxScreen;
 
 #endif
 #ifdef DEBUG1

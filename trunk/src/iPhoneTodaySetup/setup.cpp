@@ -225,6 +225,10 @@ SETUP_API codeINSTALL_EXIT Install_Exit(
 	if (MessageBox(hwndParent, L"Would you like to enable today plugin?", L"Installation", MB_YESNO | MB_ICONQUESTION) == IDYES) {
 		DisableAllTodayPlugins();
 		ToggleTodayPlugin(TRUE);
+	} else if (MessageBox(hwndParent, L"Would you like to create a shortcut to the startup folder instead?", L"Installation", MB_YESNO | MB_ICONQUESTION) == IDYES) {
+		TCHAR exe[MAX_PATH];
+		StringCchPrintf(exe, MAX_PATH, L"\"%s\\%s\"", pszInstallDir, L"iPhoneToday.exe");
+		SHCreateShortcut(L"\\Windows\\StartUp\\iPhoneToday.lnk", exe);
 	}
 
 /*
@@ -263,6 +267,7 @@ SETUP_API codeUNINSTALL_INIT Uninstall_Init(
 
 	ToggleTodayPlugin(FALSE);
 	RemoveRegistry();
+	DeleteFile(L"\\Windows\\StartUp\\iPhoneToday.lnk");
 
 	return codeUNINSTALL_INIT_CONTINUE;
 }

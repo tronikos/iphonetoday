@@ -66,8 +66,10 @@
 #endif
 
 #include <commdlg.h>
+
 #if _WIN32_WCE < 0x500
 #include "my_aygshell.h"
+#include "my_dlls.h"
 #endif
 
 #include "resource.h"
@@ -95,7 +97,7 @@ typedef enum
 #define MAX_PANTALLAS			32
 #define MAX_ICONOS_PANTALLA		64
 
-#define NUM_CONFIG_SCREENS		9
+#define NUM_CONFIG_SCREENS		11
 
 #define TIMER_RECUPERACION		10000
 #define TIMER_ACTUALIZA_NOTIF	10001

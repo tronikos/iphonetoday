@@ -5,7 +5,6 @@
 #include "stdafx.h"
 #include "iPhoneToday.h"
 #include "OptionDialog.h"
-#include "VersionNo.h"
 
 /*************************************************************************/
 /* General options dialog box procedure function                 */
@@ -29,38 +28,60 @@ LRESULT CALLBACK OptionDialog8(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 
 			SHInitExtraControls();
 
-			SendMessage(GetDlgItem(hDlg, IDC_STATICAPPVER), WM_SETTEXT, 0, (LPARAM)LSTRPRODUCTVER);
+			if (configuracion == NULL) {
+				configuracion = new CConfiguracion();
+				configuracion->cargaXMLConfig();
+			}
+			if (configuracion != NULL) {
+				SendMessage(GetDlgItem(hDlg, IDC_CHECK_TRANS_ALPHABLEND),   BM_SETCHECK, configuracion->alphaBlend     ? BST_CHECKED : BST_UNCHECKED, 0);
+				SendMessage(GetDlgItem(hDlg, IDC_CHECK_TRANS_ALPHAONBLACK), BM_SETCHECK, configuracion->alphaOnBlack   ? BST_CHECKED : BST_UNCHECKED, 0);
+				SendMessage(GetDlgItem(hDlg, IDC_CHECK_TRANS_BMP),          BM_SETCHECK, configuracion->transparentBMP ? BST_CHECKED : BST_UNCHECKED, 0);
+				SetDlgItemInt(hDlg, IDC_EDIT_TRANS_THRESHOLD, configuracion->alphaThreshold, TRUE);
+
+				if (configuracion->alphaBlend) {
+					EnableWindow(GetDlgItem(hDlg, IDC_CHECK_TRANS_ALPHAONBLACK), FALSE);
+					EnableWindow(GetDlgItem(hDlg, IDC_EDIT_TRANS_THRESHOLD),     FALSE);
+					EnableWindow(GetDlgItem(hDlg, IDC_CHECK_TRANS_BMP),          FALSE);
+				}
+			} else {
+				MessageBox(hDlg, L"Empty Configuration!", 0, MB_OK);
+			}
 		}
 		return TRUE;
-
 	case WM_COMMAND:
 		switch (LOWORD(wParam))
 		{
-			case IDC_STATICURL:
-				SHELLEXECUTEINFO sei;
-				memset(&sei, 0, sizeof(sei));
-				sei.cbSize = sizeof(sei);
-				sei.lpFile = L"http://iphonetoday.googlecode.com/";
-				sei.nShow = SW_SHOWNORMAL;
-				sei.nShow = SW_SHOWNORMAL;
-				ShellExecuteEx(&sei);
-				break;
-			default:
-				break;
+		case IDC_CHECK_TRANS_ALPHABLEND:
+			BOOL checked = SendMessage(GetDlgItem(hDlg, IDC_CHECK_TRANS_ALPHABLEND), BM_GETCHECK, 0, 0) == BST_CHECKED;
+			EnableWindow(GetDlgItem(hDlg, IDC_CHECK_TRANS_ALPHAONBLACK), !checked);
+			EnableWindow(GetDlgItem(hDlg, IDC_EDIT_TRANS_THRESHOLD),     !checked);
+			EnableWindow(GetDlgItem(hDlg, IDC_CHECK_TRANS_BMP),          !checked);
+			break;
 		}
-		break;
-
+		return 0;
 	case WM_CTLCOLORSTATIC:
-		if ((HWND)lParam == GetDlgItem (hDlg, IDC_STATICURL)) {
-			// Modify the font color of the URL string
-			SetTextColor ((HDC)wParam, GetSysColor(COLOR_MENUTEXT));
-		}
-		// If an application processes this message,
-		// the return value is a handle to a brush that
-		// the system uses to paint the background of
-		// the static control.
 		return (LRESULT)GetStockObject(WHITE_BRUSH);
 	}
 
 	return DefWindowProc(hDlg, uMsg, wParam, lParam);
+}
+
+BOOL SaveConfiguration8(HWND hDlg)
+{
+	int alphaThreshold;
+
+	alphaThreshold = GetDlgItemInt(hDlg, IDC_EDIT_TRANS_THRESHOLD, NULL, TRUE);
+
+	if (alphaThreshold < 0 || alphaThreshold > 255) {
+		MessageBox(hDlg, TEXT("Alpha threshold value is not valid!"), TEXT("Error"), MB_OK);
+		return FALSE;
+	}
+
+	configuracion->alphaThreshold = alphaThreshold;
+
+	configuracion->alphaOnBlack   = SendMessage(GetDlgItem(hDlg, IDC_CHECK_TRANS_ALPHAONBLACK), BM_GETCHECK, 0, 0) == BST_CHECKED;
+	configuracion->alphaBlend     = SendMessage(GetDlgItem(hDlg, IDC_CHECK_TRANS_ALPHABLEND),   BM_GETCHECK, 0, 0) == BST_CHECKED;
+	configuracion->transparentBMP = SendMessage(GetDlgItem(hDlg, IDC_CHECK_TRANS_BMP),          BM_GETCHECK, 0, 0) == BST_CHECKED;
+
+	return TRUE;
 }
