@@ -26,7 +26,12 @@ void CConfigurationScreen::calculate(BOOL isStaticbar, int maxIcons, UINT screen
 		iconsPerRow = cs.iconsPerRowXML;
 	}
 	if (isStaticbar) {
-		iconsPerRow = min(iconsPerRow, UINT(maxIcons));
+		if (cs.shrinkToFit && maxIcons != 0) {
+			iconsPerRow = maxIcons;
+			iconWidth = (w - maxIcons * cs.minHorizontalSpace) / iconsPerRow;
+		} else {
+			iconsPerRow = min(iconsPerRow, UINT(maxIcons));
+		}
 	}
 
 	if (iconWidth * iconsPerRow <= w) {
@@ -47,6 +52,7 @@ void CConfigurationScreen::defaultValues()
 	this->cs.iconsPerRowXML = 0;
 	this->cs.minHorizontalSpace = 0;
 	this->cs.additionalVerticalSpace = 0;
+	this->cs.shrinkToFit = 0;
 
 	this->cs.fontSize = 12;
 	this->cs.fontColor = RGB(255, 255, 255);
@@ -84,6 +90,8 @@ BOOL CConfigurationScreen::loadXMLConfig(TiXmlElement *pRoot)
 			XMLUtils::GetTextElem(pElem, &this->cs.minHorizontalSpace);
 		} else if(_stricmp(nameNode, "AdditionalVerticalSpace") == 0) {
 			XMLUtils::GetTextElem(pElem, &this->cs.additionalVerticalSpace);
+		} else if(_stricmp(nameNode, "ShrinkToFit") == 0) {
+			XMLUtils::GetTextElem(pElem, &this->cs.shrinkToFit);
 		} else if(_stricmp(nameNode, "Offset") == 0) {
 			XMLUtils::GetAttr(pElem, "left",   &this->cs.offset.left);
 			XMLUtils::GetAttr(pElem, "top",    &this->cs.offset.top);
@@ -125,6 +133,10 @@ BOOL CConfigurationScreen::saveXMLConfig(TiXmlElement *pRoot)
 
 	pElem = new TiXmlElement("AdditionalVerticalSpace");
 	XMLUtils::SetTextElem(pElem, this->cs.additionalVerticalSpace);
+	pRoot->LinkEndChild(pElem);
+
+	pElem = new TiXmlElement("ShrinkToFit");
+	XMLUtils::SetTextElem(pElem, this->cs.shrinkToFit);
 	pRoot->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("Offset");

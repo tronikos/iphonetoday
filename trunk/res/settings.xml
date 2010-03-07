@@ -6,6 +6,7 @@
         <IconsPerRow>0</IconsPerRow>
         <MinHorizontalSpace>5</MinHorizontalSpace>
         <AdditionalVerticalSpace>0</AdditionalVerticalSpace>
+        <ShrinkToFit>0</ShrinkToFit>
         <Offset left="0" top="5" right="0" bottom="0" />
         <Font size="11" color="16777215" bold="0" offset="0" shadow="0" />
         <Background color1="0" color2="0" />
@@ -15,6 +16,7 @@
         <IconsPerRow>0</IconsPerRow>
         <MinHorizontalSpace>0</MinHorizontalSpace>
         <AdditionalVerticalSpace>0</AdditionalVerticalSpace>
+        <ShrinkToFit>0</ShrinkToFit>
         <Offset left="0" top="5" right="0" bottom="0" />
         <Font size="11" color="16777215" bold="0" offset="0" shadow="0" />
         <Background color1="0" color2="0" />
@@ -24,6 +26,7 @@
         <IconsPerRow>0</IconsPerRow>
         <MinHorizontalSpace>0</MinHorizontalSpace>
         <AdditionalVerticalSpace>0</AdditionalVerticalSpace>
+        <ShrinkToFit>0</ShrinkToFit>
         <Offset left="0" top="0" right="0" bottom="0" />
         <Font size="11" color="16777215" bold="0" offset="0" shadow="0" />
         <Background color1="0" color2="0" />

@@ -8,6 +8,7 @@ typedef struct ConfigurationScreen {
 	UINT iconsPerRowXML;
 	UINT minHorizontalSpace;
 	UINT additionalVerticalSpace;
+	UINT shrinkToFit;
 	UINT fontSize;
 	COLORREF fontColor;
 	UINT fontBold;
