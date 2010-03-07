@@ -27,6 +27,7 @@ public:
 
 	BOOL cargaXMLIconos(CListaPantalla *listaPantallas);
 	void defaultValues();
+	void autoConfigure();
 	BOOL cargaXMLConfig();
 	BOOL guardaXMLConfig();
 	BOOL guardaXMLIconos(CListaPantalla *listaPantallas);

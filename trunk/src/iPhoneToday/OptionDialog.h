@@ -34,7 +34,7 @@
 
 extern HWND			g_hDlg[NUM_CONFIG_SCREENS];
 
-
+extern BOOL doNotAskToSaveOptions;
 
 //////////////////////////////////////////////////////////////////////////////
 // FUNCTION PROTOTYPES

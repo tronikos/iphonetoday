@@ -2970,34 +2970,7 @@ void autoConfigure()
 	int resp = IDYES;
 #endif
 	if (resp == IDYES) {
-		int width = GetSystemMetrics(SM_CXSCREEN);
-		int height = GetSystemMetrics(SM_CYSCREEN);
-		int tmp;
-		if (width > height) {
-			tmp = height;
-			height = width;
-			width = tmp;
-		}
-
-		int iconWidth = int(float(width) * 0.1875);
-		int fontSize = iconWidth / 4;
-
-		configuracion->mainScreenConfig->cs.iconWidthXML = iconWidth;
-		configuracion->mainScreenConfig->cs.fontSize = fontSize;
-
-		configuracion->bottomBarConfig->cs.iconWidthXML = iconWidth;
-		configuracion->bottomBarConfig->cs.fontSize = fontSize;
-
-		configuracion->topBarConfig->cs.iconWidthXML = iconWidth;
-		configuracion->topBarConfig->cs.fontSize = fontSize;
-
-		configuracion->mainScreenConfig->cs.minHorizontalSpace = 5;
-		configuracion->mainScreenConfig->cs.offset.top = 5;
-		configuracion->bottomBarConfig->cs.offset.top = configuracion->mainScreenConfig->cs.offset.top;
-
-		configuracion->circlesDiameter = iconWidth / 6;
-		configuracion->circlesDistance = configuracion->circlesDiameter / 2;
-		configuracion->circlesOffset = configuracion->circlesDistance;
+		configuracion->autoConfigure();
 	}
 
 	configuracion->alreadyConfigured = 1;
