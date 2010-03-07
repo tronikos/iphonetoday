@@ -12,6 +12,7 @@ typedef struct ConfigurationScreen {
 	COLORREF fontColor;
 	UINT fontBold;
 	INT fontOffset;
+	UINT fontShadow;
 	RECT offset;
 	COLORREF backColor1;
 	COLORREF backColor2;

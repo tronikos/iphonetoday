@@ -52,6 +52,7 @@ void CConfigurationScreen::defaultValues()
 	this->cs.fontColor = RGB(255, 255, 255);
 	this->cs.fontBold = 0;
 	this->cs.fontOffset = 0;
+	this->cs.fontShadow = 0;
 
 	this->cs.offset.left = 0;
 	this->cs.offset.top = 0;
@@ -93,6 +94,7 @@ BOOL CConfigurationScreen::loadXMLConfig(TiXmlElement *pRoot)
 			XMLUtils::GetAttr(pElem, "color",  &this->cs.fontColor);
 			XMLUtils::GetAttr(pElem, "bold",   &this->cs.fontBold);
 			XMLUtils::GetAttr(pElem, "offset", &this->cs.fontOffset);
+			XMLUtils::GetAttr(pElem, "shadow", &this->cs.fontShadow);
 		} else if(_stricmp(nameNode, "Background") == 0) {
 			XMLUtils::GetAttr(pElem, "color1",  &this->cs.backColor1);
 			XMLUtils::GetAttr(pElem, "color2",  &this->cs.backColor2);
@@ -137,6 +139,7 @@ BOOL CConfigurationScreen::saveXMLConfig(TiXmlElement *pRoot)
 	XMLUtils::SetAttr(pElem, "color",  this->cs.fontColor);
 	XMLUtils::SetAttr(pElem, "bold",   this->cs.fontBold);
 	XMLUtils::SetAttr(pElem, "offset", this->cs.fontOffset);
+	XMLUtils::SetAttr(pElem, "shadow", this->cs.fontShadow);
 	pRoot->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("Background");

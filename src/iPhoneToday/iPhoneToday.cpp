@@ -1410,11 +1410,21 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 	posTexto.right = int(icono->x + width + (cs->distanceIconsH * 0.5));
 
 	if (cs->cs.fontSize > 0) {
+		TCHAR *p = icono->nombre;
 		if (icono->tipo == NOTIF_OPERATOR || icono->tipo == NOTIF_SIGNAL_OPER) {
-			DrawText(*hDC, estado->operatorName, -1, &posTexto, DT_CENTER | DT_TOP);
-		} else {
-			DrawText(*hDC, icono->nombre, -1, &posTexto, DT_CENTER | DT_TOP);
+			p = estado->operatorName;
 		}
+		if (cs->cs.fontShadow > 0) {
+			COLORREF colorOld = SetTextColor(*hDC, RGB(1,1,1));
+			RECT posTexto2 = posTexto;
+			posTexto2.left += cs->cs.fontShadow;
+			posTexto2.top += cs->cs.fontShadow;
+			posTexto2.right += cs->cs.fontShadow;
+			posTexto2.bottom += cs->cs.fontShadow;
+			DrawText(*hDC, p, -1, &posTexto2, DT_CENTER | DT_TOP);
+			SetTextColor(*hDC, colorOld);
+		}
+		DrawText(*hDC, p, -1, &posTexto, DT_CENTER | DT_TOP);
 	}
 }
 
