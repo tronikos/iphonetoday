@@ -331,6 +331,29 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lPara
 		return doTimer (hwnd, uimessage, wParam, lParam);
 	case WM_PAINT:
 		return doPaint (hwnd, uimessage, wParam, lParam);
+#ifdef EXEC_MODE
+	case WM_WININICHANGE:
+		RECT rcw;
+		if (!GetWindowRect(hwnd, &rcw)) return 0;
+		if (configuracion == NULL) return 0;
+		if (configuracion->fullscreen) {
+			int cxScreen = GetSystemMetrics(SM_CXSCREEN);
+			int cyScreen = GetSystemMetrics(SM_CYSCREEN);
+			if (rcw.right - rcw.left != cxScreen || rcw.bottom - rcw.top != cyScreen) {
+				SetWindowPos(hwnd, NULL, 0, 0, cxScreen, cyScreen, SWP_NOZORDER);
+				resizeWindow(hwnd, true);
+			}
+		} else {
+			RECT rcd;
+			if (!GetWindowRect(GetDesktopWindow(), &rcd)) return 0;
+			if (rcd.left != rcw.left || rcd.top != rcw.top || rcd.right != rcw.right || rcd.bottom != rcw.bottom) {
+				SetWindowPos(hwnd, NULL, rcd.left, rcd.top, rcd.right - rcd.left, rcd.bottom - rcd.top, SWP_NOZORDER);
+				resizeWindow(hwnd, true);
+			}
+		}
+
+		return 0;
+#endif
 	case WM_SIZE:
 #ifdef DEBUG1
 		NKDbgPrintfW(L"WM_SIZE (%d, cx = %d, cy = %d)\n", wParam, LOWORD(lParam), HIWORD(lParam));
