@@ -902,3 +902,37 @@ BOOL CConfiguracion::guardaXMLConfig()
 
 	return 0;
 }
+
+void CConfiguracion::autoConfigure()
+{
+	int width = GetSystemMetrics(SM_CXSCREEN);
+	int height = GetSystemMetrics(SM_CYSCREEN);
+	int tmp;
+	if (width > height) {
+		tmp = height;
+		height = width;
+		width = tmp;
+	}
+
+	int iconWidth = int(float(width) * 0.1875);
+	int fontSize = iconWidth / 4;
+
+	this->mainScreenConfig->cs.iconWidthXML = iconWidth;
+	this->mainScreenConfig->cs.fontSize = fontSize;
+
+	this->bottomBarConfig->cs.iconWidthXML = iconWidth;
+	this->bottomBarConfig->cs.fontSize = fontSize;
+
+	this->topBarConfig->cs.iconWidthXML = iconWidth;
+	this->topBarConfig->cs.fontSize = fontSize;
+
+	this->mainScreenConfig->cs.minHorizontalSpace = 5;
+	this->mainScreenConfig->cs.offset.top = 5;
+	this->bottomBarConfig->cs.offset.top = this->mainScreenConfig->cs.offset.top;
+
+	this->circlesDiameter = iconWidth / 6;
+	this->circlesDistance = this->circlesDiameter / 2;
+	this->circlesOffset = this->circlesDistance;
+
+	this->alreadyConfigured = 1;
+}

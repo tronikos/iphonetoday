@@ -37,6 +37,7 @@ HWND		g_hDlg[NUM_CONFIG_SCREENS];
 // Variable to track how many times PropSheetPageProc is called when closing the property sheet
 static INT	s_iReleaseCall;
 
+BOOL doNotAskToSaveOptions = FALSE;
 
 /*************************************************************************/
 /* Option dialog PropSheetPageProc callback function                     */
@@ -59,6 +60,11 @@ UINT CALLBACK PropSheetPageProc(HWND hwnd,UINT uMsg,LPPROPSHEETPAGE ppsp)
 				// Only save the registry values when the last property sheet is released
 				if (s_iReleaseCall >= NUM_CONFIG_SCREENS)
 				{
+					if (doNotAskToSaveOptions) {
+						doNotAskToSaveOptions = FALSE;
+						return FALSE;
+					}
+
 					// Comprobamos si quiere guardar o solo salir
 					int resp = MessageBox(hwnd, TEXT("Save Changes?"), TEXT("Exit"), MB_YESNO);
 					if (resp == IDNO) {
