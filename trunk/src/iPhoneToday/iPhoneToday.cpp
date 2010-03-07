@@ -655,7 +655,11 @@ LRESULT WndProcLoading (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 
 		GetClientRect( hwnd, &rcWindBounds);
 
-		SetTextColor(hDC, RGB(0,0,0));
+		HBRUSH hBrush = CreateSolidBrush(RGB(0,0,0));
+		FillRect(hDC, &rcWindBounds, hBrush);
+		DeleteObject(hBrush);
+
+		SetTextColor(hDC, RGB(255,255,255));
 		TCHAR elementText[MAX_PATH];
 		StringCchCopy(elementText, CountOf(elementText), L"Loading...");
 		DrawText(hDC, elementText, _tcslen( elementText ), &rcWindBounds,
