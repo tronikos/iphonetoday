@@ -1415,7 +1415,7 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 			p = estado->operatorName;
 		}
 		if (cs->cs.fontShadow > 0) {
-			COLORREF colorOld = SetTextColor(*hDC, RGB(1,1,1));
+			COLORREF colorOld = SetTextColor(*hDC, RGB(10,10,10));
 			RECT posTexto2 = posTexto;
 			posTexto2.left += cs->cs.fontShadow;
 			posTexto2.top += cs->cs.fontShadow;
