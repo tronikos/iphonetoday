@@ -461,6 +461,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\iPhoneToday\PropertySheetPage10.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\iPhoneToday\PropertySheetPage2.cpp"
 				>
 			</File>
@@ -486,6 +490,10 @@
 			</File>
 			<File
 				RelativePath="..\iPhoneToday\PropertySheetPage8.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\iPhoneToday\PropertySheetPage9.cpp"
 				>
 			</File>
 			<File
@@ -568,6 +576,10 @@
 			</File>
 			<File
 				RelativePath="..\iPhoneToday\my_aygshell.h"
+				>
+			</File>
+			<File
+				RelativePath="..\iPhoneToday\my_dlls.h"
 				>
 			</File>
 			<File

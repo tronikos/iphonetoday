@@ -3,6 +3,20 @@
 #include <windows.h>
 #include "xmlWrapper.h"
 
+typedef struct ConfigurationScreen {
+	UINT iconWidthXML;
+	UINT iconsPerRowXML;
+	UINT minHorizontalSpace;
+	UINT additionalVerticalSpace;
+	UINT fontSize;
+	COLORREF fontColor;
+	UINT fontBold;
+	INT fontOffset;
+	RECT offset;
+	COLORREF backColor1;
+	COLORREF backColor2;
+} ConfigurationScreen;
+
 class CConfigurationScreen
 {
 public:
@@ -16,17 +30,7 @@ public:
 	void calculate(BOOL isStaticbar, int maxIcons, UINT screenWidth, UINT screenHeight);
 
 	// Variables from XML
-	UINT iconWidthXML;
-	UINT iconsPerRowXML;
-	UINT minHorizontalSpace;
-	UINT additionalVerticalSpace;
-	UINT fontSize;
-	COLORREF fontColor;
-	UINT fontBold;
-	INT fontOffset;
-	RECT offset;
-	COLORREF backColor1;
-	COLORREF backColor2;
+	ConfigurationScreen cs;
 
 	// Calculated variables
 	UINT iconWidth;

@@ -6,6 +6,82 @@
 #include "iPhoneToday.h"
 #include "OptionDialog.h"
 
+ConfigurationScreen ms, bb, tb;
+ConfigurationScreen *cur_cs;
+
+void cs_enable(HWND hDlg, BOOL bEnable)
+{
+	EnableWindow(GetDlgItem(hDlg, IDC_EDIT_CS_ICON_WIDTH),		bEnable);
+	EnableWindow(GetDlgItem(hDlg, IDC_EDIT_CS_ICONS_PER_ROW),	bEnable);
+	EnableWindow(GetDlgItem(hDlg, IDC_EDIT_CS_TEXT_HEIGHT),		bEnable);
+	EnableWindow(GetDlgItem(hDlg, IDC_EDIT_CS_TEXT_OFFSET),		bEnable);
+	EnableWindow(GetDlgItem(hDlg, IDC_EDIT_CS_TEXT_COLOR),		bEnable);
+	EnableWindow(GetDlgItem(hDlg, IDC_BUTTON_CS_TEXT_COLOR),	bEnable);
+	EnableWindow(GetDlgItem(hDlg, IDC_CHECK_CS_TEXT_BOLD),		bEnable);
+	EnableWindow(GetDlgItem(hDlg, IDC_EDIT_CS_BACK_COLOR1),		bEnable);
+	EnableWindow(GetDlgItem(hDlg, IDC_BUTTON_CS_BACK_COLOR1),	bEnable);
+	EnableWindow(GetDlgItem(hDlg, IDC_EDIT_CS_BACK_COLOR2),		bEnable);
+	EnableWindow(GetDlgItem(hDlg, IDC_BUTTON_CS_BACK_COLOR2),	bEnable);	
+	EnableWindow(GetDlgItem(hDlg, IDC_EDIT_CS_MINHSPACE),		bEnable);
+	EnableWindow(GetDlgItem(hDlg, IDC_EDIT_CS_ADDVSPACE),		bEnable);
+	EnableWindow(GetDlgItem(hDlg, IDC_EDIT_CS_OFFSET_LEFT),		bEnable);
+	EnableWindow(GetDlgItem(hDlg, IDC_EDIT_CS_OFFSET_TOP),		bEnable);
+	EnableWindow(GetDlgItem(hDlg, IDC_EDIT_CS_OFFSET_RIGHT),	bEnable);
+	EnableWindow(GetDlgItem(hDlg, IDC_EDIT_CS_OFFSET_BOTTOM),	bEnable);
+
+}
+
+void cs_load(HWND hDlg, ConfigurationScreen *cs)
+{
+	if (cs != NULL) {
+		SetDlgItemInt(hDlg, IDC_EDIT_CS_ICON_WIDTH,		cs->iconWidthXML,	TRUE);
+		SetDlgItemInt(hDlg, IDC_EDIT_CS_ICONS_PER_ROW,	cs->iconsPerRowXML,	TRUE);
+		SetDlgItemInt(hDlg, IDC_EDIT_CS_TEXT_HEIGHT,	cs->fontSize,		TRUE);
+		SetDlgItemInt(hDlg, IDC_EDIT_CS_TEXT_OFFSET,	cs->fontOffset,		TRUE);
+
+		SetDlgItemHex(hDlg, IDC_EDIT_CS_TEXT_COLOR,		cs->fontColor);
+
+		SendMessage(GetDlgItem(hDlg, IDC_CHECK_CS_TEXT_BOLD), BM_SETCHECK, cs->fontBold ? BST_CHECKED : BST_UNCHECKED, 0);
+
+		SetDlgItemHex(hDlg, IDC_EDIT_CS_BACK_COLOR1,	cs->backColor1);
+		SetDlgItemHex(hDlg, IDC_EDIT_CS_BACK_COLOR2,	cs->backColor2);
+
+		SetDlgItemInt(hDlg, IDC_EDIT_CS_MINHSPACE,		cs->minHorizontalSpace,	TRUE);
+		SetDlgItemInt(hDlg, IDC_EDIT_CS_ADDVSPACE,		cs->additionalVerticalSpace,	TRUE);
+
+		SetDlgItemInt(hDlg, IDC_EDIT_CS_OFFSET_LEFT,	cs->offset.left,	TRUE);
+		SetDlgItemInt(hDlg, IDC_EDIT_CS_OFFSET_TOP,		cs->offset.top,		TRUE);
+		SetDlgItemInt(hDlg, IDC_EDIT_CS_OFFSET_RIGHT,	cs->offset.right,	TRUE);
+		SetDlgItemInt(hDlg, IDC_EDIT_CS_OFFSET_BOTTOM,	cs->offset.bottom,	TRUE);
+	}
+	cs_enable(hDlg, TRUE);
+}
+
+void cs_save(HWND hDlg, ConfigurationScreen *cs)
+{
+	if (cs != NULL) {
+		cs->iconWidthXML	= GetDlgItemInt(hDlg, IDC_EDIT_CS_ICON_WIDTH,		NULL, TRUE);
+		cs->iconsPerRowXML	= GetDlgItemInt(hDlg, IDC_EDIT_CS_ICONS_PER_ROW,	NULL, TRUE);
+		cs->fontSize		= GetDlgItemInt(hDlg, IDC_EDIT_CS_TEXT_HEIGHT,		NULL, TRUE);
+		cs->fontOffset		= GetDlgItemInt(hDlg, IDC_EDIT_CS_TEXT_OFFSET,		NULL, TRUE);
+
+		cs->fontColor		= GetDlgItemHex(hDlg, IDC_EDIT_CS_TEXT_COLOR,		NULL);
+
+		cs->fontBold		= SendMessage(GetDlgItem(hDlg, IDC_CHECK_CS_TEXT_BOLD), BM_GETCHECK, 0, 0) == BST_CHECKED;
+
+		cs->backColor1		= GetDlgItemHex(hDlg, IDC_EDIT_CS_BACK_COLOR1,		NULL);
+		cs->backColor2		= GetDlgItemHex(hDlg, IDC_EDIT_CS_BACK_COLOR2,		NULL);
+
+		cs->minHorizontalSpace		= GetDlgItemInt(hDlg, IDC_EDIT_CS_MINHSPACE,		NULL, TRUE);
+		cs->additionalVerticalSpace	= GetDlgItemInt(hDlg, IDC_EDIT_CS_ADDVSPACE,		NULL, TRUE);
+
+		cs->offset.left		= GetDlgItemInt(hDlg, IDC_EDIT_CS_OFFSET_LEFT,		NULL, TRUE);
+		cs->offset.top		= GetDlgItemInt(hDlg, IDC_EDIT_CS_OFFSET_TOP,		NULL, TRUE);
+		cs->offset.right	= GetDlgItemInt(hDlg, IDC_EDIT_CS_OFFSET_RIGHT,		NULL, TRUE);
+		cs->offset.bottom	= GetDlgItemInt(hDlg, IDC_EDIT_CS_OFFSET_BOTTOM,	NULL, TRUE);
+	}
+}
+
 /*************************************************************************/
 /* General options dialog box procedure function                 */
 /*************************************************************************/
@@ -39,34 +115,25 @@ LRESULT CALLBACK OptionDialog0(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 
 			SHInitExtraControls();
 
+			cur_cs = NULL;
+			cs_enable(hDlg, FALSE);
+
 			if (configuracion == NULL) {
 				configuracion = new CConfiguracion();
 				configuracion->cargaXMLConfig();
 			}
 			if (configuracion != NULL) {
+				memcpy(&ms, &configuracion->mainScreenConfig->cs, sizeof(ConfigurationScreen));
+				memcpy(&bb, &configuracion->bottomBarConfig->cs,  sizeof(ConfigurationScreen));
+				memcpy(&tb, &configuracion->topBarConfig->cs,     sizeof(ConfigurationScreen));
 
-				CConfigurationScreen *cs = configuracion->mainScreenConfig;
+				SendMessage(GetDlgItem(hDlg, IDC_COMBO_CS), CB_ADDSTRING, 0, (LPARAM)L"Mainscreen");
+				SendMessage(GetDlgItem(hDlg, IDC_COMBO_CS), CB_ADDSTRING, 0, (LPARAM)L"Bottombar");
+				SendMessage(GetDlgItem(hDlg, IDC_COMBO_CS), CB_ADDSTRING, 0, (LPARAM)L"Topbar");
 
-				SetDlgItemInt(hDlg, IDC_EDIT_MS_ICON_WIDTH,		cs->iconWidthXML,	TRUE);
-				SetDlgItemInt(hDlg, IDC_EDIT_MS_ICONS_PER_ROW,	cs->iconsPerRowXML,	TRUE);
-				SetDlgItemInt(hDlg, IDC_EDIT_MS_TEXT_HEIGHT,	cs->fontSize,		TRUE);
-				SetDlgItemInt(hDlg, IDC_EDIT_MS_TEXT_OFFSET,	cs->fontOffset,		TRUE);
-
-				SetDlgItemHex(hDlg, IDC_EDIT_MS_TEXT_COLOR,		cs->fontColor);
-
-				SendMessage(GetDlgItem(hDlg, IDC_CHECK_MS_TEXT_BOLD), BM_SETCHECK, cs->fontBold ? BST_CHECKED : BST_UNCHECKED, 0);
-
-				SetDlgItemHex(hDlg, IDC_EDIT_MS_BACK_COLOR1,	cs->backColor1);
-				SetDlgItemHex(hDlg, IDC_EDIT_MS_BACK_COLOR2,	cs->backColor2);
-
-				SetDlgItemInt(hDlg, IDC_EDIT_MS_MINHSPACE,		cs->minHorizontalSpace,	TRUE);
-				SetDlgItemInt(hDlg, IDC_EDIT_MS_ADDVSPACE,		cs->additionalVerticalSpace,	TRUE);
-
-				SetDlgItemInt(hDlg, IDC_EDIT_MS_OFFSET_LEFT,	cs->offset.left,	TRUE);
-				SetDlgItemInt(hDlg, IDC_EDIT_MS_OFFSET_TOP,		cs->offset.top,		TRUE);
-				SetDlgItemInt(hDlg, IDC_EDIT_MS_OFFSET_RIGHT,	cs->offset.right,	TRUE);
-				SetDlgItemInt(hDlg, IDC_EDIT_MS_OFFSET_BOTTOM,	cs->offset.bottom,	TRUE);
-
+				SendMessage(GetDlgItem(hDlg, IDC_COMBO_CS), CB_SETCURSEL, 0, 0);
+				cur_cs = &ms;
+				cs_load(hDlg, cur_cs);
 			} else {
 				MessageBox(hDlg, L"Empty Configuration!", 0, MB_OK);
 			}
@@ -78,24 +145,52 @@ LRESULT CALLBACK OptionDialog0(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 			COLORREF nextColor;
 			switch (LOWORD(wParam))
 			{
-			case IDC_BUTTON_MS_TEXT_COLOR:
-				rgbCurrent = GetDlgItemHex(hDlg, IDC_EDIT_MS_TEXT_COLOR, NULL);
-				if (ColorSelector(rgbCurrent, &nextColor)) {
-					SetDlgItemHex(hDlg, IDC_EDIT_MS_TEXT_COLOR, nextColor);
+			case IDC_COMBO_CS:
+				if (HIWORD(wParam) == CBN_SELCHANGE) {
+					cs_save(hDlg, cur_cs);
+					ShowWindow(GetDlgItem(hDlg, IDC_CHECK_CLOCK_FORMAT12), SW_HIDE);
+					TCHAR str[MAX_PATH];
+					GetDlgItemText(hDlg, IDC_COMBO_CS, str, MAX_PATH);
+					if (lstrcmpi(str, L"Mainscreen") == 0) {
+						cur_cs = &ms;
+						cs_load(hDlg, cur_cs);
+					} else if (lstrcmpi(str, L"Bottombar") == 0) {
+						cur_cs = &bb;
+						cs_load(hDlg, cur_cs);
+					} else if (lstrcmpi(str, L"Topbar") == 0) {
+						cur_cs = &tb;
+						cs_load(hDlg, cur_cs);
+					} else {
+						cs_enable(hDlg, FALSE);
+					}
 				}
 				break;
-			case IDC_BUTTON_MS_BACK_COLOR1:
-				rgbCurrent = GetDlgItemHex(hDlg, IDC_EDIT_MS_BACK_COLOR1, NULL);
-				if (ColorSelector(rgbCurrent, &nextColor)) {
-					SetDlgItemHex(hDlg, IDC_EDIT_MS_BACK_COLOR1, nextColor);
+			case IDC_BUTTON_CS_TEXT_COLOR:
+				rgbCurrent = GetDlgItemHex(hDlg, IDC_EDIT_CS_TEXT_COLOR, NULL);
+				if (ColorSelector(hDlg, rgbCurrent, &nextColor)) {
+					SetDlgItemHex(hDlg, IDC_EDIT_CS_TEXT_COLOR, nextColor);
 				}
 				break;
-			case IDC_BUTTON_MS_BACK_COLOR2:
-				rgbCurrent = GetDlgItemHex(hDlg, IDC_EDIT_MS_BACK_COLOR2, NULL);
-				if (ColorSelector(rgbCurrent, &nextColor)) {
-					SetDlgItemHex(hDlg, IDC_EDIT_MS_BACK_COLOR2, nextColor);
+			case IDC_BUTTON_CS_BACK_COLOR1:
+				rgbCurrent = GetDlgItemHex(hDlg, IDC_EDIT_CS_BACK_COLOR1, NULL);
+				if (ColorSelector(hDlg, rgbCurrent, &nextColor)) {
+					SetDlgItemHex(hDlg, IDC_EDIT_CS_BACK_COLOR1, nextColor);
 				}
 				break;
+			case IDC_BUTTON_CS_BACK_COLOR2:
+				rgbCurrent = GetDlgItemHex(hDlg, IDC_EDIT_CS_BACK_COLOR2, NULL);
+				if (ColorSelector(hDlg, rgbCurrent, &nextColor)) {
+					SetDlgItemHex(hDlg, IDC_EDIT_CS_BACK_COLOR2, nextColor);
+				}
+				break;
+			case IDC_EDIT_CS_ICONS_PER_ROW:
+				if (HIWORD(wParam) == EN_SETFOCUS) {
+					static BOOL displayed_tip = FALSE;
+					if (!displayed_tip) {
+						displayed_tip = TRUE;
+						MessageBox(hDlg, L"It is recommended to leave this 0. In that case:\nicons_per_row = screen_width / (icon_width + minimum_horizontal_space).", L"Tip", MB_OK);
+					}
+				}
 			}
 		}
 		return 0;
@@ -106,87 +201,62 @@ LRESULT CALLBACK OptionDialog0(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 	return DefWindowProc(hDlg, uMsg, wParam, lParam);
 }
 
-BOOL SaveConfiguration0(HWND hDlg)
+BOOL cs_check(HWND hDlg, ConfigurationScreen *cs)
 {
-	int iconWidth, iconsPerRow, textHeight, textOffset, textColor, textBold, backColor1, backColor2, minHSpace, addVSpace, offset_left, offset_top, offset_right, offset_bottom;
-
-	CConfigurationScreen *cs = configuracion->mainScreenConfig;
-
-	iconWidth	= GetDlgItemInt(hDlg, IDC_EDIT_MS_ICON_WIDTH,		NULL, TRUE);
-	iconsPerRow	= GetDlgItemInt(hDlg, IDC_EDIT_MS_ICONS_PER_ROW,	NULL, TRUE);
-	textHeight	= GetDlgItemInt(hDlg, IDC_EDIT_MS_TEXT_HEIGHT,		NULL, TRUE);
-	textOffset	= GetDlgItemInt(hDlg, IDC_EDIT_MS_TEXT_OFFSET,		NULL, TRUE);
-
-	textColor	= GetDlgItemHex(hDlg, IDC_EDIT_MS_TEXT_COLOR,		NULL);
-
-	textBold = SendMessage(GetDlgItem(hDlg, IDC_CHECK_MS_TEXT_BOLD), BM_GETCHECK, 0, 0) == BST_CHECKED;
-
-	backColor1	= GetDlgItemHex(hDlg, IDC_EDIT_MS_BACK_COLOR1,		NULL);
-	backColor2	= GetDlgItemHex(hDlg, IDC_EDIT_MS_BACK_COLOR2,		NULL);
-
-	minHSpace	= GetDlgItemInt(hDlg, IDC_EDIT_MS_MINHSPACE,		NULL, TRUE);
-	addVSpace	= GetDlgItemInt(hDlg, IDC_EDIT_MS_ADDVSPACE,		NULL, TRUE);
-
-	offset_left		= GetDlgItemInt(hDlg, IDC_EDIT_MS_OFFSET_LEFT,		NULL, TRUE);
-	offset_top		= GetDlgItemInt(hDlg, IDC_EDIT_MS_OFFSET_TOP,		NULL, TRUE);
-	offset_right	= GetDlgItemInt(hDlg, IDC_EDIT_MS_OFFSET_RIGHT,		NULL, TRUE);
-	offset_bottom	= GetDlgItemInt(hDlg, IDC_EDIT_MS_OFFSET_BOTTOM,	NULL, TRUE);
-
-	if (iconWidth < 0 || iconWidth > 256) {
+	if (cs->iconWidthXML < 0 || cs->iconWidthXML > 256) {
 		MessageBox(hDlg, TEXT("Icon width value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
-	if (iconsPerRow < 0 || iconsPerRow > 32) {
+	if (cs->iconsPerRowXML < 0 || cs->iconsPerRowXML > 32) {
 		MessageBox(hDlg, TEXT("Icons per row value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
-	if (textHeight < 0 || textHeight > 100) {
+	if (cs->fontSize < 0 || cs->fontSize > 100) {
 		MessageBox(hDlg, TEXT("Text height value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
-	if (textOffset < -256 || textOffset > 256) {
+	if (cs->fontOffset < -256 || cs->fontOffset > 256) {
 		MessageBox(hDlg, TEXT("Text offset value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
-	if (minHSpace < 0 || minHSpace > 256) {
+	if (cs->minHorizontalSpace < 0 || cs->minHorizontalSpace > 256) {
 		MessageBox(hDlg, TEXT("Minimum horizontal space value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
-	if (addVSpace < 0 || addVSpace > 256) {
+	if (cs->additionalVerticalSpace < 0 || cs->additionalVerticalSpace > 256) {
 		MessageBox(hDlg, TEXT("Additional vertical space value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
-	if (offset_left < 0 || offset_left > 256) {
+	if (cs->offset.left < 0 || cs->offset.left > 256) {
 		MessageBox(hDlg, TEXT("Offset left value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
-	if (offset_top < 0 || offset_top > 256) {
+	if (cs->offset.top < 0 || cs->offset.top > 256) {
 		MessageBox(hDlg, TEXT("Offset top value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
-	if (offset_right < 0 || offset_right > 256) {
+	if (cs->offset.right < 0 || cs->offset.right > 256) {
 		MessageBox(hDlg, TEXT("Offset right value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
-	if (offset_bottom < 0 || offset_bottom > 256) {
+	if (cs->offset.bottom < 0 || cs->offset.bottom > 256) {
 		MessageBox(hDlg, TEXT("Offset bottom value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
+	return TRUE;
+}
 
-	cs->iconWidthXML			= iconWidth;
-	cs->iconsPerRowXML			= iconsPerRow;
-	cs->fontSize				= textHeight;
-	cs->fontOffset				= textOffset;
-	cs->fontColor				= textColor;
-	cs->fontBold				= textBold;
-	cs->backColor1				= backColor1;
-	cs->backColor2				= backColor2;
-	cs->minHorizontalSpace		= minHSpace;
-	cs->additionalVerticalSpace	= addVSpace;
-	cs->offset.left				= offset_left;
-	cs->offset.top				= offset_top;
-	cs->offset.right			= offset_right;
-	cs->offset.bottom			= offset_bottom;
+BOOL SaveConfiguration0(HWND hDlg)
+{
+	cs_save(hDlg, cur_cs);
+
+	if (!cs_check(hDlg, &ms)) return FALSE;
+	if (!cs_check(hDlg, &bb)) return FALSE;
+	if (!cs_check(hDlg, &tb)) return FALSE;
+
+	memcpy(&configuracion->mainScreenConfig->cs, &ms, sizeof(CConfigurationScreen));
+	memcpy(&configuracion->bottomBarConfig->cs,  &bb, sizeof(CConfigurationScreen));
+	memcpy(&configuracion->topBarConfig->cs,     &tb, sizeof(CConfigurationScreen));
 
 	return TRUE;
 }

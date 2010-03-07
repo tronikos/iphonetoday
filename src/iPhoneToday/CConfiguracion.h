@@ -90,30 +90,18 @@ public:
 	UINT verticalScroll;
 	UINT freestyleScroll;
 
-	// DayOfWeek
-	SpecialIconSettings dow;
+	// Special icons
+	SpecialIconSettings dow;	// DayOfWeek
 	TCHAR diasSemana[7][16];
-
-	// DayOfMonth
-	SpecialIconSettings dom;
-
-	// Clock
-	SpecialIconSettings clck;
+	SpecialIconSettings dom;	// DayOfMonth
+	SpecialIconSettings clck;	// Clock
 	UINT clock12Format;
-
-	// Battery
-	SpecialIconSettings batt;
-
-	// Volume
-	SpecialIconSettings vol;
-
-	// Memory load,free,used
-	SpecialIconSettings meml;
-	SpecialIconSettings memf;
-	SpecialIconSettings memu;
-
-	// Signal strength
-	SpecialIconSettings sign;
+	SpecialIconSettings batt;	// Battery
+	SpecialIconSettings vol;	// Volume
+	SpecialIconSettings meml;	// Memory load
+	SpecialIconSettings memf;	// Memory free
+	SpecialIconSettings memu;	// Memory used
+	SpecialIconSettings sign;	// Signal strength
 
 	// Bubbles
 	TCHAR bubble_notif[MAX_PATH];
@@ -124,13 +112,33 @@ public:
 	UINT closeOnLaunchIcon;
 	UINT vibrateOnLaunchIcon;
 	UINT allowAnimationOnLaunchIcon;
+	COLORREF colorOfAnimationOnLaunchIcon;
+	UINT allowSoundOnLaunchIcon;
+	TCHAR soundOnLaunchIcon[MAX_PATH];
 
+	// General
 	UINT notifyTimer;
 	UINT ignoreRotation;
 	UINT disableRightClick;
 	UINT fullscreen;
 	UINT neverShowTaskBar;
 	UINT noWindowTitle;
-	UINT alreadyConfigured;
 
+	// Today item height (Portrait|Landscape)
+	UINT heightP;
+	UINT heightL;
+
+	// Out of screen
+	TCHAR outOfScreenLeft[MAX_PATH];
+	TCHAR outOfScreenRight[MAX_PATH];
+	TCHAR outOfScreenTop[MAX_PATH];
+	TCHAR outOfScreenBottom[MAX_PATH];
+
+	// Transparency
+	BOOL alphaBlend;
+	BOOL alphaOnBlack;
+	UINT alphaThreshold;
+	BOOL transparentBMP;
+
+	UINT alreadyConfigured;
 };

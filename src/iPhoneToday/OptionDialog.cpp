@@ -146,6 +146,8 @@ BOOL CreatePropertySheet(HWND hwnd)
 	psp[6].pfnDlgProc = (DLGPROC)&OptionDialog6;
 	psp[7].pfnDlgProc = (DLGPROC)&OptionDialog7;
 	psp[8].pfnDlgProc = (DLGPROC)&OptionDialog8;
+	psp[9].pfnDlgProc = (DLGPROC)&OptionDialog9;
+	psp[10].pfnDlgProc = (DLGPROC)&OptionDialog10;
 
 
     //
@@ -193,6 +195,10 @@ BOOL SaveConfiguration()
 		result &= SaveConfiguration6(g_hDlg[6]);
 	if (g_hDlg[7])
 		result &= SaveConfiguration7(g_hDlg[7]);
+	if (g_hDlg[8])
+		result &= SaveConfiguration8(g_hDlg[8]);
+	if (g_hDlg[9])
+		result &= SaveConfiguration9(g_hDlg[9]);
 
 	if (result) {
 		configuracion->guardaXMLConfig();

@@ -33,13 +33,6 @@ LRESULT CALLBACK OptionDialog4(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 				configuracion->cargaXMLConfig();
 			}
 			if (configuracion != NULL) {
-				SetDlgItemInt(hDlg, IDC_EDIT_HEADER_HEIGHT,		configuracion->headerFontSize,		TRUE);
-				SetDlgItemHex(hDlg, IDC_EDIT_HEADER_COLOR,		configuracion->headerFontColor);
-				SetDlgItemInt(hDlg, IDC_EDIT_HEADER_WEIGHT,		configuracion->headerFontWeight,	TRUE);
-				SetDlgItemInt(hDlg, IDC_EDIT_HEADER_OFFSET,		configuracion->headerOffset,		TRUE);
-				SetDlgItemInt(hDlg, IDC_EDIT_CIRCLES_DIAMETER,	configuracion->circlesDiameter,		TRUE);
-				SetDlgItemInt(hDlg, IDC_EDIT_CIRCLES_DISTANCE,	configuracion->circlesDistance,		TRUE);
-				SetDlgItemInt(hDlg, IDC_EDIT_CIRCLES_OFFSET,	configuracion->circlesOffset,		TRUE);
 				SetDlgItemText(hDlg, IDC_EDIT_BUBBLE_NOTIF,		configuracion->bubble_notif);
 				SetDlgItemText(hDlg, IDC_EDIT_BUBBLE_STATE,		configuracion->bubble_state);
 				SetDlgItemText(hDlg, IDC_EDIT_BUBBLE_ALARM,		configuracion->bubble_alarm);
@@ -75,14 +68,6 @@ LRESULT CALLBACK OptionDialog4(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 					SetDlgItemText(hDlg, IDC_EDIT_BUBBLE_ALARM, str);
 				}
 				break;
-			case IDC_BUTTON_HEADER_COLOR:
-				int rgbCurrent;
-				COLORREF nextColor;
-				rgbCurrent = GetDlgItemHex(hDlg, IDC_EDIT_HEADER_COLOR, NULL);
-				if (ColorSelector(rgbCurrent, &nextColor)) {
-					SetDlgItemHex(hDlg, IDC_EDIT_HEADER_COLOR, nextColor);
-				}
-				break;
 			}
 		}
 		return 0;
@@ -95,49 +80,6 @@ LRESULT CALLBACK OptionDialog4(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 
 BOOL SaveConfiguration4(HWND hDlg)
 {
-	int headerHeight, headerColor, headerWeight, headerOffset, circlesDiameter, circlesDistance, circlesOffset;
-
-	headerHeight	= GetDlgItemInt(hDlg, IDC_EDIT_HEADER_HEIGHT,	NULL, TRUE);
-	headerColor		= GetDlgItemHex(hDlg, IDC_EDIT_HEADER_COLOR,	NULL);
-	headerWeight	= GetDlgItemInt(hDlg, IDC_EDIT_HEADER_WEIGHT,	NULL, TRUE);
-	headerOffset	= GetDlgItemInt(hDlg, IDC_EDIT_HEADER_OFFSET,	NULL, TRUE);
-	circlesDiameter	= GetDlgItemInt(hDlg, IDC_EDIT_CIRCLES_DIAMETER,NULL, TRUE);
-	circlesDistance	= GetDlgItemInt(hDlg, IDC_EDIT_CIRCLES_DISTANCE,NULL, TRUE);
-	circlesOffset	= GetDlgItemInt(hDlg, IDC_EDIT_CIRCLES_OFFSET,	NULL, TRUE);
-
-	if (headerHeight < 0 || headerHeight > 128) {
-		MessageBox(hDlg, TEXT("Header height value is not valid!"), TEXT("Error"), MB_OK);
-		return FALSE;
-	}
-	if (headerWeight < 0 || headerWeight > 1000) {
-		MessageBox(hDlg, TEXT("Header weight value is not valid!"), TEXT("Error"), MB_OK);
-		return FALSE;
-	}
-	if (headerOffset < 0 || headerOffset > 128) {
-		MessageBox(hDlg, TEXT("Header offset value is not valid!"), TEXT("Error"), MB_OK);
-		return FALSE;
-	}
-	if (circlesDiameter < 0 || circlesDiameter > 128) {
-		MessageBox(hDlg, TEXT("Circles diameter value is not valid!"), TEXT("Error"), MB_OK);
-		return FALSE;
-	}
-	if (circlesDistance < 0 || circlesDistance > 128) {
-		MessageBox(hDlg, TEXT("Circles distance value is not valid!"), TEXT("Error"), MB_OK);
-		return FALSE;
-	}
-	if (circlesOffset < -800 || circlesDistance > 800) {
-		MessageBox(hDlg, TEXT("Circles offset value is not valid!"), TEXT("Error"), MB_OK);
-		return FALSE;
-	}
-
-	configuracion->headerFontSize = headerHeight;
-	configuracion->headerFontColor = headerColor;
-	configuracion->headerFontWeight = headerWeight;
-	configuracion->headerOffset = headerOffset;
-	configuracion->circlesDiameter = circlesDiameter;
-	configuracion->circlesDistance = circlesDistance;
-	configuracion->circlesOffset = circlesOffset;
-
 	GetDlgItemText(hDlg, IDC_EDIT_BUBBLE_NOTIF, configuracion->bubble_notif, CountOf(configuracion->bubble_notif));
 	GetDlgItemText(hDlg, IDC_EDIT_BUBBLE_STATE, configuracion->bubble_state, CountOf(configuracion->bubble_state));
 	GetDlgItemText(hDlg, IDC_EDIT_BUBBLE_ALARM, configuracion->bubble_alarm, CountOf(configuracion->bubble_alarm));

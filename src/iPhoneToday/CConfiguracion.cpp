@@ -482,6 +482,9 @@ void CConfiguracion::defaultValues()
 	this->closeOnLaunchIcon = 0;
 	this->vibrateOnLaunchIcon = 40;
 	this->allowAnimationOnLaunchIcon = 1;
+	this->colorOfAnimationOnLaunchIcon = RGB(255,255,255);
+	this->allowSoundOnLaunchIcon = 1;
+	this->soundOnLaunchIcon[0] = 0;
 
 	this->notifyTimer = 2000;
 	this->ignoreRotation = 0;
@@ -489,6 +492,19 @@ void CConfiguracion::defaultValues()
 	this->fullscreen = 0;
 	this->neverShowTaskBar = 0;
 	this->noWindowTitle = 0;
+	this->heightP = 0;
+	this->heightL = 0;
+
+	this->outOfScreenLeft[0] = 0;
+	this->outOfScreenRight[0] = 0;
+	this->outOfScreenTop[0] = 0;
+	this->outOfScreenBottom[0] = 0;
+
+	this->alphaBlend = 0;
+	this->alphaOnBlack = 0;
+	this->alphaThreshold = 25;
+	this->transparentBMP = 1;
+
 	this->alreadyConfigured = 0;
 }
 
@@ -584,6 +600,9 @@ BOOL CConfiguracion::cargaXMLConfig()
 			XMLUtils::GetAttr(pElem, "close",   &this->closeOnLaunchIcon);
 			XMLUtils::GetAttr(pElem, "vibrate", &this->vibrateOnLaunchIcon);
 			XMLUtils::GetAttr(pElem, "animate", &this->allowAnimationOnLaunchIcon);
+			XMLUtils::GetAttr(pElem, "color",   &this->colorOfAnimationOnLaunchIcon);
+			XMLUtils::GetAttr(pElem, "sound",   &this->allowSoundOnLaunchIcon);
+			XMLUtils::GetAttr(pElem, "wav",     this->soundOnLaunchIcon, CountOf(this->soundOnLaunchIcon));
 		} else if(_stricmp(nameNode, "Background") == 0) {
 			XMLUtils::GetAttr(pElem, "transparent", &this->fondoTransparente);
 			XMLUtils::GetAttr(pElem, "color",       &this->fondoColor);
@@ -602,6 +621,19 @@ BOOL CConfiguracion::cargaXMLConfig()
 			XMLUtils::GetTextElem(pElem, &this->neverShowTaskBar);
 		} else if(_stricmp(nameNode, "NoWindowTitle") == 0) {
 			XMLUtils::GetTextElem(pElem, &this->noWindowTitle);
+		} else if(_stricmp(nameNode, "OutOfScreen") == 0) {
+			XMLUtils::GetAttr(pElem, "left",   this->outOfScreenLeft,   CountOf(this->outOfScreenLeft));
+			XMLUtils::GetAttr(pElem, "right",  this->outOfScreenRight,  CountOf(this->outOfScreenRight));
+			XMLUtils::GetAttr(pElem, "top",    this->outOfScreenTop,    CountOf(this->outOfScreenTop));
+			XMLUtils::GetAttr(pElem, "bottom", this->outOfScreenBottom, CountOf(this->outOfScreenBottom));
+		} else if(_stricmp(nameNode, "Transparency") == 0) {
+			XMLUtils::GetAttr(pElem, "alphablend",     &this->alphaBlend);
+			XMLUtils::GetAttr(pElem, "alphaonblack",   &this->alphaOnBlack);
+			XMLUtils::GetAttr(pElem, "threshold",      &this->alphaThreshold);
+			XMLUtils::GetAttr(pElem, "transparentbmp", &this->transparentBMP);
+		} else if(_stricmp(nameNode, "TodayItemHeight") == 0) {
+			XMLUtils::GetAttr(pElem, "portrait",  &this->heightP);
+			XMLUtils::GetAttr(pElem, "landscape", &this->heightL);
 		} else if(_stricmp(nameNode, "AlreadyConfigured") == 0) {
 			XMLUtils::GetTextElem(pElem, &this->alreadyConfigured);
 		} else if(_stricmp(nameNode, "MainScreen") == 0) {
@@ -810,6 +842,9 @@ BOOL CConfiguracion::guardaXMLConfig()
 	XMLUtils::SetAttr(pElem, "close",   this->closeOnLaunchIcon);
 	XMLUtils::SetAttr(pElem, "vibrate", this->vibrateOnLaunchIcon);
 	XMLUtils::SetAttr(pElem, "animate", this->allowAnimationOnLaunchIcon);
+	XMLUtils::SetAttr(pElem, "color",   this->colorOfAnimationOnLaunchIcon);
+	XMLUtils::SetAttr(pElem, "sound",   this->allowSoundOnLaunchIcon);
+	XMLUtils::SetAttr(pElem, "wav",     this->soundOnLaunchIcon, CountOf(this->soundOnLaunchIcon));
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("NotifyTimer");
@@ -834,6 +869,25 @@ BOOL CConfiguracion::guardaXMLConfig()
 
 	pElem = new TiXmlElement("NoWindowTitle");
 	XMLUtils::SetTextElem(pElem, this->noWindowTitle);
+	root->LinkEndChild(pElem);
+
+	pElem = new TiXmlElement("OutOfScreen");
+	XMLUtils::SetAttr(pElem, "left",   this->outOfScreenLeft,   CountOf(this->outOfScreenLeft));
+	XMLUtils::SetAttr(pElem, "right",  this->outOfScreenRight,  CountOf(this->outOfScreenRight));
+	XMLUtils::SetAttr(pElem, "top",    this->outOfScreenTop,    CountOf(this->outOfScreenTop));
+	XMLUtils::SetAttr(pElem, "bottom", this->outOfScreenBottom, CountOf(this->outOfScreenBottom));
+	root->LinkEndChild(pElem);
+
+	pElem = new TiXmlElement("Transparency");
+	XMLUtils::SetAttr(pElem, "alphablend",     this->alphaBlend);
+	XMLUtils::SetAttr(pElem, "alphaonblack",   this->alphaOnBlack);
+	XMLUtils::SetAttr(pElem, "threshold",      this->alphaThreshold);
+	XMLUtils::SetAttr(pElem, "transparentbmp", this->transparentBMP);
+	root->LinkEndChild(pElem);
+
+	pElem = new TiXmlElement("TodayItemHeight");
+	XMLUtils::SetAttr(pElem, "portrait",  this->heightP);
+	XMLUtils::SetAttr(pElem, "landscape", this->heightL);
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("AlreadyConfigured");

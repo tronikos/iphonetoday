@@ -6,6 +6,9 @@ static fSipShowIM *pSipShowIM = NULL;
 typedef BOOL (STDAPICALLTYPE FAR fGetSystemPowerStatusEx)(PSYSTEM_POWER_STATUS_EX,BOOL);
 static fGetSystemPowerStatusEx *pGetSystemPowerStatusEx = NULL;
 
+typedef BOOL (STDAPICALLTYPE FAR fAlphaBlend)(HDC,int,int,int,int,HDC,int,int,int,int,BLENDFUNCTION);
+static fAlphaBlend *pAlphaBlend = NULL;
+
 BOOL InitCoredll()
 {
 	static HMODULE hCoredllLib = NULL;
@@ -16,6 +19,7 @@ BOOL InitCoredll()
 		return FALSE;
 	pSipShowIM = (fSipShowIM*)GetProcAddress(hCoredllLib, L"SipShowIM");
 	pGetSystemPowerStatusEx = (fGetSystemPowerStatusEx*)GetProcAddress(hCoredllLib, L"GetSystemPowerStatusEx");
+	pAlphaBlend = (fAlphaBlend*)GetProcAddress(hCoredllLib, L"AlphaBlend");
 	return TRUE;
 }
 
@@ -33,7 +37,76 @@ BOOL WINAPI GetSystemPowerStatusEx(PSYSTEM_POWER_STATUS_EX pSystemPowerStatusEx,
 	return FALSE;
 }
 
+BOOL AlphaBlend(HDC hdcDest, int nXOriginDest, int nYOriginDest, int nWidthDest, int nHeightDest,
+				HDC hdcSrc, int nXOriginSrc, int nYOriginSrc, int nWidthSrc, int nHeightSrc,
+				BLENDFUNCTION blendFunction)
+{
+	BOOL ret = FALSE;
+	if (InitCoredll() && pAlphaBlend != NULL)
+		ret = pAlphaBlend(hdcDest, nXOriginDest, nYOriginDest, nWidthDest, nHeightDest,
+							hdcSrc, nXOriginSrc, nYOriginSrc, nWidthSrc, nHeightSrc,
+							blendFunction);
+	if (ret)
+		return TRUE;
 
+	if (nWidthDest != nWidthSrc || nHeightDest != nHeightSrc)
+		return FALSE;
+
+	BITMAPINFO bmInfoDest;
+	memset(&bmInfoDest.bmiHeader, 0, sizeof(BITMAPINFOHEADER));
+	bmInfoDest.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+	bmInfoDest.bmiHeader.biWidth = nWidthDest;
+	bmInfoDest.bmiHeader.biHeight = nHeightDest;
+	bmInfoDest.bmiHeader.biPlanes = 1;
+	bmInfoDest.bmiHeader.biBitCount = 32;
+	BYTE *pDest;
+	HDC tmp_hdcDest = CreateCompatibleDC(hdcDest);
+	HBITMAP tmp_bmpDest = CreateDIBSection(hdcDest, &bmInfoDest, DIB_RGB_COLORS, (void**)&pDest, 0, 0);
+	HGDIOBJ tmp_objDest = SelectObject(tmp_hdcDest, tmp_bmpDest);
+	BitBlt(tmp_hdcDest, 0, 0, nWidthDest, nHeightDest, hdcDest, nXOriginDest, nYOriginDest, SRCCOPY);
+
+	BITMAPINFO bmInfoSrc;
+	memset(&bmInfoSrc.bmiHeader, 0, sizeof(BITMAPINFOHEADER));
+	bmInfoSrc.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+	bmInfoSrc.bmiHeader.biWidth = nWidthSrc;
+	bmInfoSrc.bmiHeader.biHeight = nHeightSrc;
+	bmInfoSrc.bmiHeader.biPlanes = 1;
+	bmInfoSrc.bmiHeader.biBitCount = 32;
+	BYTE *pSrc;
+	HDC tmp_hdcSrc = CreateCompatibleDC(hdcSrc);
+	HBITMAP tmp_bmpSrc = CreateDIBSection(hdcSrc, &bmInfoSrc, DIB_RGB_COLORS, (void**)&pSrc, 0, 0);
+	HGDIOBJ tmp_objSrc = SelectObject(tmp_hdcSrc, tmp_bmpSrc);
+	BitBlt(tmp_hdcSrc, 0, 0, nWidthSrc, nHeightSrc, hdcSrc, nXOriginSrc, nYOriginSrc, SRCCOPY);
+
+	BYTE *pD = pDest;
+	BYTE *pS = pSrc;
+	for (int i = 0; i < nWidthDest * nHeightDest; i++) {
+		BYTE a = pS[3];
+		if (a != 0) {
+			if (a == 0xFF) {
+				pD[0] = pS[0];
+				pD[1] = pS[1];
+				pD[2] = pS[2];
+			} else {
+				BYTE na = ~a;
+				pD[0] = ((na * pD[0]) >> 8) + pS[0];
+				pD[1] = ((na * pD[1]) >> 8) + pS[1];
+				pD[2] = ((na * pD[2]) >> 8) + pS[2];
+			}
+		}
+		pD += 4;
+		pS += 4;
+	}
+
+	SetDIBitsToDevice(hdcDest, nXOriginDest, nYOriginDest, nWidthDest, nHeightDest, 0, 0, 0, nHeightDest, pDest, &bmInfoDest, 0);
+	DeleteObject(SelectObject(tmp_hdcDest, tmp_objDest));
+	DeleteDC(tmp_hdcDest);
+
+	DeleteObject(SelectObject(tmp_hdcSrc, tmp_objSrc));
+	DeleteDC(tmp_hdcSrc);
+
+	return TRUE;
+}
 
 typedef BOOL (STDAPICALLTYPE FAR fPropertySheet)(LPCPROPSHEETHEADERW); 
 static fPropertySheet *pPropertySheet = NULL;

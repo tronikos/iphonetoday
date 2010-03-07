@@ -8,7 +8,7 @@ long loadImage_IImagingFactory_CreateImageFromFile_duration = 0;
 long loadImage_IImagingFactory_CreateBitmapFromImage_duration = 0;
 #endif
 
-HBITMAP LoadImageWithImgdecmp(HDC hDC, LPTSTR strFileName);
+HBITMAP LoadImageWithImgdecmp(LPTSTR strFileName);
 
 CIcono::CIcono(void)
 {
@@ -38,13 +38,18 @@ void CIcono::defaultValues()
 }
 
 void CIcono::loadImage(HDC *hDC, TCHAR *pathImage, int width, int height, int bitsPerPixel, float factor) {
+	clearImageObjects();
+
+	if (!FileExists(pathImage)) {
+		return;
+	}
+
 	TIMER_START(loadImage_duration);
 	// IImagingFactory* g_pImgFactory = NULL;
 	HDC hdcResult;
 	HBITMAP hbmResult;
 	HBITMAP hbmResultOld;
 
-	clearImageObjects();
 
 	// initialize imaging API
 	// CoInitializeEx(NULL, COINIT_MULTITHREADED);
@@ -53,6 +58,7 @@ void CIcono::loadImage(HDC *hDC, TCHAR *pathImage, int width, int height, int bi
 	// 	return;
 	// }
 
+	BOOL isPNG = lstrcmpi(wcsrchr(pathImage, '.'), L".png") == 0;
 	BOOL isBMP = lstrcmpi(wcsrchr(pathImage, '.'), L".bmp") == 0;
 	// If imaging API is not available or it is a .bmp use SHLoadDIBitmap that only supports .bmp images and is faster.
 	if (g_pImgFactory == NULL || isBMP) {
@@ -66,7 +72,7 @@ void CIcono::loadImage(HDC *hDC, TCHAR *pathImage, int width, int height, int bi
 		if (g_hImgdecmpDll == NULL || isBMP) {
 			hbmTemp = SHLoadDIBitmap(pathImage);
 		} else {
-			hbmTemp = LoadImageWithImgdecmp(*hDC, pathImage);
+			hbmTemp = LoadImageWithImgdecmp(pathImage);
 		}
 		BITMAP bm;
 		GetObject(hbmTemp, sizeof(BITMAP), &bm);
@@ -84,20 +90,20 @@ void CIcono::loadImage(HDC *hDC, TCHAR *pathImage, int width, int height, int bi
 		// create a BITMAPINFO with minimal initilisation
 
 		// for the CreateDIBSection
-		BITMAPINFO RGB32BitsBITMAPINFO;
-		ZeroMemory(&RGB32BitsBITMAPINFO,sizeof(BITMAPINFO));
-		RGB32BitsBITMAPINFO.bmiHeader.biSize=sizeof(BITMAPINFOHEADER);
-		RGB32BitsBITMAPINFO.bmiHeader.biWidth=width;
-		RGB32BitsBITMAPINFO.bmiHeader.biHeight=height;
-		RGB32BitsBITMAPINFO.bmiHeader.biPlanes=1;
-		RGB32BitsBITMAPINFO.bmiHeader.biBitCount=32;
+		BITMAPINFO bmInfo;
+		ZeroMemory(&bmInfo, sizeof(BITMAPINFO));
+		bmInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+		bmInfo.bmiHeader.biWidth = width;
+		bmInfo.bmiHeader.biHeight = height;
+		bmInfo.bmiHeader.biPlanes = 1;
+		bmInfo.bmiHeader.biBitCount = GetPixelFormatSize(bitsPerPixel);
 
 		// pointer used for direct Bitmap pixels access
 		hdcResult = CreateCompatibleDC(*hDC);
 
 		BYTE *ptPixels;
 		hbmResult = CreateDIBSection(hdcResult,
-			(BITMAPINFO *)&RGB32BitsBITMAPINFO,
+			(BITMAPINFO *)&bmInfo,
 			DIB_RGB_COLORS,
 			(void **)&ptPixels,
 			NULL, 0);
@@ -109,16 +115,42 @@ void CIcono::loadImage(HDC *hDC, TCHAR *pathImage, int width, int height, int bi
 		StretchBlt(hdcResult, 0, 0, width, height, hdcTemp, 0, 0, widthTemp, heightTemp, SRCCOPY);
 
 
-		if (!isBMP) {
+		if (isPNG && GetPixelFormatSize(bitsPerPixel) == 32) {
+			BYTE *p = ptPixels;
 			// get color of lower left corner pixel
-			COLORREF llc = *(COLORREF*)ptPixels;
-			if (llc != RGBA(0, 0, 0, 0)) {
-				for (int i = 0; i < 4 * width * height; i += 4)
-				{
-					// set all the pixels that have llc color as transparent
-					if (*(COLORREF*)(ptPixels + i) == llc) {
-						*(COLORREF*)(ptPixels + i) = RGBA(0, 0, 0, 0);
+			COLORREF llc = *(COLORREF*)p;
+			for (int i = 0; i < width * height; i++) {
+				// set all the pixels that have llc color as transparent
+				COLORREF *c = (COLORREF*)p;
+				if (*c == llc) {
+					*c = RGBA(0, 0, 0, 0);
+				// Replace black colored pixels with semi-black pixels
+				} else if (p[0] < 0x0A && p[1] < 0x0A && p[2] < 0x0A) {
+					*c = RGBA(0x0A, 0x0A, 0x0A, 0xFF);
+				//} else {
+				//	p[3] = 0xFF;
+				}
+				p += 4;
+			}
+		}
+
+		if (isBMP && GetPixelFormatSize(bitsPerPixel) == 32) {
+			BOOL blackAsTransparent = TRUE;
+			if (configuracion != NULL) {
+				if (!configuracion->alphaBlend) {
+					blackAsTransparent = configuracion->transparentBMP;
+				}
+			}
+			if (!blackAsTransparent) {
+				BYTE *p = ptPixels;
+				for (int i = 0; i < width * height; i++) {
+					// Replace black colored pixels with semi-black pixels
+					if (p[0] < 0x0A && p[1] < 0x0A && p[2] < 0x0A) {
+						p[0] = 0x0A;
+						p[1] = 0x0A;
+						p[2] = 0x0A;
 					}
+					p += 4;
 				}
 			}
 		}
@@ -176,25 +208,41 @@ void CIcono::loadImage(HDC *hDC, TCHAR *pathImage, int width, int height, int bi
 		// m_pBitmap->LockBits(&rect, ImageLockModeRead, PIXFMT_16BPP_RGB565, &lockedBitmapData);
 		m_pBitmap->LockBits(&rect, ImageLockModeRead, bitsPerPixel, &lockedBitmapData);
 
-		if (bitsPerPixel == PIXFMT_32BPP_ARGB) {
-			for (int y=0; y<height; y++)
-			{
-				BYTE * pPixel = (BYTE *) lockedBitmapData.Scan0 + width * 4 * y;
+		if (isPNG && GetPixelFormatSize(bitsPerPixel) == 32) {
+			BOOL alphaBlend = FALSE;
+			if (configuracion != NULL) {
+				alphaBlend = configuracion->alphaBlend;
+			}
 
-				for (int x=0; x<width; x++)
-				{
-					if (pPixel[3] < 25) {
-					//|| (pPixel[0] > 0xFA && pPixel[1] < 0x06 && pPixel[2] > 0xFA)) {
-						pPixel[0] = 0;
-						pPixel[1] = 0;
-						pPixel[2] = 0;
-						pPixel[3] = 0;
-//					} else if (pPixel[0] < 0x0A && pPixel[1] < 0x0A && pPixel[2] < 0x0A) {
-//						pPixel[1] = 0x0A;
-//						pPixel[2] = 0x0A;
-//						pPixel[3] = 0x0A;
+			if (!alphaBlend) {
+				BYTE alphaThreshold = 25;
+				BOOL alphaOnBlack = FALSE;
+				if (configuracion != NULL) {
+					alphaThreshold = configuracion->alphaThreshold;
+					alphaOnBlack = configuracion->alphaOnBlack;
+				}
+
+				BYTE *p = (BYTE *) lockedBitmapData.Scan0;
+				for (int i = 0; i < width * height; i++) {
+					BYTE A = p[3];
+					if (alphaOnBlack) {
+						p[0] = (BYTE)((p[0] * A) >> 8);
+						p[1] = (BYTE)((p[1] * A) >> 8);
+						p[2] = (BYTE)((p[2] * A) >> 8);
 					}
-					pPixel += 4;
+					// Replace semi-transparent pixels (alpha value < alphaThreshold) with black
+					if (A < alphaThreshold) {
+						p[0] = 0;
+						p[1] = 0;
+						p[2] = 0;
+						p[3] = 0;
+					// Replace black colored pixels with semi-black pixels
+					} else if (p[0] < 0x0A && p[1] < 0x0A && p[2] < 0x0A) {
+						p[0] = 0x0A;
+						p[1] = 0x0A;
+						p[2] = 0x0A;
+					}
+					p += 4;
 				}
 			}
 		}
@@ -291,20 +339,20 @@ void CIcono::loadImageFromExec(HDC *hDC, TCHAR *pathExec, int width, int height)
 	// create a BITMAPINFO with minimal initilisation
 
 	// for the CreateDIBSection
-	BITMAPINFO RGB32BitsBITMAPINFO;
-	ZeroMemory(&RGB32BitsBITMAPINFO,sizeof(BITMAPINFO));
-	RGB32BitsBITMAPINFO.bmiHeader.biSize=sizeof(BITMAPINFOHEADER);
-	RGB32BitsBITMAPINFO.bmiHeader.biWidth=width;
-	RGB32BitsBITMAPINFO.bmiHeader.biHeight=height;
-	RGB32BitsBITMAPINFO.bmiHeader.biPlanes=1;
-	RGB32BitsBITMAPINFO.bmiHeader.biBitCount=32;
+	BITMAPINFO bmInfo;
+	ZeroMemory(&bmInfo, sizeof(BITMAPINFO));
+	bmInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+	bmInfo.bmiHeader.biWidth = width;
+	bmInfo.bmiHeader.biHeight = height;
+	bmInfo.bmiHeader.biPlanes = 1;
+	bmInfo.bmiHeader.biBitCount = 32;
 
 	// pointer used for direct Bitmap pixels access
 	HDC hdcResult = CreateCompatibleDC(*hDC);
 
 	BYTE *ptPixels;
 	HBITMAP hbmResult = CreateDIBSection(hdcResult,
-		(BITMAPINFO *)&RGB32BitsBITMAPINFO,
+		(BITMAPINFO *)&bmInfo,
 		DIB_RGB_COLORS,
 		(void **)&ptPixels,
 		NULL, 0);
@@ -315,37 +363,6 @@ void CIcono::loadImageFromExec(HDC *hDC, TCHAR *pathExec, int width, int height)
 
 	// Resize hdc
 	StretchBlt(hdcResult, 0, 0, width, height, hdcTemp, 0, 0, widthTemp, heightTemp, SRCCOPY);
-
-
-	/*
-	// get color of lower left corner pixel's color
-	COLORREF llc = *(COLORREF*)ptPixels;
-	if (llc != RGBA(0, 0, 0, 0)) {
-		for (int i = 0; i < 4 * width * height; i += 4)
-		{
-			// set all the pixels that have llc color as transparent
-			if (*(COLORREF*)(ptPixels + i) == llc) {
-				*(COLORREF*)(ptPixels + i) = RGBA(0, 0, 0, 0);
-			}
-		}
-	}
-	*/
-	/*
-	for (int i = 0; i < 4 * width * height; i += 4)
-	{
-		if (ptPixels[i+3] > 230 || (ptPixels[i] > 0xFA && ptPixels[i+1] < 0x06 && ptPixels[i+2] > 0xFA)) {
-			// ptPixels[i] = 0xFF;
-			// ptPixels[i+1] = 0x00;
-			// ptPixels[i+2] = 0xFF;
-			// ptPixels[i+3] = 0xFF;
-
-			ptPixels[i] = 0x00;
-			ptPixels[i+1] = 0x00;
-			ptPixels[i+2] = 0x00;
-			ptPixels[i+3] = 0x00;
-		}
-	}
-	*/
 
 
 	if (icon != NULL)  {
@@ -412,7 +429,7 @@ typedef struct tagDecompressImageInfo {
 
 #endif
 
-HBITMAP LoadImageWithImgdecmp(HDC hDC, LPTSTR strFileName)
+HBITMAP LoadImageWithImgdecmp(LPTSTR strFileName)
 {
    FILE* f = _tfopen(strFileName, TEXT("rb"));
    if (! f) {
@@ -432,7 +449,7 @@ HBITMAP LoadImageWithImgdecmp(HDC hDC, LPTSTR strFileName)
    dii.dwBufferCurrent = 0;
    dii.phBM = &hBitmap;
    dii.ppImageRender = NULL;
-   dii.iBitDepth = GetDeviceCaps(hDC, BITSPIXEL);
+   dii.iBitDepth = 24;
    dii.lParam = LPARAM(f);
    dii.hdc = 0;
    dii.iScale = 100;

@@ -32,17 +32,25 @@
     <Header size="0" color="16777215" weight="900" offset="0" />
     <Background transparent="1" color="0" static="1" factor="1.000" wallpaper="" />
     <Movement MoveThreshold="15" MaxVelocity="140" MinVelocity="20" RefreshTime="20" FactorMov="4" VerticalScroll="0" FreestyleScroll="0" />
-    <DayOfWeek color="16777215" width="18" height="40" weight="400" Sunday="Sun" Monday="Mon" Tuesday="Tue" Wednesday="Wed" Thursday="Thu" Friday="Fri" Saturday="Sat" />
-    <DayOfMonth color="1973790" width="30" height="80" weight="800" />
-    <Clock color="15132390" width="13" height="60" weight="900" format12="0" />
-    <Battery color="15132390" width="25" height="70" weight="900" />
+    <DayOfWeek color="16777215" width="18" height="40" weight="400" left="0" top="0" right="0" bottom="72" Sunday="Sun" Monday="Mon" Tuesday="Tue" Wednesday="Wed" Thursday="Thu" Friday="Fri" Saturday="Sat" />
+    <DayOfMonth color="1973790" width="30" height="80" weight="800" left="0" top="25" right="0" bottom="0" />
+    <Clock color="15132390" width="13" height="60" weight="900" left="0" top="0" right="0" bottom="0" format12="0" />
+    <Battery color="15132390" width="25" height="70" weight="900" left="0" top="0" right="0" bottom="0" />
+    <Volume color="15132390" width="25" height="70" weight="900" left="0" top="0" right="0" bottom="0" />
+    <MemoryLoad color="15132390" width="25" height="70" weight="900" left="0" top="0" right="0" bottom="0" />
+    <MemoryFree color="15132390" width="20" height="70" weight="600" left="0" top="0" right="0" bottom="0" />
+    <MemoryUsed color="15132390" width="20" height="70" weight="600" left="0" top="0" right="0" bottom="0" />
+    <SignalStrength color="15132390" width="25" height="70" weight="900" left="0" top="0" right="0" bottom="0" />
     <Bubbles notif="bubble_notif.png" state="bubble_state.png" alarm="bubble_alarm.png" />
-    <OnLaunchIcon close="0" vibrate="40" animate="1" />
+    <OnLaunchIcon close="0" vibrate="40" animate="1" color="16777215" sound="1" wav="" />
     <NotifyTimer>2000</NotifyTimer>
     <IgnoreRotation>0</IgnoreRotation>
     <DisableRightClick>0</DisableRightClick>
     <Fullscreen>0</Fullscreen>
     <NeverShowTaskBar>0</NeverShowTaskBar>
     <NoWindowTitle>0</NoWindowTitle>
+    <OutOfScreen left="" right="" top="" bottom="" />
+    <Transparency alphablend="0" alphaonblack="0" threshold="25" transparentbmp="1" />
+    <TodayItemHeight portrait="0" landscape="0" />
     <AlreadyConfigured>0</AlreadyConfigured>
 </root>

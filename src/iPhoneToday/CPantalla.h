@@ -17,6 +17,7 @@ public:
 	UINT altoPantalla;	// screen height
 	HBITMAP imagen;
 	HDC hDC;
+	BYTE *pBits;
 
 	HBITMAP imagenOld;
 	HFONT hFontOld;

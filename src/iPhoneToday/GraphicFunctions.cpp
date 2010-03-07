@@ -19,6 +19,20 @@ along with iContact.  If not, see <http://www.gnu.org/licenses/>.
 #include <commdlg.h>
 
 /*
+#if _WIN32_WCE < 0x500
+typedef struct _BLENDFUNCTION
+{
+    BYTE   BlendOp;
+    BYTE   BlendFlags;
+    BYTE   SourceConstantAlpha;
+    BYTE   AlphaFormat;
+}BLENDFUNCTION,*PBLENDFUNCTION;
+
+#define AC_SRC_OVER                 0x00
+#define AC_SRC_ALPHA                0x01      // premultiplied alpha
+#define AC_SRC_ALPHA_NONPREMULT     0x02      // non-premultiplied alpha
+#endif
+
 typedef BOOL (STDAPICALLTYPE FAR fAlphaBlend)(HDC,int,int,int,int,HDC,int,int,int,int,BLENDFUNCTION);
 
 void BltAlpha(HDC hdcDest, int nXOriginDest, int nYOriginDest,
@@ -31,17 +45,17 @@ void BltAlpha(HDC hdcDest, int nXOriginDest, int nYOriginDest,
 
 	if (hLib == NULL) {
 		hLib = LoadLibrary(L"coredll.dll");
-		pAlphaBlend = (fAlphaBlend*)GetProcAddress(hLib, L"pAlphaBlend");
+		pAlphaBlend = (fAlphaBlend*)GetProcAddress(hLib, L"AlphaBlend");
 	}
 	if (pAlphaBlend == NULL) {
-		DWORD dRop = alpha > 0 ? SRCAND : SRCCOPY;
-		BitBlt(hdcDest, nXOriginDest, nYOriginDest, nWidthDest, nHeightDest, hdcSrc, 0, 0, dRop);
+		TransparentBlt(hdcDest, nXOriginDest, nYOriginDest, nWidthDest, nHeightDest, hdcSrc, nXOriginSrc, nYoriginSrc, nWidthSrc, nHeightSrc, RGBA(0, 0, 0, 0));
+		//BitBlt(hdcDest, nXOriginDest, nYOriginDest, nWidthDest, nHeightDest, hdcSrc, nXOriginSrc, 0, SRCCOPY);
 	} else {
 		BLENDFUNCTION bf;
 		bf.BlendOp = AC_SRC_OVER;
 		bf.BlendFlags = 0;
 		bf.SourceConstantAlpha = alpha;
-		bf.AlphaFormat = 0;
+		bf.AlphaFormat = AC_SRC_ALPHA;
 		pAlphaBlend(hdcDest, nXOriginDest, nYOriginDest, nWidthDest, nHeightDest, 
 			hdcSrc, nXOriginSrc, nYoriginSrc, nWidthSrc, nHeightSrc, bf);
 	}
@@ -217,7 +231,7 @@ void DrawGradientGDI(HDC tdc, const RECT& iRect, COLORREF StartRGB, COLORREF End
   GradientFill(tdc, vert, 2, &gRect, 1, GRADIENT_FILL_RECT_V);
 }
 
-BOOL ColorSelector(COLORREF rgbCurrent, COLORREF *nextColor) {
+BOOL ColorSelector(HWND hwndOwner, COLORREF rgbCurrent, COLORREF *nextColor) {
 
 	BOOL result = FALSE;
 
@@ -227,7 +241,7 @@ BOOL ColorSelector(COLORREF rgbCurrent, COLORREF *nextColor) {
 	// Initialize CHOOSECOLOR 
 	ZeroMemory(&cc, sizeof(cc));
 	cc.lStructSize = sizeof(cc);
-	cc.hwndOwner = NULL;
+	cc.hwndOwner = hwndOwner;
 	cc.lpCustColors = (LPDWORD) acrCustClr;
 	cc.rgbResult = rgbCurrent;
 	cc.Flags = CC_ANYCOLOR | CC_RGBINIT;

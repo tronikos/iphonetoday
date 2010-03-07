@@ -40,7 +40,7 @@ BEGIN
         BEGIN
             VALUE "Comments", "iPhoneToday\0"
             VALUE "CompanyName", "iPhoneToday\0"
-            VALUE "FileDescription", "iPhoneToday\0"
+            VALUE "FileDescription", "iPhoneToday - An iPhone like interface for Windows Mobile\0"
             VALUE "FileVersion", STRFILEVER
             VALUE "InternalName", "iPhoneToday\0"
             VALUE "LegalCopyright", "Copyright (C) 2010\0"

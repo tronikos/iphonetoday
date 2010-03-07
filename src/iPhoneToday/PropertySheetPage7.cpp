@@ -33,21 +33,15 @@ LRESULT CALLBACK OptionDialog7(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 				configuracion->cargaXMLConfig();
 			}
 			if (configuracion != NULL) {
-				SendMessage(GetDlgItem(hDlg, IDC_CHECK_FULLSCREEN),				BM_SETCHECK, configuracion->fullscreen					? BST_CHECKED : BST_UNCHECKED, 0);
-				SendMessage(GetDlgItem(hDlg, IDC_CHECK_NEVER_SHOW_TASKBAR),		BM_SETCHECK, configuracion->neverShowTaskBar			? BST_CHECKED : BST_UNCHECKED, 0);
-				SendMessage(GetDlgItem(hDlg, IDC_CHECK_NO_WINDOW_TITLE),		BM_SETCHECK, configuracion->noWindowTitle				? BST_CHECKED : BST_UNCHECKED, 0);
-				SendMessage(GetDlgItem(hDlg, IDC_CHECK_DISABLE_RIGHT_CLICK),	BM_SETCHECK, configuracion->disableRightClick			? BST_CHECKED : BST_UNCHECKED, 0);
-				SendMessage(GetDlgItem(hDlg, IDC_CHECK_IGNORE_ROTATION),		BM_SETCHECK, configuracion->ignoreRotation				? BST_CHECKED : BST_UNCHECKED, 0);
-				SendMessage(GetDlgItem(hDlg, IDC_CHECK_ONLAUNCH_CLOSE),			BM_SETCHECK, configuracion->closeOnLaunchIcon			? BST_CHECKED : BST_UNCHECKED, 0);
-				SendMessage(GetDlgItem(hDlg, IDC_CHECK_ONLAUNCH_ANIMATE),		BM_SETCHECK, configuracion->allowAnimationOnLaunchIcon	? BST_CHECKED : BST_UNCHECKED, 0);
+				SendMessage(GetDlgItem(hDlg, IDC_CHECK_ONLAUNCH_CLOSE),		BM_SETCHECK, configuracion->closeOnLaunchIcon			? BST_CHECKED : BST_UNCHECKED, 0);
+				SendMessage(GetDlgItem(hDlg, IDC_CHECK_ONLAUNCH_ANIMATE),	BM_SETCHECK, configuracion->allowAnimationOnLaunchIcon	? BST_CHECKED : BST_UNCHECKED, 0);
+				SendMessage(GetDlgItem(hDlg, IDC_CHECK_ONLAUNCH_SOUND),		BM_SETCHECK, configuracion->allowSoundOnLaunchIcon		? BST_CHECKED : BST_UNCHECKED, 0);
 
-				SetDlgItemInt(hDlg, IDC_EDIT_ONLAUNCH_VIBRATE,	configuracion->vibrateOnLaunchIcon,	TRUE);
-				SetDlgItemInt(hDlg, IDC_EDIT_NOTIFY_TIMER,		configuracion->notifyTimer,			TRUE);
+				SetDlgItemInt(hDlg, IDC_EDIT_ONLAUNCH_VIBRATE,	configuracion->vibrateOnLaunchIcon, TRUE);
+				SetDlgItemHex(hDlg, IDC_EDIT_ANIM_COLOR,		configuracion->colorOfAnimationOnLaunchIcon);
+				SetDlgItemText(hDlg, IDC_EDIT_WAV,				configuracion->soundOnLaunchIcon);
 
 #ifndef EXEC_MODE
-				EnableWindow(GetDlgItem(hDlg, IDC_CHECK_FULLSCREEN), FALSE);
-				EnableWindow(GetDlgItem(hDlg, IDC_CHECK_NEVER_SHOW_TASKBAR), FALSE);
-				EnableWindow(GetDlgItem(hDlg, IDC_CHECK_NO_WINDOW_TITLE), FALSE);
 				EnableWindow(GetDlgItem(hDlg, IDC_CHECK_ONLAUNCH_CLOSE), FALSE);
 #endif
 			} else {
@@ -58,18 +52,27 @@ LRESULT CALLBACK OptionDialog7(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 	case WM_COMMAND:
 		switch (LOWORD(wParam))
 		{
-		case IDC_CHECK_NEVER_SHOW_TASKBAR:
-			if (SendMessage(GetDlgItem(hDlg, IDC_CHECK_NEVER_SHOW_TASKBAR), BM_GETCHECK, 0, 0) == BST_CHECKED) {
-				int resp = MessageBox(hDlg,
-					L"Are you really sure you never want to show the taskbar?\n"
-					L"This option is meant for Pocket Navigation Devices.\n"
-					L"The fullscreen option already hides the taskbar.",
-					L"Are you sure?", MB_YESNO);
-				if (resp == IDNO) {
-					SendMessage(GetDlgItem(hDlg, IDC_CHECK_NEVER_SHOW_TASKBAR), BM_SETCHECK, BST_UNCHECKED, 0);
+			TCHAR str[MAX_PATH];
+			TCHAR browseDir[MAX_PATH];
+			case IDC_BUTTON_WAV:
+				GetDlgItemText(hDlg, IDC_EDIT_WAV, str, MAX_PATH);
+				getPathFromFile(str, browseDir);
+				if (openFileBrowse(hDlg, OFN_EXFLAG_DETAILSVIEW, str, browseDir)) {
+					SetDlgItemText(hDlg, IDC_EDIT_WAV, str);
 				}
-			}
-			break;
+				break;
+			case IDC_BUTTON_WAV_PLAY:
+				GetDlgItemText(hDlg, IDC_EDIT_WAV, str, MAX_PATH);
+				PlaySound(str, 0, SND_ASYNC | SND_FILENAME | SND_NODEFAULT);
+				break;
+			case IDC_BUTTON_ANIM_COLOR:
+				int rgbCurrent;
+				COLORREF nextColor;
+				rgbCurrent = GetDlgItemHex(hDlg, IDC_EDIT_ANIM_COLOR, NULL);
+				if (ColorSelector(hDlg, rgbCurrent, &nextColor)) {
+					SetDlgItemHex(hDlg, IDC_EDIT_ANIM_COLOR, nextColor);
+				}
+				break;
 		}
 		return 0;
 	case WM_CTLCOLORSTATIC:
@@ -81,30 +84,23 @@ LRESULT CALLBACK OptionDialog7(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 
 BOOL SaveConfiguration7(HWND hDlg)
 {
-	int vibrateOnLaunchIcon, notifyTimer;
+	int vibrateOnLaunchIcon;
 
 	vibrateOnLaunchIcon = GetDlgItemInt(hDlg, IDC_EDIT_ONLAUNCH_VIBRATE, NULL, TRUE);
-	notifyTimer = GetDlgItemInt(hDlg, IDC_EDIT_NOTIFY_TIMER, NULL, TRUE);
 
 	if (vibrateOnLaunchIcon < 0 || vibrateOnLaunchIcon > 500) {
 		MessageBox(hDlg, TEXT("Vibrate on launch value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
-	if (notifyTimer < 0 || notifyTimer > 10000) {
-		MessageBox(hDlg, TEXT("Notify timer value is not valid!"), TEXT("Error"), MB_OK);
-		return FALSE;
-	}
 
 	configuracion->vibrateOnLaunchIcon = vibrateOnLaunchIcon;
-	configuracion->notifyTimer = notifyTimer;
 
-	configuracion->fullscreen					= SendMessage(GetDlgItem(hDlg, IDC_CHECK_FULLSCREEN),			BM_GETCHECK, 0, 0) == BST_CHECKED;
-	configuracion->neverShowTaskBar				= SendMessage(GetDlgItem(hDlg, IDC_CHECK_NEVER_SHOW_TASKBAR),	BM_GETCHECK, 0, 0) == BST_CHECKED;
-	configuracion->noWindowTitle				= SendMessage(GetDlgItem(hDlg, IDC_CHECK_NO_WINDOW_TITLE),		BM_GETCHECK, 0, 0) == BST_CHECKED;
-	configuracion->disableRightClick			= SendMessage(GetDlgItem(hDlg, IDC_CHECK_DISABLE_RIGHT_CLICK),	BM_GETCHECK, 0, 0) == BST_CHECKED;
-	configuracion->ignoreRotation				= SendMessage(GetDlgItem(hDlg, IDC_CHECK_IGNORE_ROTATION),		BM_GETCHECK, 0, 0) == BST_CHECKED;
 	configuracion->closeOnLaunchIcon			= SendMessage(GetDlgItem(hDlg, IDC_CHECK_ONLAUNCH_CLOSE),		BM_GETCHECK, 0, 0) == BST_CHECKED;
 	configuracion->allowAnimationOnLaunchIcon	= SendMessage(GetDlgItem(hDlg, IDC_CHECK_ONLAUNCH_ANIMATE),		BM_GETCHECK, 0, 0) == BST_CHECKED;
+	configuracion->allowSoundOnLaunchIcon		= SendMessage(GetDlgItem(hDlg, IDC_CHECK_ONLAUNCH_SOUND),		BM_GETCHECK, 0, 0) == BST_CHECKED;
+	configuracion->colorOfAnimationOnLaunchIcon	= GetDlgItemHex(hDlg, IDC_EDIT_ANIM_COLOR, NULL);
+
+	GetDlgItemText(hDlg, IDC_EDIT_WAV, configuracion->soundOnLaunchIcon, CountOf(configuracion->soundOnLaunchIcon));
 
 	return TRUE;
 }
