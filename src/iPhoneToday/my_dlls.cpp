@@ -49,9 +49,6 @@ BOOL AlphaBlend(HDC hdcDest, int nXOriginDest, int nYOriginDest, int nWidthDest,
 	if (ret)
 		return TRUE;
 
-	if (nWidthDest != nWidthSrc || nHeightDest != nHeightSrc)
-		return FALSE;
-
 	BITMAPINFO bmInfoDest;
 	memset(&bmInfoDest.bmiHeader, 0, sizeof(BITMAPINFOHEADER));
 	bmInfoDest.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
@@ -68,15 +65,23 @@ BOOL AlphaBlend(HDC hdcDest, int nXOriginDest, int nYOriginDest, int nWidthDest,
 	BITMAPINFO bmInfoSrc;
 	memset(&bmInfoSrc.bmiHeader, 0, sizeof(BITMAPINFOHEADER));
 	bmInfoSrc.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-	bmInfoSrc.bmiHeader.biWidth = nWidthSrc;
-	bmInfoSrc.bmiHeader.biHeight = nHeightSrc;
+	//bmInfoSrc.bmiHeader.biWidth = nWidthSrc;
+	//bmInfoSrc.bmiHeader.biHeight = nHeightSrc;
+	bmInfoSrc.bmiHeader.biWidth = nWidthDest;
+	bmInfoSrc.bmiHeader.biHeight = nHeightDest;
 	bmInfoSrc.bmiHeader.biPlanes = 1;
 	bmInfoSrc.bmiHeader.biBitCount = 32;
 	BYTE *pSrc;
 	HDC tmp_hdcSrc = CreateCompatibleDC(hdcSrc);
 	HBITMAP tmp_bmpSrc = CreateDIBSection(hdcSrc, &bmInfoSrc, DIB_RGB_COLORS, (void**)&pSrc, 0, 0);
 	HGDIOBJ tmp_objSrc = SelectObject(tmp_hdcSrc, tmp_bmpSrc);
-	BitBlt(tmp_hdcSrc, 0, 0, nWidthSrc, nHeightSrc, hdcSrc, nXOriginSrc, nYOriginSrc, SRCCOPY);
+	if (nWidthDest == nWidthSrc && nHeightDest == nHeightSrc) {
+		BitBlt(tmp_hdcSrc, 0, 0, nWidthSrc, nHeightSrc,
+			hdcSrc, nXOriginSrc, nYOriginSrc, SRCCOPY);
+	} else {
+		StretchBlt(tmp_hdcSrc, 0, 0, nWidthDest, nHeightDest,
+			hdcSrc, nXOriginSrc, nYOriginSrc, nWidthSrc, nHeightSrc, SRCCOPY);
+	}
 
 	BYTE *pD = pDest;
 	BYTE *pS = pSrc;

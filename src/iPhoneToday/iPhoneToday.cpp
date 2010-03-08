@@ -39,6 +39,9 @@ HBRUSH  hBrushFondo = NULL;
 HBRUSH  hBrushTrans = NULL;
 HBRUSH  hBrushAnimation = NULL;
 
+BOOL pushed = FALSE;
+void ResetPushed();
+
 // Variables para detectar doble click
 POINTS posUltimoClick = {0};
 long timeUltimoClick = 0;
@@ -732,6 +735,22 @@ LRESULT doPaint (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 		hBrushAnimation = CreateSolidBrush(configuracion->colorOfAnimationOnLaunchIcon);
 	}
 
+	if (pushed && estado->estadoCuadro == 0 && configuracion->pushedIcon->hDC != NULL
+		&& ps.rcPaint.right - ps.rcPaint.left == ps.rcPaint.bottom - ps.rcPaint.top
+		&& (ps.rcPaint.right - ps.rcPaint.left == configuracion->mainScreenConfig->iconWidth
+			|| ps.rcPaint.right - ps.rcPaint.left == configuracion->bottomBarConfig->iconWidth
+			|| ps.rcPaint.right - ps.rcPaint.left == configuracion->topBarConfig->iconWidth)) {
+		BLENDFUNCTION bf;
+		bf.BlendOp = AC_SRC_OVER;
+		bf.BlendFlags = 0;
+		bf.SourceConstantAlpha = 255;
+		bf.AlphaFormat = AC_SRC_ALPHA;
+		AlphaBlend(hDC, ps.rcPaint.left, ps.rcPaint.top, ps.rcPaint.right - ps.rcPaint.left, ps.rcPaint.bottom - ps.rcPaint.top,
+				configuracion->pushedIcon->hDC, 0, 0, configuracion->pushedIcon->anchoImagen, configuracion->pushedIcon->altoImagen, bf);
+		EndPaint(hwnd, &ps);
+		return 0;
+	}
+
 	BOOL isTransparent = configuracion->fondoTransparente;
 #ifdef EXEC_MODE
 	isTransparent = FALSE;
@@ -783,6 +802,8 @@ LRESULT doPaint (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 
 LRESULT doMove (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 {
+	ResetPushed();
+
 	// Cogemos la posicion del raton
 	POINTS posCursor2;
 	posCursor2 = MAKEPOINTS(lParam);
@@ -817,19 +838,21 @@ LRESULT doMove (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 		posImage.y += movy;
 		setPosiciones(false, movx, movy);
 		posCursor = posCursor2;
-	}
 
-	// Actualizamos la imagen
-	RECT            rcWindBounds;
-	GetClientRect( hwnd, &rcWindBounds);
-	InvalidateRect(hwnd, &rcWindBounds, FALSE);
-	// UpdateWindow(hwnd);
+		// Actualizamos la imagen
+		RECT            rcWindBounds;
+		GetClientRect( hwnd, &rcWindBounds);
+		InvalidateRect(hwnd, &rcWindBounds, FALSE);
+		// UpdateWindow(hwnd);
+	}
 
 	return 0;
 }
 
 void RightClick(HWND hwnd, POINTS posCursor)
 {
+	ResetPushed();
+
 	// Create context menu
 	HMENU hmenu = CreatePopupMenu();
 
@@ -984,6 +1007,49 @@ LRESULT doMouseDown (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 	posCursor = MAKEPOINTS(lParam);
 	posCursorInitialized = TRUE;
 
+	if (configuracion->pushedIcon->hDC != NULL || _tcsclen(configuracion->pushed_sound) > 0) {
+		procesaPulsacion(hwnd, posCursor, FALSE, TRUE);
+		if (iconoActual.nIconoActual >= 0) {
+			if (_tcsclen(configuracion->pushed_sound) > 0) {
+				TCHAR fullPath[MAX_PATH];
+				configuracion->getAbsolutePath(fullPath, CountOf(fullPath), configuracion->pushed_sound);
+				PlaySound(fullPath, 0, SND_ASYNC | SND_FILENAME | SND_NODEFAULT);
+			}
+			if (configuracion->pushedIcon->hDC != NULL) {
+				CIcono *icono;
+				int x, y, width;
+				if (iconoActual.nPantallaActual == -2) {
+					icono = listaPantallas->topBar->listaIconos[iconoActual.nIconoActual];
+					x = int(icono->x);
+					y = int(icono->y);
+					width = configuracion->topBarConfig->iconWidth;
+				} else if (iconoActual.nPantallaActual == -1) {
+					icono = listaPantallas->barraInferior->listaIconos[iconoActual.nIconoActual];
+					x = int(icono->x);
+					y = int(icono->y) + configuracion->altoPantalla - listaPantallas->barraInferior->altoPantalla;
+					width = configuracion->bottomBarConfig->iconWidth;
+				} else {
+					icono = listaPantallas->listaPantalla[iconoActual.nPantallaActual]->listaIconos[iconoActual.nIconoActual];
+					x = int(icono->x);
+					int offset = estado->posObjetivo.y;
+					if (listaPantallas->topBar != NULL && listaPantallas->topBar->numIconos > 0 && configuracion->topBarConfig->iconWidth > 0) {
+						offset += listaPantallas->topBar->altoPantalla;
+					}
+					y = int(icono->y) + offset;
+					width = configuracion->mainScreenConfig->iconWidth;
+				}
+				pushed = TRUE;
+				RECT rc;
+				rc.left = x;
+				rc.top = y;
+				rc.right = rc.left + width;
+				rc.bottom = rc.top + width;
+				InvalidateRect(hwnd, &rc, FALSE);
+				UpdateWindow(hwnd);
+			}
+		}
+	}
+
 	if (configuracion->disableRightClick) {
 		return 0;
 	}
@@ -1016,6 +1082,8 @@ LRESULT doMouseDown (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 
 LRESULT doMouseUp (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 {
+	ResetPushed();
+
 	POINTS point;
 	point = MAKEPOINTS(lParam);
 	bool doubleClick = false;
@@ -3070,4 +3138,15 @@ void getWindowSize(HWND hwnd, int *windowWidth, int *windowHeight)
 #ifdef DEBUG1
 	NKDbgPrintfW(L"getWindowSize(%d, %d)\n", *windowWidth, *windowHeight);
 #endif
+}
+
+void ResetPushed()
+{
+	if (pushed) {
+		pushed = FALSE;
+		RECT rcWindBounds;
+		GetClientRect(g_hWnd, &rcWindBounds);
+		InvalidateRect(g_hWnd, &rcWindBounds, FALSE);
+		UpdateWindow(g_hWnd);
+	}
 }
