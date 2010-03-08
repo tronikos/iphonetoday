@@ -42,8 +42,8 @@ CConfiguracion::CConfiguracion(void)
 
 CConfiguracion::~CConfiguracion(void)
 {
-	if (pushedIcon != NULL) {
-		delete pushedIcon;
+	if (pressedIcon != NULL) {
+		delete pressedIcon;
 	}
 	if (bubbleNotif != NULL) {
 		delete bubbleNotif;
@@ -340,10 +340,10 @@ BOOL CConfiguracion::cargaImagenes(HDC *hDC)
 	// Background
 	cargaFondo(hDC);
 
-	// Pushed icon
-	pushedIcon = new CIcono();
-	getAbsolutePath(rutaImgCompleta, CountOf(rutaImgCompleta), pushed_icon);
-	pushedIcon->loadImage(hDC, rutaImgCompleta, mainScreenConfig->iconWidth, mainScreenConfig->iconWidth, PIXFMT_32BPP_ARGB, 0, TRUE);
+	// Pressed icon
+	pressedIcon = new CIcono();
+	getAbsolutePath(rutaImgCompleta, CountOf(rutaImgCompleta), pressed_icon);
+	pressedIcon->loadImage(hDC, rutaImgCompleta, mainScreenConfig->iconWidth, mainScreenConfig->iconWidth, PIXFMT_32BPP_ARGB, 0, TRUE);
 
 	// Bubbles
 	bubbleNotif = new CIcono();
@@ -494,9 +494,8 @@ void CConfiguracion::defaultValues()
 	this->allowSoundOnLaunchIcon = 1;
 	this->soundOnLaunchIcon[0] = 0;
 
-	//StringCchCopy(this->pushed_icon, CountOf(this->pushed_icon), TEXT("pushed_icon.png"));
-	this->pushed_icon[0] = 0;
-	this->pushed_sound[0] = 0;
+	StringCchCopy(this->pressed_icon, CountOf(this->pressed_icon), TEXT("Pressed\\RoundedPressed.png"));
+	this->pressed_sound[0] = 0;
 
 	this->notifyTimer = 2000;
 	this->ignoreRotation = 0;
@@ -615,9 +614,9 @@ BOOL CConfiguracion::cargaXMLConfig()
 			XMLUtils::GetAttr(pElem, "color",   &this->colorOfAnimationOnLaunchIcon);
 			XMLUtils::GetAttr(pElem, "sound",   &this->allowSoundOnLaunchIcon);
 			XMLUtils::GetAttr(pElem, "wav",     this->soundOnLaunchIcon, CountOf(this->soundOnLaunchIcon));
-		} else if(_stricmp(nameNode, "OnPushIcon") == 0) {
-			XMLUtils::GetAttr(pElem, "icon",  this->pushed_icon,  CountOf(this->pushed_icon));
-			XMLUtils::GetAttr(pElem, "sound", this->pushed_sound, CountOf(this->pushed_sound));
+		} else if(_stricmp(nameNode, "OnPressIcon") == 0) {
+			XMLUtils::GetAttr(pElem, "icon",  this->pressed_icon,  CountOf(this->pressed_icon));
+			XMLUtils::GetAttr(pElem, "sound", this->pressed_sound, CountOf(this->pressed_sound));
 		} else if(_stricmp(nameNode, "Background") == 0) {
 			XMLUtils::GetAttr(pElem, "transparent", &this->fondoTransparente);
 			XMLUtils::GetAttr(pElem, "color",       &this->fondoColor);
@@ -862,9 +861,9 @@ BOOL CConfiguracion::guardaXMLConfig()
 	XMLUtils::SetAttr(pElem, "wav",     this->soundOnLaunchIcon, CountOf(this->soundOnLaunchIcon));
 	root->LinkEndChild(pElem);
 
-	pElem = new TiXmlElement("OnPushIcon");
-	XMLUtils::SetAttr(pElem, "icon",  this->pushed_icon,  CountOf(this->pushed_icon));
-	XMLUtils::SetAttr(pElem, "sound", this->pushed_sound, CountOf(this->pushed_sound));
+	pElem = new TiXmlElement("OnPressIcon");
+	XMLUtils::SetAttr(pElem, "icon",  this->pressed_icon,  CountOf(this->pressed_icon));
+	XMLUtils::SetAttr(pElem, "sound", this->pressed_sound, CountOf(this->pressed_sound));
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("NotifyTimer");

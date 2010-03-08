@@ -153,7 +153,7 @@ typedef enum
 #define NOTIF_SYNC_EMAIL_TXT	TEXT("Unread Sync EMail")
 #define NOTIF_TOTAL_EMAIL_TXT	TEXT("Unread Total EMail")
 #define NOTIF_CITAS_TXT			TEXT("Calendar & Appointments")
-#define NOTIF_TAREAS_TXT		TEXT("Nexts Tasks")
+#define NOTIF_TAREAS_TXT		TEXT("Next Tasks")
 #define NOTIF_CALENDAR_TXT		TEXT("Calendar")
 #define NOTIF_SMS_MMS_TXT		TEXT("Unread SMS & MMS")
 #define NOTIF_WIFI_TXT			TEXT("Wifi State")
