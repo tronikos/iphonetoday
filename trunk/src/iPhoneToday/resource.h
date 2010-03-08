@@ -135,11 +135,11 @@
 #define IDC_EDIT_TRANS_THRESHOLD        1163
 #define IDC_CHECK_TRANS_BMP             1164
 #define IDC_BUTTON_RESET_SETTINGS       1165
-#define IDC_EDIT_PUSHED_ICON            1166
-#define IDC_BUTTON_PUSHED_ICON          1167
-#define IDC_EDIT_PUSHED_SOUND           1168
-#define IDC_BUTTON_PUSHED_SOUND         1169
-#define IDC_BUTTON_PUSHED_SOUND_PLAY    1170
+#define IDC_EDIT_PRESSED_ICON           1166
+#define IDC_BUTTON_PRESSED_ICON         1167
+#define IDC_EDIT_PRESSED_SOUND          1168
+#define IDC_BUTTON_PRESSED_SOUND        1169
+#define IDC_BUTTON_PRESSED_SOUND_PLAY   1170
 
 // Next default values for new objects
 // 

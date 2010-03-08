@@ -40,8 +40,8 @@ LRESULT CALLBACK OptionDialog7(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 				SetDlgItemInt(hDlg, IDC_EDIT_ONLAUNCH_VIBRATE,	configuracion->vibrateOnLaunchIcon, TRUE);
 				SetDlgItemHex(hDlg, IDC_EDIT_ANIM_COLOR,		configuracion->colorOfAnimationOnLaunchIcon);
 				SetDlgItemText(hDlg, IDC_EDIT_WAV,				configuracion->soundOnLaunchIcon);
-				SetDlgItemText(hDlg, IDC_EDIT_PUSHED_ICON,		configuracion->pushed_icon);
-				SetDlgItemText(hDlg, IDC_EDIT_PUSHED_SOUND,		configuracion->pushed_sound);
+				SetDlgItemText(hDlg, IDC_EDIT_PRESSED_ICON,		configuracion->pressed_icon);
+				SetDlgItemText(hDlg, IDC_EDIT_PRESSED_SOUND,	configuracion->pressed_sound);
 
 #ifndef EXEC_MODE
 				EnableWindow(GetDlgItem(hDlg, IDC_CHECK_ONLAUNCH_CLOSE), FALSE);
@@ -75,22 +75,22 @@ LRESULT CALLBACK OptionDialog7(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 					SetDlgItemHex(hDlg, IDC_EDIT_ANIM_COLOR, nextColor);
 				}
 				break;
-			case IDC_BUTTON_PUSHED_ICON:
-				GetDlgItemText(hDlg, IDC_EDIT_PUSHED_ICON, str, MAX_PATH);
+			case IDC_BUTTON_PRESSED_ICON:
+				GetDlgItemText(hDlg, IDC_EDIT_PRESSED_ICON, str, MAX_PATH);
 				getPathFromFile(str, browseDir);
-				if (openFileBrowse(hDlg, OFN_EXFLAG_DETAILSVIEW, str, browseDir)) {
-					SetDlgItemText(hDlg, IDC_EDIT_PUSHED_ICON, str);
+				if (openFileBrowse(hDlg, OFN_EXFLAG_THUMBNAILVIEW, str, browseDir)) {
+					SetDlgItemText(hDlg, IDC_EDIT_PRESSED_ICON, str);
 				}
 				break;
-			case IDC_BUTTON_PUSHED_SOUND:
-				GetDlgItemText(hDlg, IDC_EDIT_PUSHED_SOUND, str, MAX_PATH);
+			case IDC_BUTTON_PRESSED_SOUND:
+				GetDlgItemText(hDlg, IDC_EDIT_PRESSED_SOUND, str, MAX_PATH);
 				getPathFromFile(str, browseDir);
 				if (openFileBrowse(hDlg, OFN_EXFLAG_DETAILSVIEW, str, browseDir)) {
-					SetDlgItemText(hDlg, IDC_EDIT_PUSHED_SOUND, str);
+					SetDlgItemText(hDlg, IDC_EDIT_PRESSED_SOUND, str);
 				}
 				break;
-			case IDC_BUTTON_PUSHED_SOUND_PLAY:
-				GetDlgItemText(hDlg, IDC_EDIT_PUSHED_SOUND, str, MAX_PATH);
+			case IDC_BUTTON_PRESSED_SOUND_PLAY:
+				GetDlgItemText(hDlg, IDC_EDIT_PRESSED_SOUND, str, MAX_PATH);
 				PlaySound(str, 0, SND_ASYNC | SND_FILENAME | SND_NODEFAULT);
 				break;
 		}
@@ -121,8 +121,8 @@ BOOL SaveConfiguration7(HWND hDlg)
 	configuracion->colorOfAnimationOnLaunchIcon	= GetDlgItemHex(hDlg, IDC_EDIT_ANIM_COLOR, NULL);
 
 	GetDlgItemText(hDlg, IDC_EDIT_WAV,			configuracion->soundOnLaunchIcon,	CountOf(configuracion->soundOnLaunchIcon));
-	GetDlgItemText(hDlg, IDC_EDIT_PUSHED_ICON,	configuracion->pushed_icon,			CountOf(configuracion->pushed_icon));
-	GetDlgItemText(hDlg, IDC_EDIT_PUSHED_SOUND,	configuracion->pushed_sound,		CountOf(configuracion->pushed_sound));
+	GetDlgItemText(hDlg, IDC_EDIT_PRESSED_ICON,	configuracion->pressed_icon,		CountOf(configuracion->pressed_icon));
+	GetDlgItemText(hDlg, IDC_EDIT_PRESSED_SOUND,configuracion->pressed_sound,		CountOf(configuracion->pressed_sound));
 
 	return TRUE;
 }

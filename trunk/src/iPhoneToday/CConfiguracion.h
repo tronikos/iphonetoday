@@ -50,7 +50,7 @@ public:
 	UINT altoPantallaMax;
 	UINT anchoPantalla;
 
-	CIcono *pushedIcon;
+	CIcono *pressedIcon;
 
 	CIcono *bubbleNotif;
 	CIcono *bubbleState;
@@ -120,8 +120,8 @@ public:
 	TCHAR soundOnLaunchIcon[MAX_PATH];
 
 	// OnPush
-	TCHAR pushed_icon[MAX_PATH];
-	TCHAR pushed_sound[MAX_PATH];
+	TCHAR pressed_icon[MAX_PATH];
+	TCHAR pressed_sound[MAX_PATH];
 
 	// General
 	UINT notifyTimer;

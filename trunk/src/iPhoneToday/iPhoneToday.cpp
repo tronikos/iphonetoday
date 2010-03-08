@@ -39,8 +39,8 @@ HBRUSH  hBrushFondo = NULL;
 HBRUSH  hBrushTrans = NULL;
 HBRUSH  hBrushAnimation = NULL;
 
-BOOL pushed = FALSE;
-void ResetPushed();
+BOOL pressed = FALSE;
+void ResetPressed();
 
 // Variables para detectar doble click
 POINTS posUltimoClick = {0};
@@ -348,7 +348,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lPara
 			}
 		} else {
 			RECT rcd;
-			if (!GetWindowRect(GetDesktopWindow(), &rcd)) return 0;
+			if (!SystemParametersInfo(SPI_GETWORKAREA, 0, &rcd, 0)) return 0;
 			if (rcd.left != rcw.left || rcd.top != rcw.top || rcd.right != rcw.right || rcd.bottom != rcw.bottom) {
 				SetWindowPos(hwnd, NULL, rcd.left, rcd.top, rcd.right - rcd.left, rcd.bottom - rcd.top, SWP_NOZORDER);
 				resizeWindow(hwnd, true);
@@ -735,7 +735,7 @@ LRESULT doPaint (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 		hBrushAnimation = CreateSolidBrush(configuracion->colorOfAnimationOnLaunchIcon);
 	}
 
-	if (pushed && estado->estadoCuadro == 0 && configuracion->pushedIcon->hDC != NULL
+	if (pressed && estado->estadoCuadro == 0 && configuracion->pressedIcon->hDC != NULL
 		&& ps.rcPaint.right - ps.rcPaint.left == ps.rcPaint.bottom - ps.rcPaint.top
 		&& (ps.rcPaint.right - ps.rcPaint.left == configuracion->mainScreenConfig->iconWidth
 			|| ps.rcPaint.right - ps.rcPaint.left == configuracion->bottomBarConfig->iconWidth
@@ -746,7 +746,7 @@ LRESULT doPaint (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 		bf.SourceConstantAlpha = 255;
 		bf.AlphaFormat = AC_SRC_ALPHA;
 		AlphaBlend(hDC, ps.rcPaint.left, ps.rcPaint.top, ps.rcPaint.right - ps.rcPaint.left, ps.rcPaint.bottom - ps.rcPaint.top,
-				configuracion->pushedIcon->hDC, 0, 0, configuracion->pushedIcon->anchoImagen, configuracion->pushedIcon->altoImagen, bf);
+				configuracion->pressedIcon->hDC, 0, 0, configuracion->pressedIcon->anchoImagen, configuracion->pressedIcon->altoImagen, bf);
 		EndPaint(hwnd, &ps);
 		return 0;
 	}
@@ -802,7 +802,7 @@ LRESULT doPaint (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 
 LRESULT doMove (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 {
-	ResetPushed();
+	ResetPressed();
 
 	// Cogemos la posicion del raton
 	POINTS posCursor2;
@@ -851,7 +851,7 @@ LRESULT doMove (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 
 void RightClick(HWND hwnd, POINTS posCursor)
 {
-	ResetPushed();
+	ResetPressed();
 
 	// Create context menu
 	HMENU hmenu = CreatePopupMenu();
@@ -1007,15 +1007,15 @@ LRESULT doMouseDown (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 	posCursor = MAKEPOINTS(lParam);
 	posCursorInitialized = TRUE;
 
-	if (configuracion->pushedIcon->hDC != NULL || _tcsclen(configuracion->pushed_sound) > 0) {
+	if (configuracion->pressedIcon->hDC != NULL || _tcsclen(configuracion->pressed_sound) > 0) {
 		procesaPulsacion(hwnd, posCursor, FALSE, TRUE);
 		if (iconoActual.nIconoActual >= 0) {
-			if (_tcsclen(configuracion->pushed_sound) > 0) {
+			if (_tcsclen(configuracion->pressed_sound) > 0) {
 				TCHAR fullPath[MAX_PATH];
-				configuracion->getAbsolutePath(fullPath, CountOf(fullPath), configuracion->pushed_sound);
+				configuracion->getAbsolutePath(fullPath, CountOf(fullPath), configuracion->pressed_sound);
 				PlaySound(fullPath, 0, SND_ASYNC | SND_FILENAME | SND_NODEFAULT);
 			}
-			if (configuracion->pushedIcon->hDC != NULL) {
+			if (configuracion->pressedIcon->hDC != NULL) {
 				CIcono *icono;
 				int x, y, width;
 				if (iconoActual.nPantallaActual == -2) {
@@ -1038,7 +1038,7 @@ LRESULT doMouseDown (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 					y = int(icono->y) + offset;
 					width = configuracion->mainScreenConfig->iconWidth;
 				}
-				pushed = TRUE;
+				pressed = TRUE;
 				RECT rc;
 				rc.left = x;
 				rc.top = y;
@@ -1082,7 +1082,7 @@ LRESULT doMouseDown (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 
 LRESULT doMouseUp (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 {
-	ResetPushed();
+	ResetPressed();
 
 	POINTS point;
 	point = MAKEPOINTS(lParam);
@@ -2672,7 +2672,7 @@ BOOL inicializaApp(HWND hwnd) {
 		SetWindowPos(hwnd, NULL, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), SWP_NOZORDER);
 	} else {
 		RECT rc;
-		if (GetWindowRect(GetDesktopWindow(), &rc)) {
+		if (SystemParametersInfo(SPI_GETWORKAREA, 0, &rc, 0)) {
 			SetWindowPos(hwnd, NULL, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, SWP_NOZORDER);
 		}
 	}
@@ -3140,10 +3140,10 @@ void getWindowSize(HWND hwnd, int *windowWidth, int *windowHeight)
 #endif
 }
 
-void ResetPushed()
+void ResetPressed()
 {
-	if (pushed) {
-		pushed = FALSE;
+	if (pressed) {
+		pressed = FALSE;
 		RECT rcWindBounds;
 		GetClientRect(g_hWnd, &rcWindBounds);
 		InvalidateRect(g_hWnd, &rcWindBounds, FALSE);
