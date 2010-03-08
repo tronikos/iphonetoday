@@ -50,6 +50,8 @@ public:
 	UINT altoPantallaMax;
 	UINT anchoPantalla;
 
+	CIcono *pushedIcon;
+
 	CIcono *bubbleNotif;
 	CIcono *bubbleState;
 	CIcono *bubbleAlarm;
@@ -116,6 +118,10 @@ public:
 	COLORREF colorOfAnimationOnLaunchIcon;
 	UINT allowSoundOnLaunchIcon;
 	TCHAR soundOnLaunchIcon[MAX_PATH];
+
+	// OnPush
+	TCHAR pushed_icon[MAX_PATH];
+	TCHAR pushed_sound[MAX_PATH];
 
 	// General
 	UINT notifyTimer;

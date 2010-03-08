@@ -135,6 +135,11 @@
 #define IDC_EDIT_TRANS_THRESHOLD        1163
 #define IDC_CHECK_TRANS_BMP             1164
 #define IDC_BUTTON_RESET_SETTINGS       1165
+#define IDC_EDIT_PUSHED_ICON            1166
+#define IDC_BUTTON_PUSHED_ICON          1167
+#define IDC_EDIT_PUSHED_SOUND           1168
+#define IDC_BUTTON_PUSHED_SOUND         1169
+#define IDC_BUTTON_PUSHED_SOUND_PLAY    1170
 
 // Next default values for new objects
 // 
@@ -142,7 +147,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        121
 #define _APS_NEXT_COMMAND_VALUE         40003
-#define _APS_NEXT_CONTROL_VALUE         1166
+#define _APS_NEXT_CONTROL_VALUE         1171
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

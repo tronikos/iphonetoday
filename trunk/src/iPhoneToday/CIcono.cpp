@@ -37,7 +37,7 @@ void CIcono::defaultValues()
 	launchAnimation = 1;
 }
 
-void CIcono::loadImage(HDC *hDC, TCHAR *pathImage, int width, int height, int bitsPerPixel, float factor) {
+void CIcono::loadImage(HDC *hDC, TCHAR *pathImage, int width, int height, int bitsPerPixel, float factor, BOOL alwaysPremultiply) {
 	clearImageObjects();
 
 	if (!FileExists(pathImage)) {
@@ -214,18 +214,25 @@ void CIcono::loadImage(HDC *hDC, TCHAR *pathImage, int width, int height, int bi
 				alphaBlend = configuracion->alphaBlend;
 			}
 
-			if (!alphaBlend) {
+			// if the alphaBlend option is set,
+			// the pixels will be pre-multiplied later once they have been copied to the page's hdc
+			// and before they are alpha blended to the window's hdc
+			if (!alphaBlend || alwaysPremultiply) {
 				BYTE alphaThreshold = 25;
-				BOOL alphaOnBlack = FALSE;
+				BOOL premultiply = FALSE;
 				if (configuracion != NULL) {
 					alphaThreshold = configuracion->alphaThreshold;
-					alphaOnBlack = configuracion->alphaOnBlack;
+					premultiply = configuracion->alphaOnBlack;
+				}
+				if (alwaysPremultiply) {
+					alphaThreshold = 1;
+					premultiply = TRUE;
 				}
 
 				BYTE *p = (BYTE *) lockedBitmapData.Scan0;
 				for (int i = 0; i < width * height; i++) {
 					BYTE A = p[3];
-					if (alphaOnBlack) {
+					if (premultiply) {
 						p[0] = (BYTE)((p[0] * A) >> 8);
 						p[1] = (BYTE)((p[1] * A) >> 8);
 						p[2] = (BYTE)((p[2] * A) >> 8);
@@ -449,7 +456,7 @@ HBITMAP LoadImageWithImgdecmp(LPTSTR strFileName)
    dii.dwBufferCurrent = 0;
    dii.phBM = &hBitmap;
    dii.ppImageRender = NULL;
-   dii.iBitDepth = 24;
+   dii.iBitDepth = 16;
    dii.lParam = LPARAM(f);
    dii.hdc = 0;
    dii.iScale = 100;
