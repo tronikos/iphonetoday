@@ -399,10 +399,14 @@ LRESULT doTimer (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 				estado->timeUltimoLanzamiento = GetTickCount();
 
 				if (estado->iconoActivo) {
+					BOOL bWorked = FALSE;
 					if (hayNotificacion(estado->iconoActivo->tipo) > 0 && _tcsclen(estado->iconoActivo->ejecutableAlt) > 0) {
-						LaunchApplication(estado->iconoActivo->ejecutableAlt, estado->iconoActivo->parametrosAlt);
+						bWorked = LaunchApplication(estado->iconoActivo->ejecutableAlt, estado->iconoActivo->parametrosAlt);
 					} else if (_tcsclen(estado->iconoActivo->ejecutable) > 0) {
-						LaunchApplication(estado->iconoActivo->ejecutable, estado->iconoActivo->parametros);
+						bWorked = LaunchApplication(estado->iconoActivo->ejecutable, estado->iconoActivo->parametros);
+					}
+					if (!bWorked) {
+						estado->timeUltimoLanzamiento = 0;
 					}
 				}
 			}
@@ -1128,6 +1132,9 @@ LRESULT doActivate (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 	if (wParam == WA_CLICKACTIVE || wParam == WA_ACTIVE)
 	{
 		resizeWindow(hwnd, true);
+		if (estado->estadoCuadro == 2) {
+			estado->timeUltimoLanzamiento = 0;
+		}
 	}
 	// The window is being deactivated... restore it to non-fullscreen
 	else if (!::IsChild(hwnd, (HWND)lParam))
@@ -1902,7 +1909,7 @@ BOOL LaunchApplication(LPCTSTR pCmdLine, LPCTSTR pParametros)
 
 	if (wcsncmp(pCmdLine, L"--", 2) == 0) {
 		if (CommandLineArguements(g_hWnd, pCmdLine + 2)) {
-			return TRUE;
+			return FALSE;
 		}
 	}
 
