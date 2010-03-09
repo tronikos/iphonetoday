@@ -80,8 +80,11 @@ public:
 	// Background
 	UINT fondoTransparente;
 	COLORREF fondoColor;
-	UINT fondoEstatico;
+	BOOL fondoEstatico;
 	float fondoFactor;
+	BOOL fondoFitWidth;
+	BOOL fondoFitHeight;
+	BOOL fondoCenter;
 	TCHAR strFondoPantalla[MAX_PATH];
 
 	// Movement

@@ -759,28 +759,52 @@ LRESULT doPaint (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 #ifdef EXEC_MODE
 	isTransparent = FALSE;
 #endif
-	if ((isTransparent || configuracion->fondoEstatico) && configuracion->fondoPantalla != NULL && configuracion->fondoPantalla->hDC != NULL) {
-		BitBlt(hDCMem, 0, 0, configuracion->fondoPantalla->anchoImagen, configuracion->fondoPantalla->altoImagen, configuracion->fondoPantalla->hDC, 0, 0, SRCCOPY);
-	} else if (configuracion->fondoPantalla && configuracion->fondoPantalla->hDC) {
+	if (configuracion->fondoPantalla == NULL || configuracion->fondoPantalla->hDC == NULL) {
 		FillRect(hDCMem, &rcWindBounds, hBrushFondo);
-
-		int posXMin = 0;
-		int posXMax = (listaPantallas->numPantallas - 1) * configuracion->anchoPantalla;
-		double posX = -1 * posImage.x;
-		posX = max(posXMin, min(posXMax, posX));
-		posX = posX / posXMax;
-		posX = max(posX * ((int)configuracion->fondoPantalla->anchoImagen - (int)configuracion->anchoPantalla), 0);
-
-		int posYMin = 0;
-		int posYMax = configuracion->altoPantallaMax - configuracion->altoPantalla;
-		double posY = -1 * posImage.y;
-		posY = max(posYMin, min(posYMax, posY));
-		posY = posY / posYMax;
-		posY = max(posY * ((int)configuracion->fondoPantalla->altoImagen - (int)configuracion->altoPantalla), 0);
-
-		BitBlt(hDCMem, 0, 0, configuracion->anchoPantalla, configuracion->altoPantalla, configuracion->fondoPantalla->hDC, int(posX), int(posY), SRCCOPY);
 	} else {
-		FillRect(hDCMem, &rcWindBounds, hBrushFondo);
+		if (isTransparent) {
+			BitBlt(hDCMem, 0, 0, configuracion->fondoPantalla->anchoImagen, configuracion->fondoPantalla->altoImagen,
+				configuracion->fondoPantalla->hDC, 0, 0, SRCCOPY);
+		} else {
+			if (configuracion->fondoPantalla->anchoImagen < configuracion->anchoPantalla ||
+				configuracion->fondoPantalla->altoImagen < configuracion->altoPantalla) {
+					FillRect(hDCMem, &rcWindBounds, hBrushFondo);
+			}
+			int destX = 0;
+			int destY = 0;
+			int srcX = 0;
+			int srcY = 0;
+			if (configuracion->fondoEstatico) {
+				if (configuracion->fondoCenter) {
+					destX = ((int) configuracion->anchoPantalla - (int) configuracion->fondoPantalla->anchoImagen) / 2;
+					destY = ((int) configuracion->altoPantalla - (int) configuracion->fondoPantalla->altoImagen) / 2;
+				}
+			} else {
+				int posXMin = 0;
+				int posXMax = (listaPantallas->numPantallas - 1) * configuracion->anchoPantalla;
+				double posX = -1 * posImage.x;
+				posX = max(posXMin, min(posXMax, posX));
+				posX = posX / posXMax;
+				posX = max(posX * ((int)configuracion->fondoPantalla->anchoImagen - (int)configuracion->anchoPantalla), 0);
+
+				int posYMin = 0;
+				int posYMax = configuracion->altoPantallaMax - configuracion->altoPantalla;
+				double posY = -1 * posImage.y;
+				posY = max(posYMin, min(posYMax, posY));
+				posY = posY / posYMax;
+				posY = max(posY * ((int)configuracion->fondoPantalla->altoImagen - (int)configuracion->altoPantalla), 0);
+
+				if (configuracion->fondoCenter) {
+					destX = max(0, ((int) configuracion->anchoPantalla - (int) configuracion->fondoPantalla->anchoImagen) / 2);
+					destY = max(0, ((int) configuracion->altoPantalla - (int) configuracion->fondoPantalla->altoImagen) / 2);
+				}
+
+				srcX = int(posX);
+				srcY = int(posY);
+			}
+			BitBlt(hDCMem, destX, destY, configuracion->fondoPantalla->anchoImagen, configuracion->fondoPantalla->altoImagen,
+				configuracion->fondoPantalla->hDC, srcX, srcY, SRCCOPY);
+		}
 	}
 
 	// Pintamos los iconos
@@ -2025,12 +2049,11 @@ void procesaPulsacion(HWND hwnd, POINTS posCursor, BOOL doubleClick, BOOL noLanz
 	if (!noLanzar && iconoActual.nIconoActual >= 0) {
 
 		if (configuracion->allowSoundOnLaunchIcon) {
+			TCHAR fullPath[MAX_PATH];
 			if (_tcsclen(icono->sound) > 0) {
-				TCHAR fullPath[MAX_PATH];
 				configuracion->getAbsolutePath(fullPath, CountOf(fullPath), icono->sound);
 				PlaySound(fullPath, 0, SND_ASYNC | SND_FILENAME | SND_NODEFAULT);
 			} else if (_tcsclen(configuracion->soundOnLaunchIcon) > 0) {
-				TCHAR fullPath[MAX_PATH];
 				configuracion->getAbsolutePath(fullPath, CountOf(fullPath), configuracion->soundOnLaunchIcon);
 				PlaySound(fullPath, 0, SND_ASYNC | SND_FILENAME | SND_NODEFAULT);
 			}
@@ -2478,8 +2501,10 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 			}
 		} else if (LOWORD(wParam) == IDC_BUTTON_WAV_PLAY) {
 			TCHAR pathFile[MAX_PATH];
+			TCHAR fullPath[MAX_PATH];
 			GetDlgItemText(hDlg, IDC_MICON_SOUND, pathFile, MAX_PATH);
-			PlaySound(pathFile, 0, SND_ASYNC | SND_FILENAME | SND_NODEFAULT);
+			configuracion->getAbsolutePath(fullPath, CountOf(fullPath), pathFile);
+			PlaySound(fullPath, 0, SND_ASYNC | SND_FILENAME | SND_NODEFAULT);
 		} else if (LOWORD(wParam) == IDC_MICON_EXEC_B) {
 			if (lastPathExec[0] == 0) {
 				if (!SHGetSpecialFolderPath(hDlg, lastPathExec, CSIDL_PROGRAMS, FALSE)) {
