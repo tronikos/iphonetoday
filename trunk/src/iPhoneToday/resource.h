@@ -140,6 +140,7 @@
 #define IDC_EDIT_PRESSED_SOUND          1168
 #define IDC_BUTTON_PRESSED_SOUND        1169
 #define IDC_BUTTON_PRESSED_SOUND_PLAY   1170
+#define IDC_EDIT_REFRESH_TIME           1171
 
 // Next default values for new objects
 // 
@@ -147,7 +148,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        121
 #define _APS_NEXT_COMMAND_VALUE         40003
-#define _APS_NEXT_CONTROL_VALUE         1171
+#define _APS_NEXT_CONTROL_VALUE         1172
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
