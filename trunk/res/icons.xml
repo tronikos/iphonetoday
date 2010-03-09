@@ -2,46 +2,50 @@
 <!--iPhoneToday for Windows Mobile-->
 <root>
     <screen header="Screen1">
-        <icon name="Contacts" image="contactos.png" sound="" exec="\Windows\poutlook.exe" parameters="contacts" execAlt="" parametersAlt="" type="0" animation="1" />
-        <icon name="Clock" image="SimpleBlack.png" sound="" exec="ctlpnl" parameters="cplmain.cpl,16" execAlt="" parametersAlt="" type="12" animation="1" />
-        <icon name="Calculator" image="calc.png" sound="" exec="\Windows\MobileCalculator.exe" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
-        <icon name="Notes" image="notes.png" sound="" exec="\Windows\notes.exe" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
-        <icon name="Internet" image="iexplorer.png" sound="" exec="\Windows\iexplore.exe" parameters="" execAlt="" parametersAlt="" type="0" animation="0" />
-        <icon name="Player" image="wmplayer.png" sound="" exec="\Windows\WMPlayer.lnk" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
-        <icon name="Browser" image="fileexplorer.png" sound="" exec="\Windows\fexplore.exe" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
-        <icon name="Album" image="album.png" sound="" exec="\Windows\pimg.exe" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
-        <icon name="Alarms" image="alarm.png" sound="" exec="\Windows\clock.exe" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
-        <icon name="Solitaire" image="solitario.png" sound="" exec="\Windows\solitare.exe" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
-        <icon name="Bubbles" image="bubbles.png" sound="" exec="\Windows\BubbleBreaker.exe" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
+        <icon name="Contacts" image="Contacts.png" sound="" exec=":MSCONTACTS" parameters="contacts" execAlt="" parametersAlt="" type="0" animation="1" />
+        <icon name="E-mail" image="Email.png" sound="" exec=":MSINBOX" parameters="-pickeroption" execAlt="" parametersAlt="" type="0" animation="1" />
+        <icon name="Internet" image="iexplorer.png" sound="" exec=":MSPIE" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
+        <icon name="Clock" image="Blank.png" sound="" exec="ctlpnl" parameters="cplmain.cpl,16" execAlt="" parametersAlt="" type="12" animation="1" />
+        <icon name="Calculator" image="Calculator.png" sound="" exec=":MSCALC" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
+        <icon name="Notes" image="Notes.png" sound="" exec=":MSNOTETAKE" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
+        <icon name="Messenger" image="Messenger.png" sound="" exec="\Windows\WLMMessenger.exe" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
+        <icon name="Player" image="wmplayer.png" sound="" exec=":WMPLAYER" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
+        <icon name="Explorer" image="Explorer.png" sound="" exec=":MSFEXPLORE" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
+        <icon name="Search" image="Search.png" sound="" exec=":MSFIND" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
+        <icon name="Album" image="PicturesAndVideos.png" sound="" exec=":MSPIMG" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
+        <icon name="Alarms" image="Alarms.png" sound="" exec="\Windows\clock.exe" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
     </screen>
     <screen header="Screen2">
-        <icon name="Tomtom" image="tomtom.png" sound="" exec="\Internal Storage\Program Files\Navigator\TomTom Navigator.exe" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
-        <icon name="iGO 8" image="igo8.png" sound="" exec="\Internal Storage\iGO8\iGO8.exe" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
-        <icon name="Youtube" image="youtube.png" sound="" exec="\Windows\Start Menu\Programas\Multimedia\YouTube.lnk" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
-        <icon name="Linterna" image="literna.png" sound="" exec="\Windows\Start Menu\Programs\Applicaciones\Linterna.lnk" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
-        <icon name="WatchStop" image="stopwatch.png" sound="" exec="\Windows\Start Menu\Programas\Aplicaciones\StopWatch.lnk" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
-        <icon name="Teeter" image="teeter.png" sound="" exec="\Windows\Start Menu\Programs\Juegos\Teeter.lnk" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
-        <icon name="Camera" image="camara.png" sound="" exec="\Windows\Start Menu\Programs\Multimedia\Camera.lnk" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
-        <icon name="Google Maps" image="googlemaps.png" sound="" exec="\Windows\Start Menu\Programs\Applicaciones\Google Maps.lnk" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
-        <icon name="Radio FM" image="radiofm.png" sound="" exec="\Windows\Start Menu\Programs\Multimedia\RM Radio.lnk" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
-        <icon name="S2U2" image="s2u2.png" sound="" exec="\Windows\Start Menu\Programs\S2U2\S2U2.lnk" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
+        <icon name="Word" image="Word.png" sound="" exec=":MSPWORD" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
+        <icon name="Excel" image="Excel.png" sound="" exec=":MSPXL" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
+        <icon name="PowerPoint" image="PowerPoint.png" sound="" exec=":MSPPT" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
+        <icon name="OneNote" image="OneNote.png" sound="" exec=":MSONENOTEMOBILE" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
+        <icon name="YouTube" image="YouTube.png" sound="" exec="http://www.youtube.com/" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
+        <icon name="Google Maps" image="Google Maps.png" sound="" exec="http://maps.google.com/" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
+        <icon name="Solitaire" image="Solitaire.png" sound="" exec=":MSSOLITAIRE" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
+        <icon name="Bubbles" image="Bubble Breaker.png" sound="" exec="BubbleBreaker.exe" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
+        <icon name="ActiveSync" image="ActiveSync.png" sound="" exec=":MSSYNCAPP" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
+        <icon name="Task Manager" image="Task Manager.png" sound="" exec=":MSTASKMGR" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
+        <icon name="Camera" image="Camera.png" sound="" exec="\Windows\camera.exe" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
     </screen>
     <screen header="Screen3">
-        <icon name="Wifi" image="wifi.png" sound="" exec="\Internal Storage\Program Files\Varios\Wifi.exe" parameters="" execAlt="" parametersAlt="" type="9" animation="1" />
-        <icon name="Bluetooth" image="bluetooth.png" sound="" exec="\Internal Storage\Program Files\Varios\Bluetooth.exe" parameters="" execAlt="" parametersAlt="" type="10" animation="1" />
-        <icon name="GPS Config" image="gpstool.png" sound="" exec="\Windows\Start Menu\Programas\Conexiones\GPS Tool.lnk" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
-        <icon name="NoData" image="nodata.png" sound="" exec="\Windows\Start Menu\Programs\Sistema\NoData.lnk" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
-        <icon name="Settings" image="advconfig.png" sound="" exec="\Windows\Start Menu\Programas\Sistema\Advanced Config.lnk" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
-        <icon name="Connections" image="commgr.png" sound="" exec="\Windows\Start Menu\Programs\Sistema\Comm Manager.lnk" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
-        <icon name="PsShutXP" image="psshutxp.png" sound="" exec="\Windows\Start Menu\Programs\Sistema\psShutXP.lnk" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
-        <icon name="RAM Settings" image="ramsweeper.png" sound="" exec="\Windows\Start Menu\Programs\Sistema\RAM Sweeper.lnk" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
-        <icon name="Registry" image="registry.png" sound="" exec="\Windows\Start Menu\Programs\Sistema\PHM Registry Editor.lnk" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
-        <icon name="Battery" image="battery.png" sound="" exec="ctlpnl" parameters="cplmain.cpl,3" execAlt="" parametersAlt="" type="14" animation="1" />
+        <icon name="Wifi" image="wifi.png" sound="" exec="ctlpnl" parameters="cplmain.cpl,26" execAlt="" parametersAlt="" type="9" animation="1" />
+        <icon name="Bluetooth" image="Bluetooth.png" sound="" exec="ctlpnl" parameters="cplmain.cpl,23" execAlt="" parametersAlt="" type="10" animation="1" />
+        <icon name="GPS" image="GPS.png" sound="" exec="ctlpnl" parameters="cplmain.cpl,25" execAlt="" parametersAlt="" type="0" animation="1" />
+        <icon name="GPRS" image="GPRS.png" sound="" exec="" parameters="" execAlt="" parametersAlt="" type="19" animation="1" />
+        <icon name="Connections" image="Connections.png" sound="" exec="ctlpnl" parameters="cplmain.cpl,17" execAlt="" parametersAlt="" type="0" animation="1" />
+        <icon name="Options" image="Options.png" sound="" exec="--options" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
+        <icon name="RAM Free" image="RAM.png" sound="" exec="ctlpnl" parameters="cplmain.cpl,4" execAlt="" parametersAlt="" type="17" animation="1" />
+        <icon name="Battery" image="Battery.png" sound="" exec="ctlpnl" parameters="cplmain.cpl,3" execAlt="" parametersAlt="" type="14" animation="1" />
+        <icon name="Volume" image="Speaker.png" sound="" exec="--volume:++10" parameters="" execAlt="" parametersAlt="" type="15" animation="0" />
+        <icon name="Operator" image="Blank.png" sound="" exec="ctlpnl" parameters="cplmain.cpl,20" execAlt="" parametersAlt="" type="22" animation="1" />
+        <icon name="Rotate" image="Rotate.png" sound="" exec="--rotate" parameters="" execAlt="" parametersAlt="" type="0" animation="0" />
+        <icon name="Off" image="Off.png" sound="" exec="--off" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
     </screen>
     <BottomBar>
-        <icon name="Phone" image="phone.png" sound="" exec="\Windows\cprog.exe" parameters="" execAlt="" parametersAlt="" type="1" animation="1" />
-        <icon name="SMS" image="sms.png" sound="" exec="\Windows\tmail.exe" parameters="" execAlt="" parametersAlt="" type="2" animation="1" />
-        <icon name="Calendar" image="calendar.png" sound="" exec="\Windows\calendar.exe" parameters="" execAlt="" parametersAlt="" type="5" animation="1" />
-        <icon name="Tasks" image="tareas.png" sound="" exec="\Windows\poutlook.exe" parameters="tasks" execAlt="" parametersAlt="" type="6" animation="1" />
+        <icon name="Phone" image="Phone.png" sound="" exec=":MSCProg" parameters="" execAlt="" parametersAlt="" type="1" animation="1" />
+        <icon name="SMS" image="SMS.png" sound="" exec=":MSINBOX" parameters='-service &quot;SMS&quot;' execAlt="" parametersAlt="" type="2" animation="1" />
+        <icon name="Calendar" image="Calendar.png" sound="" exec=":MSCALENDAR" parameters="" execAlt="" parametersAlt="" type="5" animation="1" />
+        <icon name="Tasks" image="Tasks.png" sound="" exec=":MSTASKS" parameters="tasks" execAlt="" parametersAlt="" type="6" animation="1" />
     </BottomBar>
 </root>

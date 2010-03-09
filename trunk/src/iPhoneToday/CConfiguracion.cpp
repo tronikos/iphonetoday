@@ -521,6 +521,7 @@ void CConfiguracion::defaultValues()
 	if (isPND()) {
 		this->disableRightClickDots = 1;
 		this->vibrateOnLaunchIcon = 0;
+		this->fullscreen = 1;
 	}
 }
 
