@@ -862,16 +862,18 @@ LRESULT doMove (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 		if (!movementInitiatedByVertical || configuracion->freestyleScroll) {
 			movx = int((posCursor2.x - posCursor.x)*(1 + float(configuracion->factorMovimiento) / 10));
 		}
-		posImage.x += movx;
-		posImage.y += movy;
-		setPosiciones(false, movx, movy);
-		posCursor = posCursor2;
+		if (movx != 0 || movy != 0) {
+			posImage.x += movx;
+			posImage.y += movy;
+			setPosiciones(false, movx, movy);
+			posCursor = posCursor2;
 
-		// Actualizamos la imagen
-		RECT            rcWindBounds;
-		GetClientRect( hwnd, &rcWindBounds);
-		InvalidateRect(hwnd, &rcWindBounds, FALSE);
-		// UpdateWindow(hwnd);
+			// Actualizamos la imagen
+			RECT            rcWindBounds;
+			GetClientRect( hwnd, &rcWindBounds);
+			InvalidateRect(hwnd, &rcWindBounds, FALSE);
+			// UpdateWindow(hwnd);
+		}
 	}
 
 	return 0;
