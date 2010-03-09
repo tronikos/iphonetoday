@@ -1071,7 +1071,10 @@ LRESULT doMouseDown (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 	shrg.ptDown.y	= HIWORD(lParam);
 	shrg.dwFlags	= SHRG_LONGDELAY | SHRG_RETURNCMD;
 
-	DWORD res = SHRecognizeGesture(&shrg);
+	DWORD res = -1;
+	if (!configuracion->disableRightClickDots) {
+		res = SHRecognizeGesture(&shrg);
+	}
 	if (res == GN_CONTEXTMENU) {
 		RightClick(hwnd, posCursor);
 		// After the right click menu is shown on WM5 devices the WM_LBUTTONDOWN is not captured.

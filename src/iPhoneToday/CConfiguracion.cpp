@@ -500,6 +500,7 @@ void CConfiguracion::defaultValues()
 	this->notifyTimer = 2000;
 	this->ignoreRotation = 0;
 	this->disableRightClick = 0;
+	this->disableRightClickDots = 0;
 	this->fullscreen = 0;
 	this->neverShowTaskBar = 0;
 	this->noWindowTitle = 0;
@@ -517,6 +518,11 @@ void CConfiguracion::defaultValues()
 	this->transparentBMP = 1;
 
 	this->alreadyConfigured = 0;
+
+	if (isPND()) {
+		this->disableRightClickDots = 1;
+		this->vibrateOnLaunchIcon = 0;
+	}
 }
 
 void SpecialIconSettingsLoad(TiXmlElement *pElem, SpecialIconSettings *sis)
@@ -629,6 +635,8 @@ BOOL CConfiguracion::cargaXMLConfig()
 			XMLUtils::GetTextElem(pElem, &this->ignoreRotation);
 		} else if(_stricmp(nameNode, "DisableRightClick") == 0) {
 			XMLUtils::GetTextElem(pElem, &this->disableRightClick);
+		} else if(_stricmp(nameNode, "DisableRightClickDots") == 0) {
+			XMLUtils::GetTextElem(pElem, &this->disableRightClickDots);
 		} else if(_stricmp(nameNode, "Fullscreen") == 0) {
 			XMLUtils::GetTextElem(pElem, &this->fullscreen);
 		} else if(_stricmp(nameNode, "NeverShowTaskBar") == 0) {
@@ -876,6 +884,10 @@ BOOL CConfiguracion::guardaXMLConfig()
 
 	pElem = new TiXmlElement("DisableRightClick");
 	XMLUtils::SetTextElem(pElem, this->disableRightClick);
+	root->LinkEndChild(pElem);
+
+	pElem = new TiXmlElement("DisableRightClickDots");
+	XMLUtils::SetTextElem(pElem, this->disableRightClickDots);
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("Fullscreen");
