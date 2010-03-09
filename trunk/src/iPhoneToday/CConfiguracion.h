@@ -127,6 +127,7 @@ public:
 	UINT notifyTimer;
 	UINT ignoreRotation;
 	UINT disableRightClick;
+	UINT disableRightClickDots;
 	UINT fullscreen;
 	UINT neverShowTaskBar;
 	UINT noWindowTitle;

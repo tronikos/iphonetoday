@@ -180,3 +180,17 @@ DWORD MemoryUsed()
 	GlobalMemoryStatus(&mems);
 	return mems.dwTotalPhys - mems.dwAvailPhys;
 }
+
+BOOL isPND() {
+	static int i = -1;
+	if (i == -1) {
+		TCHAR buf[MAX_PATH];
+		SystemParametersInfo(SPI_GETPLATFORMTYPE, MAX_PATH, buf, 0);
+		if (wcsicmp(buf, L"PocketPC") != 0 && wcsicmp(buf, L"SmartPhone") != 0) {
+			i = 1;
+		} else {
+			i = 0;
+		}
+	}
+	return (i == 1);
+}

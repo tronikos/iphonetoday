@@ -27,3 +27,5 @@ int BatteryPercentage();
 int MemoryLoad();
 DWORD MemoryFree();
 DWORD MemoryUsed();
+
+BOOL isPND();
