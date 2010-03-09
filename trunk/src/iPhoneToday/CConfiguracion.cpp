@@ -315,14 +315,10 @@ BOOL CConfiguracion::cargaFondo(HDC *hDC)
 			delete fondoPantalla;
 		}
 		fondoPantalla = new CIcono();
-		float factor = 0;
-		if (!this->fondoEstatico) {
-			factor = this->fondoFactor;
-		}
 
 		TCHAR rutaImgCompleta[MAX_PATH];
 		getAbsolutePath(rutaImgCompleta, CountOf(rutaImgCompleta), strFondoPantalla);
-		fondoPantalla->loadImage(hDC, rutaImgCompleta, anchoPantalla, altoPantalla, PIXFMT_16BPP_RGB565, factor);
+		fondoPantalla->loadImage(hDC, rutaImgCompleta, this->fondoFitWidth ? anchoPantalla : 0, this->fondoFitHeight ? altoPantalla : 0, PIXFMT_16BPP_RGB565, this->fondoFactor);
 	} else {
 		if (fondoPantalla != NULL) {
 			delete fondoPantalla;
@@ -343,7 +339,7 @@ BOOL CConfiguracion::cargaImagenes(HDC *hDC)
 	// Pressed icon
 	pressedIcon = new CIcono();
 	getAbsolutePath(rutaImgCompleta, CountOf(rutaImgCompleta), pressed_icon);
-	pressedIcon->loadImage(hDC, rutaImgCompleta, mainScreenConfig->iconWidth, mainScreenConfig->iconWidth, PIXFMT_32BPP_ARGB, 0, TRUE);
+	pressedIcon->loadImage(hDC, rutaImgCompleta, mainScreenConfig->iconWidth, mainScreenConfig->iconWidth, PIXFMT_32BPP_ARGB, 1, TRUE);
 
 	// Bubbles
 	bubbleNotif = new CIcono();
@@ -380,6 +376,9 @@ void CConfiguracion::defaultValues()
 	this->fondoTransparente = 1;
 	this->fondoColor = RGB(0, 0, 0);
 	this->fondoEstatico = 1;
+	this->fondoFitWidth = 1;
+	this->fondoFitHeight = 1;
+	this->fondoCenter = 1;
 	this->fondoFactor = 1;
 	StringCchCopy(this->strFondoPantalla, CountOf(this->strFondoPantalla), L"");
 
@@ -438,7 +437,7 @@ void CConfiguracion::defaultValues()
 	this->batt.offset.right = 0;
 	this->batt.offset.bottom = 0;
 
-	this->vol.color = RGB(230,230,230);
+	this->vol.color = RGB(0,64,128);
 	this->vol.width = 25;
 	this->vol.height = 70;
 	this->vol.weight = 900;
@@ -627,6 +626,9 @@ BOOL CConfiguracion::cargaXMLConfig()
 			XMLUtils::GetAttr(pElem, "transparent", &this->fondoTransparente);
 			XMLUtils::GetAttr(pElem, "color",       &this->fondoColor);
 			XMLUtils::GetAttr(pElem, "static",      &this->fondoEstatico);
+			XMLUtils::GetAttr(pElem, "fitwidth",    &this->fondoFitWidth);
+			XMLUtils::GetAttr(pElem, "fitheight",   &this->fondoFitHeight);
+			XMLUtils::GetAttr(pElem, "center",      &this->fondoCenter);
 			XMLUtils::GetAttr(pElem, "factor",      &this->fondoFactor);
 			XMLUtils::GetAttr(pElem, "wallpaper",   this->strFondoPantalla, CountOf(this->strFondoPantalla));
 		} else if(_stricmp(nameNode, "NotifyTimer") == 0) {
@@ -796,6 +798,9 @@ BOOL CConfiguracion::guardaXMLConfig()
 	XMLUtils::SetAttr(pElem, "transparent", this->fondoTransparente);
 	XMLUtils::SetAttr(pElem, "color",       this->fondoColor);
 	XMLUtils::SetAttr(pElem, "static",      this->fondoEstatico);
+	XMLUtils::SetAttr(pElem, "fitwidth",    this->fondoFitWidth);
+	XMLUtils::SetAttr(pElem, "fitheight",   this->fondoFitHeight);
+	XMLUtils::SetAttr(pElem, "center",      this->fondoCenter);
 	XMLUtils::SetAttr(pElem, "factor",      this->fondoFactor);
 	XMLUtils::SetAttr(pElem, "wallpaper",   this->strFondoPantalla, CountOf(this->strFondoPantalla));
 	root->LinkEndChild(pElem);

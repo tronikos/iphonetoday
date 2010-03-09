@@ -58,7 +58,7 @@ void CConfigurationScreen::defaultValues()
 	this->cs.fontColor = RGB(255, 255, 255);
 	this->cs.fontBold = 0;
 	this->cs.fontOffset = 0;
-	this->cs.fontShadow = 0;
+	this->cs.fontShadow = 1;
 
 	this->cs.offset.left = 0;
 	this->cs.offset.top = 0;

@@ -80,9 +80,16 @@ void CIcono::loadImage(HDC *hDC, TCHAR *pathImage, int width, int height, int bi
 		int heightTemp = bm.bmHeight;
 		hbmTempOld = (HBITMAP)SelectObject(hdcTemp, hbmTemp);
 
-		if (factor != 0) {
+		if (width == 0 && height == 0) {
 			width = int(widthTemp * factor);
 			height = int(heightTemp * factor);
+		} else {
+			if (width == 0) {
+				width = widthTemp * height / heightTemp / 2 * 2;
+			}
+			if (height == 0) {
+				height = heightTemp * width / widthTemp / 2 * 2;
+			}
 		}
 
 		SetBkMode(hdcTemp, TRANSPARENT);
@@ -182,9 +189,16 @@ void CIcono::loadImage(HDC *hDC, TCHAR *pathImage, int width, int height, int bi
 		ImageInfo ii;
 		m_pImage->GetImageInfo(&ii);
 
-		if (factor != 0) {
+		if (width == 0 && height == 0) {
 			width = int(ii.Width * factor);
 			height = int(ii.Height * factor);
+		} else {
+			if (width == 0) {
+				width = ii.Width * height / ii.Height / 2 * 2;
+			}
+			if (height == 0) {
+				height = ii.Height * width / ii.Width / 2 * 2;
+			}
 		}
 
 		HRESULT hRet;

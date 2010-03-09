@@ -55,17 +55,20 @@ LRESULT CALLBACK OptionDialog7(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 		switch (LOWORD(wParam))
 		{
 			TCHAR str[MAX_PATH];
+			TCHAR fullPath[MAX_PATH];
 			TCHAR browseDir[MAX_PATH];
 			case IDC_BUTTON_WAV:
 				GetDlgItemText(hDlg, IDC_EDIT_WAV, str, MAX_PATH);
-				getPathFromFile(str, browseDir);
+				configuracion->getAbsolutePath(fullPath, MAX_PATH, str);
+				getPathFromFile(fullPath, browseDir);
 				if (openFileBrowse(hDlg, OFN_EXFLAG_DETAILSVIEW, str, browseDir)) {
 					SetDlgItemText(hDlg, IDC_EDIT_WAV, str);
 				}
 				break;
 			case IDC_BUTTON_WAV_PLAY:
 				GetDlgItemText(hDlg, IDC_EDIT_WAV, str, MAX_PATH);
-				PlaySound(str, 0, SND_ASYNC | SND_FILENAME | SND_NODEFAULT);
+				configuracion->getAbsolutePath(fullPath, MAX_PATH, str);
+				PlaySound(fullPath, 0, SND_ASYNC | SND_FILENAME | SND_NODEFAULT);
 				break;
 			case IDC_BUTTON_ANIM_COLOR:
 				int rgbCurrent;
@@ -77,21 +80,24 @@ LRESULT CALLBACK OptionDialog7(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 				break;
 			case IDC_BUTTON_PRESSED_ICON:
 				GetDlgItemText(hDlg, IDC_EDIT_PRESSED_ICON, str, MAX_PATH);
-				getPathFromFile(str, browseDir);
+				configuracion->getAbsolutePath(fullPath, MAX_PATH, str);
+				getPathFromFile(fullPath, browseDir);
 				if (openFileBrowse(hDlg, OFN_EXFLAG_THUMBNAILVIEW, str, browseDir)) {
 					SetDlgItemText(hDlg, IDC_EDIT_PRESSED_ICON, str);
 				}
 				break;
 			case IDC_BUTTON_PRESSED_SOUND:
 				GetDlgItemText(hDlg, IDC_EDIT_PRESSED_SOUND, str, MAX_PATH);
-				getPathFromFile(str, browseDir);
+				configuracion->getAbsolutePath(fullPath, MAX_PATH, str);
+				getPathFromFile(fullPath, browseDir);
 				if (openFileBrowse(hDlg, OFN_EXFLAG_DETAILSVIEW, str, browseDir)) {
 					SetDlgItemText(hDlg, IDC_EDIT_PRESSED_SOUND, str);
 				}
 				break;
 			case IDC_BUTTON_PRESSED_SOUND_PLAY:
 				GetDlgItemText(hDlg, IDC_EDIT_PRESSED_SOUND, str, MAX_PATH);
-				PlaySound(str, 0, SND_ASYNC | SND_FILENAME | SND_NODEFAULT);
+				configuracion->getAbsolutePath(fullPath, MAX_PATH, str);
+				PlaySound(fullPath, 0, SND_ASYNC | SND_FILENAME | SND_NODEFAULT);
 				break;
 		}
 		return 0;
