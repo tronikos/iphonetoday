@@ -50,11 +50,30 @@ BOOL CommandLineArguements(HWND hwnd, LPCTSTR pCmdLine)
 		return TRUE;
 	} else if (_wcsnicmp(pCmdLine, L"volume:", wcslen(L"volume:")) == 0) {
 		int l = wcslen(L"volume:");
-		WORD vol;
+		WORD vol = GetVolumePercentage();
+		BOOL cycle = FALSE;
 		if (*(pCmdLine + l) == '+') {
-			vol = GetVolumePercentage() + (WORD) _wtoi(pCmdLine + l + 1);
+			l++;
+			if (*(pCmdLine + l) == '+') {
+				l++;
+				cycle = TRUE;
+			}
+			if (cycle && vol >= 100) {
+				vol = 0;
+			} else {
+				vol += (WORD) _wtoi(pCmdLine + l);
+			}
 		} else if (*(pCmdLine + l) == '-') {
-			vol = GetVolumePercentage() - (WORD) _wtoi(pCmdLine + l + 1);
+			l++;
+			if (*(pCmdLine + l) == '-') {
+				l++;
+				cycle = TRUE;
+			}
+			if (cycle && vol <= 0) {
+				vol = 100;
+			} else {
+				vol -= (WORD) _wtoi(pCmdLine + l);
+			}
 		} else {
 			vol = (WORD) _wtoi(pCmdLine + l);
 		}
