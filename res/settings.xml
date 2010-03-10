@@ -54,6 +54,7 @@
     <Fullscreen>0</Fullscreen>
     <NeverShowTaskBar>0</NeverShowTaskBar>
     <NoWindowTitle>0</NoWindowTitle>
+    <ShowExit>1</ShowExit>
     <OutOfScreen left="" right="" top="" bottom="" />
     <Transparency alphablend="0" alphaonblack="0" threshold="25" transparentbmp="1" />
     <TodayItemHeight portrait="0" landscape="0" />

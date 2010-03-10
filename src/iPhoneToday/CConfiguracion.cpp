@@ -503,6 +503,7 @@ void CConfiguracion::defaultValues()
 	this->fullscreen = 0;
 	this->neverShowTaskBar = 0;
 	this->noWindowTitle = 0;
+	this->showExit = 1;
 	this->heightP = 0;
 	this->heightL = 0;
 
@@ -646,6 +647,8 @@ BOOL CConfiguracion::cargaXMLConfig()
 			XMLUtils::GetTextElem(pElem, &this->neverShowTaskBar);
 		} else if(_stricmp(nameNode, "NoWindowTitle") == 0) {
 			XMLUtils::GetTextElem(pElem, &this->noWindowTitle);
+		} else if(_stricmp(nameNode, "ShowExit") == 0) {
+			XMLUtils::GetTextElem(pElem, &this->showExit);
 		} else if(_stricmp(nameNode, "OutOfScreen") == 0) {
 			XMLUtils::GetAttr(pElem, "left",   this->outOfScreenLeft,   CountOf(this->outOfScreenLeft));
 			XMLUtils::GetAttr(pElem, "right",  this->outOfScreenRight,  CountOf(this->outOfScreenRight));
@@ -906,6 +909,10 @@ BOOL CConfiguracion::guardaXMLConfig()
 
 	pElem = new TiXmlElement("NoWindowTitle");
 	XMLUtils::SetTextElem(pElem, this->noWindowTitle);
+	root->LinkEndChild(pElem);
+
+	pElem = new TiXmlElement("ShowExit");
+	XMLUtils::SetTextElem(pElem, this->showExit);
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("OutOfScreen");
