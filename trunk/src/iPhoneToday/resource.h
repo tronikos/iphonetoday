@@ -144,6 +144,7 @@
 #define IDC_CHECK_BACK_FIT_WIDTH        1172
 #define IDC_CHECK_BACK_FIT_HEIGHT       1173
 #define IDC_CHECK_BACK_CENTER           1174
+#define IDC_CHECK_SHOW_EXIT             1175
 
 // Next default values for new objects
 // 
@@ -151,7 +152,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        121
 #define _APS_NEXT_COMMAND_VALUE         40003
-#define _APS_NEXT_CONTROL_VALUE         1175
+#define _APS_NEXT_CONTROL_VALUE         1176
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

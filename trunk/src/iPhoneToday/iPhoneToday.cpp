@@ -920,7 +920,9 @@ void RightClick(HWND hwnd, POINTS posCursor)
 	AppendMenu(hmenu, MF_SEPARATOR, 0, 0);
 	AppendMenu(hmenu, MF_STRING, MENU_POPUP_CANCEL, TEXT("Cancel"));
 #ifdef EXEC_MODE
-	AppendMenu(hmenu, MF_STRING, MENU_POPUP_EXIT, TEXT("Exit"));
+	if (configuracion->showExit) {
+		AppendMenu(hmenu, MF_STRING, MENU_POPUP_EXIT, TEXT("Exit"));
+	}
 #endif
 
 	POINT pt;

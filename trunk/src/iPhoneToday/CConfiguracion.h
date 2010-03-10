@@ -134,6 +134,7 @@ public:
 	UINT fullscreen;
 	UINT neverShowTaskBar;
 	UINT noWindowTitle;
+	UINT showExit;
 
 	// Today item height (Portrait|Landscape)
 	UINT heightP;

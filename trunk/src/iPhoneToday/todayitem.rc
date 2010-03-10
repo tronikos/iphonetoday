@@ -223,15 +223,17 @@ BEGIN
     CONTROL         "Fullscreen (only for EXE version)",IDC_CHECK_FULLSCREEN,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,7,119,10
     CONTROL         "Never show taskbar (even after exit!)",IDC_CHECK_NEVER_SHOW_TASKBAR,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,18,138,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,17,138,10
     CONTROL         "Hide window from task managers",IDC_CHECK_NO_WINDOW_TITLE,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,29,121,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,27,121,10
+    CONTROL         "Show exit in right click menu",IDC_CHECK_SHOW_EXIT,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,37,105,10
     CONTROL         "Disable right click (long tap)",IDC_CHECK_DISABLE_RIGHT_CLICK,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,40,103,10
-    CONTROL         "Ignore rotation",IDC_CHECK_IGNORE_ROTATION,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,51,65,10
-    CONTROL         "Update notifications every (ms):",-1,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,7,62,104,8
-    EDITTEXT        IDC_EDIT_NOTIFY_TIMER,130,60,23,12,ES_AUTOHSCROLL | ES_NUMBER
-    CONTROL         "Today item height (only for DLL version):",-1,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,7,75,132,8
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,47,103,10
+    CONTROL         "Ignore rotation",IDC_CHECK_IGNORE_ROTATION,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,57,65,10
+    CONTROL         "Update notifications every (ms):",-1,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,7,66,104,8
+    EDITTEXT        IDC_EDIT_NOTIFY_TIMER,130,64,23,12,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Today item height (only for DLL version):",-1,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,7,76,132,8
     CONTROL         "Portrait:",-1,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,7,87,28,8
     EDITTEXT        IDC_EDIT_HEIGHTP,39,85,23,12,ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "Landscape:",-1,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,91,87,38,8

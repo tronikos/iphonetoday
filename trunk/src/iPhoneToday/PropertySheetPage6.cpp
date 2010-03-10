@@ -36,6 +36,7 @@ LRESULT CALLBACK OptionDialog6(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 				SendMessage(GetDlgItem(hDlg, IDC_CHECK_FULLSCREEN),				BM_SETCHECK, configuracion->fullscreen					? BST_CHECKED : BST_UNCHECKED, 0);
 				SendMessage(GetDlgItem(hDlg, IDC_CHECK_NEVER_SHOW_TASKBAR),		BM_SETCHECK, configuracion->neverShowTaskBar			? BST_CHECKED : BST_UNCHECKED, 0);
 				SendMessage(GetDlgItem(hDlg, IDC_CHECK_NO_WINDOW_TITLE),		BM_SETCHECK, configuracion->noWindowTitle				? BST_CHECKED : BST_UNCHECKED, 0);
+				SendMessage(GetDlgItem(hDlg, IDC_CHECK_SHOW_EXIT),				BM_SETCHECK, configuracion->showExit					? BST_CHECKED : BST_UNCHECKED, 0);
 				SendMessage(GetDlgItem(hDlg, IDC_CHECK_DISABLE_RIGHT_CLICK),	BM_SETCHECK, configuracion->disableRightClick			? BST_CHECKED : BST_UNCHECKED, 0);
 				SendMessage(GetDlgItem(hDlg, IDC_CHECK_IGNORE_ROTATION),		BM_SETCHECK, configuracion->ignoreRotation				? BST_CHECKED : BST_UNCHECKED, 0);
 
@@ -50,6 +51,7 @@ LRESULT CALLBACK OptionDialog6(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 				EnableWindow(GetDlgItem(hDlg, IDC_CHECK_FULLSCREEN), FALSE);
 				EnableWindow(GetDlgItem(hDlg, IDC_CHECK_NEVER_SHOW_TASKBAR), FALSE);
 				EnableWindow(GetDlgItem(hDlg, IDC_CHECK_NO_WINDOW_TITLE), FALSE);
+				EnableWindow(GetDlgItem(hDlg, IDC_CHECK_SHOW_EXIT), FALSE);
 #endif
 			} else {
 				MessageBox(hDlg, L"Empty Configuration!", 0, MB_OK);
@@ -110,6 +112,7 @@ BOOL SaveConfiguration6(HWND hDlg)
 	configuracion->fullscreen			= SendMessage(GetDlgItem(hDlg, IDC_CHECK_FULLSCREEN),			BM_GETCHECK, 0, 0) == BST_CHECKED;
 	configuracion->neverShowTaskBar		= SendMessage(GetDlgItem(hDlg, IDC_CHECK_NEVER_SHOW_TASKBAR),	BM_GETCHECK, 0, 0) == BST_CHECKED;
 	configuracion->noWindowTitle		= SendMessage(GetDlgItem(hDlg, IDC_CHECK_NO_WINDOW_TITLE),		BM_GETCHECK, 0, 0) == BST_CHECKED;
+	configuracion->showExit				= SendMessage(GetDlgItem(hDlg, IDC_CHECK_SHOW_EXIT),			BM_GETCHECK, 0, 0) == BST_CHECKED;
 	configuracion->disableRightClick	= SendMessage(GetDlgItem(hDlg, IDC_CHECK_DISABLE_RIGHT_CLICK),	BM_GETCHECK, 0, 0) == BST_CHECKED;
 	configuracion->ignoreRotation		= SendMessage(GetDlgItem(hDlg, IDC_CHECK_IGNORE_ROTATION),		BM_GETCHECK, 0, 0) == BST_CHECKED;
 
