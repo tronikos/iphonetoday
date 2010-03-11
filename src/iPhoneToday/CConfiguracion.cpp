@@ -390,6 +390,7 @@ void CConfiguracion::defaultValues()
 	this->verticalScroll = 0;
 	this->freestyleScroll = 0;
 
+	this->dowUseLocale = 1;
 	StringCchCopy(this->diasSemana[0], CountOf(this->diasSemana[0]), TEXT("Sun"));
 	StringCchCopy(this->diasSemana[1], CountOf(this->diasSemana[1]), TEXT("Mon"));
 	StringCchCopy(this->diasSemana[2], CountOf(this->diasSemana[2]), TEXT("Tue"));
@@ -586,6 +587,7 @@ BOOL CConfiguracion::cargaXMLConfig()
 			XMLUtils::GetAttr(pElem, "FreestyleScroll", &this->freestyleScroll);
 		} else if(_stricmp(nameNode, "DayOfWeek") == 0) {
 			SpecialIconSettingsLoad(pElem, &this->dow);
+			XMLUtils::GetAttr(pElem, "UseLocale", &dowUseLocale);
 			XMLUtils::GetAttr(pElem, "Sunday",    this->diasSemana[0], CountOf(this->diasSemana[0]));
 			XMLUtils::GetAttr(pElem, "Monday",    this->diasSemana[1], CountOf(this->diasSemana[1]));
 			XMLUtils::GetAttr(pElem, "Tuesday",   this->diasSemana[2], CountOf(this->diasSemana[2]));
@@ -821,6 +823,7 @@ BOOL CConfiguracion::guardaXMLConfig()
 
 	pElem = new TiXmlElement("DayOfWeek");
 	SpecialIconSettingsSave(pElem, &this->dow);
+	XMLUtils::SetAttr(pElem, "UseLocale", dowUseLocale);
 	XMLUtils::SetAttr(pElem, "Sunday",    this->diasSemana[0], CountOf(this->diasSemana[0]));
 	XMLUtils::SetAttr(pElem, "Monday",    this->diasSemana[1], CountOf(this->diasSemana[1]));
 	XMLUtils::SetAttr(pElem, "Tuesday",   this->diasSemana[2], CountOf(this->diasSemana[2]));

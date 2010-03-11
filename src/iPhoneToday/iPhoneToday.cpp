@@ -1345,7 +1345,10 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 			case NOTIF_CITAS:
 				numNotif = estado->numCitas;
 			case NOTIF_CALENDAR:
-				DrawSpecialIconText(*hDC, configuracion->diasSemana[estado->st.wDayOfWeek], icono, width, configuracion->dow);
+				if (!configuracion->dowUseLocale || !GetDateFormat(LOCALE_USER_DEFAULT, 0, &estado->st, L"ddd", str, CountOf(str))) {
+					StringCchCopy(str, CountOf(str), configuracion->diasSemana[estado->st.wDayOfWeek]);
+				}
+				DrawSpecialIconText(*hDC, str, icono, width, configuracion->dow);
 				StringCchPrintf(str, CountOf(str), TEXT("%i"), estado->st.wDay);
 				DrawSpecialIconText(*hDC, str, icono, width, configuracion->dom);
 				break;
