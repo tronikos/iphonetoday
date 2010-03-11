@@ -15,40 +15,21 @@ LRESULT CALLBACK OptionDialog7(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 	{
 	case WM_INITDIALOG:
 		{
-			// Initialize handle to property sheet
-			g_hDlg[7] = hDlg;
+			InitOptionsDialog(hDlg, 7);
 
-			SHINITDLGINFO shidi;
+			SendMessage(GetDlgItem(hDlg, IDC_CHECK_ONLAUNCH_CLOSE),		BM_SETCHECK, configuracion->closeOnLaunchIcon			? BST_CHECKED : BST_UNCHECKED, 0);
+			SendMessage(GetDlgItem(hDlg, IDC_CHECK_ONLAUNCH_ANIMATE),	BM_SETCHECK, configuracion->allowAnimationOnLaunchIcon	? BST_CHECKED : BST_UNCHECKED, 0);
+			SendMessage(GetDlgItem(hDlg, IDC_CHECK_ONLAUNCH_SOUND),		BM_SETCHECK, configuracion->allowSoundOnLaunchIcon		? BST_CHECKED : BST_UNCHECKED, 0);
 
-			// Create a Done button and size it.  
-			shidi.dwMask = SHIDIM_FLAGS;
-			shidi.dwFlags = SHIDIF_DONEBUTTON | SHIDIF_SIZEDLG | SHIDIF_WANTSCROLLBAR;
-			shidi.hDlg = hDlg;
-			SHInitDialog(&shidi);
-
-			SHInitExtraControls();
-
-			if (configuracion == NULL) {
-				configuracion = new CConfiguracion();
-				configuracion->cargaXMLConfig();
-			}
-			if (configuracion != NULL) {
-				SendMessage(GetDlgItem(hDlg, IDC_CHECK_ONLAUNCH_CLOSE),		BM_SETCHECK, configuracion->closeOnLaunchIcon			? BST_CHECKED : BST_UNCHECKED, 0);
-				SendMessage(GetDlgItem(hDlg, IDC_CHECK_ONLAUNCH_ANIMATE),	BM_SETCHECK, configuracion->allowAnimationOnLaunchIcon	? BST_CHECKED : BST_UNCHECKED, 0);
-				SendMessage(GetDlgItem(hDlg, IDC_CHECK_ONLAUNCH_SOUND),		BM_SETCHECK, configuracion->allowSoundOnLaunchIcon		? BST_CHECKED : BST_UNCHECKED, 0);
-
-				SetDlgItemInt(hDlg, IDC_EDIT_ONLAUNCH_VIBRATE,	configuracion->vibrateOnLaunchIcon, TRUE);
-				SetDlgItemHex(hDlg, IDC_EDIT_ANIM_COLOR,		configuracion->colorOfAnimationOnLaunchIcon);
-				SetDlgItemText(hDlg, IDC_EDIT_WAV,				configuracion->soundOnLaunchIcon);
-				SetDlgItemText(hDlg, IDC_EDIT_PRESSED_ICON,		configuracion->pressed_icon);
-				SetDlgItemText(hDlg, IDC_EDIT_PRESSED_SOUND,	configuracion->pressed_sound);
+			SetDlgItemInt(hDlg, IDC_EDIT_ONLAUNCH_VIBRATE,	configuracion->vibrateOnLaunchIcon, TRUE);
+			SetDlgItemHex(hDlg, IDC_EDIT_ANIM_COLOR,		configuracion->colorOfAnimationOnLaunchIcon);
+			SetDlgItemText(hDlg, IDC_EDIT_WAV,				configuracion->soundOnLaunchIcon);
+			SetDlgItemText(hDlg, IDC_EDIT_PRESSED_ICON,		configuracion->pressed_icon);
+			SetDlgItemText(hDlg, IDC_EDIT_PRESSED_SOUND,	configuracion->pressed_sound);
 
 #ifndef EXEC_MODE
-				EnableWindow(GetDlgItem(hDlg, IDC_CHECK_ONLAUNCH_CLOSE), FALSE);
+			EnableWindow(GetDlgItem(hDlg, IDC_CHECK_ONLAUNCH_CLOSE), FALSE);
 #endif
-			} else {
-				MessageBox(hDlg, L"Empty Configuration!", 0, MB_OK);
-			}
 		}
 		return TRUE;
 	case WM_COMMAND:
@@ -101,8 +82,15 @@ LRESULT CALLBACK OptionDialog7(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 				break;
 		}
 		return 0;
-	case WM_CTLCOLORSTATIC:
-		return (LRESULT)GetStockObject(WHITE_BRUSH);
+	case WM_PAINT:
+		PaintOptionsDialog(hDlg, 7);
+		return 0;
+	case WM_NOTIFY:
+		if (((LPNMHDR) lParam)->code == PSN_HELP) {
+			ToggleKeyboard();
+			return 0;
+		}
+		break;
 	}
 
 	return DefWindowProc(hDlg, uMsg, wParam, lParam);

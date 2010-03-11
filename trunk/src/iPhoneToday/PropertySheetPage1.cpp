@@ -28,42 +28,23 @@ LRESULT CALLBACK OptionDialog1(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 	{
 	case WM_INITDIALOG:
 		{
-			// Initialize handle to property sheet
-			g_hDlg[1] = hDlg;
+			InitOptionsDialog(hDlg, 1);
 
-			SHINITDLGINFO shidi;
+			SetDlgItemText(hDlg, IDC_EDIT_BACK_WALLPAPER, configuracion->strFondoPantalla);
+			SendMessage(GetDlgItem(hDlg, IDC_CHECK_BACK_STATIC),		BM_SETCHECK, configuracion->fondoEstatico ? BST_CHECKED : BST_UNCHECKED, 0);
+			SendMessage(GetDlgItem(hDlg, IDC_CHECK_BACK_FIT_WIDTH),		BM_SETCHECK, configuracion->fondoFitWidth ? BST_CHECKED : BST_UNCHECKED, 0);
+			SendMessage(GetDlgItem(hDlg, IDC_CHECK_BACK_FIT_HEIGHT),	BM_SETCHECK, configuracion->fondoFitHeight ? BST_CHECKED : BST_UNCHECKED, 0);
+			SendMessage(GetDlgItem(hDlg, IDC_CHECK_BACK_CENTER),		BM_SETCHECK, configuracion->fondoCenter ? BST_CHECKED : BST_UNCHECKED, 0);
+			SendMessage(GetDlgItem(hDlg, IDC_CHECK_BACK_TRANSPARENT),	BM_SETCHECK, configuracion->fondoTransparente ? BST_CHECKED : BST_UNCHECKED, 0);
+			SetDlgItemHex(hDlg, IDC_EDIT_BACK_COLOR, configuracion->fondoColor);
 
-			// Create a Done button and size it.  
-			shidi.dwMask = SHIDIM_FLAGS;
-			shidi.dwFlags = SHIDIF_DONEBUTTON | SHIDIF_SIZEDLG | SHIDIF_WANTSCROLLBAR;
-			shidi.hDlg = hDlg;
-			SHInitDialog(&shidi);
-
-			SHInitExtraControls();
-
-			if (configuracion == NULL) {
-				configuracion = new CConfiguracion();
-				configuracion->cargaXMLConfig();
-			}
-			if (configuracion != NULL) {
-				SetDlgItemText(hDlg, IDC_EDIT_BACK_WALLPAPER, configuracion->strFondoPantalla);
-				SendMessage(GetDlgItem(hDlg, IDC_CHECK_BACK_STATIC),		BM_SETCHECK, configuracion->fondoEstatico ? BST_CHECKED : BST_UNCHECKED, 0);
-				SendMessage(GetDlgItem(hDlg, IDC_CHECK_BACK_FIT_WIDTH),		BM_SETCHECK, configuracion->fondoFitWidth ? BST_CHECKED : BST_UNCHECKED, 0);
-				SendMessage(GetDlgItem(hDlg, IDC_CHECK_BACK_FIT_HEIGHT),	BM_SETCHECK, configuracion->fondoFitHeight ? BST_CHECKED : BST_UNCHECKED, 0);
-				SendMessage(GetDlgItem(hDlg, IDC_CHECK_BACK_CENTER),		BM_SETCHECK, configuracion->fondoCenter ? BST_CHECKED : BST_UNCHECKED, 0);
-				SendMessage(GetDlgItem(hDlg, IDC_CHECK_BACK_TRANSPARENT),	BM_SETCHECK, configuracion->fondoTransparente ? BST_CHECKED : BST_UNCHECKED, 0);
-				SetDlgItemHex(hDlg, IDC_EDIT_BACK_COLOR, configuracion->fondoColor);
-
-				SetDlgItemFloat(hDlg, IDC_EDIT_BACK_FACTOR, configuracion->fondoFactor);
-				EnableWindow(GetDlgItem(hDlg, IDC_EDIT_BACK_FACTOR), !(configuracion->fondoFitWidth || configuracion->fondoFitHeight));
+			SetDlgItemFloat(hDlg, IDC_EDIT_BACK_FACTOR, configuracion->fondoFactor);
+			EnableWindow(GetDlgItem(hDlg, IDC_EDIT_BACK_FACTOR), !(configuracion->fondoFitWidth || configuracion->fondoFitHeight));
 #ifdef EXEC_MODE
-				EnableWindow(GetDlgItem(hDlg, IDC_CHECK_BACK_TRANSPARENT), FALSE);
+			EnableWindow(GetDlgItem(hDlg, IDC_CHECK_BACK_TRANSPARENT), FALSE);
 #else
-				EnableAllDlgItems1(hDlg, !configuracion->fondoTransparente);
+			EnableAllDlgItems1(hDlg, !configuracion->fondoTransparente);
 #endif
-			} else {
-				MessageBox(hDlg, L"Empty Configuration!", 0, MB_OK);
-			}
 		}
 		return TRUE;
 	case WM_COMMAND:
@@ -101,8 +82,15 @@ LRESULT CALLBACK OptionDialog1(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 			}
 		}
 		return 0;
-	case WM_CTLCOLORSTATIC:
-		return (LRESULT)GetStockObject(WHITE_BRUSH);
+	case WM_PAINT:
+		PaintOptionsDialog(hDlg, 1);
+		return 0;
+	case WM_NOTIFY:
+		if (((LPNMHDR) lParam)->code == PSN_HELP) {
+			ToggleKeyboard();
+			return 0;
+		}
+		break;
 	}
 
 	return DefWindowProc(hDlg, uMsg, wParam, lParam);

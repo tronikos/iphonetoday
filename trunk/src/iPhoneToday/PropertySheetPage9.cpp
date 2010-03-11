@@ -15,31 +15,12 @@ LRESULT CALLBACK OptionDialog9(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 	{
 	case WM_INITDIALOG:
 		{
-			// Initialize handle to property sheet
-			g_hDlg[9] = hDlg;
+			InitOptionsDialog(hDlg, 9);
 
-			SHINITDLGINFO shidi;
-
-			// Create a Done button and size it.  
-			shidi.dwMask = SHIDIM_FLAGS;
-			shidi.dwFlags = SHIDIF_DONEBUTTON | SHIDIF_SIZEDLG | SHIDIF_WANTSCROLLBAR;
-			shidi.hDlg = hDlg;
-			SHInitDialog(&shidi);
-
-			SHInitExtraControls();
-
-			if (configuracion == NULL) {
-				configuracion = new CConfiguracion();
-				configuracion->cargaXMLConfig();
-			}
-			if (configuracion != NULL) {
-				SetDlgItemText(hDlg, IDC_EDIT_OUTOFSCREEN_LEFT,   configuracion->outOfScreenLeft);
-				SetDlgItemText(hDlg, IDC_EDIT_OUTOFSCREEN_RIGHT,  configuracion->outOfScreenRight);
-				SetDlgItemText(hDlg, IDC_EDIT_OUTOFSCREEN_TOP,    configuracion->outOfScreenTop);
-				SetDlgItemText(hDlg, IDC_EDIT_OUTOFSCREEN_BOTTOM, configuracion->outOfScreenBottom);
-			} else {
-				MessageBox(hDlg, L"Empty Configuration!", 0, MB_OK);
-			}
+			SetDlgItemText(hDlg, IDC_EDIT_OUTOFSCREEN_LEFT,   configuracion->outOfScreenLeft);
+			SetDlgItemText(hDlg, IDC_EDIT_OUTOFSCREEN_RIGHT,  configuracion->outOfScreenRight);
+			SetDlgItemText(hDlg, IDC_EDIT_OUTOFSCREEN_TOP,    configuracion->outOfScreenTop);
+			SetDlgItemText(hDlg, IDC_EDIT_OUTOFSCREEN_BOTTOM, configuracion->outOfScreenBottom);
 		}
 		return TRUE;
 	case WM_COMMAND:
@@ -77,8 +58,15 @@ LRESULT CALLBACK OptionDialog9(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 				break;
 		}
 		return 0;
-	case WM_CTLCOLORSTATIC:
-		return (LRESULT)GetStockObject(WHITE_BRUSH);
+	case WM_PAINT:
+		PaintOptionsDialog(hDlg, 9);
+		return 0;
+	case WM_NOTIFY:
+		if (((LPNMHDR) lParam)->code == PSN_HELP) {
+			ToggleKeyboard();
+			return 0;
+		}
+		break;
 	}
 
 	return DefWindowProc(hDlg, uMsg, wParam, lParam);

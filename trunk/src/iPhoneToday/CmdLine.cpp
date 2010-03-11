@@ -93,6 +93,9 @@ BOOL CommandLineArguements(HWND hwnd, LPCTSTR pCmdLine)
 	} else if (wcsicmp(pCmdLine, L"off") == 0 || wcsicmp(pCmdLine, L"standby") == 0 || wcsicmp(pCmdLine, L"suspend") == 0) {
 		SetSystemPowerState(NULL, POWER_STATE_SUSPEND, POWER_FORCE);
 		return TRUE;
+	} else if (wcsicmp(pCmdLine, L"keyboard") == 0) {
+		ToggleKeyboard();
+		return TRUE;
 	}
 
 	return FALSE;

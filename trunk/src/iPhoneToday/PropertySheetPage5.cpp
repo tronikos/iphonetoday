@@ -62,52 +62,33 @@ LRESULT CALLBACK OptionDialog5(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 	{
 	case WM_INITDIALOG:
 		{
-			// Initialize handle to property sheet
-			g_hDlg[5] = hDlg;
-
-			SHINITDLGINFO shidi;
-
-			// Create a Done button and size it.  
-			shidi.dwMask = SHIDIM_FLAGS;
-			shidi.dwFlags = SHIDIF_DONEBUTTON | SHIDIF_SIZEDLG | SHIDIF_WANTSCROLLBAR;
-			shidi.hDlg = hDlg;
-			SHInitDialog(&shidi);
-
-			SHInitExtraControls();
+			InitOptionsDialog(hDlg, 5);
 
 			cur_sis = NULL;
 			sis_enable(hDlg, FALSE);
 
-			if (configuracion == NULL) {
-				configuracion = new CConfiguracion();
-				configuracion->cargaXMLConfig();
-			}
-			if (configuracion != NULL) {
-				memcpy(&batt, &configuracion->batt, sizeof(SpecialIconSettings));
-				memcpy(&clck, &configuracion->clck, sizeof(SpecialIconSettings));
-				memcpy(&dom,  &configuracion->dom,  sizeof(SpecialIconSettings));
-				memcpy(&dow,  &configuracion->dow,  sizeof(SpecialIconSettings));
-				memcpy(&vol,  &configuracion->vol,  sizeof(SpecialIconSettings));
-				memcpy(&meml, &configuracion->meml, sizeof(SpecialIconSettings));
-				memcpy(&memf, &configuracion->memf, sizeof(SpecialIconSettings));
-				memcpy(&memu, &configuracion->memu, sizeof(SpecialIconSettings));
-				memcpy(&sign, &configuracion->sign, sizeof(SpecialIconSettings));
+			memcpy(&batt, &configuracion->batt, sizeof(SpecialIconSettings));
+			memcpy(&clck, &configuracion->clck, sizeof(SpecialIconSettings));
+			memcpy(&dom,  &configuracion->dom,  sizeof(SpecialIconSettings));
+			memcpy(&dow,  &configuracion->dow,  sizeof(SpecialIconSettings));
+			memcpy(&vol,  &configuracion->vol,  sizeof(SpecialIconSettings));
+			memcpy(&meml, &configuracion->meml, sizeof(SpecialIconSettings));
+			memcpy(&memf, &configuracion->memf, sizeof(SpecialIconSettings));
+			memcpy(&memu, &configuracion->memu, sizeof(SpecialIconSettings));
+			memcpy(&sign, &configuracion->sign, sizeof(SpecialIconSettings));
 
-				SendMessage(GetDlgItem(hDlg, IDC_COMBO_SIS), CB_ADDSTRING, 0, (LPARAM)L"Battery");
-				SendMessage(GetDlgItem(hDlg, IDC_COMBO_SIS), CB_ADDSTRING, 0, (LPARAM)L"Clock");
-				SendMessage(GetDlgItem(hDlg, IDC_COMBO_SIS), CB_ADDSTRING, 0, (LPARAM)L"Day of month");
-				SendMessage(GetDlgItem(hDlg, IDC_COMBO_SIS), CB_ADDSTRING, 0, (LPARAM)L"Day of week");
-				SendMessage(GetDlgItem(hDlg, IDC_COMBO_SIS), CB_ADDSTRING, 0, (LPARAM)L"Volume");
-				SendMessage(GetDlgItem(hDlg, IDC_COMBO_SIS), CB_ADDSTRING, 0, (LPARAM)L"Memory load");
-				SendMessage(GetDlgItem(hDlg, IDC_COMBO_SIS), CB_ADDSTRING, 0, (LPARAM)L"Memory free");
-				SendMessage(GetDlgItem(hDlg, IDC_COMBO_SIS), CB_ADDSTRING, 0, (LPARAM)L"Memory used");
-				SendMessage(GetDlgItem(hDlg, IDC_COMBO_SIS), CB_ADDSTRING, 0, (LPARAM)L"Signal strength");
+			SendMessage(GetDlgItem(hDlg, IDC_COMBO_SIS), CB_ADDSTRING, 0, (LPARAM)L"Battery");
+			SendMessage(GetDlgItem(hDlg, IDC_COMBO_SIS), CB_ADDSTRING, 0, (LPARAM)L"Clock");
+			SendMessage(GetDlgItem(hDlg, IDC_COMBO_SIS), CB_ADDSTRING, 0, (LPARAM)L"Day of month");
+			SendMessage(GetDlgItem(hDlg, IDC_COMBO_SIS), CB_ADDSTRING, 0, (LPARAM)L"Day of week");
+			SendMessage(GetDlgItem(hDlg, IDC_COMBO_SIS), CB_ADDSTRING, 0, (LPARAM)L"Volume");
+			SendMessage(GetDlgItem(hDlg, IDC_COMBO_SIS), CB_ADDSTRING, 0, (LPARAM)L"Memory load");
+			SendMessage(GetDlgItem(hDlg, IDC_COMBO_SIS), CB_ADDSTRING, 0, (LPARAM)L"Memory free");
+			SendMessage(GetDlgItem(hDlg, IDC_COMBO_SIS), CB_ADDSTRING, 0, (LPARAM)L"Memory used");
+			SendMessage(GetDlgItem(hDlg, IDC_COMBO_SIS), CB_ADDSTRING, 0, (LPARAM)L"Signal strength");
 
-				SendMessage(GetDlgItem(hDlg, IDC_CHECK_CLOCK_FORMAT12), BM_SETCHECK, configuracion->clock12Format ? BST_CHECKED : BST_UNCHECKED, 0);
-				ShowWindow(GetDlgItem(hDlg, IDC_CHECK_CLOCK_FORMAT12), SW_HIDE);
-			} else {
-				MessageBox(hDlg, L"Empty Configuration!", 0, MB_OK);
-			}
+			SendMessage(GetDlgItem(hDlg, IDC_CHECK_CLOCK_FORMAT12), BM_SETCHECK, configuracion->clock12Format ? BST_CHECKED : BST_UNCHECKED, 0);
+			ShowWindow(GetDlgItem(hDlg, IDC_CHECK_CLOCK_FORMAT12), SW_HIDE);
 		}
 		return TRUE;
 	case WM_COMMAND:
@@ -163,8 +144,15 @@ LRESULT CALLBACK OptionDialog5(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 			}
 		}
 		return 0;
-	case WM_CTLCOLORSTATIC:
-		return (LRESULT)GetStockObject(WHITE_BRUSH);
+	case WM_PAINT:
+		PaintOptionsDialog(hDlg, 5);
+		return 0;
+	case WM_NOTIFY:
+		if (((LPNMHDR) lParam)->code == PSN_HELP) {
+			ToggleKeyboard();
+			return 0;
+		}
+		break;
 	}
 
 	return DefWindowProc(hDlg, uMsg, wParam, lParam);

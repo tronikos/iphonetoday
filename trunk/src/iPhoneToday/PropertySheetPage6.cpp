@@ -15,47 +15,28 @@ LRESULT CALLBACK OptionDialog6(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 	{
 	case WM_INITDIALOG:
 		{
-			// Initialize handle to property sheet
-			g_hDlg[6] = hDlg;
+			InitOptionsDialog(hDlg, 6);
 
-			SHINITDLGINFO shidi;
+			SendMessage(GetDlgItem(hDlg, IDC_CHECK_FULLSCREEN),				BM_SETCHECK, configuracion->fullscreen					? BST_CHECKED : BST_UNCHECKED, 0);
+			SendMessage(GetDlgItem(hDlg, IDC_CHECK_NEVER_SHOW_TASKBAR),		BM_SETCHECK, configuracion->neverShowTaskBar			? BST_CHECKED : BST_UNCHECKED, 0);
+			SendMessage(GetDlgItem(hDlg, IDC_CHECK_NO_WINDOW_TITLE),		BM_SETCHECK, configuracion->noWindowTitle				? BST_CHECKED : BST_UNCHECKED, 0);
+			SendMessage(GetDlgItem(hDlg, IDC_CHECK_SHOW_EXIT),				BM_SETCHECK, configuracion->showExit					? BST_CHECKED : BST_UNCHECKED, 0);
+			SendMessage(GetDlgItem(hDlg, IDC_CHECK_DISABLE_RIGHT_CLICK),	BM_SETCHECK, configuracion->disableRightClick			? BST_CHECKED : BST_UNCHECKED, 0);
+			SendMessage(GetDlgItem(hDlg, IDC_CHECK_IGNORE_ROTATION),		BM_SETCHECK, configuracion->ignoreRotation				? BST_CHECKED : BST_UNCHECKED, 0);
 
-			// Create a Done button and size it.  
-			shidi.dwMask = SHIDIM_FLAGS;
-			shidi.dwFlags = SHIDIF_DONEBUTTON | SHIDIF_SIZEDLG | SHIDIF_WANTSCROLLBAR;
-			shidi.hDlg = hDlg;
-			SHInitDialog(&shidi);
-
-			SHInitExtraControls();
-
-			if (configuracion == NULL) {
-				configuracion = new CConfiguracion();
-				configuracion->cargaXMLConfig();
-			}
-			if (configuracion != NULL) {
-				SendMessage(GetDlgItem(hDlg, IDC_CHECK_FULLSCREEN),				BM_SETCHECK, configuracion->fullscreen					? BST_CHECKED : BST_UNCHECKED, 0);
-				SendMessage(GetDlgItem(hDlg, IDC_CHECK_NEVER_SHOW_TASKBAR),		BM_SETCHECK, configuracion->neverShowTaskBar			? BST_CHECKED : BST_UNCHECKED, 0);
-				SendMessage(GetDlgItem(hDlg, IDC_CHECK_NO_WINDOW_TITLE),		BM_SETCHECK, configuracion->noWindowTitle				? BST_CHECKED : BST_UNCHECKED, 0);
-				SendMessage(GetDlgItem(hDlg, IDC_CHECK_SHOW_EXIT),				BM_SETCHECK, configuracion->showExit					? BST_CHECKED : BST_UNCHECKED, 0);
-				SendMessage(GetDlgItem(hDlg, IDC_CHECK_DISABLE_RIGHT_CLICK),	BM_SETCHECK, configuracion->disableRightClick			? BST_CHECKED : BST_UNCHECKED, 0);
-				SendMessage(GetDlgItem(hDlg, IDC_CHECK_IGNORE_ROTATION),		BM_SETCHECK, configuracion->ignoreRotation				? BST_CHECKED : BST_UNCHECKED, 0);
-
-				SetDlgItemInt(hDlg, IDC_EDIT_NOTIFY_TIMER,	configuracion->notifyTimer,	TRUE);
-				SetDlgItemInt(hDlg, IDC_EDIT_HEIGHTP,		configuracion->heightP,		TRUE);
-				SetDlgItemInt(hDlg, IDC_EDIT_HEIGHTL,		configuracion->heightL,		TRUE);
+			SetDlgItemInt(hDlg, IDC_EDIT_NOTIFY_TIMER,	configuracion->notifyTimer,	TRUE);
+			SetDlgItemInt(hDlg, IDC_EDIT_HEIGHTP,		configuracion->heightP,		TRUE);
+			SetDlgItemInt(hDlg, IDC_EDIT_HEIGHTL,		configuracion->heightL,		TRUE);
 
 #ifdef EXEC_MODE
-				EnableWindow(GetDlgItem(hDlg, IDC_EDIT_HEIGHTP), FALSE);
-				EnableWindow(GetDlgItem(hDlg, IDC_EDIT_HEIGHTL), FALSE);
+			EnableWindow(GetDlgItem(hDlg, IDC_EDIT_HEIGHTP), FALSE);
+			EnableWindow(GetDlgItem(hDlg, IDC_EDIT_HEIGHTL), FALSE);
 #else
-				EnableWindow(GetDlgItem(hDlg, IDC_CHECK_FULLSCREEN), FALSE);
-				EnableWindow(GetDlgItem(hDlg, IDC_CHECK_NEVER_SHOW_TASKBAR), FALSE);
-				EnableWindow(GetDlgItem(hDlg, IDC_CHECK_NO_WINDOW_TITLE), FALSE);
-				EnableWindow(GetDlgItem(hDlg, IDC_CHECK_SHOW_EXIT), FALSE);
+			EnableWindow(GetDlgItem(hDlg, IDC_CHECK_FULLSCREEN), FALSE);
+			EnableWindow(GetDlgItem(hDlg, IDC_CHECK_NEVER_SHOW_TASKBAR), FALSE);
+			EnableWindow(GetDlgItem(hDlg, IDC_CHECK_NO_WINDOW_TITLE), FALSE);
+			EnableWindow(GetDlgItem(hDlg, IDC_CHECK_SHOW_EXIT), FALSE);
 #endif
-			} else {
-				MessageBox(hDlg, L"Empty Configuration!", 0, MB_OK);
-			}
 		}
 		return TRUE;
 	case WM_COMMAND:
@@ -85,8 +66,15 @@ LRESULT CALLBACK OptionDialog6(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 			break;
 		}
 		return 0;
-	case WM_CTLCOLORSTATIC:
-		return (LRESULT)GetStockObject(WHITE_BRUSH);
+	case WM_PAINT:
+		PaintOptionsDialog(hDlg, 6);
+		return 0;
+	case WM_NOTIFY:
+		if (((LPNMHDR) lParam)->code == PSN_HELP) {
+			ToggleKeyboard();
+			return 0;
+		}
+		break;
 	}
 
 	return DefWindowProc(hDlg, uMsg, wParam, lParam);

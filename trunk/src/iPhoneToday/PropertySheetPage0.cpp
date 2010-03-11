@@ -91,52 +91,22 @@ LRESULT CALLBACK OptionDialog0(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 	{
 	case WM_INITDIALOG:
 		{
-			// Initialize handle to property sheet
-			g_hDlg[0] = hDlg;
-
-			if (FindWindow(L"MS_SIPBUTTON", NULL) != NULL) {
-				// Property sheet will destroy part of the soft key bar,
-				// therefore we create an empty menu bar here
-				// Only required on the first property sheet
-				SHMENUBARINFO shmbi;
-				shmbi.cbSize = sizeof(shmbi);
-				shmbi.hwndParent = hDlg;
-				shmbi.dwFlags = SHCMBF_EMPTYBAR;
-				SHCreateMenuBar(&shmbi);
-			}
-
-			SHINITDLGINFO shidi;
-
-			// Create a Done button and size it.  
-			shidi.dwMask = SHIDIM_FLAGS;
-			shidi.dwFlags = SHIDIF_DONEBUTTON | SHIDIF_SIZEDLG | SHIDIF_WANTSCROLLBAR;
-			shidi.hDlg = hDlg;
-			SHInitDialog(&shidi);
-
-			SHInitExtraControls();
+			InitOptionsDialog(hDlg, 0);
 
 			cur_cs = NULL;
 			cs_enable(hDlg, FALSE);
 
-			if (configuracion == NULL) {
-				configuracion = new CConfiguracion();
-				configuracion->cargaXMLConfig();
-			}
-			if (configuracion != NULL) {
-				memcpy(&ms, &configuracion->mainScreenConfig->cs, sizeof(ConfigurationScreen));
-				memcpy(&bb, &configuracion->bottomBarConfig->cs,  sizeof(ConfigurationScreen));
-				memcpy(&tb, &configuracion->topBarConfig->cs,     sizeof(ConfigurationScreen));
+			memcpy(&ms, &configuracion->mainScreenConfig->cs, sizeof(ConfigurationScreen));
+			memcpy(&bb, &configuracion->bottomBarConfig->cs,  sizeof(ConfigurationScreen));
+			memcpy(&tb, &configuracion->topBarConfig->cs,     sizeof(ConfigurationScreen));
 
-				SendMessage(GetDlgItem(hDlg, IDC_COMBO_CS), CB_ADDSTRING, 0, (LPARAM)L"Mainscreen");
-				SendMessage(GetDlgItem(hDlg, IDC_COMBO_CS), CB_ADDSTRING, 0, (LPARAM)L"Bottombar");
-				SendMessage(GetDlgItem(hDlg, IDC_COMBO_CS), CB_ADDSTRING, 0, (LPARAM)L"Topbar");
+			SendMessage(GetDlgItem(hDlg, IDC_COMBO_CS), CB_ADDSTRING, 0, (LPARAM)L"Mainscreen");
+			SendMessage(GetDlgItem(hDlg, IDC_COMBO_CS), CB_ADDSTRING, 0, (LPARAM)L"Bottombar");
+			SendMessage(GetDlgItem(hDlg, IDC_COMBO_CS), CB_ADDSTRING, 0, (LPARAM)L"Topbar");
 
-				SendMessage(GetDlgItem(hDlg, IDC_COMBO_CS), CB_SETCURSEL, 0, 0);
-				cur_cs = &ms;
-				cs_load(hDlg, cur_cs);
-			} else {
-				MessageBox(hDlg, L"Empty Configuration!", 0, MB_OK);
-			}
+			SendMessage(GetDlgItem(hDlg, IDC_COMBO_CS), CB_SETCURSEL, 0, 0);
+			cur_cs = &ms;
+			cs_load(hDlg, cur_cs);
 		}
 		return TRUE;
 	case WM_COMMAND:
@@ -194,8 +164,15 @@ LRESULT CALLBACK OptionDialog0(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 			}
 		}
 		return 0;
-	case WM_CTLCOLORSTATIC:
-		return (LRESULT)GetStockObject(WHITE_BRUSH);
+	case WM_PAINT:
+		PaintOptionsDialog(hDlg, 0);
+		return 0;
+	case WM_NOTIFY:
+		if (((LPNMHDR) lParam)->code == PSN_HELP) {
+			ToggleKeyboard();
+			return 0;
+		}
+		break;
 	}
 
 	return DefWindowProc(hDlg, uMsg, wParam, lParam);

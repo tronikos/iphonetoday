@@ -15,36 +15,17 @@ LRESULT CALLBACK OptionDialog2(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 	{
 	case WM_INITDIALOG:
 		{
-			// Initialize handle to property sheet
-			g_hDlg[2] = hDlg;
+			InitOptionsDialog(hDlg, 2);
 
-			SHINITDLGINFO shidi;
+			SetDlgItemInt(hDlg, IDC_EDIT_MOVE_THRESHOLD,	configuracion->umbralMovimiento,	TRUE);
+			SetDlgItemInt(hDlg, IDC_EDIT_MOVE_FACTOR,		configuracion->factorMovimiento,	TRUE);
+			SetDlgItemInt(hDlg, IDC_EDIT_MIN_VELOCITY,		configuracion->velMinima,			TRUE);
+			SetDlgItemInt(hDlg, IDC_EDIT_MAX_VELOCITY,		configuracion->velMaxima,			TRUE);
+			SetDlgItemInt(hDlg, IDC_EDIT_REFRESH_TIME,		configuracion->refreshTime,			TRUE);
+			SendMessage(GetDlgItem(hDlg, IDC_CHECK_VERTICAL_SCROLL), BM_SETCHECK, configuracion->verticalScroll ? BST_CHECKED : BST_UNCHECKED, 0);
+			SendMessage(GetDlgItem(hDlg, IDC_CHECK_FREESTYLE_SCROLL), BM_SETCHECK, configuracion->freestyleScroll ? BST_CHECKED : BST_UNCHECKED, 0);
 
-			// Create a Done button and size it.  
-			shidi.dwMask = SHIDIM_FLAGS;
-			shidi.dwFlags = SHIDIF_DONEBUTTON | SHIDIF_SIZEDLG | SHIDIF_WANTSCROLLBAR;
-			shidi.hDlg = hDlg;
-			SHInitDialog(&shidi);
-
-			SHInitExtraControls();
-
-			if (configuracion == NULL) {
-				configuracion = new CConfiguracion();
-				configuracion->cargaXMLConfig();
-			}
-			if (configuracion != NULL) {
-				SetDlgItemInt(hDlg, IDC_EDIT_MOVE_THRESHOLD,	configuracion->umbralMovimiento,	TRUE);
-				SetDlgItemInt(hDlg, IDC_EDIT_MOVE_FACTOR,		configuracion->factorMovimiento,	TRUE);
-				SetDlgItemInt(hDlg, IDC_EDIT_MIN_VELOCITY,		configuracion->velMinima,			TRUE);
-				SetDlgItemInt(hDlg, IDC_EDIT_MAX_VELOCITY,		configuracion->velMaxima,			TRUE);
-				SetDlgItemInt(hDlg, IDC_EDIT_REFRESH_TIME,		configuracion->refreshTime,			TRUE);
-				SendMessage(GetDlgItem(hDlg, IDC_CHECK_VERTICAL_SCROLL), BM_SETCHECK, configuracion->verticalScroll ? BST_CHECKED : BST_UNCHECKED, 0);
-				SendMessage(GetDlgItem(hDlg, IDC_CHECK_FREESTYLE_SCROLL), BM_SETCHECK, configuracion->freestyleScroll ? BST_CHECKED : BST_UNCHECKED, 0);
-
-				EnableWindow(GetDlgItem(hDlg, IDC_CHECK_FREESTYLE_SCROLL), configuracion->verticalScroll);
-			} else {
-				MessageBox(hDlg, L"Empty Configuration!", 0, MB_OK);
-			}
+			EnableWindow(GetDlgItem(hDlg, IDC_CHECK_FREESTYLE_SCROLL), configuracion->verticalScroll);
 		}
 		return TRUE;
 	case WM_COMMAND:
@@ -55,8 +36,15 @@ LRESULT CALLBACK OptionDialog2(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 			break;
 		}
 		return 0;
-	case WM_CTLCOLORSTATIC:
-		return (LRESULT)GetStockObject(WHITE_BRUSH);
+	case WM_PAINT:
+		PaintOptionsDialog(hDlg, 2);
+		return 0;
+	case WM_NOTIFY:
+		if (((LPNMHDR) lParam)->code == PSN_HELP) {
+			ToggleKeyboard();
+			return 0;
+		}
+		break;
 	}
 
 	return DefWindowProc(hDlg, uMsg, wParam, lParam);

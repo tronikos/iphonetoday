@@ -16,23 +16,7 @@ LRESULT CALLBACK OptionDialog10(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 	{
 	case WM_INITDIALOG:
 		{
-			// Initialize handle to property sheet
-			g_hDlg[10] = hDlg;
-
-			SHINITDLGINFO shidi;
-
-			// Create a Done button and size it.  
-			shidi.dwMask = SHIDIM_FLAGS;
-			shidi.dwFlags = SHIDIF_DONEBUTTON | SHIDIF_SIZEDLG | SHIDIF_WANTSCROLLBAR;
-			shidi.hDlg = hDlg;
-			SHInitDialog(&shidi);
-
-			SHInitExtraControls();
-
-			if (configuracion == NULL) {
-				configuracion = new CConfiguracion();
-				configuracion->cargaXMLConfig();
-			}
+			InitOptionsDialog(hDlg, 10);
 
 			SendMessage(GetDlgItem(hDlg, IDC_STATICAPPVER), WM_SETTEXT, 0, (LPARAM)LSTRPRODUCTVER);
 		}
@@ -65,16 +49,15 @@ LRESULT CALLBACK OptionDialog10(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 		}
 		break;
 
-	case WM_CTLCOLORSTATIC:
-		if ((HWND)lParam == GetDlgItem (hDlg, IDC_STATICURL)) {
-			// Modify the font color of the URL string
-			SetTextColor ((HDC)wParam, GetSysColor(COLOR_MENUTEXT));
+	case WM_PAINT:
+		PaintOptionsDialog(hDlg, 10);
+		return 0;
+	case WM_NOTIFY:
+		if (((LPNMHDR) lParam)->code == PSN_HELP) {
+			ToggleKeyboard();
+			return 0;
 		}
-		// If an application processes this message,
-		// the return value is a handle to a brush that
-		// the system uses to paint the background of
-		// the static control.
-		return (LRESULT)GetStockObject(WHITE_BRUSH);
+		break;
 	}
 
 	return DefWindowProc(hDlg, uMsg, wParam, lParam);

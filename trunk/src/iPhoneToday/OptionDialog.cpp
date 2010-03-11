@@ -39,6 +39,55 @@ static INT	s_iReleaseCall;
 
 BOOL doNotAskToSaveOptions = FALSE;
 
+
+void InitOptionsDialog(HWND hDlg, INT iDlg)
+{
+	// Initialize handle to property sheet
+	g_hDlg[iDlg] = hDlg;
+
+	if (iDlg == 0) {
+		if (FindWindow(L"MS_SIPBUTTON", NULL) != NULL) {
+			// Property sheet will destroy part of the soft key bar,
+			// therefore we create an empty menu bar here
+			// Only required on the first property sheet
+			SHMENUBARINFO shmbi;
+			shmbi.cbSize = sizeof(shmbi);
+			shmbi.hwndParent = hDlg;
+			shmbi.dwFlags = SHCMBF_EMPTYBAR;
+			SHCreateMenuBar(&shmbi);
+		} else {
+			SetWindowLong(GetParent(hDlg), GWL_EXSTYLE, GetWindowLong(hDlg, GWL_EXSTYLE) | WS_EX_CONTEXTHELP | WS_EX_CAPTIONOKBTN);
+		}
+	}
+
+	SHINITDLGINFO shidi;
+	shidi.dwMask = SHIDIM_FLAGS;
+	shidi.dwFlags = SHIDIF_DONEBUTTON | SHIDIF_SIZEDLG | SHIDIF_WANTSCROLLBAR;
+	shidi.hDlg = hDlg;
+	SHInitDialog(&shidi);
+
+	if (configuracion == NULL) {
+		configuracion = new CConfiguracion();
+		configuracion->cargaXMLConfig();
+	}
+}
+
+void PaintOptionsDialog(HWND hDlg, INT iDlg)
+{
+	HDC hdc;
+	PAINTSTRUCT ps;
+	RECT rcDlg;
+	HBRUSH hBrush;
+
+	hdc = BeginPaint(hDlg, &ps);	
+	GetClientRect(hDlg, &rcDlg);
+	hBrush = CreateSolidBrush(GetSysColor(COLOR_MENU));
+	FillRect(hdc, &rcDlg, hBrush);
+	DeleteObject(hBrush);
+	EndPaint(hDlg, &ps);
+}
+
+
 /*************************************************************************/
 /* Option dialog PropSheetPageProc callback function                     */
 /*************************************************************************/
