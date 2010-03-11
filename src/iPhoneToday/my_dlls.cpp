@@ -3,6 +3,9 @@
 typedef BOOL (STDAPICALLTYPE FAR fSipShowIM)(DWORD);
 static fSipShowIM *pSipShowIM = NULL;
 
+typedef BOOL (STDAPICALLTYPE FAR fSipGetInfo)(SIPINFO*);
+static fSipGetInfo *pSipGetInfo = NULL;
+
 typedef BOOL (STDAPICALLTYPE FAR fGetSystemPowerStatusEx)(PSYSTEM_POWER_STATUS_EX,BOOL);
 static fGetSystemPowerStatusEx *pGetSystemPowerStatusEx = NULL;
 
@@ -18,6 +21,7 @@ BOOL InitCoredll()
 	if (hCoredllLib == NULL)
 		return FALSE;
 	pSipShowIM = (fSipShowIM*)GetProcAddress(hCoredllLib, L"SipShowIM");
+	pSipGetInfo = (fSipGetInfo*)GetProcAddress(hCoredllLib, L"SipGetInfo");
 	pGetSystemPowerStatusEx = (fGetSystemPowerStatusEx*)GetProcAddress(hCoredllLib, L"GetSystemPowerStatusEx");
 	pAlphaBlend = (fAlphaBlend*)GetProcAddress(hCoredllLib, L"AlphaBlend");
 	return TRUE;
@@ -27,6 +31,13 @@ BOOL WINAPI SipShowIM(DWORD dwFlag)
 {
 	if (InitCoredll() && pSipShowIM != NULL)
 		return pSipShowIM(dwFlag);
+	return FALSE;
+}
+
+BOOL WINAPI SipGetInfo(SIPINFO* pSipInfo)
+{
+	if (InitCoredll() && pSipGetInfo != NULL)
+		return pSipGetInfo(pSipInfo);
 	return FALSE;
 }
 

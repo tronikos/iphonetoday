@@ -58,3 +58,30 @@ void Rotate(int angle)
 	}
 	ChangeDisplaySettingsEx(NULL, &mode, NULL, 0, NULL);
 }
+
+typedef BOOL (STDAPICALLTYPE FAR fSipGetInfo)(SIPINFO*);
+typedef BOOL (STDAPICALLTYPE FAR fSipShowIM)(DWORD);
+
+void ToggleKeyboard()
+{
+	SIPINFO si;
+	memset(&si, 0, sizeof(si));
+	si.cbSize = sizeof(SIPINFO);
+	if (SipGetInfo(&si)) {
+		SipShowIM((si.fdwFlags|SIPF_ON) == si.fdwFlags ? SIPF_OFF : SIPF_ON);
+	} else {
+		HMODULE hCoredllLib = LoadLibrary(L"coredl2.dll");
+		if (hCoredllLib != NULL) {
+			fSipGetInfo *pSipGetInfo = (fSipGetInfo*) GetProcAddress(hCoredllLib, L"SipGetInfo");
+			fSipShowIM *pSipShowIM = (fSipShowIM*) GetProcAddress(hCoredllLib, L"SipShowIM");
+			if (pSipGetInfo && pSipShowIM) {
+				memset(&si, 0, sizeof(si));
+				si.cbSize = sizeof(SIPINFO);
+				if (pSipGetInfo(&si)) {
+					pSipShowIM((si.fdwFlags|SIPF_ON) == si.fdwFlags ? SIPF_OFF : SIPF_ON);
+				}
+			}
+			FreeLibrary(hCoredllLib);
+		}
+	}
+}

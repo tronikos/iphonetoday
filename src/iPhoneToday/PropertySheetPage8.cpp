@@ -15,36 +15,17 @@ LRESULT CALLBACK OptionDialog8(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 	{
 	case WM_INITDIALOG:
 		{
-			// Initialize handle to property sheet
-			g_hDlg[8] = hDlg;
+			InitOptionsDialog(hDlg, 8);
 
-			SHINITDLGINFO shidi;
+			SendMessage(GetDlgItem(hDlg, IDC_CHECK_TRANS_ALPHABLEND),   BM_SETCHECK, configuracion->alphaBlend     ? BST_CHECKED : BST_UNCHECKED, 0);
+			SendMessage(GetDlgItem(hDlg, IDC_CHECK_TRANS_ALPHAONBLACK), BM_SETCHECK, configuracion->alphaOnBlack   ? BST_CHECKED : BST_UNCHECKED, 0);
+			SendMessage(GetDlgItem(hDlg, IDC_CHECK_TRANS_BMP),          BM_SETCHECK, configuracion->transparentBMP ? BST_CHECKED : BST_UNCHECKED, 0);
+			SetDlgItemInt(hDlg, IDC_EDIT_TRANS_THRESHOLD, configuracion->alphaThreshold, TRUE);
 
-			// Create a Done button and size it.  
-			shidi.dwMask = SHIDIM_FLAGS;
-			shidi.dwFlags = SHIDIF_DONEBUTTON | SHIDIF_SIZEDLG | SHIDIF_WANTSCROLLBAR;
-			shidi.hDlg = hDlg;
-			SHInitDialog(&shidi);
-
-			SHInitExtraControls();
-
-			if (configuracion == NULL) {
-				configuracion = new CConfiguracion();
-				configuracion->cargaXMLConfig();
-			}
-			if (configuracion != NULL) {
-				SendMessage(GetDlgItem(hDlg, IDC_CHECK_TRANS_ALPHABLEND),   BM_SETCHECK, configuracion->alphaBlend     ? BST_CHECKED : BST_UNCHECKED, 0);
-				SendMessage(GetDlgItem(hDlg, IDC_CHECK_TRANS_ALPHAONBLACK), BM_SETCHECK, configuracion->alphaOnBlack   ? BST_CHECKED : BST_UNCHECKED, 0);
-				SendMessage(GetDlgItem(hDlg, IDC_CHECK_TRANS_BMP),          BM_SETCHECK, configuracion->transparentBMP ? BST_CHECKED : BST_UNCHECKED, 0);
-				SetDlgItemInt(hDlg, IDC_EDIT_TRANS_THRESHOLD, configuracion->alphaThreshold, TRUE);
-
-				if (configuracion->alphaBlend) {
-					EnableWindow(GetDlgItem(hDlg, IDC_CHECK_TRANS_ALPHAONBLACK), FALSE);
-					EnableWindow(GetDlgItem(hDlg, IDC_EDIT_TRANS_THRESHOLD),     FALSE);
-					EnableWindow(GetDlgItem(hDlg, IDC_CHECK_TRANS_BMP),          FALSE);
-				}
-			} else {
-				MessageBox(hDlg, L"Empty Configuration!", 0, MB_OK);
+			if (configuracion->alphaBlend) {
+				EnableWindow(GetDlgItem(hDlg, IDC_CHECK_TRANS_ALPHAONBLACK), FALSE);
+				EnableWindow(GetDlgItem(hDlg, IDC_EDIT_TRANS_THRESHOLD),     FALSE);
+				EnableWindow(GetDlgItem(hDlg, IDC_CHECK_TRANS_BMP),          FALSE);
 			}
 		}
 		return TRUE;
@@ -59,8 +40,15 @@ LRESULT CALLBACK OptionDialog8(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 			break;
 		}
 		return 0;
-	case WM_CTLCOLORSTATIC:
-		return (LRESULT)GetStockObject(WHITE_BRUSH);
+	case WM_PAINT:
+		PaintOptionsDialog(hDlg, 8);
+		return 0;
+	case WM_NOTIFY:
+		if (((LPNMHDR) lParam)->code == PSN_HELP) {
+			ToggleKeyboard();
+			return 0;
+		}
+		break;
 	}
 
 	return DefWindowProc(hDlg, uMsg, wParam, lParam);

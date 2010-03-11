@@ -15,30 +15,11 @@ LRESULT CALLBACK OptionDialog4(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 	{
 	case WM_INITDIALOG:
 		{
-			// Initialize handle to property sheet
-			g_hDlg[4] = hDlg;
+			InitOptionsDialog(hDlg, 4);
 
-			SHINITDLGINFO shidi;
-
-			// Create a Done button and size it.  
-			shidi.dwMask = SHIDIM_FLAGS;
-			shidi.dwFlags = SHIDIF_DONEBUTTON | SHIDIF_SIZEDLG | SHIDIF_WANTSCROLLBAR;
-			shidi.hDlg = hDlg;
-			SHInitDialog(&shidi);
-
-			SHInitExtraControls();
-
-			if (configuracion == NULL) {
-				configuracion = new CConfiguracion();
-				configuracion->cargaXMLConfig();
-			}
-			if (configuracion != NULL) {
-				SetDlgItemText(hDlg, IDC_EDIT_BUBBLE_NOTIF,		configuracion->bubble_notif);
-				SetDlgItemText(hDlg, IDC_EDIT_BUBBLE_STATE,		configuracion->bubble_state);
-				SetDlgItemText(hDlg, IDC_EDIT_BUBBLE_ALARM,		configuracion->bubble_alarm);
-			} else {
-				MessageBox(hDlg, L"Empty Configuration!", 0, MB_OK);
-			}
+			SetDlgItemText(hDlg, IDC_EDIT_BUBBLE_NOTIF,		configuracion->bubble_notif);
+			SetDlgItemText(hDlg, IDC_EDIT_BUBBLE_STATE,		configuracion->bubble_state);
+			SetDlgItemText(hDlg, IDC_EDIT_BUBBLE_ALARM,		configuracion->bubble_alarm);
 		}
 		return TRUE;
 	case WM_COMMAND:
@@ -75,8 +56,15 @@ LRESULT CALLBACK OptionDialog4(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 			}
 		}
 		return 0;
-	case WM_CTLCOLORSTATIC:
-		return (LRESULT)GetStockObject(WHITE_BRUSH);
+	case WM_PAINT:
+		PaintOptionsDialog(hDlg, 4);
+		return 0;
+	case WM_NOTIFY:
+		if (((LPNMHDR) lParam)->code == PSN_HELP) {
+			ToggleKeyboard();
+			return 0;
+		}
+		break;
 	}
 
 	return DefWindowProc(hDlg, uMsg, wParam, lParam);

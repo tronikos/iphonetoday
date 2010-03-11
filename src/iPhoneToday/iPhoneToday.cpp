@@ -1535,8 +1535,8 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 	// Pintamos el nombre del icono
 	posTexto.top = int(icono->y + width + cs->cs.fontOffset);
 	posTexto.bottom = posTexto.top + cs->cs.fontSize;
-	posTexto.left = int(icono->x - (cs->distanceIconsH * 0.5));
-	posTexto.right = int(icono->x + width + (cs->distanceIconsH * 0.5));
+	posTexto.left = int(icono->x - (cs->distanceIconsH * 0.5) + 0.5);
+	posTexto.right = int(icono->x + width + (cs->distanceIconsH * 0.5) + 0.5);
 
 	if (cs->cs.fontSize > 0) {
 		TCHAR *p = icono->nombre;
@@ -2167,14 +2167,14 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 			}
 
 			SHINITDLGINFO shidi;
-
-			// Create a Done button and size it.
 			shidi.dwMask = SHIDIM_FLAGS;
 			shidi.dwFlags = SHIDIF_DONEBUTTON | SHIDIF_SIZEDLG | SHIDIF_WANTSCROLLBAR;
 			shidi.hDlg = hDlg;
 			SHInitDialog(&shidi);
 
-			SHInitExtraControls();
+			if (FindWindow(L"MS_SIPBUTTON", NULL) == NULL) {
+				SetWindowLong(hDlg, GWL_EXSTYLE, GetWindowLong(hDlg, GWL_EXSTYLE) | WS_EX_CONTEXTHELP | WS_EX_CAPTIONOKBTN);
+			}
 
 			// Configuramos el elemento Screen
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_SPIN_SCREEN), UDM_SETBUDDY, (WPARAM) GetDlgItem(hDlg, IDC_MICON_SCREEN), 0);
@@ -2546,6 +2546,9 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 			}
 		}
 		break;
+	case WM_HELP:
+		ToggleKeyboard();
+		break;
 	case WM_DESTROY:
 		break;
 	}
@@ -2585,14 +2588,14 @@ LRESULT CALLBACK editHeaderDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 			}
 
 			SHINITDLGINFO shidi;
-
-			// Create a Done button and size it.
 			shidi.dwMask = SHIDIM_FLAGS;
 			shidi.dwFlags = SHIDIF_DONEBUTTON | SHIDIF_SIZEDLG | SHIDIF_WANTSCROLLBAR;
 			shidi.hDlg = hDlg;
 			SHInitDialog(&shidi);
 
-			SHInitExtraControls();
+			if (FindWindow(L"MS_SIPBUTTON", NULL) == NULL) {
+				SetWindowLong(hDlg, GWL_EXSTYLE, GetWindowLong(hDlg, GWL_EXSTYLE) | WS_EX_CONTEXTHELP | WS_EX_CAPTIONOKBTN);
+			}
 
 			SetDlgItemText(hDlg, IDC_EDIT_HEADER, listaPantallas->listaPantalla[estado->pantallaActiva]->header);
 		}
@@ -2629,6 +2632,9 @@ LRESULT CALLBACK editHeaderDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 			EndDialog(hDlg, LOWORD(wParam));
 			return FALSE;
 		}
+		break;
+	case WM_HELP:
+		ToggleKeyboard();
 		break;
 	case WM_DESTROY:
 		break;

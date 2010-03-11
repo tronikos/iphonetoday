@@ -41,6 +41,9 @@ extern BOOL doNotAskToSaveOptions;
 //////////////////////////////////////////////////////////////////////////////
 
 // Option dialog functions
+void				InitOptionsDialog(HWND, INT);
+void				PaintOptionsDialog(HWND, INT);
+
 UINT	CALLBACK	PropSheetPageProc(HWND, UINT, LPPROPSHEETPAGE);  // Option dialog PropSheetPageProc callback function
 
 INT					PropSheetCallback(HWND, UINT, LPARAM);  // PropertySheet callback function
