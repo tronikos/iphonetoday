@@ -98,6 +98,7 @@ public:
 
 	// Special icons
 	SpecialIconSettings dow;	// DayOfWeek
+	BOOL dowUseLocale;
 	TCHAR diasSemana[7][16];
 	SpecialIconSettings dom;	// DayOfMonth
 	SpecialIconSettings clck;	// Clock

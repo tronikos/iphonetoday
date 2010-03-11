@@ -88,7 +88,9 @@ LRESULT CALLBACK OptionDialog5(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 			SendMessage(GetDlgItem(hDlg, IDC_COMBO_SIS), CB_ADDSTRING, 0, (LPARAM)L"Signal strength");
 
 			SendMessage(GetDlgItem(hDlg, IDC_CHECK_CLOCK_FORMAT12), BM_SETCHECK, configuracion->clock12Format ? BST_CHECKED : BST_UNCHECKED, 0);
+			SendMessage(GetDlgItem(hDlg, IDC_CHECK_DOW_USE_LOCALE), BM_SETCHECK, configuracion->dowUseLocale ? BST_CHECKED : BST_UNCHECKED, 0);
 			ShowWindow(GetDlgItem(hDlg, IDC_CHECK_CLOCK_FORMAT12), SW_HIDE);
+			ShowWindow(GetDlgItem(hDlg, IDC_CHECK_DOW_USE_LOCALE), SW_HIDE);
 		}
 		return TRUE;
 	case WM_COMMAND:
@@ -99,6 +101,7 @@ LRESULT CALLBACK OptionDialog5(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 				if (HIWORD(wParam) == CBN_SELCHANGE) {
 					sis_save(hDlg, cur_sis);
 					ShowWindow(GetDlgItem(hDlg, IDC_CHECK_CLOCK_FORMAT12), SW_HIDE);
+					ShowWindow(GetDlgItem(hDlg, IDC_CHECK_DOW_USE_LOCALE), SW_HIDE);
 					TCHAR str[MAX_PATH];
 					GetDlgItemText(hDlg, IDC_COMBO_SIS, str, MAX_PATH);
 					if (lstrcmpi(str, L"Battery") == 0) {
@@ -114,6 +117,7 @@ LRESULT CALLBACK OptionDialog5(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 					} else if (lstrcmpi(str, L"Day of week") == 0) {
 						cur_sis = &dow;
 						sis_load(hDlg, cur_sis);
+						ShowWindow(GetDlgItem(hDlg, IDC_CHECK_DOW_USE_LOCALE), SW_SHOW);
 					} else if (lstrcmpi(str, L"Volume") == 0) {
 						cur_sis = &vol;
 						sis_load(hDlg, cur_sis);
@@ -216,6 +220,7 @@ BOOL SaveConfiguration5(HWND hDlg)
 	memcpy(&configuracion->sign, &sign, sizeof(SpecialIconSettings));
 
 	configuracion->clock12Format = SendMessage(GetDlgItem(hDlg, IDC_CHECK_CLOCK_FORMAT12), BM_GETCHECK, 0, 0) == BST_CHECKED;
+	configuracion->dowUseLocale  = SendMessage(GetDlgItem(hDlg, IDC_CHECK_DOW_USE_LOCALE), BM_GETCHECK, 0, 0) == BST_CHECKED;
 
 	return TRUE;
 }
