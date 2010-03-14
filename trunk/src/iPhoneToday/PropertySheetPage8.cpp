@@ -34,6 +34,12 @@ LRESULT CALLBACK OptionDialog8(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 		{
 		case IDC_CHECK_TRANS_ALPHABLEND:
 			BOOL checked = SendMessage(GetDlgItem(hDlg, IDC_CHECK_TRANS_ALPHABLEND), BM_GETCHECK, 0, 0) == BST_CHECKED;
+			if (checked && !nativelySupportsAlphaBlend()) {
+				if (MessageBox(hDlg, L"Your device does not natively support AlphaBlend. Do you want to enable it? Scrolling will be slow!", L"Warning", MB_YESNO) == IDNO) {
+					SendMessage(GetDlgItem(hDlg, IDC_CHECK_TRANS_ALPHABLEND), BM_SETCHECK, BST_UNCHECKED, 0);
+					break;
+				}
+			}
 			EnableWindow(GetDlgItem(hDlg, IDC_CHECK_TRANS_ALPHAONBLACK), !checked);
 			EnableWindow(GetDlgItem(hDlg, IDC_EDIT_TRANS_THRESHOLD),     !checked);
 			EnableWindow(GetDlgItem(hDlg, IDC_CHECK_TRANS_BMP),          !checked);

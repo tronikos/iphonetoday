@@ -181,7 +181,8 @@ DWORD MemoryUsed()
 	return mems.dwTotalPhys - mems.dwAvailPhys;
 }
 
-BOOL isPND() {
+BOOL isPND()
+{
 	static int i = -1;
 	if (i == -1) {
 		TCHAR buf[MAX_PATH];
@@ -190,6 +191,22 @@ BOOL isPND() {
 			i = 1;
 		} else {
 			i = 0;
+		}
+	}
+	return (i == 1);
+}
+
+BOOL nativelySupportsAlphaBlend()
+{
+	static int i = -1;
+	if (i == -1) {
+		i = 0;
+		HMODULE hCoredllLib = LoadLibrary(L"coredll.dll");
+		if (hCoredllLib != NULL) {
+			if (GetProcAddress(hCoredllLib, L"AlphaBlend") != NULL) {
+				i = 1;
+			}
+			FreeLibrary(hCoredllLib);
 		}
 	}
 	return (i == 1);
