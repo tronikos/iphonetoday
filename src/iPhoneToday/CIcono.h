@@ -12,8 +12,9 @@
 #define TIMER_RESET(t) (t = 0)
 
 extern long loadImage_duration;
-extern long loadImage_IImagingFactory_CreateImageFromFile_duration;
-extern long loadImage_IImagingFactory_CreateBitmapFromImage_duration;
+extern long loadImage_load_duration;
+extern long loadImage_resize_duration;
+extern long loadImage_fix_duration;
 
 #else
 

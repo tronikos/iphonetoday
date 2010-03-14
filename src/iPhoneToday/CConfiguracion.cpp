@@ -205,8 +205,9 @@ BOOL CConfiguracion::cargaIconos(HDC *hDC, CListaPantalla *listaPantallas)
 	BOOL result = false;
 
 	TIMER_RESET(loadImage_duration);
-	TIMER_RESET(loadImage_IImagingFactory_CreateImageFromFile_duration);
-	TIMER_RESET(loadImage_IImagingFactory_CreateBitmapFromImage_duration);
+	TIMER_RESET(loadImage_load_duration);
+	TIMER_RESET(loadImage_resize_duration);
+	TIMER_RESET(loadImage_fix_duration);
 
 	// long duration = -(long)GetTickCount();
 	result = cargaXMLIconos(listaPantallas);
@@ -272,8 +273,9 @@ BOOL CConfiguracion::cargaIconos(HDC *hDC, CListaPantalla *listaPantallas)
 
 #ifdef TIMING
 	NKDbgPrintfW(L" *** %d msec\t loadImage.\n", loadImage_duration);	
-	NKDbgPrintfW(L" *** %d msec\t loadImage_IImagingFactory_CreateImageFromFile_duration.\n", loadImage_IImagingFactory_CreateImageFromFile_duration);
-	NKDbgPrintfW(L" *** %d msec\t loadImage_IImagingFactory_CreateBitmapFromImage_duration.\n", loadImage_IImagingFactory_CreateBitmapFromImage_duration);
+	NKDbgPrintfW(L" *** %d msec\t loadImage_load_duration.\n", loadImage_load_duration);
+	NKDbgPrintfW(L" *** %d msec\t loadImage_resize_duration.\n", loadImage_resize_duration);
+	NKDbgPrintfW(L" *** %d msec\t loadImage_fix_duration.\n", loadImage_fix_duration);
 #endif
 
 	result = true;

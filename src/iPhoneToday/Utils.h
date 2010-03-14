@@ -29,3 +29,4 @@ DWORD MemoryFree();
 DWORD MemoryUsed();
 
 BOOL isPND();
+BOOL nativelySupportsAlphaBlend();
