@@ -59,6 +59,7 @@ void CConfigurationScreen::defaultValues()
 	this->cs.fontBold = 0;
 	this->cs.fontOffset = 0;
 	this->cs.fontShadow = 1;
+	this->cs.fontRoundRect = 0;
 
 	this->cs.offset.left = 0;
 	this->cs.offset.top = 0;
@@ -98,11 +99,12 @@ BOOL CConfigurationScreen::loadXMLConfig(TiXmlElement *pRoot)
 			XMLUtils::GetAttr(pElem, "right",  &this->cs.offset.right);
 			XMLUtils::GetAttr(pElem, "bottom", &this->cs.offset.bottom);
 		} else if(_stricmp(nameNode, "Font") == 0) {
-			XMLUtils::GetAttr(pElem, "size",   &this->cs.fontSize);
-			XMLUtils::GetAttr(pElem, "color",  &this->cs.fontColor);
-			XMLUtils::GetAttr(pElem, "bold",   &this->cs.fontBold);
-			XMLUtils::GetAttr(pElem, "offset", &this->cs.fontOffset);
-			XMLUtils::GetAttr(pElem, "shadow", &this->cs.fontShadow);
+			XMLUtils::GetAttr(pElem, "size",      &this->cs.fontSize);
+			XMLUtils::GetAttr(pElem, "color",     &this->cs.fontColor);
+			XMLUtils::GetAttr(pElem, "bold",      &this->cs.fontBold);
+			XMLUtils::GetAttr(pElem, "offset",    &this->cs.fontOffset);
+			XMLUtils::GetAttr(pElem, "shadow",    &this->cs.fontShadow);
+			XMLUtils::GetAttr(pElem, "roundrect", &this->cs.fontRoundRect);
 		} else if(_stricmp(nameNode, "Background") == 0) {
 			XMLUtils::GetAttr(pElem, "color1",  &this->cs.backColor1);
 			XMLUtils::GetAttr(pElem, "color2",  &this->cs.backColor2);
@@ -147,11 +149,12 @@ BOOL CConfigurationScreen::saveXMLConfig(TiXmlElement *pRoot)
 	pRoot->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("Font");
-	XMLUtils::SetAttr(pElem, "size",   this->cs.fontSize);
-	XMLUtils::SetAttr(pElem, "color",  this->cs.fontColor);
-	XMLUtils::SetAttr(pElem, "bold",   this->cs.fontBold);
-	XMLUtils::SetAttr(pElem, "offset", this->cs.fontOffset);
-	XMLUtils::SetAttr(pElem, "shadow", this->cs.fontShadow);
+	XMLUtils::SetAttr(pElem, "size",      this->cs.fontSize);
+	XMLUtils::SetAttr(pElem, "color",     this->cs.fontColor);
+	XMLUtils::SetAttr(pElem, "bold",      this->cs.fontBold);
+	XMLUtils::SetAttr(pElem, "offset",    this->cs.fontOffset);
+	XMLUtils::SetAttr(pElem, "shadow",    this->cs.fontShadow);
+	XMLUtils::SetAttr(pElem, "roundrect", this->cs.fontRoundRect);
 	pRoot->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("Background");
