@@ -10,7 +10,7 @@ long loadImage_resize_duration = 0;
 long loadImage_fix_duration = 0;
 #endif
 
-HBITMAP LoadImageWithImagingApi(LPTSTR strFileName);
+IBitmapImage* LoadImageWithImagingApi(BitmapData *lockedBitmapData, LPTSTR strFileName, int width, int height, int bitsPerPixel, float factor);
 HBITMAP LoadImageWithImgdecmp(LPTSTR strFileName);
 
 CIcono::CIcono(void)
@@ -54,80 +54,96 @@ void CIcono::loadImage(HDC *hDC, TCHAR *pathImage, int width, int height, int bi
 	HBITMAP hbmResultOld = NULL;
 	BYTE *pBits = NULL;
 
-
 	const TCHAR *ext = wcsrchr(pathImage, '.');
 	BOOL isPNG = lstrcmpi(ext, L".png") == 0;
 	BOOL isBMP = lstrcmpi(ext, L".bmp") == 0;
 
-	// temp HDC and HBITMAP for loading the image before resizing it
-	HDC hdcTemp = CreateCompatibleDC(GetDC(NULL));
+	// loaded bitmap by the Imaging API (already resized)
+	IBitmapImage *pBitmap = NULL;
+	BitmapData lockedBitmapData;
+
+	// loaded bitmap by the other methods (needs to be resized)
 	HBITMAP hbmTemp = NULL;
-	HBITMAP hbmTempOld = NULL;
 
 	BOOL byImgdecmp = FALSE;
+	BOOL loaded = FALSE;
 
 	TIMER_START(loadImage_load_duration);
-	if (hbmTemp == NULL && isBMP) {
+
+	if (!loaded && isBMP) {
 		hbmTemp = SHLoadDIBitmap(pathImage);
+		loaded = (hbmTemp != NULL);
 	}
-	if (hbmTemp == NULL && g_pImgFactory != NULL ) {
-		hbmTemp = LoadImageWithImagingApi(pathImage);
+	if (!loaded && g_pImgFactory != NULL ) {
+		pBitmap = LoadImageWithImagingApi(&lockedBitmapData, pathImage, width, height, bitsPerPixel, factor);
+		if (pBitmap) {
+			pBits = (BYTE *) lockedBitmapData.Scan0;
+		}
+		loaded = (pBitmap != NULL);
 	}
-	if (hbmTemp == NULL && isPNG) {
+	if (!loaded && isPNG) {
 		hbmTemp = LoadPng(pathImage, 0, 0, FALSE);
+		loaded = (hbmTemp != NULL);
 	}
-	if (hbmTemp == NULL && g_hImgdecmpDll != NULL) {
+	if (!loaded && g_hImgdecmpDll != NULL) {
 		hbmTemp = LoadImageWithImgdecmp(pathImage);
 		if (hbmTemp) byImgdecmp = TRUE;
+		loaded = (hbmTemp != NULL);
 	}
+
 	TIMER_STOP(loadImage_load_duration);
 
-	if (hbmTemp == NULL) {
-		DeleteDC(hdcTemp);
+	if (!loaded) {
 		return;
 	}
 
+	// Create result hdc
+	hdcResult = CreateCompatibleDC(*hDC);
+
 	TIMER_START(loadImage_resize_duration);
 
-	hbmTempOld = (HBITMAP) SelectObject(hdcTemp, hbmTemp);
+	if (hbmTemp) {
+		HDC hdcTemp = CreateCompatibleDC(GetDC(NULL));
+		HBITMAP hbmTempOld = (HBITMAP) SelectObject(hdcTemp, hbmTemp);
 
-	BITMAP bm;
-	GetObject(hbmTemp, sizeof(BITMAP), &bm);
-	int widthTemp = bm.bmWidth;
-	int heightTemp = bm.bmHeight;
+		BITMAP bm;
+		GetObject(hbmTemp, sizeof(BITMAP), &bm);
+		int widthTemp = bm.bmWidth;
+		int heightTemp = bm.bmHeight;
 
-	// get desired width and height
-	if (width == 0 && height == 0) {
-		width = int(widthTemp * factor);
-		height = int(heightTemp * factor);
-	} else {
-		if (width == 0) {
-			width = widthTemp * height / heightTemp / 2 * 2;
+		// get desired width and height
+		if (width == 0 && height == 0) {
+			width = int(widthTemp * factor);
+			height = int(heightTemp * factor);
+		} else {
+			if (width == 0) {
+				width = widthTemp * height / heightTemp / 2 * 2;
+			}
+			if (height == 0) {
+				height = heightTemp * width / widthTemp / 2 * 2;
+			}
 		}
-		if (height == 0) {
-			height = heightTemp * width / widthTemp / 2 * 2;
-		}
+
+		// Create result dib bitmap
+		BITMAPINFO bmInfo;
+		ZeroMemory(&bmInfo, sizeof(BITMAPINFO));
+		bmInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+		bmInfo.bmiHeader.biWidth = width;
+		bmInfo.bmiHeader.biHeight = height;
+		bmInfo.bmiHeader.biPlanes = 1;
+		bmInfo.bmiHeader.biBitCount = GetPixelFormatSize(bitsPerPixel);
+		hbmResult = CreateDIBSection(hdcResult, (BITMAPINFO *)&bmInfo, DIB_RGB_COLORS, (void **)&pBits, NULL, 0);
+		hbmResultOld = (HBITMAP) SelectObject(hdcResult, hbmResult);
+
+		// Resize the temp hdc and copy it to the result hdc
+		//SetStretchBltMode(hdcResult, BILINEAR);
+		StretchBlt(hdcResult, 0, 0, width, height, hdcTemp, 0, 0, widthTemp, heightTemp, SRCCOPY);
+
+		// Clean up temp dc
+		SelectObject(hdcTemp, hbmTempOld);
+		DeleteObject(hbmTemp);
+		DeleteDC(hdcTemp);
 	}
-
-	// Create result hdc and a dib bitmap
-	hdcResult = CreateCompatibleDC(*hDC);
-	BITMAPINFO bmInfo;
-	ZeroMemory(&bmInfo, sizeof(BITMAPINFO));
-	bmInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-	bmInfo.bmiHeader.biWidth = width;
-	bmInfo.bmiHeader.biHeight = height;
-	bmInfo.bmiHeader.biPlanes = 1;
-	bmInfo.bmiHeader.biBitCount = GetPixelFormatSize(bitsPerPixel);
-	hbmResult = CreateDIBSection(hdcResult, (BITMAPINFO *)&bmInfo, DIB_RGB_COLORS, (void **)&pBits, NULL, 0);
-	hbmResultOld = (HBITMAP) SelectObject(hdcResult, hbmResult);
-
-	// Resize the temp hdc and copy it to the result hdc
-	StretchBlt(hdcResult, 0, 0, width, height, hdcTemp, 0, 0, widthTemp, heightTemp, SRCCOPY);
-
-	// Clean up temp dc
-	SelectObject(hdcTemp, hbmTempOld);
-	DeleteObject(hbmTemp);
-	DeleteDC(hdcTemp);
 
 	TIMER_STOP(loadImage_resize_duration);
 
@@ -223,6 +239,15 @@ void CIcono::loadImage(HDC *hDC, TCHAR *pathImage, int width, int height, int bi
 		}
 	}
 
+	// if the bitmap was loaded by the Imaging API create the result dib bitmap
+	if (pBitmap) {
+		hbmResult = CreateBitmap(lockedBitmapData.Width, lockedBitmapData.Height, 1,
+			GetPixelFormatSize(lockedBitmapData.PixelFormat), lockedBitmapData.Scan0);
+		pBitmap->UnlockBits(&lockedBitmapData);
+		pBitmap->Release();
+		hbmResultOld = (HBITMAP) SelectObject(hdcResult, hbmResult);
+	}
+
 	// if alphablend is disabled and this icon is not a pressed icon
 	// then in order to save memory convert the 32bit image to whatever the screen supports (usually 16bit)
 	if (!configuracion->alphaBlend && !alwaysPremultiply && GetPixelFormatSize(bitsPerPixel) == 32) {
@@ -302,56 +327,51 @@ void CIcono::clearImageObjects()
 
 ///////////////////////////////////////////////////////////
 
-HBITMAP LoadImageWithImagingApi(LPTSTR strFileName)
+IBitmapImage* LoadImageWithImagingApi(BitmapData *lockedBitmapData, LPTSTR strFileName, int width, int height, int bitsPerPixel, float factor)
 {
-	HBITMAP hResult = NULL;
+	IBitmapImage *pBitmap = NULL;
 
 	//IImagingFactory *g_pImgFactory = NULL;
 	//CoInitializeEx(NULL, COINIT_MULTITHREADED);
-    //if (SUCCEEDED(CoCreateInstance(CLSID_ImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IImagingFactory, (void **)&g_pImgFactory))) {
+	//if (SUCCEEDED(CoCreateInstance(CLSID_ImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IImagingFactory, (void **) &g_pImgFactory))) {
 		IImage *pImage = NULL;
 		ImageInfo ii;
 		if (SUCCEEDED(g_pImgFactory->CreateImageFromFile(strFileName, &pImage))
 			&& SUCCEEDED(pImage->GetImageInfo(&ii)))
 		{
-#if 1
-			IBitmapImage *pBitmap = NULL;
-			if (SUCCEEDED(g_pImgFactory->CreateBitmapFromImage(pImage, 0, 0, 0, InterpolationHintDefault, &pBitmap))) {
-				RECT rect = {0, 0, ii.Width, ii.Height};
-				BitmapData lockedBitmapData;
-				lockedBitmapData.Width = ii.Width;
-				lockedBitmapData.Height = ii.Height;
-				lockedBitmapData.PixelFormat = ii.PixelFormat;
-				pBitmap->LockBits(&rect, ImageLockModeRead, ii.PixelFormat, &lockedBitmapData);
-				hResult = CreateBitmap(lockedBitmapData.Width, lockedBitmapData.Height, 1,
-					GetPixelFormatSize(lockedBitmapData.PixelFormat), lockedBitmapData.Scan0);
-				pBitmap->UnlockBits(&lockedBitmapData);
+			int widthTemp = ii.Width;
+			int heightTemp = ii.Height;
+
+			// get desired width and height
+			if (width == 0 && height == 0) {
+				width = int(widthTemp * factor);
+				height = int(heightTemp * factor);
+			} else {
+				if (width == 0) {
+					width = widthTemp * height / heightTemp / 2 * 2;
+				}
+				if (height == 0) {
+					height = heightTemp * width / widthTemp / 2 * 2;
+				}
 			}
-			if (pBitmap) pBitmap->Release();
-#else // slower
-			HDC hdcTemp = CreateCompatibleDC(GetDC(NULL));
-			BYTE *pBits;
-			BITMAPINFO bmInfo;
-			ZeroMemory(&bmInfo, sizeof(BITMAPINFO));
-			bmInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-			bmInfo.bmiHeader.biWidth = ii.Width;
-			bmInfo.bmiHeader.biHeight = ii.Height;
-			bmInfo.bmiHeader.biPlanes = 1;
-			bmInfo.bmiHeader.biBitCount = GetPixelFormatSize(ii.PixelFormat);
-			hResult = CreateDIBSection(hdcTemp, (BITMAPINFO *)&bmInfo, DIB_RGB_COLORS, (void **)&pBits, NULL, 0);
-			HBITMAP hBitmapOld = (HBITMAP) SelectObject(hdcTemp, hResult);
-			RECT rect = {0, 0, ii.Width, ii.Height};
-			pImage->Draw(hdcTemp, &rect, 0);
-			SelectObject(hdcTemp, hBitmapOld);
-			DeleteDC(hdcTemp);
-#endif
+			if (SUCCEEDED(g_pImgFactory->CreateBitmapFromImage(pImage, width, height, bitsPerPixel, InterpolationHintDefault, &pBitmap))) {
+				RECT rect = {0, 0, width, height};
+				lockedBitmapData->Width = width;
+				lockedBitmapData->Height = height;
+				lockedBitmapData->PixelFormat = ii.PixelFormat;
+				pBitmap->LockBits(&rect, ImageLockModeRead, bitsPerPixel, lockedBitmapData);
+				//hResult = CreateBitmap(lockedBitmapData->Width, lockedBitmapData->Height, 1,
+				//	GetPixelFormatSize(lockedBitmapData->PixelFormat), lockedBitmapData->Scan0);
+				//pBitmap->UnlockBits(lockedBitmapData);
+			}
+			//if (pBitmap) pBitmap->Release();
 		}
 		if (pImage) pImage->Release();
 	//}
 	//if (g_pImgFactory) g_pImgFactory->Release();
 	//CoUninitialize();
 
-	return hResult;
+	return pBitmap;
 }
 
 ///////////////////////////////////////////////////////////
