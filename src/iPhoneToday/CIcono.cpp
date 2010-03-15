@@ -78,6 +78,8 @@ void CIcono::loadImage(HDC *hDC, TCHAR *pathImage, int width, int height, int bi
 		pBitmap = LoadImageWithImagingApi(&lockedBitmapData, pathImage, width, height, bitsPerPixel, factor);
 		if (pBitmap) {
 			pBits = (BYTE *) lockedBitmapData.Scan0;
+			width = lockedBitmapData.Width;
+			height = lockedBitmapData.Height;
 		}
 		loaded = (pBitmap != NULL);
 	}
