@@ -356,7 +356,7 @@ IBitmapImage* LoadImageWithImagingApi(BitmapData *lockedBitmapData, LPTSTR strFi
 					height = heightTemp * width / widthTemp / 2 * 2;
 				}
 			}
-			if (SUCCEEDED(g_pImgFactory->CreateBitmapFromImage(pImage, width, height, bitsPerPixel, InterpolationHintDefault, &pBitmap))) {
+			if (SUCCEEDED(g_pImgFactory->CreateBitmapFromImage(pImage, width, height, bitsPerPixel, InterpolationHintAveraging, &pBitmap))) {
 				RECT rect = {0, 0, width, height};
 				lockedBitmapData->Width = width;
 				lockedBitmapData->Height = height;
