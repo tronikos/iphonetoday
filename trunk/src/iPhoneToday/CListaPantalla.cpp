@@ -133,7 +133,7 @@ CIcono *CListaPantalla::copyIcono(int nPantallaActual, int nIconoActual, int nSc
 	pantalla->numIconos++;
 	pantalla->debeActualizar = TRUE;
 
-	if (nPantallaActual != -1) {
+	if (nPantallaActual >= 0) {
 		if (listaPantalla[nPantallaActual]->numIconos == 0 && numPantallas > 1) {
 			delete listaPantalla[nPantallaActual];
 			for (int i = nPantallaActual; i < int(numPantallas - 1); i++) {
