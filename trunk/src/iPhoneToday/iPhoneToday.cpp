@@ -35,6 +35,13 @@ POINTS posImage = {0, 2};
 HDC		hDCMem = NULL;
 HBITMAP	hbmMem = NULL;
 HBITMAP	hbmMemOld = NULL;
+
+// Used only when configuration->alphablend == 2
+HDC		hDCMem2 = NULL;
+HBITMAP	hbmMem2 = NULL;
+HBITMAP	hbmMemOld2 = NULL;
+BITMAP bmBack = {0};
+
 HBRUSH  hBrushFondo = NULL;
 HBRUSH  hBrushTrans = NULL;
 HBRUSH  hBrushAnimation = NULL;
@@ -727,9 +734,31 @@ LRESULT doPaint (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 
 	hDC = BeginPaint(hwnd, &ps);
 
+	if (configuracion->alphaBlend == 2 && hDCMem2 == NULL) {
+		hDCMem2 = CreateCompatibleDC(hDC);
+		hbmMem2 = CreateCompatibleBitmap(hDC, rcWindBounds.right - rcWindBounds.left, rcWindBounds.bottom - rcWindBounds.top);
+		hbmMemOld2 = (HBITMAP)SelectObject(hDCMem2, hbmMem2);
+	}
 	if (hDCMem == NULL) {
 		hDCMem = CreateCompatibleDC(hDC);
-		hbmMem = CreateCompatibleBitmap(hDC, rcWindBounds.right - rcWindBounds.left, rcWindBounds.bottom - rcWindBounds.top);
+		if (configuracion->alphaBlend == 2) {
+			BITMAPINFO bmBackInfo;
+			memset(&bmBackInfo.bmiHeader, 0, sizeof(BITMAPINFOHEADER));
+			bmBackInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+			bmBackInfo.bmiHeader.biWidth = rcWindBounds.right - rcWindBounds.left;
+			bmBackInfo.bmiHeader.biHeight = rcWindBounds.bottom - rcWindBounds.top;
+			bmBackInfo.bmiHeader.biPlanes = 1;
+			bmBackInfo.bmiHeader.biBitCount = 32;
+
+			bmBack.bmWidth = bmBackInfo.bmiHeader.biWidth;
+			bmBack.bmHeight = bmBackInfo.bmiHeader.biHeight;
+			bmBack.bmPlanes = bmBackInfo.bmiHeader.biPlanes;
+			bmBack.bmBitsPixel = bmBackInfo.bmiHeader.biBitCount;
+
+			hbmMem = CreateDIBSection(hDC, &bmBackInfo, DIB_RGB_COLORS, &bmBack.bmBits, 0, 0);
+		} else {
+			hbmMem = CreateCompatibleBitmap(hDC, rcWindBounds.right - rcWindBounds.left, rcWindBounds.bottom - rcWindBounds.top);
+		}
 		hbmMemOld = (HBITMAP)SelectObject(hDCMem, hbmMem);
 
 		SetBkMode(hDCMem, TRANSPARENT);
@@ -821,7 +850,13 @@ LRESULT doPaint (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 			estado->estadoCuadro = 3;
 		}
 	}
-	BitBlt(hDC, rcWindBounds.left, rcWindBounds.top, rcWindBounds.right - rcWindBounds.left, rcWindBounds.bottom - rcWindBounds.top, hDCMem, rcWindBounds.left, rcWindBounds.top, SRCCOPY);
+	if (configuracion->alphaBlend == 2) {
+		// to avoid screen tearing first copy the DIB section of hDCMem to the device compatible bitmap of hDCMem2 and then copy it to the window's device context hDC
+		BitBlt(hDCMem2, rcWindBounds.left, rcWindBounds.top, rcWindBounds.right - rcWindBounds.left, rcWindBounds.bottom - rcWindBounds.top, hDCMem, rcWindBounds.left, rcWindBounds.top, SRCCOPY);
+		BitBlt(hDC, rcWindBounds.left, rcWindBounds.top, rcWindBounds.right - rcWindBounds.left, rcWindBounds.bottom - rcWindBounds.top, hDCMem2, rcWindBounds.left, rcWindBounds.top, SRCCOPY);
+	} else {
+		BitBlt(hDC, rcWindBounds.left, rcWindBounds.top, rcWindBounds.right - rcWindBounds.left, rcWindBounds.bottom - rcWindBounds.top, hDCMem, rcWindBounds.left, rcWindBounds.top, SRCCOPY);
+	}
 
 	EndPaint(hwnd, &ps);
 
@@ -1714,12 +1749,21 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type) {
 
 		BOOL ab = FALSE;
 		if (configuracion->alphaBlend) {
-			BLENDFUNCTION bf;
-			bf.BlendOp = AC_SRC_OVER;
-			bf.BlendFlags = 0;
-			bf.SourceConstantAlpha = 255;
-			bf.AlphaFormat = AC_SRC_ALPHA;
-			ab = AlphaBlend(*hDC, xDestOrg, yDestOrg, cx, cy, pantalla->hDC, xSrcOrg, ySrcOrg, cx, cy, bf);
+			if (configuracion->alphaBlend == 2 && bmBack.bmBits) {
+				BITMAP bmScreen = {0};
+				bmScreen.bmWidth = pantalla->anchoPantalla;
+				bmScreen.bmHeight = pantalla->altoPantalla;
+				bmScreen.bmBits = pantalla->pBits;
+				bmScreen.bmBitsPixel = 32;
+				ab = AlphaBlend2(&bmBack, xDestOrg, yDestOrg, &bmScreen, xSrcOrg, ySrcOrg, cx, cy);
+			} else {
+				BLENDFUNCTION bf;
+				bf.BlendOp = AC_SRC_OVER;
+				bf.BlendFlags = 0;
+				bf.SourceConstantAlpha = 255;
+				bf.AlphaFormat = AC_SRC_ALPHA;
+				ab = AlphaBlend(*hDC, xDestOrg, yDestOrg, cx, cy, pantalla->hDC, xSrcOrg, ySrcOrg, cx, cy, bf);
+			}
 		}
 		if (!ab) {
 			if (isTransparent || configuracion->fondoPantalla != NULL) {
@@ -2445,7 +2489,6 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 			// All Ok, Icon Creation
 			CPantalla *pantalla = NULL;
 			CIcono *icono = NULL;
-			// BITMAP bm;
 
 			if (newScreen) {
 				pantalla = listaPantallas->creaPantalla();
@@ -2793,6 +2836,7 @@ BOOL inicializaApp(HWND hwnd) {
 
 BOOL borraObjetosHDC() {
 	borraHDC_HBITMPAP(&hDCMem, &hbmMem, &hbmMemOld);
+	borraHDC_HBITMPAP(&hDCMem2, &hbmMem2, &hbmMemOld2);
 
 	if (listaPantallas->barraInferior != NULL) {
 		borraHDC_HBITMPAP(
@@ -3046,38 +3090,19 @@ void doDestroy(HWND hwnd) {
 		g_hWnd = NULL;
 	}
 
+	borraObjetosHDC();
+
 	if (listaPantallas != NULL) {
 		delete listaPantallas;
+		listaPantallas = NULL;
 	}
 	if (estado != NULL) {
 		delete estado;
+		estado = NULL;
 	}
 	if (configuracion != NULL) {
 		delete configuracion;
-	}
-
-	listaPantallas = NULL;
-	estado = NULL;
-	configuracion = NULL;
-
-	if(hbmMem != NULL && hDCMem != NULL) {
-		SelectObject(hDCMem, hbmMemOld);
-		DeleteDC(hDCMem);
-		DeleteObject(hbmMem);
-		hDCMem = NULL;
-		hbmMem = NULL;
-	}
-
-	if(hBrushFondo != NULL) {
-		DeleteObject(hBrushFondo);
-	}
-
-	if(hBrushTrans != NULL) {
-		DeleteObject(hBrushTrans);
-	}
-
-	if(hBrushAnimation != NULL) {
-		DeleteObject(hBrushAnimation);
+		configuracion = NULL;
 	}
 }
 

@@ -273,14 +273,16 @@ IDD_DIALOGPAGE8 DIALOG  0, 0, 160, 104
 STYLE DS_SETFONT | WS_CHILD
 FONT 8, "Tahoma"
 BEGIN
-    CONTROL         "Alpha blend on background (experimental)",IDC_CHECK_TRANS_ALPHABLEND,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,7,151,10
-    CONTROL         "Alpha blend on black",IDC_CHECK_TRANS_ALPHAONBLACK,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,19,81,10
-    CONTROL         "Alpha threshold (0-255):",IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,7,33,80,8
-    EDITTEXT        IDC_EDIT_TRANS_THRESHOLD,130,31,23,12,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Alpha blend on background",IDC_CHECK_TRANS_ALPHABLEND,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,7,103,10
+    CONTROL         "Alpha blend on background (alternative)",IDC_CHECK_TRANS_ALPHABLEND2,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,19,145,10
+    CONTROL         "Alpha blend on black background",IDC_CHECK_TRANS_ALPHAONBLACK,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,32,121,10
+    CONTROL         "Alpha threshold (0-255):",IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,7,46,80,8
+    EDITTEXT        IDC_EDIT_TRANS_THRESHOLD,130,44,23,12,ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "Use black color as transparent for .bmp",IDC_CHECK_TRANS_BMP,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,47,142,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,60,142,10
 END
 
 IDD_DIALOGPAGE9 DIALOG  0, 0, 160, 104

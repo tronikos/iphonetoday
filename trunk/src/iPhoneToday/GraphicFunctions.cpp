@@ -257,3 +257,44 @@ BOOL ColorSelector(HWND hwndOwner, COLORREF rgbCurrent, COLORREF *nextColor) {
 
 	return result;
 }
+
+BOOL AlphaBlend2(BITMAP *bmDst, int xDstOrg, int yDstOrg, BITMAP *bmSrc, int xSrcOrg, int ySrcOrg, int cx, int cy)
+{
+	if (bmDst->bmBits == NULL || bmSrc->bmBits == NULL || bmDst->bmBitsPixel != 32 || bmSrc->bmBitsPixel != 32) {
+		return FALSE;
+	}
+
+	BYTE *pD;
+	BYTE *pS;
+	cx = min(cx, bmDst->bmWidth - xDstOrg);
+	cx = min(cx, bmSrc->bmWidth - xSrcOrg);
+	cy = min(cy, bmDst->bmHeight - yDstOrg);
+	cy = min(cy, bmSrc->bmHeight - ySrcOrg);
+
+	yDstOrg = bmDst->bmHeight - yDstOrg - cy;
+	ySrcOrg = bmSrc->bmHeight - ySrcOrg - cy;
+
+	for (int y = 0; y < cy; y++) {
+		pD = (BYTE *) bmDst->bmBits + 4 * ((y + yDstOrg) * bmDst->bmWidth + xDstOrg);
+		pS = (BYTE *) bmSrc->bmBits + 4 * ((y + ySrcOrg) * bmSrc->bmWidth + xSrcOrg);
+		for (int x = 0; x < cx; x++) {
+			BYTE a = pS[3];
+			if (a != 0) {
+				if (a == 0xFF) {
+					pD[0] = pS[0];
+					pD[1] = pS[1];
+					pD[2] = pS[2];
+				} else {
+					BYTE na = ~a;
+					pD[0] = ((na * pD[0]) >> 8) + pS[0];
+					pD[1] = ((na * pD[1]) >> 8) + pS[1];
+					pD[2] = ((na * pD[2]) >> 8) + pS[2];
+				}
+			}
+			pD += 4;
+			pS += 4;
+		}
+	}
+
+	return TRUE;
+}
