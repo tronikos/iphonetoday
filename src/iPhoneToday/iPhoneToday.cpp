@@ -506,7 +506,8 @@ LRESULT doTimer (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 				estado->clearReloadIcon();
 			} else if (hayCambiosIconos) {
 				// Cargamos la configuracion de iconos
-				configuracion->cargaIconos(&hDCMem, listaPantallas);
+				configuracion->cargaXMLIconos2(listaPantallas);
+				configuracion->cargaIconsImages(&hDCMem, listaPantallas);
 
 				// Marcamos aquellas pantallas que haya que actualizar
 				CPantalla *pantalla;
@@ -2810,14 +2811,19 @@ BOOL inicializaApp(HWND hwnd) {
 
 	// Cargamos la configuracion de iconos
 	listaPantallas = new CListaPantalla();
-	// duration = -(long)GetTickCount();
-	configuracion->cargaIconos(&hdc, listaPantallas);
-	// duration += GetTickCount();
-	// NKDbgPrintfW(L" *** %d \t to cargaIconos.\n", duration);
+	configuracion->cargaXMLIconos2(listaPantallas);
 
 	calculateConfiguration(windowWidth, windowHeight);
 
+	// duration = -(long)GetTickCount();
+	configuracion->cargaIconsImages(&hdc, listaPantallas);
+	// duration += GetTickCount();
+	// NKDbgPrintfW(L" *** %d \t to cargaIconsImages.\n", duration);
+
+	// duration = -(long)GetTickCount();
 	configuracion->cargaImagenes(&hdc);
+	// duration += GetTickCount();
+	// NKDbgPrintfW(L" *** %d \t to cargaImagenes.\n", duration);
 
 	// Establecemos la ruta por defecto para buscar programas
 	//if (!SHGetSpecialFolderPath(hwnd, lastPathExec, CSIDL_PROGRAMS, FALSE)) {
