@@ -200,17 +200,10 @@ BOOL CConfiguracion::cargaXMLIconos(CListaPantalla *listaPantallas)
 	return TRUE;
 }
 
-BOOL CConfiguracion::cargaIconos(HDC *hDC, CListaPantalla *listaPantallas)
+BOOL CConfiguracion::cargaXMLIconos2(CListaPantalla *listaPantallas)
 {
-	BOOL result = false;
-
-	TIMER_RESET(loadImage_duration);
-	TIMER_RESET(loadImage_load_duration);
-	TIMER_RESET(loadImage_resize_duration);
-	TIMER_RESET(loadImage_fix_duration);
-
 	// long duration = -(long)GetTickCount();
-	result = cargaXMLIconos(listaPantallas);
+	BOOL result = cargaXMLIconos(listaPantallas);
 	// duration += GetTickCount();
 	// NKDbgPrintfW(L" *** %d \t to cargaXMLIconos.\n", duration);
 
@@ -227,22 +220,28 @@ BOOL CConfiguracion::cargaIconos(HDC *hDC, CListaPantalla *listaPantallas)
 		if (listaPantallas->topBar == NULL) {
 			listaPantallas->topBar = new CPantalla();
 		}
-		return result;
+		return FALSE;
 	}
+
+	return TRUE;
+}
+
+BOOL CConfiguracion::cargaIconsImages(HDC *hDC, CListaPantalla *listaPantallas)
+{
+	TIMER_RESET(loadImage_duration);
+	TIMER_RESET(loadImage_load_duration);
+	TIMER_RESET(loadImage_resize_duration);
+	TIMER_RESET(loadImage_fix_duration);
 
 	int nPantallas = listaPantallas->numPantallas;
 	int nIconos;
 	CPantalla *pantalla;
 	CIcono *icono;
 
-	// duration = -(long)GetTickCount();
-
 	for (int i = 0; i < nPantallas; i++) {
 		pantalla = listaPantallas->listaPantalla[i];
-
 		nIconos = pantalla->numIconos;
 		for (int j = 0; j < nIconos; j++) {
-
 			icono = pantalla->listaIconos[j];
 			cargaImagenIcono(hDC, icono, MAINSCREEN);
 		}
@@ -253,7 +252,6 @@ BOOL CConfiguracion::cargaIconos(HDC *hDC, CListaPantalla *listaPantallas)
 
 	nIconos = pantalla->numIconos;
 	for (int j = 0; j < nIconos; j++) {
-
 		icono = pantalla->listaIconos[j];
 		cargaImagenIcono(hDC, icono, BOTTOMBAR);
 	}
@@ -263,13 +261,9 @@ BOOL CConfiguracion::cargaIconos(HDC *hDC, CListaPantalla *listaPantallas)
 
 	nIconos = pantalla->numIconos;
 	for (int j = 0; j < nIconos; j++) {
-
 		icono = pantalla->listaIconos[j];
 		cargaImagenIcono(hDC, icono, TOPBAR);
 	}
-
-	// duration += GetTickCount();
-	// NKDbgPrintfW(L" *** %d \t to cargaImagenIcono.\n", duration);
 
 #ifdef TIMING
 	NKDbgPrintfW(L" *** %d msec\t loadImage.\n", loadImage_duration);	
@@ -278,8 +272,7 @@ BOOL CConfiguracion::cargaIconos(HDC *hDC, CListaPantalla *listaPantallas)
 	NKDbgPrintfW(L" *** %d msec\t loadImage_fix_duration.\n", loadImage_fix_duration);
 #endif
 
-	result = true;
-	return result;
+	return TRUE;
 }
 
 BOOL CConfiguracion::cargaImagenIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type)

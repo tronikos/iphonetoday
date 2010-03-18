@@ -20,7 +20,8 @@ public:
 	~CConfiguracion(void);
 
 	void calculaConfiguracion(int maxIconos, int numIconsInBottomBar, int numIconsInTopBar, int width, int height);
-	BOOL cargaIconos(HDC *hDC, CListaPantalla *listaPantallas);
+	BOOL cargaXMLIconos2(CListaPantalla *listaPantallas);
+	BOOL cargaIconsImages(HDC *hDC, CListaPantalla *listaPantallas);
 	BOOL cargaImagenIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type);
 	BOOL cargaImagenes(HDC *hDC);
 	BOOL cargaFondo(HDC *hDC);
