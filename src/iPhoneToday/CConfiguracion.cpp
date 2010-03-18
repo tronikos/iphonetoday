@@ -308,11 +308,10 @@ BOOL CConfiguracion::cargaImagenIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE scree
 }
 BOOL CConfiguracion::cargaFondo(HDC *hDC)
 {
+#ifndef EXEC_MODE
 	BOOL isTransparent = this->fondoTransparente;
-#ifdef EXEC_MODE
-	isTransparent = FALSE;
-#endif
 	if (!isTransparent) {
+#endif
 		if (fondoPantalla != NULL) {
 			delete fondoPantalla;
 		}
@@ -321,12 +320,18 @@ BOOL CConfiguracion::cargaFondo(HDC *hDC)
 		TCHAR rutaImgCompleta[MAX_PATH];
 		getAbsolutePath(rutaImgCompleta, CountOf(rutaImgCompleta), strFondoPantalla);
 		fondoPantalla->loadImage(hDC, rutaImgCompleta, this->fondoFitWidth ? anchoPantalla : 0, this->fondoFitHeight ? altoPantalla : 0, PIXFMT_16BPP_RGB565, this->fondoFactor);
+		if (fondoPantalla->hDC == NULL) {
+			delete fondoPantalla;
+			fondoPantalla = NULL;
+		}
+#ifndef EXEC_MODE
 	} else {
 		if (fondoPantalla != NULL) {
 			delete fondoPantalla;
 			fondoPantalla = NULL;
 		}
 	}
+#endif
 	return TRUE;
 }
 

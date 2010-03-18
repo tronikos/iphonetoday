@@ -764,7 +764,7 @@ LRESULT doPaint (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 		SetBkMode(hDCMem, TRANSPARENT);
 
 		hBrushFondo = CreateSolidBrush(configuracion->fondoColor);
-		hBrushTrans = CreateSolidBrush(RGBA(0, 0, 0, 0));
+		hBrushTrans = CreateSolidBrush(RGB(0, 0, 0));
 		hBrushAnimation = CreateSolidBrush(configuracion->colorOfAnimationOnLaunchIcon);
 	}
 
@@ -784,9 +784,10 @@ LRESULT doPaint (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 		return 0;
 	}
 
-	BOOL isTransparent = configuracion->fondoTransparente;
 #ifdef EXEC_MODE
-	isTransparent = FALSE;
+	BOOL isTransparent = FALSE;
+#else
+	BOOL isTransparent = configuracion->fondoTransparente;
 #endif
 	if (configuracion->fondoPantalla == NULL || configuracion->fondoPantalla->hDC == NULL) {
 		FillRect(hDCMem, &rcWindBounds, hBrushFondo);
@@ -1342,7 +1343,12 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 	UINT width = cs->iconWidth;
 	TCHAR str[16];
 
-	if (configuracion->alphaBlend) {
+#ifdef EXEC_MODE
+	BOOL isTransparent = FALSE;
+#else
+	BOOL isTransparent = configuracion->fondoTransparente;
+#endif
+	if (configuracion->alphaBlend || isTransparent || (configuracion->fondoPantalla && configuracion->fondoPantalla->hDC)) {
 		if (icono->anchoImagen == width && icono->altoImagen == width) {
 			BitBlt(*hDC, int(icono->x), int(icono->y), width, width,
 				icono->hDC, 0, 0, SRCCOPY);
@@ -1352,7 +1358,7 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 		}
 	} else {
 		TransparentBlt(*hDC, int(icono->x), int(icono->y), width, width,
-			icono->hDC, 0, 0, icono->anchoImagen, icono->altoImagen, RGBA(0, 0, 0, 0));
+			icono->hDC, 0, 0, icono->anchoImagen, icono->altoImagen, RGB(0, 0, 0));
 	}
 
 	// Notificaciones
@@ -1617,9 +1623,10 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type) {
 		cs = configuracion->mainScreenConfig;
 	}
 
-	BOOL isTransparent = configuracion->fondoTransparente;
 #ifdef EXEC_MODE
-	isTransparent = FALSE;
+	BOOL isTransparent = FALSE;
+#else
+	BOOL isTransparent = configuracion->fondoTransparente;
 #endif
 
 	// Si debemos recalcular la pantalla
@@ -1666,10 +1673,10 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type) {
 		rc.bottom = pantalla->altoPantalla;
 
 
-		if (_tcsclen(configuracion->strFondoPantalla) == 0 && !isTransparent) {
-			DrawGradientGDI(pantalla->hDC, rc, cs->cs.backColor1,  cs->cs.backColor2,  0xAAAA);
-		} else {
+		if (isTransparent || (configuracion->fondoPantalla && configuracion->fondoPantalla->hDC)) {
 			FillRect(pantalla->hDC, &rc, hBrushTrans);
+		} else {
+			DrawGradientGDI(pantalla->hDC, rc, cs->cs.backColor1,  cs->cs.backColor2,  0xAAAA);
 		}
 
 		if (configuracion->headerFontSize > 0 && _tcslen(pantalla->header) > 0) {
@@ -1766,8 +1773,8 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type) {
 			}
 		}
 		if (!ab) {
-			if (isTransparent || configuracion->fondoPantalla != NULL) {
-				TransparentBlt(*hDC, xDestOrg, yDestOrg, cx, cy, pantalla->hDC, xSrcOrg, ySrcOrg, cx, cy, RGBA(0, 0, 0, 0));
+			if (isTransparent || (configuracion->fondoPantalla && configuracion->fondoPantalla->hDC)) {
+				TransparentBlt(*hDC, xDestOrg, yDestOrg, cx, cy, pantalla->hDC, xSrcOrg, ySrcOrg, cx, cy, RGB(0, 0, 0));
 			} else {
 				BitBlt(*hDC, xDestOrg, yDestOrg, cx, cy, pantalla->hDC, xSrcOrg, ySrcOrg, SRCCOPY);
 			}
@@ -2707,9 +2714,10 @@ BOOL cargaFondoPantalla(HWND hwnd) {
 		return FALSE;
 	}
 
-	BOOL isTransparent = configuracion->fondoTransparente;
 #ifdef EXEC_MODE
-	isTransparent = FALSE;
+	BOOL isTransparent = FALSE;
+#else
+	BOOL isTransparent = configuracion->fondoTransparente;
 #endif
 	if (!isTransparent) {
 		return FALSE;
@@ -2732,10 +2740,6 @@ BOOL cargaFondoPantalla(HWND hwnd) {
 		configuracion->fondoPantalla->imagen = CreateCompatibleBitmap(hdc, rc.right - rc.left, rc.bottom - rc.top);
 		configuracion->fondoPantalla->imagenOld = (HBITMAP)SelectObject(configuracion->fondoPantalla->hDC, configuracion->fondoPantalla->imagen);
 
-		// BITMAP bm;
-		// GetObject(configuracion->fondoPantalla->imagen, sizeof(BITMAP), &bm);
-		// configuracion->fondoPantalla->anchoImagen = bm.bmWidth;
-		// configuracion->fondoPantalla->altoImagen = bm.bmHeight;
 		configuracion->fondoPantalla->anchoImagen = rc.right - rc.left;
 		configuracion->fondoPantalla->altoImagen = rc.bottom - rc.top;
 
@@ -2838,23 +2842,23 @@ BOOL borraObjetosHDC() {
 	borraHDC_HBITMPAP(&hDCMem, &hbmMem, &hbmMemOld);
 	borraHDC_HBITMPAP(&hDCMem2, &hbmMem2, &hbmMemOld2);
 
-	if (listaPantallas->barraInferior != NULL) {
-		borraHDC_HBITMPAP(
-			&listaPantallas->barraInferior->hDC,
-			&listaPantallas->barraInferior->imagen,
-			&listaPantallas->barraInferior->imagenOld);
-		listaPantallas->barraInferior->debeActualizar = TRUE;
-	}
-
-	if (listaPantallas->topBar != NULL) {
-		borraHDC_HBITMPAP(
-			&listaPantallas->topBar->hDC,
-			&listaPantallas->topBar->imagen,
-			&listaPantallas->topBar->imagenOld);
-		listaPantallas->topBar->debeActualizar = TRUE;
-	}
-
 	if (listaPantallas != NULL) {
+		if (listaPantallas->barraInferior != NULL) {
+			borraHDC_HBITMPAP(
+				&listaPantallas->barraInferior->hDC,
+				&listaPantallas->barraInferior->imagen,
+				&listaPantallas->barraInferior->imagenOld);
+			listaPantallas->barraInferior->debeActualizar = TRUE;
+		}
+
+		if (listaPantallas->topBar != NULL) {
+			borraHDC_HBITMPAP(
+				&listaPantallas->topBar->hDC,
+				&listaPantallas->topBar->imagen,
+				&listaPantallas->topBar->imagenOld);
+			listaPantallas->topBar->debeActualizar = TRUE;
+		}
+
 		for (UINT i = 0; i < listaPantallas->numPantallas; i++) {
 			borraHDC_HBITMPAP(
 				&listaPantallas->listaPantalla[i]->hDC,
@@ -2897,7 +2901,7 @@ BOOL borraHDC_HBITMPAP(HDC *hdc, HBITMAP *hbm, HBITMAP *hbmOld) {
 // Draw a ellipse
 void drawNotification(HDC hDC, RECT *rect, CIcono *imagen, TCHAR *texto) {
 	TransparentBlt(hDC, rect->left, rect->top, rect->right - rect->left, rect->bottom - rect->top,
-						imagen->hDC, 0, 0, imagen->anchoImagen, imagen->altoImagen, RGBA(0, 0, 0, 0));
+		imagen->hDC, 0, 0, imagen->anchoImagen, imagen->altoImagen, RGB(0, 0, 0));
 
 	if (texto != NULL) {
 		DrawText(hDC, texto, -1, rect, DT_CENTER | DT_VCENTER);
