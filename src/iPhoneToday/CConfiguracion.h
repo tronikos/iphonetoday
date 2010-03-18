@@ -148,7 +148,7 @@ public:
 	TCHAR outOfScreenBottom[MAX_PATH];
 
 	// Transparency
-	BOOL alphaBlend;
+	UINT alphaBlend;
 	BOOL alphaOnBlack;
 	UINT alphaThreshold;
 	BOOL transparentBMP;

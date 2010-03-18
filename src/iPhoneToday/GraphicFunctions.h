@@ -12,3 +12,6 @@ void drawEllipse(HDC hDC, int x, int y, int x2, int y2, COLORREF color, TCHAR *t
 void DrawGradientGDI(HDC, const RECT&, COLORREF, COLORREF, COLOR16 alpha = 0x0000);
 
 BOOL ColorSelector(HWND hwndOwner, COLORREF rgbCurrent, COLORREF *nextColor);
+
+// AlphaBlends bitmap bmSrc to bmDst. Bitmaps are required to be DIB sections.
+BOOL AlphaBlend2(BITMAP *bmDst, int xDstOrg, int yDstOrg, BITMAP *bmSrc, int xSrcOrg, int ySrcOrg, int cx, int cy);
