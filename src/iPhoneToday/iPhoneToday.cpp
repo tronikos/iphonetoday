@@ -74,6 +74,7 @@ IDENT_ICONO iconoActual;
 ATOM MyRegisterClass(HINSTANCE, LPTSTR);
 BOOL InitInstance(HINSTANCE, int);
 LRESULT WndProcLoading (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam);
+LRESULT doActivate (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam);
 #else
 INT InitializeClasses();
 BOOL cargaFondoPantalla(HWND hwnd);
@@ -86,7 +87,6 @@ LRESULT doPaint (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam);
 LRESULT doMove (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam);
 LRESULT doMouseDown (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam);
 LRESULT doMouseUp (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam);
-LRESULT doActivate (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam);
 BOOL LaunchApplication(LPCTSTR pCmdLine, LPCTSTR pParameters);
 void pintaIconos(HDC *hDC, RECT *rcWindBounds);
 void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type);
@@ -196,14 +196,23 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lPara
 	//check to see if a refresh is required
 	case WM_TODAYCUSTOM_QUERYREFRESHCACHE:
 		{
+			//NKDbgPrintfW(L"WM_TODAYCUSTOM_QUERYREFRESHCACHE %ld\n", GetTickCount());
 			// get the pointer to the item from the Today screen
 			TODAYLISTITEM *ptliItem = (TODAYLISTITEM*)wParam;
 
 			if ((NULL == ptliItem) || (WaitForSingleObject(SHELL_API_READY_EVENT, 0) == WAIT_TIMEOUT)) {
 				return FALSE;
 			}
-			if (configuracion == NULL) {
+			if (configuracion == NULL || estado == NULL) {
 				return FALSE;
+			}
+			if (configuracion->notifyTimer > 0) {
+				static DWORD start = 0;
+				DWORD now = GetTickCount();
+				if (now - start > (DWORD) configuracion->notifyTimer) {
+					start = now;
+					PostMessage(hwnd, WM_TIMER, TIMER_ACTUALIZA_NOTIF, 0);
+				}
 			}
 			if (0 == ptliItem->cyp || configuracion->altoPantalla != ptliItem->cyp) {
 				ptliItem->cyp = configuracion->altoPantalla;
@@ -335,8 +344,10 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lPara
 		return doMouseUp (hwnd, uimessage, wParam, lParam);
 	case WM_MOUSEMOVE:
 		return doMove (hwnd, uimessage, wParam, lParam);
+#ifdef EXEC_MODE
 	case WM_ACTIVATE:
 		return doActivate (hwnd, uimessage, wParam, lParam);
+#endif
 	case WM_TIMER:
 		return doTimer (hwnd, uimessage, wParam, lParam);
 	case WM_PAINT:
@@ -460,6 +471,7 @@ LRESULT doTimer (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 		shouldInvalidateRect = TRUE;
 
 	} else if (wParam == TIMER_ACTUALIZA_NOTIF) {
+		//NKDbgPrintfW(L"TIMER_ACTUALIZA_NOTIF %ld\n", GetTickCount());
 		if (!estado->hayMovimiento) {
 			// Actualizamos las notificaciones
 			BOOL hayCambios = estado->actualizaNotificaciones();
@@ -1195,6 +1207,7 @@ LRESULT doMouseUp (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
+#ifdef EXEC_MODE
 LRESULT doActivate (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 {
 	if (wParam == WA_CLICKACTIVE || wParam == WA_ACTIVE)
@@ -1203,15 +1216,21 @@ LRESULT doActivate (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 		if (estado->estadoCuadro == 2) {
 			estado->timeUltimoLanzamiento = 0;
 		}
+		PostMessage(hwnd, WM_TIMER, TIMER_ACTUALIZA_NOTIF, 0);
+		if (configuracion->notifyTimer > 0) {
+			SetTimer(hwnd, TIMER_ACTUALIZA_NOTIF, configuracion->notifyTimer, NULL);
+		}
 	}
 	// The window is being deactivated... restore it to non-fullscreen
 	else if (!::IsChild(hwnd, (HWND)lParam))
 	{
+		KillTimer(hwnd, TIMER_ACTUALIZA_NOTIF);
 		resizeWindow(hwnd, false);
 	}
 
 	return DefWindowProc (hwnd, uimessage, wParam, lParam);
 }
+#endif
 
 #ifndef EXEC_MODE
 /*************************************************************************/
@@ -2837,9 +2856,11 @@ BOOL inicializaApp(HWND hwnd) {
 
 	setPosiciones(true, 0, 0);
 
+#ifdef EXEC_MODE
 	if (configuracion->notifyTimer > 0) {
 		SetTimer(hwnd, TIMER_ACTUALIZA_NOTIF, configuracion->notifyTimer, NULL);
 	}
+#endif
 
 	return TRUE;
 }
