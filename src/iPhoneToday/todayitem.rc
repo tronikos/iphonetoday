@@ -283,6 +283,7 @@ BEGIN
     EDITTEXT        IDC_EDIT_TRANS_THRESHOLD,130,44,23,12,ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "Use black color as transparent for .bmp",IDC_CHECK_TRANS_BMP,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,60,142,10
+    CONTROL         "Use mask for transparency",IDC_CHECK_TRANS_MASK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,74,102,10
 END
 
 IDD_DIALOGPAGE9 DIALOG  0, 0, 160, 104

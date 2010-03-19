@@ -153,6 +153,7 @@ public:
 	BOOL alphaOnBlack;
 	UINT alphaThreshold;
 	BOOL transparentBMP;
+	BOOL useMask;
 
 	UINT alreadyConfigured;
 };

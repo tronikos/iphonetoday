@@ -4,9 +4,13 @@ CPantalla::CPantalla(void)
 {
 	debeActualizar = TRUE;
 	header[0] = '\0';
-	imagen = NULL;
 	hDC = NULL;
+	imagen = NULL;
+	imagenOld = NULL;
 	pBits = NULL;
+	mask_hDC = NULL;
+	mask_imagen = NULL;
+	mask_imagenOld = NULL;
 
 	numIconos = 0;
 	for (int i = 0; i < MAX_ICONOS_PANTALLA; i++) {
@@ -33,6 +37,17 @@ CPantalla::~CPantalla(void)
 		if (imagen != NULL) {
 			DeleteObject(imagen);
 			imagen = NULL;
+		}
+	}
+	if (mask_hDC != NULL) {
+		if (mask_imagenOld != NULL) {
+			SelectObject(mask_hDC, mask_imagenOld);
+		}
+		DeleteDC(mask_hDC);
+		mask_hDC = NULL;
+		if (mask_imagen != NULL) {
+			DeleteObject(mask_imagen);
+			mask_imagen = NULL;
 		}
 	}
 }

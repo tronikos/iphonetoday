@@ -15,11 +15,16 @@ public:
 	TCHAR header[MAX_PATH];
 	UINT anchoPantalla;	// screen width
 	UINT altoPantalla;	// screen height
-	HBITMAP imagen;
+
 	HDC hDC;
+	HBITMAP imagen;
+	HBITMAP imagenOld;
 	BYTE *pBits;
 
-	HBITMAP imagenOld;
+	HDC mask_hDC;
+	HBITMAP mask_imagen;
+	HBITMAP mask_imagenOld;
+
 	HFONT hFontOld;
 
 	CPantalla(void);
