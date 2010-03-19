@@ -147,6 +147,7 @@
 #define IDC_CHECK_BACK_CENTER           1174
 #define IDC_CHECK_SHOW_EXIT             1175
 #define IDC_CHECK_TRANS_ALPHABLEND2     1176
+#define IDC_CHECK_TRANS_MASK            1177
 
 // Next default values for new objects
 // 
@@ -154,7 +155,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        121
 #define _APS_NEXT_COMMAND_VALUE         40003
-#define _APS_NEXT_CONTROL_VALUE         1177
+#define _APS_NEXT_CONTROL_VALUE         1178
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

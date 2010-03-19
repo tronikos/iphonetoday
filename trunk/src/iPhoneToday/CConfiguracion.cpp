@@ -517,6 +517,7 @@ void CConfiguracion::defaultValues()
 	this->alphaOnBlack = 0;
 	this->alphaThreshold = 25;
 	this->transparentBMP = 1;
+	this->useMask = 0;
 
 	this->alreadyConfigured = 0;
 
@@ -661,6 +662,7 @@ BOOL CConfiguracion::cargaXMLConfig()
 			XMLUtils::GetAttr(pElem, "alphaonblack",   &this->alphaOnBlack);
 			XMLUtils::GetAttr(pElem, "threshold",      &this->alphaThreshold);
 			XMLUtils::GetAttr(pElem, "transparentbmp", &this->transparentBMP);
+			XMLUtils::GetAttr(pElem, "mask",           &this->useMask);
 		} else if(_stricmp(nameNode, "TodayItemHeight") == 0) {
 			XMLUtils::GetAttr(pElem, "portrait",  &this->heightP);
 			XMLUtils::GetAttr(pElem, "landscape", &this->heightL);
@@ -930,6 +932,7 @@ BOOL CConfiguracion::guardaXMLConfig()
 	XMLUtils::SetAttr(pElem, "alphaonblack",   this->alphaOnBlack);
 	XMLUtils::SetAttr(pElem, "threshold",      this->alphaThreshold);
 	XMLUtils::SetAttr(pElem, "transparentbmp", this->transparentBMP);
+	XMLUtils::SetAttr(pElem, "mask",           this->useMask);
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("TodayItemHeight");

@@ -1748,6 +1748,14 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type) {
 					p += 4;
 				}
 			}
+		} else if (configuracion->useMask) {
+			if (pantalla->mask_hDC == NULL) {
+				pantalla->mask_hDC = CreateCompatibleDC(*hDC);
+				pantalla->mask_imagen = CreateBitmap(pantalla->anchoPantalla, pantalla->altoPantalla, 1, 1, NULL);
+				pantalla->mask_imagenOld = (HBITMAP) SelectObject(pantalla->mask_hDC, pantalla->mask_imagen);
+			}
+			SetBkColor(pantalla->hDC, RGB(0, 0, 0));
+			BitBlt(pantalla->mask_hDC, 0, 0, pantalla->anchoPantalla, pantalla->altoPantalla, pantalla->hDC, 0, 0, SRCCOPY);
 		}
 	}
 
@@ -1794,7 +1802,13 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type) {
 		}
 		if (!ab) {
 			if (isTransparent || (configuracion->fondoPantalla && configuracion->fondoPantalla->hDC)) {
-				TransparentBlt(*hDC, xDestOrg, yDestOrg, cx, cy, pantalla->hDC, xSrcOrg, ySrcOrg, cx, cy, RGB(0, 0, 0));
+				if (configuracion->useMask && pantalla->mask_hDC) {
+					BitBlt(*hDC, xDestOrg, yDestOrg, cx, cy, pantalla->hDC, xSrcOrg, ySrcOrg, SRCINVERT);
+					BitBlt(*hDC, xDestOrg, yDestOrg, cx, cy, pantalla->mask_hDC, xSrcOrg, ySrcOrg, SRCAND);
+					BitBlt(*hDC, xDestOrg, yDestOrg, cx, cy, pantalla->hDC, xSrcOrg, ySrcOrg, SRCINVERT);
+				} else {
+					TransparentBlt(*hDC, xDestOrg, yDestOrg, cx, cy, pantalla->hDC, xSrcOrg, ySrcOrg, cx, cy, RGB(0, 0, 0));
+				}
 			} else {
 				BitBlt(*hDC, xDestOrg, yDestOrg, cx, cy, pantalla->hDC, xSrcOrg, ySrcOrg, SRCCOPY);
 			}
@@ -2875,6 +2889,10 @@ BOOL borraObjetosHDC() {
 				&listaPantallas->barraInferior->hDC,
 				&listaPantallas->barraInferior->imagen,
 				&listaPantallas->barraInferior->imagenOld);
+			borraHDC_HBITMPAP(
+				&listaPantallas->barraInferior->mask_hDC,
+				&listaPantallas->barraInferior->mask_imagen,
+				&listaPantallas->barraInferior->mask_imagenOld);
 			listaPantallas->barraInferior->debeActualizar = TRUE;
 		}
 
@@ -2883,6 +2901,10 @@ BOOL borraObjetosHDC() {
 				&listaPantallas->topBar->hDC,
 				&listaPantallas->topBar->imagen,
 				&listaPantallas->topBar->imagenOld);
+			borraHDC_HBITMPAP(
+				&listaPantallas->topBar->mask_hDC,
+				&listaPantallas->topBar->mask_imagen,
+				&listaPantallas->topBar->mask_imagenOld);
 			listaPantallas->topBar->debeActualizar = TRUE;
 		}
 
@@ -2891,6 +2913,10 @@ BOOL borraObjetosHDC() {
 				&listaPantallas->listaPantalla[i]->hDC,
 				&listaPantallas->listaPantalla[i]->imagen,
 				&listaPantallas->listaPantalla[i]->imagenOld);
+			borraHDC_HBITMPAP(
+				&listaPantallas->listaPantalla[i]->mask_hDC,
+				&listaPantallas->listaPantalla[i]->mask_imagen,
+				&listaPantallas->listaPantalla[i]->mask_imagenOld);
 			listaPantallas->listaPantalla[i]->debeActualizar = TRUE;
 		}
 	}
