@@ -1330,7 +1330,7 @@ void DrawSpecialIconText(HDC hDC, TCHAR *str, CIcono *icon, int iconWidth, Speci
 	lf.lfWeight = sis.weight;
 	lf.lfWidth = LONG(sis.width / 100.0 * iconWidth);
 	lf.lfHeight = LONG(sis.height / 100.0 * iconWidth);
-	lf.lfQuality = DEFAULT_QUALITY;
+	lf.lfQuality = configuracion->textQuality;
 
 	hFont = CreateFontIndirect(&lf);
 
@@ -1678,7 +1678,7 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type) {
 				lf.lfWeight = FW_NORMAL;
 			}
 			lf.lfHeight = cs->cs.fontSize;
-			lf.lfQuality = DEFAULT_QUALITY;
+			lf.lfQuality = configuracion->textQuality;
 
 			HFONT hFont = CreateFontIndirect(&lf);
 
@@ -1709,7 +1709,7 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type) {
 
 			lf.lfWeight = configuracion->headerFontWeight;
 			lf.lfHeight = configuracion->headerFontSize;
-			lf.lfQuality = DEFAULT_QUALITY;
+			lf.lfQuality = configuracion->textQuality;
 
 			hFont = CreateFontIndirect(&lf);
 			hFontOld = (HFONT) SelectObject(pantalla->hDC, hFont);

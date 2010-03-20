@@ -25,11 +25,25 @@ LRESULT CALLBACK OptionDialog8(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 			
 			SetDlgItemInt(hDlg, IDC_EDIT_TRANS_THRESHOLD, configuracion->alphaThreshold, TRUE);
 
+			SendMessage(GetDlgItem(hDlg, IDC_COMBO_TEXT_QUALITY), CB_ADDSTRING, 0, (LPARAM)L"Default");
+			SendMessage(GetDlgItem(hDlg, IDC_COMBO_TEXT_QUALITY), CB_ADDSTRING, 0, (LPARAM)L"Draft");
+			SendMessage(GetDlgItem(hDlg, IDC_COMBO_TEXT_QUALITY), CB_ADDSTRING, 0, (LPARAM)L"Nonantialiased");
+			SendMessage(GetDlgItem(hDlg, IDC_COMBO_TEXT_QUALITY), CB_ADDSTRING, 0, (LPARAM)L"Antialiased");
+			SendMessage(GetDlgItem(hDlg, IDC_COMBO_TEXT_QUALITY), CB_ADDSTRING, 0, (LPARAM)L"Cleartype");
+			SendMessage(GetDlgItem(hDlg, IDC_COMBO_TEXT_QUALITY), CB_ADDSTRING, 0, (LPARAM)L"Cleartype compat");
+
+			int tmp = configuracion->textQuality;
+			if (tmp > 2) {
+				tmp--;
+			}
+			SendMessage(GetDlgItem(hDlg, IDC_COMBO_TEXT_QUALITY), CB_SETCURSEL, tmp, 0);
+
 			if (configuracion->alphaBlend) {
 				EnableWindow(GetDlgItem(hDlg, IDC_CHECK_TRANS_ALPHAONBLACK), FALSE);
 				EnableWindow(GetDlgItem(hDlg, IDC_EDIT_TRANS_THRESHOLD),     FALSE);
 				EnableWindow(GetDlgItem(hDlg, IDC_CHECK_TRANS_BMP),          FALSE);
 				EnableWindow(GetDlgItem(hDlg, IDC_CHECK_TRANS_MASK),         FALSE);
+				EnableWindow(GetDlgItem(hDlg, IDC_COMBO_TEXT_QUALITY),       FALSE);
 				if (configuracion->alphaBlend == 1) {
 					EnableWindow(GetDlgItem(hDlg, IDC_CHECK_TRANS_ALPHABLEND2), FALSE);
 				}else if (configuracion->alphaBlend == 2) {
@@ -54,6 +68,7 @@ LRESULT CALLBACK OptionDialog8(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 			EnableWindow(GetDlgItem(hDlg, IDC_EDIT_TRANS_THRESHOLD),     !checked);
 			EnableWindow(GetDlgItem(hDlg, IDC_CHECK_TRANS_BMP),          !checked);
 			EnableWindow(GetDlgItem(hDlg, IDC_CHECK_TRANS_MASK),         !checked);
+			EnableWindow(GetDlgItem(hDlg, IDC_COMBO_TEXT_QUALITY),       !checked);
 			EnableWindow(GetDlgItem(hDlg, IDC_CHECK_TRANS_ALPHABLEND2),  !checked);
 			SendMessage(GetDlgItem(hDlg, IDC_CHECK_TRANS_ALPHABLEND2), BM_SETCHECK, BST_UNCHECKED, 0);
 			break;
@@ -63,6 +78,7 @@ LRESULT CALLBACK OptionDialog8(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 			EnableWindow(GetDlgItem(hDlg, IDC_EDIT_TRANS_THRESHOLD),     !checked);
 			EnableWindow(GetDlgItem(hDlg, IDC_CHECK_TRANS_BMP),          !checked);
 			EnableWindow(GetDlgItem(hDlg, IDC_CHECK_TRANS_MASK),         !checked);
+			EnableWindow(GetDlgItem(hDlg, IDC_COMBO_TEXT_QUALITY),       !checked);
 			EnableWindow(GetDlgItem(hDlg, IDC_CHECK_TRANS_ALPHABLEND),   !checked);
 			SendMessage(GetDlgItem(hDlg, IDC_CHECK_TRANS_ALPHABLEND), BM_SETCHECK, BST_UNCHECKED, 0);
 			break;
@@ -113,6 +129,11 @@ BOOL SaveConfiguration8(HWND hDlg)
 	configuracion->alphaOnBlack   = SendMessage(GetDlgItem(hDlg, IDC_CHECK_TRANS_ALPHAONBLACK), BM_GETCHECK, 0, 0) == BST_CHECKED;
 	configuracion->transparentBMP = SendMessage(GetDlgItem(hDlg, IDC_CHECK_TRANS_BMP),          BM_GETCHECK, 0, 0) == BST_CHECKED;
 	configuracion->useMask        = SendMessage(GetDlgItem(hDlg, IDC_CHECK_TRANS_MASK),         BM_GETCHECK, 0, 0) == BST_CHECKED;
+
+	configuracion->textQuality = SendMessage(GetDlgItem(hDlg, IDC_COMBO_TEXT_QUALITY), CB_GETCURSEL, 0, 0);
+	if (configuracion->textQuality >=2) {
+		configuracion->textQuality++;
+	}
 
 	return TRUE;
 }
