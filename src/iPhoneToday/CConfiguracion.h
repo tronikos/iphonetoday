@@ -137,6 +137,7 @@ public:
 	UINT neverShowTaskBar;
 	UINT noWindowTitle;
 	UINT showExit;
+	UINT textQuality;
 
 	// Today item height (Portrait|Landscape)
 	UINT heightP;
