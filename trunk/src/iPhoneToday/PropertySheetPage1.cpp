@@ -82,22 +82,20 @@ LRESULT CALLBACK OptionDialog1(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 			}
 		}
 		return 0;
-	case WM_PAINT:
-		PaintOptionsDialog(hDlg, 1);
-		return 0;
-	case WM_NOTIFY:
-		if (((LPNMHDR) lParam)->code == PSN_HELP) {
-			ToggleKeyboard();
-			return 0;
-		}
-		break;
 	}
 
-	return DefWindowProc(hDlg, uMsg, wParam, lParam);
+	return DefOptionWindowProc(hDlg, 1, uMsg, wParam, lParam);
+}
+
+BOOL IsValidConfiguration1(HWND hDlg)
+{
+	return TRUE;
 }
 
 BOOL SaveConfiguration1(HWND hDlg)
 {
+	if (!IsValidConfiguration1(hDlg)) return FALSE;
+
 	GetDlgItemText(hDlg, IDC_EDIT_BACK_WALLPAPER, configuracion->strFondoPantalla, CountOf(configuracion->strFondoPantalla));
 	configuracion->fondoEstatico	= SendMessage(GetDlgItem(hDlg, IDC_CHECK_BACK_STATIC), BM_GETCHECK, 0, 0) == BST_CHECKED;
 	configuracion->fondoFitWidth	= SendMessage(GetDlgItem(hDlg, IDC_CHECK_BACK_FIT_WIDTH), BM_GETCHECK, 0, 0) == BST_CHECKED;

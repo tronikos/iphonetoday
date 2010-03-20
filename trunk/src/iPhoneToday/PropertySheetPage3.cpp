@@ -41,21 +41,12 @@ LRESULT CALLBACK OptionDialog3(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 			}
 		}
 		return 0;
-	case WM_PAINT:
-		PaintOptionsDialog(hDlg, 3);
-		return 0;
-	case WM_NOTIFY:
-		if (((LPNMHDR) lParam)->code == PSN_HELP) {
-			ToggleKeyboard();
-			return 0;
-		}
-		break;
 	}
 
-	return DefWindowProc(hDlg, uMsg, wParam, lParam);
+	return DefOptionWindowProc(hDlg, 3, uMsg, wParam, lParam);
 }
 
-BOOL SaveConfiguration3(HWND hDlg)
+BOOL IsValidConfiguration3(HWND hDlg)
 {
 	int headerHeight, headerColor, headerWeight, headerOffset, circlesDiameter, circlesDistance, circlesOffset;
 
@@ -91,6 +82,23 @@ BOOL SaveConfiguration3(HWND hDlg)
 		MessageBox(hDlg, TEXT("Circles offset value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
+
+	return TRUE;
+}
+
+BOOL SaveConfiguration3(HWND hDlg)
+{
+	if (!IsValidConfiguration3(hDlg)) return FALSE;
+
+	int headerHeight, headerColor, headerWeight, headerOffset, circlesDiameter, circlesDistance, circlesOffset;
+
+	headerHeight	= GetDlgItemInt(hDlg, IDC_EDIT_HEADER_HEIGHT,	NULL, TRUE);
+	headerColor		= GetDlgItemHex(hDlg, IDC_EDIT_HEADER_COLOR,	NULL);
+	headerWeight	= GetDlgItemInt(hDlg, IDC_EDIT_HEADER_WEIGHT,	NULL, TRUE);
+	headerOffset	= GetDlgItemInt(hDlg, IDC_EDIT_HEADER_OFFSET,	NULL, TRUE);
+	circlesDiameter	= GetDlgItemInt(hDlg, IDC_EDIT_CIRCLES_DIAMETER,NULL, TRUE);
+	circlesDistance	= GetDlgItemInt(hDlg, IDC_EDIT_CIRCLES_DISTANCE,NULL, TRUE);
+	circlesOffset	= GetDlgItemInt(hDlg, IDC_EDIT_CIRCLES_OFFSET,	NULL, TRUE);
 
 	configuracion->headerFontSize = headerHeight;
 	configuracion->headerFontColor = headerColor;

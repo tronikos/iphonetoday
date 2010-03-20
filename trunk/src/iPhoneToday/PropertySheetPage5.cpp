@@ -148,18 +148,9 @@ LRESULT CALLBACK OptionDialog5(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 			}
 		}
 		return 0;
-	case WM_PAINT:
-		PaintOptionsDialog(hDlg, 5);
-		return 0;
-	case WM_NOTIFY:
-		if (((LPNMHDR) lParam)->code == PSN_HELP) {
-			ToggleKeyboard();
-			return 0;
-		}
-		break;
 	}
 
-	return DefWindowProc(hDlg, uMsg, wParam, lParam);
+	return DefOptionWindowProc(hDlg, 5, uMsg, wParam, lParam);
 }
 
 BOOL sis_check(HWND hDlg, SpecialIconSettings *sis)
@@ -195,7 +186,7 @@ BOOL sis_check(HWND hDlg, SpecialIconSettings *sis)
 	return TRUE;
 }
 
-BOOL SaveConfiguration5(HWND hDlg)
+BOOL IsValidConfiguration5(HWND hDlg)
 {
 	sis_save(hDlg, cur_sis);
 
@@ -208,6 +199,15 @@ BOOL SaveConfiguration5(HWND hDlg)
 	if (!sis_check(hDlg, &memf)) return FALSE;
 	if (!sis_check(hDlg, &memu)) return FALSE;
 	if (!sis_check(hDlg, &sign)) return FALSE;
+
+	return TRUE;
+}
+
+BOOL SaveConfiguration5(HWND hDlg)
+{
+	sis_save(hDlg, cur_sis);
+
+	if (!IsValidConfiguration5(hDlg)) return FALSE;
 
 	memcpy(&configuracion->batt, &batt, sizeof(SpecialIconSettings));
 	memcpy(&configuracion->clck, &clck, sizeof(SpecialIconSettings));

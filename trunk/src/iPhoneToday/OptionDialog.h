@@ -43,6 +43,7 @@ extern BOOL doNotAskToSaveOptions;
 // Option dialog functions
 void				InitOptionsDialog(HWND, INT);
 void				PaintOptionsDialog(HWND, INT);
+LRESULT				DefOptionWindowProc(HWND hDlg, INT iDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 UINT	CALLBACK	PropSheetPageProc(HWND, UINT, LPPROPSHEETPAGE);  // Option dialog PropSheetPageProc callback function
 
@@ -61,6 +62,18 @@ BOOL				SaveConfiguration6(HWND);
 BOOL				SaveConfiguration7(HWND);
 BOOL				SaveConfiguration8(HWND);
 BOOL				SaveConfiguration9(HWND);
+
+BOOL IsValidConfiguration(HWND, INT);
+BOOL IsValidConfiguration0(HWND);
+BOOL IsValidConfiguration1(HWND);
+BOOL IsValidConfiguration2(HWND);
+BOOL IsValidConfiguration3(HWND);
+BOOL IsValidConfiguration4(HWND);
+BOOL IsValidConfiguration5(HWND);
+BOOL IsValidConfiguration6(HWND);
+BOOL IsValidConfiguration7(HWND);
+BOOL IsValidConfiguration8(HWND);
+BOOL IsValidConfiguration9(HWND);
 
 // Option dialog box procedure functions
 LRESULT	CALLBACK	OptionDialog0(HWND, UINT, WPARAM, LPARAM);

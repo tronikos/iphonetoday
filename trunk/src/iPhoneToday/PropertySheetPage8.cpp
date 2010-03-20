@@ -74,21 +74,12 @@ LRESULT CALLBACK OptionDialog8(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 			break;
 		}
 		return 0;
-	case WM_PAINT:
-		PaintOptionsDialog(hDlg, 8);
-		return 0;
-	case WM_NOTIFY:
-		if (((LPNMHDR) lParam)->code == PSN_HELP) {
-			ToggleKeyboard();
-			return 0;
-		}
-		break;
 	}
 
-	return DefWindowProc(hDlg, uMsg, wParam, lParam);
+	return DefOptionWindowProc(hDlg, 8, uMsg, wParam, lParam);
 }
 
-BOOL SaveConfiguration8(HWND hDlg)
+BOOL IsValidConfiguration8(HWND hDlg)
 {
 	int alphaThreshold;
 
@@ -98,6 +89,17 @@ BOOL SaveConfiguration8(HWND hDlg)
 		MessageBox(hDlg, TEXT("Alpha threshold value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
+
+	return TRUE;
+}
+
+BOOL SaveConfiguration8(HWND hDlg)
+{
+	if (!IsValidConfiguration1(hDlg)) return FALSE;
+
+	int alphaThreshold;
+
+	alphaThreshold = GetDlgItemInt(hDlg, IDC_EDIT_TRANS_THRESHOLD, NULL, TRUE);
 
 	configuracion->alphaThreshold = alphaThreshold;
 
