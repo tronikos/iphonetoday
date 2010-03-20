@@ -66,21 +66,12 @@ LRESULT CALLBACK OptionDialog6(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 			break;
 		}
 		return 0;
-	case WM_PAINT:
-		PaintOptionsDialog(hDlg, 6);
-		return 0;
-	case WM_NOTIFY:
-		if (((LPNMHDR) lParam)->code == PSN_HELP) {
-			ToggleKeyboard();
-			return 0;
-		}
-		break;
 	}
 
-	return DefWindowProc(hDlg, uMsg, wParam, lParam);
+	return DefOptionWindowProc(hDlg, 6, uMsg, wParam, lParam);
 }
 
-BOOL SaveConfiguration6(HWND hDlg)
+BOOL IsValidConfiguration6(HWND hDlg)
 {
 	int notifyTimer, heightP, heightL;
 
@@ -96,6 +87,19 @@ BOOL SaveConfiguration6(HWND hDlg)
 		MessageBox(hDlg, TEXT("Height value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
+
+	return TRUE;
+}
+
+BOOL SaveConfiguration6(HWND hDlg)
+{
+	if (!IsValidConfiguration6(hDlg)) return FALSE;
+
+	int notifyTimer, heightP, heightL;
+
+	notifyTimer = GetDlgItemInt(hDlg, IDC_EDIT_NOTIFY_TIMER, NULL, TRUE);
+	heightP = GetDlgItemInt(hDlg, IDC_EDIT_HEIGHTP, NULL, TRUE);
+	heightL = GetDlgItemInt(hDlg, IDC_EDIT_HEIGHTL, NULL, TRUE);
 
 	configuracion->fullscreen			= SendMessage(GetDlgItem(hDlg, IDC_CHECK_FULLSCREEN),			BM_GETCHECK, 0, 0) == BST_CHECKED;
 	configuracion->neverShowTaskBar		= SendMessage(GetDlgItem(hDlg, IDC_CHECK_NEVER_SHOW_TASKBAR),	BM_GETCHECK, 0, 0) == BST_CHECKED;

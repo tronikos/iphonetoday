@@ -34,16 +34,17 @@
 // Handles to the dialog pages
 HWND		g_hDlg[NUM_CONFIG_SCREENS];  
 
-// Variable to track how many times PropSheetPageProc is called when closing the property sheet
-static INT	s_iReleaseCall;
-
 BOOL doNotAskToSaveOptions = FALSE;
+int saveOptionsAnswer = -1;
+int initializedDialogs = 0;
+int appliedDialogs = 0;
 
 
 void InitOptionsDialog(HWND hDlg, INT iDlg)
 {
 	// Initialize handle to property sheet
 	g_hDlg[iDlg] = hDlg;
+	initializedDialogs++;
 
 	if (iDlg == 0) {
 		if (FindWindow(L"MS_SIPBUTTON", NULL) != NULL) {
@@ -87,6 +88,94 @@ void PaintOptionsDialog(HWND hDlg, INT iDlg)
 	EndPaint(hDlg, &ps);
 }
 
+BOOL IsValidConfiguration(HWND hDlg, INT iDlg)
+{
+	BOOL isValid = TRUE;
+	switch (iDlg) {
+		case 0:
+			isValid = IsValidConfiguration0(hDlg);
+			break;
+		case 1:
+			isValid = IsValidConfiguration1(hDlg);
+			break;
+		case 2:
+			isValid = IsValidConfiguration2(hDlg);
+			break;
+		case 3:
+			isValid = IsValidConfiguration3(hDlg);
+			break;
+		case 4:
+			isValid = IsValidConfiguration4(hDlg);
+			break;
+		case 5:
+			isValid = IsValidConfiguration5(hDlg);
+			break;
+		case 6:
+			isValid = IsValidConfiguration6(hDlg);
+			break;
+		case 7:
+			isValid = IsValidConfiguration7(hDlg);
+			break;
+		case 8:
+			isValid = IsValidConfiguration8(hDlg);
+			break;
+		case 9:
+			isValid = IsValidConfiguration9(hDlg);
+			break;
+	}
+	return isValid;
+}
+
+LRESULT DefOptionWindowProc(HWND hDlg, INT iDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	switch (uMsg)
+	{
+		case WM_PAINT:
+			PaintOptionsDialog(hDlg, iDlg);
+			return 0;
+		case WM_NOTIFY:
+			switch (((LPNMHDR) lParam)->code)
+			{
+				case PSN_HELP:
+					ToggleKeyboard();
+					return 0;
+				case PSN_QUERYCANCEL:
+					if (!doNotAskToSaveOptions && MessageBox(hDlg, TEXT("Close without saving?"), TEXT("Exit"), MB_YESNO) == IDNO) {
+						SetWindowLong(hDlg, DWL_MSGRESULT, PSNRET_INVALID_NOCHANGEPAGE);
+						return TRUE;
+					}
+					return FALSE;
+				case PSN_APPLY:
+					appliedDialogs++;
+					if (saveOptionsAnswer == -1) {
+						int resp = MessageBox(hDlg, TEXT("Save Changes?"), TEXT("Exit"), MB_YESNOCANCEL);
+						if (resp == IDCANCEL) {
+							SetWindowLong(hDlg, DWL_MSGRESULT, PSNRET_INVALID_NOCHANGEPAGE);
+							appliedDialogs = 0;
+							return TRUE;
+						}
+						saveOptionsAnswer = (resp == IDYES) ? 1 : 0;
+					}
+					if (saveOptionsAnswer == 1) {
+						if (!IsValidConfiguration(hDlg, iDlg)) {
+							SetWindowLong(hDlg, DWL_MSGRESULT, PSNRET_INVALID);
+							saveOptionsAnswer = -1;
+							appliedDialogs = 0;
+							return TRUE;
+						}
+						if (appliedDialogs == initializedDialogs) {
+							if (SaveConfiguration()) {
+								PostMessage(g_hWnd, WM_CREATE, 0, 0);
+							}
+						}
+					}
+					return FALSE;
+			}
+			break;
+	}
+
+	return DefWindowProc(hDlg, uMsg, wParam, lParam);
+}
 
 /*************************************************************************/
 /* Option dialog PropSheetPageProc callback function                     */
@@ -99,39 +188,9 @@ UINT CALLBACK PropSheetPageProc(HWND hwnd,UINT uMsg,LPPROPSHEETPAGE ppsp)
 		case PSPCB_CREATE:
 			//Return any non zero value to indicate success
 			return 1;
-			break;
 
 		case PSPCB_RELEASE:  // Every property page will call here when it gets released
-			{
-				// Increase variable for every call
-				s_iReleaseCall++;
-
-				// Only save the registry values when the last property sheet is released
-				if (s_iReleaseCall >= NUM_CONFIG_SCREENS)
-				{
-					if (doNotAskToSaveOptions) {
-						doNotAskToSaveOptions = FALSE;
-						return FALSE;
-					}
-
-					// Comprobamos si quiere guardar o solo salir
-					int resp = MessageBox(hwnd, TEXT("Save Changes?"), TEXT("Exit"), MB_YESNO);
-					if (resp == IDNO) {
-						if (g_hWndMenuBar) {
-							CommandBar_Destroy(g_hWndMenuBar);
-						}
-						// EndDialog(hwnd, LOWORD(wParam));
-						return FALSE;
-					}
-
-					// Update the settings
-					SaveConfiguration();
-					PostMessage(g_hWnd, WM_CREATE, 0, 0);
-				}
-
-				return 0;
-			}
-			break;
+			return 0;
 
 		default:
 			break;
@@ -169,9 +228,10 @@ BOOL CreatePropertySheet(HWND hwnd)
 	for (int i = 0; i < NUM_CONFIG_SCREENS; i++)
 		g_hDlg[i] = NULL;
 
-	// Initialize iPageCall used for updating the registry only once when property sheet is dismissed
-	s_iReleaseCall = 0;
-
+	doNotAskToSaveOptions = FALSE;
+	saveOptionsAnswer = -1;
+	initializedDialogs = 0;
+	appliedDialogs = 0;
 
 
 	

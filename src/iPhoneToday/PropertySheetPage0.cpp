@@ -164,18 +164,9 @@ LRESULT CALLBACK OptionDialog0(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 			}
 		}
 		return 0;
-	case WM_PAINT:
-		PaintOptionsDialog(hDlg, 0);
-		return 0;
-	case WM_NOTIFY:
-		if (((LPNMHDR) lParam)->code == PSN_HELP) {
-			ToggleKeyboard();
-			return 0;
-		}
-		break;
 	}
 
-	return DefWindowProc(hDlg, uMsg, wParam, lParam);
+	return DefOptionWindowProc(hDlg, 0, uMsg, wParam, lParam);
 }
 
 BOOL cs_check(HWND hDlg, ConfigurationScreen *cs)
@@ -223,13 +214,22 @@ BOOL cs_check(HWND hDlg, ConfigurationScreen *cs)
 	return TRUE;
 }
 
-BOOL SaveConfiguration0(HWND hDlg)
+BOOL IsValidConfiguration0(HWND hDlg)
 {
 	cs_save(hDlg, cur_cs);
 
 	if (!cs_check(hDlg, &ms)) return FALSE;
 	if (!cs_check(hDlg, &bb)) return FALSE;
 	if (!cs_check(hDlg, &tb)) return FALSE;
+
+	return TRUE;
+}
+
+BOOL SaveConfiguration0(HWND hDlg)
+{
+	cs_save(hDlg, cur_cs);
+
+	if (!IsValidConfiguration0(hDlg)) return FALSE;
 
 	memcpy(&configuracion->mainScreenConfig->cs, &ms, sizeof(CConfigurationScreen));
 	memcpy(&configuracion->bottomBarConfig->cs,  &bb, sizeof(CConfigurationScreen));

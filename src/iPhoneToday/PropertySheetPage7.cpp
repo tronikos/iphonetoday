@@ -82,21 +82,12 @@ LRESULT CALLBACK OptionDialog7(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 				break;
 		}
 		return 0;
-	case WM_PAINT:
-		PaintOptionsDialog(hDlg, 7);
-		return 0;
-	case WM_NOTIFY:
-		if (((LPNMHDR) lParam)->code == PSN_HELP) {
-			ToggleKeyboard();
-			return 0;
-		}
-		break;
 	}
 
-	return DefWindowProc(hDlg, uMsg, wParam, lParam);
+	return DefOptionWindowProc(hDlg, 7, uMsg, wParam, lParam);
 }
 
-BOOL SaveConfiguration7(HWND hDlg)
+BOOL IsValidConfiguration7(HWND hDlg)
 {
 	int vibrateOnLaunchIcon;
 
@@ -106,6 +97,17 @@ BOOL SaveConfiguration7(HWND hDlg)
 		MessageBox(hDlg, TEXT("Vibrate on launch value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
+
+	return TRUE;
+}
+
+BOOL SaveConfiguration7(HWND hDlg)
+{
+	if (!IsValidConfiguration7(hDlg)) return FALSE;
+
+	int vibrateOnLaunchIcon;
+
+	vibrateOnLaunchIcon = GetDlgItemInt(hDlg, IDC_EDIT_ONLAUNCH_VIBRATE, NULL, TRUE);
 
 	configuracion->vibrateOnLaunchIcon = vibrateOnLaunchIcon;
 

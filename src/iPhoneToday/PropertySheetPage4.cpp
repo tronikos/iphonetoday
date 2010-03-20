@@ -56,22 +56,20 @@ LRESULT CALLBACK OptionDialog4(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 			}
 		}
 		return 0;
-	case WM_PAINT:
-		PaintOptionsDialog(hDlg, 4);
-		return 0;
-	case WM_NOTIFY:
-		if (((LPNMHDR) lParam)->code == PSN_HELP) {
-			ToggleKeyboard();
-			return 0;
-		}
-		break;
 	}
 
-	return DefWindowProc(hDlg, uMsg, wParam, lParam);
+	return DefOptionWindowProc(hDlg, 4, uMsg, wParam, lParam);
+}
+
+BOOL IsValidConfiguration4(HWND hDlg)
+{
+	return TRUE;
 }
 
 BOOL SaveConfiguration4(HWND hDlg)
 {
+	if (!IsValidConfiguration4(hDlg)) return FALSE;
+
 	GetDlgItemText(hDlg, IDC_EDIT_BUBBLE_NOTIF, configuracion->bubble_notif, CountOf(configuracion->bubble_notif));
 	GetDlgItemText(hDlg, IDC_EDIT_BUBBLE_STATE, configuracion->bubble_state, CountOf(configuracion->bubble_state));
 	GetDlgItemText(hDlg, IDC_EDIT_BUBBLE_ALARM, configuracion->bubble_alarm, CountOf(configuracion->bubble_alarm));

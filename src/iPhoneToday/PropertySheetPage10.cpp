@@ -48,17 +48,7 @@ LRESULT CALLBACK OptionDialog10(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 				break;
 		}
 		break;
-
-	case WM_PAINT:
-		PaintOptionsDialog(hDlg, 10);
-		return 0;
-	case WM_NOTIFY:
-		if (((LPNMHDR) lParam)->code == PSN_HELP) {
-			ToggleKeyboard();
-			return 0;
-		}
-		break;
 	}
 
-	return DefWindowProc(hDlg, uMsg, wParam, lParam);
+	return DefOptionWindowProc(hDlg, 10, uMsg, wParam, lParam);
 }

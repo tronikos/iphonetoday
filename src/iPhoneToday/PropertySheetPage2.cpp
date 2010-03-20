@@ -36,21 +36,12 @@ LRESULT CALLBACK OptionDialog2(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 			break;
 		}
 		return 0;
-	case WM_PAINT:
-		PaintOptionsDialog(hDlg, 2);
-		return 0;
-	case WM_NOTIFY:
-		if (((LPNMHDR) lParam)->code == PSN_HELP) {
-			ToggleKeyboard();
-			return 0;
-		}
-		break;
 	}
 
-	return DefWindowProc(hDlg, uMsg, wParam, lParam);
+	return DefOptionWindowProc(hDlg, 2, uMsg, wParam, lParam);
 }
 
-BOOL SaveConfiguration2(HWND hDlg)
+BOOL IsValidConfiguration2(HWND hDlg)
 {
 	int moveThreshold, moveFactor, minVelocity, maxVelocity, refreshTime;
 
@@ -80,6 +71,21 @@ BOOL SaveConfiguration2(HWND hDlg)
 		MessageBox(hDlg, TEXT("Refresh time value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
+
+	return TRUE;
+}
+
+BOOL SaveConfiguration2(HWND hDlg)
+{
+	if (!IsValidConfiguration2(hDlg)) return FALSE;
+
+	int moveThreshold, moveFactor, minVelocity, maxVelocity, refreshTime;
+
+	moveThreshold	= GetDlgItemInt(hDlg, IDC_EDIT_MOVE_THRESHOLD,	NULL, TRUE);
+	moveFactor		= GetDlgItemInt(hDlg, IDC_EDIT_MOVE_FACTOR,		NULL, TRUE);
+	minVelocity		= GetDlgItemInt(hDlg, IDC_EDIT_MIN_VELOCITY,	NULL, TRUE);
+	maxVelocity		= GetDlgItemInt(hDlg, IDC_EDIT_MAX_VELOCITY,	NULL, TRUE);
+	refreshTime		= GetDlgItemInt(hDlg, IDC_EDIT_REFRESH_TIME,	NULL, TRUE);
 
 	configuracion->umbralMovimiento	= moveThreshold;
 	configuracion->factorMovimiento	= moveFactor;

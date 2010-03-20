@@ -58,22 +58,20 @@ LRESULT CALLBACK OptionDialog9(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 				break;
 		}
 		return 0;
-	case WM_PAINT:
-		PaintOptionsDialog(hDlg, 9);
-		return 0;
-	case WM_NOTIFY:
-		if (((LPNMHDR) lParam)->code == PSN_HELP) {
-			ToggleKeyboard();
-			return 0;
-		}
-		break;
 	}
 
-	return DefWindowProc(hDlg, uMsg, wParam, lParam);
+	return DefOptionWindowProc(hDlg, 9, uMsg, wParam, lParam);
+}
+
+BOOL IsValidConfiguration9(HWND hDlg)
+{
+	return TRUE;
 }
 
 BOOL SaveConfiguration9(HWND hDlg)
 {
+	if (!IsValidConfiguration9(hDlg)) return FALSE;
+
 	GetDlgItemText(hDlg, IDC_EDIT_OUTOFSCREEN_LEFT,   configuracion->outOfScreenLeft,   CountOf(configuracion->outOfScreenLeft));
 	GetDlgItemText(hDlg, IDC_EDIT_OUTOFSCREEN_RIGHT,  configuracion->outOfScreenRight,  CountOf(configuracion->outOfScreenRight));
 	GetDlgItemText(hDlg, IDC_EDIT_OUTOFSCREEN_TOP,    configuracion->outOfScreenTop,    CountOf(configuracion->outOfScreenTop));
