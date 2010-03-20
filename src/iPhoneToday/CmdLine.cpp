@@ -96,6 +96,10 @@ BOOL CommandLineArguements(HWND hwnd, LPCTSTR pCmdLine)
 	} else if (wcsicmp(pCmdLine, L"keyboard") == 0) {
 		ToggleKeyboard();
 		return TRUE;
+	} else if (wcsicmp(pCmdLine, L"winkey") == 0) {
+		keybd_event(91, NULL, KEYEVENTF_SILENT, NULL);
+		keybd_event(91, NULL, KEYEVENTF_SILENT|KEYEVENTF_KEYUP, NULL);
+		return TRUE;
 	}
 
 	return FALSE;
