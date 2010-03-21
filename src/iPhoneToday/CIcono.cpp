@@ -202,18 +202,18 @@ void CIcono::loadImage(HDC *hDC, TCHAR *pathImage, int width, int height, int bi
 			alphaThreshold = configuracion->alphaThreshold;
 			premultiply = configuracion->alphaOnBlack;
 		}
-		// if it is a pressed icon then it has to be pre-multiplied now
-		if (alwaysPremultiply) {
-			alphaThreshold = 0;
-			premultiply = TRUE;
-			fixBlack = FALSE;
-		}
 		// if the alphaBlend option is set,
 		// then the pixels will be pre-multiplied later once they have been copied to the page's hdc
 		// and before they are alpha blended to the window's hdc
 		if (alphaBlend) {
 			alphaThreshold = 0;
 			premultiply = FALSE;
+			fixBlack = FALSE;
+		}
+		// if it is a pressed icon then it has to be pre-multiplied now
+		if (alwaysPremultiply) {
+			alphaThreshold = 0;
+			premultiply = TRUE;
 			fixBlack = FALSE;
 		}
 
