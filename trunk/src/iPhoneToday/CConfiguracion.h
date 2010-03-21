@@ -107,8 +107,9 @@ public:
 	TCHAR diasSemana[7][16];
 	SpecialIconSettings dom;	// DayOfMonth
 	SpecialIconSettings clck;	// Clock
-	UINT clock12Format;
+	BOOL clock12Format;
 	SpecialIconSettings batt;	// Battery
+	BOOL battShowAC;
 	SpecialIconSettings vol;	// Volume
 	SpecialIconSettings meml;	// Memory load
 	SpecialIconSettings memf;	// Memory free

@@ -216,6 +216,8 @@ BEGIN
     CTEXT           "Above height and width values are for one character. Values are percentages of the icon size.",IDC_STATIC,7,73,146,24
     CONTROL         "User locale for the 3-letter abbreviation",IDC_CHECK_DOW_USE_LOCALE,
                     "Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_TABSTOP,7,62,143,10
+    CONTROL         "Show percentage while charging",IDC_CHECK_BATT_ALWAYS_SHOW_PERC,
+                    "Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_TABSTOP,7,62,119,10
 END
 
 IDD_DIALOGPAGE6 DIALOG  0, 0, 160, 104

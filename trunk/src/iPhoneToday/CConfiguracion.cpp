@@ -445,6 +445,8 @@ void CConfiguracion::defaultValues()
 	this->batt.offset.right = 0;
 	this->batt.offset.bottom = 0;
 
+	this->battShowAC = 0;
+
 	this->vol.facename[0] = 0;
 	this->vol.color = RGB(0,64,128);
 	this->vol.width = 25;
@@ -624,6 +626,7 @@ BOOL CConfiguracion::cargaXMLConfig()
 			XMLUtils::GetAttr(pElem, "format12", &this->clock12Format);
 		} else if(_stricmp(nameNode, "Battery") == 0) {
 			SpecialIconSettingsLoad(pElem, &this->batt);
+			XMLUtils::GetAttr(pElem, "AC", &this->battShowAC);
 		} else if(_stricmp(nameNode, "Volume") == 0) {
 			SpecialIconSettingsLoad(pElem, &this->vol);
 		} else if(_stricmp(nameNode, "MemoryLoad") == 0) {
@@ -872,6 +875,7 @@ BOOL CConfiguracion::guardaXMLConfig()
 
 	pElem = new TiXmlElement("Battery");
 	SpecialIconSettingsSave(pElem, &this->batt);
+	XMLUtils::SetAttr(pElem, "AC", this->battShowAC);
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("Volume");
