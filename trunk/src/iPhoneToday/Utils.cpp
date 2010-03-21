@@ -196,6 +196,15 @@ BOOL isPND()
 	return (i == 1);
 }
 
+BOOL isPhone()
+{
+	static int i = -1;
+	if (i == -1) {
+		i = FileExists(L"\\Windows\\phone.dll");
+	}
+	return (i == 1);
+}
+
 BOOL nativelySupportsAlphaBlend()
 {
 	static int i = -1;
