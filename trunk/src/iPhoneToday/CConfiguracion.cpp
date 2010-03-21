@@ -1002,17 +1002,23 @@ void CConfiguracion::autoConfigure()
 	int textSize = iconWidth / 4;
 
 	this->mainScreenConfig->cs.iconWidthXML = iconWidth;
-	this->mainScreenConfig->cs.textSize = textSize;
+	if (this->mainScreenConfig->cs.textSize) {
+		this->mainScreenConfig->cs.textSize = textSize;
+	}
 
 	this->bottomBarConfig->cs.iconWidthXML = iconWidth;
-	this->bottomBarConfig->cs.textSize = textSize;
+	if (this->bottomBarConfig->cs.textSize) {
+		this->bottomBarConfig->cs.textSize = textSize;
+	}
 
 	this->topBarConfig->cs.iconWidthXML = iconWidth;
-	this->topBarConfig->cs.textSize = textSize;
+	if (this->topBarConfig->cs.textSize) {
+		this->topBarConfig->cs.textSize = textSize;
+	}
 
-	this->mainScreenConfig->cs.minHorizontalSpace = 5;
-	this->mainScreenConfig->cs.offset.top = 5;
-	this->bottomBarConfig->cs.offset.top = this->mainScreenConfig->cs.offset.top;
+	//this->mainScreenConfig->cs.minHorizontalSpace = 5;
+	//this->mainScreenConfig->cs.offset.top = 5;
+	//this->bottomBarConfig->cs.offset.top = this->mainScreenConfig->cs.offset.top;
 
 	this->circlesDiameter = iconWidth / 6;
 	this->circlesDistance = this->circlesDiameter / 2;
