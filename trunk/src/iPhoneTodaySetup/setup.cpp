@@ -148,6 +148,19 @@ void DisableAllTodayPlugins()
 	}
 }
 
+BOOL IsInstalledInDevice(LPCTSTR pszInstallDir)
+{
+	TCHAR szPath[MAX_PATH];
+	SHGetSpecialFolderPath(NULL, szPath, CSIDL_PROGRAM_FILES, FALSE);
+	StringCchCat(szPath, MAX_PATH, L"\\iPhoneToday");
+
+	if (lstrcmpi(szPath, pszInstallDir) == 0) {
+		return TRUE;
+	}
+
+	return FALSE;
+}
+
 // **************************************************************************
 // **************************************************************************
 // Function Name: Install_Init
@@ -177,13 +190,19 @@ SETUP_API codeINSTALL_INIT Install_Init(
 {
 //	NKDbgPrintfW(L"Install_Init (fFirstCall = %d, fPreviouslyInstalled = %d, pszInstallDir = %s)\n", fFirstCall, fPreviouslyInstalled, pszInstallDir);
 
-	if (fPreviouslyInstalled) {
-		BackupOrRestoreSettings(hwndParent, pszInstallDir, TRUE);
-	}
-
 	if (fFirstCall) {  // Disable the plug-in once will do
 		ToggleTodayPlugin(FALSE);
 		RemoveRegistry();
+	}
+
+	if (fPreviouslyInstalled) {
+		BackupOrRestoreSettings(hwndParent, pszInstallDir, TRUE);
+	} else {
+		if (!IsInstalledInDevice(pszInstallDir)) {
+			if (MessageBox(hwndParent, L"Today plugin will not be available if you install it in the storage card. Continue? (Select No to cancel the installation.)", L"Installation", MB_YESNO | MB_ICONQUESTION) == IDNO) {
+				return codeINSTALL_INIT_CANCEL;
+			}
+		}
 	}
 
 	return codeINSTALL_INIT_CONTINUE;
@@ -218,17 +237,32 @@ SETUP_API codeINSTALL_EXIT Install_Exit(
     WORD    cFailedShortcuts
     )
 {
-//	NKDbgPrintfW(L"Install_Exit\n");
+//	NKDbgPrintfW(L"Install_Exit (%d %d %d %d %d)\n", cFailedDirs, cFailedFiles, cFailedRegKeys, cFailedRegVals, cFailedShortcuts);
+
+	if (cFailedDirs || cFailedFiles || cFailedRegKeys || cFailedRegVals || cFailedShortcuts) {
+		MessageBox(hwndParent, L"Installation failed!", L"Installation", MB_OK);
+		return codeINSTALL_EXIT_UNINSTALL;
+	}
 
 	BackupOrRestoreSettings(hwndParent, pszInstallDir, FALSE);
 
-	if (MessageBox(hwndParent, L"Would you like to enable today plugin?", L"Installation", MB_YESNO | MB_ICONQUESTION) == IDYES) {
-		DisableAllTodayPlugins();
-		ToggleTodayPlugin(TRUE);
-	} else if (MessageBox(hwndParent, L"Would you like to create a shortcut to the startup folder instead?", L"Installation", MB_YESNO | MB_ICONQUESTION) == IDYES) {
-		TCHAR exe[MAX_PATH];
-		StringCchPrintf(exe, MAX_PATH, L"\"%s\\%s\"", pszInstallDir, L"iPhoneToday.exe");
-		SHCreateShortcut(L"\\Windows\\StartUp\\iPhoneToday.lnk", exe);
+	BOOL bEnabled = FALSE;
+	if (IsInstalledInDevice(pszInstallDir)) {
+		if (MessageBox(hwndParent, L"Would you like to enable today plugin?", L"Installation", MB_YESNO | MB_ICONQUESTION) == IDYES) {
+			DisableAllTodayPlugins();
+			ToggleTodayPlugin(TRUE);
+			bEnabled = TRUE;
+		}
+	} else {
+		MessageBox(hwndParent, L"The today plugin will not be available because you did not install it to the device.", L"Installation", MB_OK);
+	}
+
+	if (!bEnabled) {
+		if (MessageBox(hwndParent, L"Would you like to create a shortcut to the startup folder instead?", L"Installation", MB_YESNO | MB_ICONQUESTION) == IDYES) {
+			TCHAR exe[MAX_PATH];
+			StringCchPrintf(exe, MAX_PATH, L"\"%s\\%s\"", pszInstallDir, L"iPhoneToday.exe");
+			SHCreateShortcut(L"\\Windows\\StartUp\\iPhoneToday.lnk", exe);
+		}
 	}
 
 /*
