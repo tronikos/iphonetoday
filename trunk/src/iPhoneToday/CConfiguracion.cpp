@@ -368,10 +368,13 @@ void CConfiguracion::defaultValues()
 	this->circlesDistance = 7;
 	this->circlesOffset = 7;
 
-	this->headerFontSize = 0;
-	this->headerFontWeight = 900;
-	this->headerFontColor = RGB(255, 255, 255);
+	this->headerTextFacename[0] = 0;
+	this->headerTextSize = 0;
+	this->headerTextColor = RGB(255, 255, 255);
+	this->headerTextWeight = 900;
 	this->headerOffset = 0;
+	this->headerTextShadow = 1;
+	this->headerTextRoundRect = 0;
 
 	this->fondoTransparente = 1;
 	this->fondoColor = RGB(0, 0, 0);
@@ -400,6 +403,7 @@ void CConfiguracion::defaultValues()
 	StringCchCopy(this->diasSemana[6], CountOf(this->diasSemana[6]), TEXT("Sat"));
 	StringCchCopy(this->strFondoPantalla, CountOf(this->strFondoPantalla), TEXT(""));
 
+	this->dow.facename[0] = 0;
 	this->dow.color = RGB(255,255,255);
 	this->dow.width = 18;
 	this->dow.height = 40;
@@ -409,6 +413,7 @@ void CConfiguracion::defaultValues()
 	this->dow.offset.right = 0;
 	this->dow.offset.bottom = 72;
 
+	this->dom.facename[0] = 0;
 	this->dom.color = RGB(30,30,30);
 	this->dom.width = 30;
 	this->dom.height = 80;
@@ -418,6 +423,7 @@ void CConfiguracion::defaultValues()
 	this->dom.offset.right = 0;
 	this->dom.offset.bottom = 0;
 
+	this->clck.facename[0] = 0;
 	this->clck.color = RGB(230,230,230);
 	this->clck.width = 13;
 	this->clck.height = 60;
@@ -429,6 +435,7 @@ void CConfiguracion::defaultValues()
 
 	this->clock12Format = 0;
 
+	this->batt.facename[0] = 0;
 	this->batt.color = RGB(230,230,230);
 	this->batt.width = 25;
 	this->batt.height = 70;
@@ -438,6 +445,7 @@ void CConfiguracion::defaultValues()
 	this->batt.offset.right = 0;
 	this->batt.offset.bottom = 0;
 
+	this->vol.facename[0] = 0;
 	this->vol.color = RGB(0,64,128);
 	this->vol.width = 25;
 	this->vol.height = 70;
@@ -447,6 +455,7 @@ void CConfiguracion::defaultValues()
 	this->vol.offset.right = 0;
 	this->vol.offset.bottom = 0;
 
+	this->meml.facename[0] = 0;
 	this->meml.color = RGB(230,230,230);
 	this->meml.width = 25;
 	this->meml.height = 70;
@@ -456,6 +465,7 @@ void CConfiguracion::defaultValues()
 	this->meml.offset.right = 0;
 	this->meml.offset.bottom = 0;
 
+	this->memf.facename[0] = 0;
 	this->memf.color = RGB(230,230,230);
 	this->memf.width = 20;
 	this->memf.height = 70;
@@ -465,6 +475,7 @@ void CConfiguracion::defaultValues()
 	this->memf.offset.right = 0;
 	this->memf.offset.bottom = 0;
 
+	this->memu.facename[0] = 0;
 	this->memu.color = RGB(230,230,230);
 	this->memu.width = 20;
 	this->memu.height = 70;
@@ -474,6 +485,7 @@ void CConfiguracion::defaultValues()
 	this->memu.offset.right = 0;
 	this->memu.offset.bottom = 0;
 
+	this->sign.facename[0] = 0;
 	this->sign.color = RGB(230,230,230);
 	this->sign.width = 25;
 	this->sign.height = 70;
@@ -531,26 +543,28 @@ void CConfiguracion::defaultValues()
 
 void SpecialIconSettingsLoad(TiXmlElement *pElem, SpecialIconSettings *sis)
 {
-	XMLUtils::GetAttr(pElem, "color",  &sis->color);
-	XMLUtils::GetAttr(pElem, "width",  &sis->width);
-	XMLUtils::GetAttr(pElem, "height", &sis->height);
-	XMLUtils::GetAttr(pElem, "weight", &sis->weight);
-	XMLUtils::GetAttr(pElem, "left",   &sis->offset.left);
-	XMLUtils::GetAttr(pElem, "top",    &sis->offset.top);
-	XMLUtils::GetAttr(pElem, "right",  &sis->offset.right);
-	XMLUtils::GetAttr(pElem, "bottom", &sis->offset.bottom);
+	XMLUtils::GetAttr(pElem, "facename", sis->facename, CountOf(sis->facename));
+	XMLUtils::GetAttr(pElem, "color",    &sis->color);
+	XMLUtils::GetAttr(pElem, "width",    &sis->width);
+	XMLUtils::GetAttr(pElem, "height",   &sis->height);
+	XMLUtils::GetAttr(pElem, "weight",   &sis->weight);
+	XMLUtils::GetAttr(pElem, "left",     &sis->offset.left);
+	XMLUtils::GetAttr(pElem, "top",      &sis->offset.top);
+	XMLUtils::GetAttr(pElem, "right",    &sis->offset.right);
+	XMLUtils::GetAttr(pElem, "bottom",   &sis->offset.bottom);
 }
 
 void SpecialIconSettingsSave(TiXmlElement *pElem, SpecialIconSettings *sis)
 {
-	XMLUtils::SetAttr(pElem, "color",  sis->color);
-	XMLUtils::SetAttr(pElem, "width",  sis->width);
-	XMLUtils::SetAttr(pElem, "height", sis->height);
-	XMLUtils::SetAttr(pElem, "weight", sis->weight);
-	XMLUtils::SetAttr(pElem, "left",   sis->offset.left);
-	XMLUtils::SetAttr(pElem, "top",    sis->offset.top);
-	XMLUtils::SetAttr(pElem, "right",  sis->offset.right);
-	XMLUtils::SetAttr(pElem, "bottom", sis->offset.bottom);
+	XMLUtils::SetAttr(pElem, "facename", sis->facename, CountOf(sis->facename));
+	XMLUtils::SetAttr(pElem, "color",    sis->color);
+	XMLUtils::SetAttr(pElem, "width",    sis->width);
+	XMLUtils::SetAttr(pElem, "height",   sis->height);
+	XMLUtils::SetAttr(pElem, "weight",   sis->weight);
+	XMLUtils::SetAttr(pElem, "left",     sis->offset.left);
+	XMLUtils::SetAttr(pElem, "top",      sis->offset.top);
+	XMLUtils::SetAttr(pElem, "right",    sis->offset.right);
+	XMLUtils::SetAttr(pElem, "bottom",   sis->offset.bottom);
 }
 
 BOOL CConfiguracion::cargaXMLConfig()
@@ -575,10 +589,13 @@ BOOL CConfiguracion::cargaXMLConfig()
 			XMLUtils::GetAttr(pElem, "distance", &this->circlesDistance);
 			XMLUtils::GetAttr(pElem, "offset", &this->circlesOffset);
 		} else if(_stricmp(nameNode, "Header") == 0) {
-			XMLUtils::GetAttr(pElem, "size",   &this->headerFontSize);
-			XMLUtils::GetAttr(pElem, "color",  &this->headerFontColor);
-			XMLUtils::GetAttr(pElem, "weight", &this->headerFontWeight);
-			XMLUtils::GetAttr(pElem, "offset", &this->headerOffset);
+			XMLUtils::GetAttr(pElem, "facename",  this->headerTextFacename, CountOf(this->headerTextFacename));
+			XMLUtils::GetAttr(pElem, "size",      &this->headerTextSize);
+			XMLUtils::GetAttr(pElem, "color",     &this->headerTextColor);
+			XMLUtils::GetAttr(pElem, "weight",    &this->headerTextWeight);
+			XMLUtils::GetAttr(pElem, "offset",    &this->headerOffset);
+			XMLUtils::GetAttr(pElem, "shadow",    &this->headerTextShadow);
+			XMLUtils::GetAttr(pElem, "roundrect", &this->headerTextRoundRect);
 		} else if(_stricmp(nameNode, "Movement") == 0) {
 			XMLUtils::GetAttr(pElem, "MoveThreshold",  &this->umbralMovimiento);
 			XMLUtils::GetAttr(pElem, "MaxVelocity",    &this->velMaxima);
@@ -799,10 +816,13 @@ BOOL CConfiguracion::guardaXMLConfig()
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("Header");
-	XMLUtils::SetAttr(pElem, "size",   this->headerFontSize);
-	XMLUtils::SetAttr(pElem, "color",  this->headerFontColor);
-	XMLUtils::SetAttr(pElem, "weight", this->headerFontWeight);
-	XMLUtils::SetAttr(pElem, "offset", this->headerOffset);
+	XMLUtils::SetAttr(pElem, "facename",  this->headerTextFacename, CountOf(this->headerTextFacename));
+	XMLUtils::SetAttr(pElem, "size",      this->headerTextSize);
+	XMLUtils::SetAttr(pElem, "color",     this->headerTextColor);
+	XMLUtils::SetAttr(pElem, "weight",    this->headerTextWeight);
+	XMLUtils::SetAttr(pElem, "offset",    this->headerOffset);
+	XMLUtils::SetAttr(pElem, "shadow",    this->headerTextShadow);
+	XMLUtils::SetAttr(pElem, "roundrect", this->headerTextRoundRect);
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("Background");
@@ -972,16 +992,16 @@ void CConfiguracion::autoConfigure()
 	}
 
 	int iconWidth = int(float(width) * 0.1875);
-	int fontSize = iconWidth / 4;
+	int textSize = iconWidth / 4;
 
 	this->mainScreenConfig->cs.iconWidthXML = iconWidth;
-	this->mainScreenConfig->cs.fontSize = fontSize;
+	this->mainScreenConfig->cs.textSize = textSize;
 
 	this->bottomBarConfig->cs.iconWidthXML = iconWidth;
-	this->bottomBarConfig->cs.fontSize = fontSize;
+	this->bottomBarConfig->cs.textSize = textSize;
 
 	this->topBarConfig->cs.iconWidthXML = iconWidth;
-	this->topBarConfig->cs.fontSize = fontSize;
+	this->topBarConfig->cs.textSize = textSize;
 
 	this->mainScreenConfig->cs.minHorizontalSpace = 5;
 	this->mainScreenConfig->cs.offset.top = 5;

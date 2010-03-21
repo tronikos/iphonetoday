@@ -15,3 +15,5 @@ BOOL ColorSelector(HWND hwndOwner, COLORREF rgbCurrent, COLORREF *nextColor);
 
 // AlphaBlends bitmap bmSrc to bmDst. Bitmaps are required to be DIB sections.
 BOOL AlphaBlend2(BITMAP *bmDst, int xDstOrg, int yDstOrg, BITMAP *bmSrc, int xSrcOrg, int ySrcOrg, int cx, int cy);
+
+int DrawText2(HDC hDC, LPCTSTR lpString, int nCount, LPRECT lpRect, UINT uFormat, BOOL bRoundRect = FALSE, UINT uTextShadow = 0);
