@@ -36,12 +36,12 @@ void cs_load(HWND hDlg, ConfigurationScreen *cs)
 	if (cs != NULL) {
 		SetDlgItemInt(hDlg, IDC_EDIT_CS_ICON_WIDTH,		cs->iconWidthXML,	TRUE);
 		SetDlgItemInt(hDlg, IDC_EDIT_CS_ICONS_PER_ROW,	cs->iconsPerRowXML,	TRUE);
-		SetDlgItemInt(hDlg, IDC_EDIT_CS_TEXT_HEIGHT,	cs->fontSize,		TRUE);
-		SetDlgItemInt(hDlg, IDC_EDIT_CS_TEXT_OFFSET,	cs->fontOffset,		TRUE);
+		SetDlgItemInt(hDlg, IDC_EDIT_CS_TEXT_HEIGHT,	cs->textSize,		TRUE);
+		SetDlgItemInt(hDlg, IDC_EDIT_CS_TEXT_OFFSET,	cs->textOffset,		TRUE);
 
-		SetDlgItemHex(hDlg, IDC_EDIT_CS_TEXT_COLOR,		cs->fontColor);
+		SetDlgItemHex(hDlg, IDC_EDIT_CS_TEXT_COLOR,		cs->textColor);
 
-		SendMessage(GetDlgItem(hDlg, IDC_CHECK_CS_TEXT_BOLD), BM_SETCHECK, cs->fontBold ? BST_CHECKED : BST_UNCHECKED, 0);
+		SendMessage(GetDlgItem(hDlg, IDC_CHECK_CS_TEXT_BOLD), BM_SETCHECK, cs->textBold ? BST_CHECKED : BST_UNCHECKED, 0);
 
 		SetDlgItemHex(hDlg, IDC_EDIT_CS_BACK_COLOR1,	cs->backColor1);
 		SetDlgItemHex(hDlg, IDC_EDIT_CS_BACK_COLOR2,	cs->backColor2);
@@ -62,12 +62,12 @@ void cs_save(HWND hDlg, ConfigurationScreen *cs)
 	if (cs != NULL) {
 		cs->iconWidthXML	= GetDlgItemInt(hDlg, IDC_EDIT_CS_ICON_WIDTH,		NULL, TRUE);
 		cs->iconsPerRowXML	= GetDlgItemInt(hDlg, IDC_EDIT_CS_ICONS_PER_ROW,	NULL, TRUE);
-		cs->fontSize		= GetDlgItemInt(hDlg, IDC_EDIT_CS_TEXT_HEIGHT,		NULL, TRUE);
-		cs->fontOffset		= GetDlgItemInt(hDlg, IDC_EDIT_CS_TEXT_OFFSET,		NULL, TRUE);
+		cs->textSize		= GetDlgItemInt(hDlg, IDC_EDIT_CS_TEXT_HEIGHT,		NULL, TRUE);
+		cs->textOffset		= GetDlgItemInt(hDlg, IDC_EDIT_CS_TEXT_OFFSET,		NULL, TRUE);
 
-		cs->fontColor		= GetDlgItemHex(hDlg, IDC_EDIT_CS_TEXT_COLOR,		NULL);
+		cs->textColor		= GetDlgItemHex(hDlg, IDC_EDIT_CS_TEXT_COLOR,		NULL);
 
-		cs->fontBold		= SendMessage(GetDlgItem(hDlg, IDC_CHECK_CS_TEXT_BOLD), BM_GETCHECK, 0, 0) == BST_CHECKED;
+		cs->textBold		= SendMessage(GetDlgItem(hDlg, IDC_CHECK_CS_TEXT_BOLD), BM_GETCHECK, 0, 0) == BST_CHECKED;
 
 		cs->backColor1		= GetDlgItemHex(hDlg, IDC_EDIT_CS_BACK_COLOR1,		NULL);
 		cs->backColor2		= GetDlgItemHex(hDlg, IDC_EDIT_CS_BACK_COLOR2,		NULL);
@@ -179,11 +179,11 @@ BOOL cs_check(HWND hDlg, ConfigurationScreen *cs)
 		MessageBox(hDlg, TEXT("Icons per row value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
-	if (cs->fontSize < 0 || cs->fontSize > 100) {
+	if (cs->textSize < 0 || cs->textSize > 100) {
 		MessageBox(hDlg, TEXT("Text height value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
-	if (cs->fontOffset < -256 || cs->fontOffset > 256) {
+	if (cs->textOffset < -256 || cs->textOffset > 256) {
 		MessageBox(hDlg, TEXT("Text offset value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}

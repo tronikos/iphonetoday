@@ -961,7 +961,7 @@ void RightClick(HWND hwnd, POINTS posCursor)
 			AppendMenu(hmenu, MF_STRING, MENU_POPUP_COPY, TEXT("Copy Icon"));
 		//}
 	} else {
-		if (configuracion->headerFontSize > 0) {
+		if (configuracion->headerTextSize > 0) {
 			AppendMenu(hmenu, MF_STRING, MENU_POPUP_EDIT_HEADER, TEXT("Edit header"));
 		}
 		AppendMenu(hmenu, MF_STRING, MENU_POPUP_OPTIONS, TEXT("Options"));
@@ -1316,7 +1316,7 @@ void pintaIconos(HDC *hDC, RECT *rcWindBounds) {
 
 }
 
-void DrawSpecialIconText(HDC hDC, TCHAR *str, CIcono *icon, int iconWidth, SpecialIconSettings sis)
+void DrawSpecialIconText(HDC hDC, TCHAR *str, CIcono *icon, int iconWidth, SpecialIconSettings *sis)
 {
 	RECT posText;
 	LOGFONT lf;
@@ -1327,21 +1327,32 @@ void DrawSpecialIconText(HDC hDC, TCHAR *str, CIcono *icon, int iconWidth, Speci
 
 	GetObject(hSysFont, sizeof(LOGFONT), &lf);
 
-	lf.lfWeight = sis.weight;
-	lf.lfWidth = LONG(sis.width / 100.0 * iconWidth);
-	lf.lfHeight = LONG(sis.height / 100.0 * iconWidth);
+	lf.lfWeight = sis->weight;
+	lf.lfWidth = LONG(sis->width / 100.0 * iconWidth);
+	lf.lfHeight = LONG(sis->height / 100.0 * iconWidth);
 	lf.lfQuality = configuracion->textQuality;
+	wcsncpy(lf.lfFaceName, sis->facename, CountOf(lf.lfFaceName));
 
 	hFont = CreateFontIndirect(&lf);
 
+#if 0
+	// Fix from http://support.microsoft.com/kb/306198 doesn't work...
+	if (configuracion->alphaBlend) {
+		HDC h = GetDC(g_hWnd);
+		hFontOld = (HFONT) SelectObject(h, hFont);
+		SelectObject(h, hFontOld);
+		ReleaseDC(g_hWnd, h);
+	}
+#endif
+
 	hFontOld = (HFONT) SelectObject(hDC, hFont);
 
-	colorOld = SetTextColor(hDC, sis.color);
+	colorOld = SetTextColor(hDC, sis->color);
 
-	posText.left = int(icon->x + sis.offset.left / 100.0 * iconWidth);
-	posText.top = int(icon->y + sis.offset.top / 100.0 * iconWidth);
-	posText.right = int(icon->x + iconWidth - sis.offset.right / 100.0 * iconWidth);
-	posText.bottom = int(icon->y + iconWidth - sis.offset.bottom / 100.0 * iconWidth);
+	posText.left = int(icon->x + sis->offset.left / 100.0 * iconWidth);
+	posText.top = int(icon->y + sis->offset.top / 100.0 * iconWidth);
+	posText.right = int(icon->x + iconWidth - sis->offset.right / 100.0 * iconWidth);
+	posText.bottom = int(icon->y + iconWidth - sis->offset.bottom / 100.0 * iconWidth);
 
 	DrawText(hDC, str, -1, &posText, DT_CENTER | DT_VCENTER);
 
@@ -1409,9 +1420,9 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 				if (!configuracion->dowUseLocale || !GetDateFormat(LOCALE_USER_DEFAULT, 0, &estado->st, L"ddd", str, CountOf(str))) {
 					StringCchCopy(str, CountOf(str), configuracion->diasSemana[estado->st.wDayOfWeek]);
 				}
-				DrawSpecialIconText(*hDC, str, icono, width, configuracion->dow);
+				DrawSpecialIconText(*hDC, str, icono, width, &configuracion->dow);
 				StringCchPrintf(str, CountOf(str), TEXT("%i"), estado->st.wDay);
-				DrawSpecialIconText(*hDC, str, icono, width, configuracion->dom);
+				DrawSpecialIconText(*hDC, str, icono, width, &configuracion->dom);
 				break;
 			case NOTIF_CLOCK_ALARM:
 				numNotif = estado->estadoAlarm;
@@ -1421,7 +1432,7 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 				} else {
 					StringCchPrintf(str, CountOf(str), TEXT("%02d:%02d"), estado->st.wHour, estado->st.wMinute);
 				}
-				DrawSpecialIconText(*hDC, str, icono, width, configuracion->clck);
+				DrawSpecialIconText(*hDC, str, icono, width, &configuracion->clck);
 				break;
 			case NOTIF_BATTERY:
 				if (estado->externalPowered) {
@@ -1429,28 +1440,28 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 				} else {
 					StringCchPrintf(str, CountOf(str), L"%d", estado->batteryPercentage);
 				}
-				DrawSpecialIconText(*hDC, str, icono, width, configuracion->batt);
+				DrawSpecialIconText(*hDC, str, icono, width, &configuracion->batt);
 				break;
 			case NOTIF_VOLUME:
 				StringCchPrintf(str, CountOf(str), L"%d", estado->volumePercentage);
-				DrawSpecialIconText(*hDC, str, icono, width, configuracion->vol);
+				DrawSpecialIconText(*hDC, str, icono, width, &configuracion->vol);
 				break;
 			case NOTIF_MEMORYLOAD:
 				StringCchPrintf(str, CountOf(str), L"%d", estado->memoryLoad);
-				DrawSpecialIconText(*hDC, str, icono, width, configuracion->meml);
+				DrawSpecialIconText(*hDC, str, icono, width, &configuracion->meml);
 				break;
 			case NOTIF_MEMORYFREE:
 				StringCchPrintf(str, CountOf(str), L"%.1f", estado->memoryFree / 1024.0 / 1024.0);
-				DrawSpecialIconText(*hDC, str, icono, width, configuracion->memf);
+				DrawSpecialIconText(*hDC, str, icono, width, &configuracion->memf);
 				break;
 			case NOTIF_MEMORYUSED:
 				StringCchPrintf(str, CountOf(str), L"%.1f", estado->memoryUsed / 1024.0 / 1024.0);
-				DrawSpecialIconText(*hDC, str, icono, width, configuracion->memu);
+				DrawSpecialIconText(*hDC, str, icono, width, &configuracion->memu);
 				break;
 			case NOTIF_SIGNAL:
 			case NOTIF_SIGNAL_OPER:
 				StringCchPrintf(str, CountOf(str), L"%d", estado->signalStrength);
-				DrawSpecialIconText(*hDC, str, icono, width, configuracion->sign);
+				DrawSpecialIconText(*hDC, str, icono, width, &configuracion->sign);
 				break;
 			case NOTIF_TAREAS:
 				numNotif = estado->numTareas;
@@ -1597,38 +1608,18 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 	}
 
 	// Pintamos el nombre del icono
-	posTexto.top = int(icono->y + width + cs->cs.fontOffset);
-	posTexto.bottom = posTexto.top + cs->cs.fontSize;
+	posTexto.top = int(icono->y + width + cs->cs.textOffset);
+	posTexto.bottom = posTexto.top + cs->cs.textSize;
 	posTexto.left = int(icono->x - (cs->distanceIconsH * 0.5) + 0.5);
 	posTexto.right = int(icono->x + width + (cs->distanceIconsH * 0.5) + 0.5);
 
-	if (cs->cs.fontSize > 0) {
+	if (cs->cs.textSize > 0) {
 		TCHAR *p = icono->nombre;
 		if (icono->tipo == NOTIF_OPERATOR || icono->tipo == NOTIF_SIGNAL_OPER) {
 			p = estado->operatorName;
 		}
 		if (p && p[0]) {
-			if (cs->cs.fontRoundRect) {
-				RECT rc = {0};
-				DrawText(*hDC, p, -1, &rc, DT_CENTER | DT_TOP | DT_CALCRECT);
-				int tmp = (posTexto.right - posTexto.left - rc.right) / 2;
-				HBRUSH hBrush = CreateSolidBrush(RGB(10,10,10));
-				HBRUSH hOldBrush = (HBRUSH) SelectObject(*hDC, hBrush);
-				RoundRect(*hDC, posTexto.left + tmp - rc.bottom / 2, posTexto.top - 1, posTexto.right - tmp + rc.bottom / 2, posTexto.bottom + 1, rc.bottom - 2, rc.bottom - 2);
-				SelectObject(*hDC, hOldBrush);
-				DeleteObject(hBrush);
-			}
-			if (cs->cs.fontShadow > 0) {
-				COLORREF colorOld = SetTextColor(*hDC, RGB(10,10,10));
-				RECT posTexto2 = posTexto;
-				posTexto2.left += cs->cs.fontShadow;
-				posTexto2.top += cs->cs.fontShadow;
-				posTexto2.right += cs->cs.fontShadow;
-				posTexto2.bottom += cs->cs.fontShadow;
-				DrawText(*hDC, p, -1, &posTexto2, DT_CENTER | DT_TOP);
-				SetTextColor(*hDC, colorOld);
-			}
-			DrawText(*hDC, p, -1, &posTexto, DT_CENTER | DT_TOP);
+			DrawText2(*hDC, p, -1, &posTexto, DT_CENTER | DT_TOP, cs->cs.textRoundRect, cs->cs.textShadow);
 		}
 	}
 }
@@ -1672,19 +1663,20 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type) {
 			LOGFONT lf;
 			GetObject(hSysFont, sizeof(LOGFONT), &lf);
 
-			if (cs->cs.fontBold) {
+			if (cs->cs.textBold) {
 				lf.lfWeight = FW_BOLD;
 			} else {
 				lf.lfWeight = FW_NORMAL;
 			}
-			lf.lfHeight = cs->cs.fontSize;
+			lf.lfHeight = cs->cs.textSize;
 			lf.lfQuality = configuracion->textQuality;
+			wcsncpy(lf.lfFaceName, cs->cs.textFacename, CountOf(lf.lfFaceName));
 
 			HFONT hFont = CreateFontIndirect(&lf);
 
 			pantalla->hFontOld = (HFONT)SelectObject(pantalla->hDC, hFont);
 
-			SetTextColor(pantalla->hDC, cs->cs.fontColor);
+			SetTextColor(pantalla->hDC, cs->cs.textColor);
 		}
 		SetBkMode(pantalla->hDC, TRANSPARENT);
 
@@ -1699,7 +1691,7 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type) {
 			DrawGradientGDI(pantalla->hDC, rc, cs->cs.backColor1,  cs->cs.backColor2,  0xAAAA);
 		}
 
-		if (configuracion->headerFontSize > 0 && _tcslen(pantalla->header) > 0) {
+		if (configuracion->headerTextSize > 0 && _tcslen(pantalla->header) > 0) {
 			LOGFONT lf;
 			HFONT hFont;
 			HFONT hFontOld;
@@ -1707,20 +1699,22 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type) {
 			HFONT hSysFont = (HFONT) GetStockObject(SYSTEM_FONT);
 			GetObject(hSysFont, sizeof(LOGFONT), &lf);
 
-			lf.lfWeight = configuracion->headerFontWeight;
-			lf.lfHeight = configuracion->headerFontSize;
+			lf.lfWeight = configuracion->headerTextWeight;
+			lf.lfHeight = configuracion->headerTextSize;
 			lf.lfQuality = configuracion->textQuality;
+			wcsncpy(lf.lfFaceName, configuracion->headerTextFacename, CountOf(lf.lfFaceName));
 
 			hFont = CreateFontIndirect(&lf);
 			hFontOld = (HFONT) SelectObject(pantalla->hDC, hFont);
-			colorOld = SetTextColor(pantalla->hDC, configuracion->headerFontColor);
+			colorOld = SetTextColor(pantalla->hDC, configuracion->headerTextColor);
 
 			RECT posTexto;
 			posTexto.left = 0;
 			posTexto.right = pantalla->anchoPantalla;
 			posTexto.top = configuracion->headerOffset;
-			posTexto.bottom = configuracion->headerFontSize + configuracion->headerOffset;
-			DrawText(pantalla->hDC, pantalla->header, -1, &posTexto, DT_CENTER | DT_VCENTER);
+			posTexto.bottom = configuracion->headerTextSize + configuracion->headerOffset;
+
+			DrawText2(pantalla->hDC, pantalla->header, -1, &posTexto, DT_CENTER | DT_VCENTER, configuracion->headerTextRoundRect, configuracion->headerTextShadow);
 
 			DeleteObject(SelectObject(pantalla->hDC, hFontOld));
 			SetTextColor(pantalla->hDC, colorOld);

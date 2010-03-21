@@ -17,9 +17,9 @@ LRESULT CALLBACK OptionDialog3(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 		{
 			InitOptionsDialog(hDlg, 3);
 
-			SetDlgItemInt(hDlg, IDC_EDIT_HEADER_HEIGHT,		configuracion->headerFontSize,		TRUE);
-			SetDlgItemHex(hDlg, IDC_EDIT_HEADER_COLOR,		configuracion->headerFontColor);
-			SetDlgItemInt(hDlg, IDC_EDIT_HEADER_WEIGHT,		configuracion->headerFontWeight,	TRUE);
+			SetDlgItemInt(hDlg, IDC_EDIT_HEADER_HEIGHT,		configuracion->headerTextSize,		TRUE);
+			SetDlgItemHex(hDlg, IDC_EDIT_HEADER_COLOR,		configuracion->headerTextColor);
+			SetDlgItemInt(hDlg, IDC_EDIT_HEADER_WEIGHT,		configuracion->headerTextWeight,	TRUE);
 			SetDlgItemInt(hDlg, IDC_EDIT_HEADER_OFFSET,		configuracion->headerOffset,		TRUE);
 			SetDlgItemInt(hDlg, IDC_EDIT_CIRCLES_DIAMETER,	configuracion->circlesDiameter,		TRUE);
 			SetDlgItemInt(hDlg, IDC_EDIT_CIRCLES_DISTANCE,	configuracion->circlesDistance,		TRUE);
@@ -100,9 +100,9 @@ BOOL SaveConfiguration3(HWND hDlg)
 	circlesDistance	= GetDlgItemInt(hDlg, IDC_EDIT_CIRCLES_DISTANCE,NULL, TRUE);
 	circlesOffset	= GetDlgItemInt(hDlg, IDC_EDIT_CIRCLES_OFFSET,	NULL, TRUE);
 
-	configuracion->headerFontSize = headerHeight;
-	configuracion->headerFontColor = headerColor;
-	configuracion->headerFontWeight = headerWeight;
+	configuracion->headerTextSize = headerHeight;
+	configuracion->headerTextColor = headerColor;
+	configuracion->headerTextWeight = headerWeight;
 	configuracion->headerOffset = headerOffset;
 	configuracion->circlesDiameter = circlesDiameter;
 	configuracion->circlesDistance = circlesDistance;

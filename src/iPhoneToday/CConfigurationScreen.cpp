@@ -43,7 +43,7 @@ void CConfigurationScreen::calculate(BOOL isStaticbar, int maxIcons, UINT screen
 		distanceIconsH = screenWidth / iconsPerRow;
 	}
 	posReference.y = SHORT(cs.offset.top);
-	distanceIconsV = UINT(iconWidth + cs.fontSize + cs.fontOffset + cs.additionalVerticalSpace);
+	distanceIconsV = UINT(iconWidth + cs.textSize + cs.textOffset + cs.additionalVerticalSpace);
 }
 
 void CConfigurationScreen::defaultValues()
@@ -54,12 +54,13 @@ void CConfigurationScreen::defaultValues()
 	this->cs.additionalVerticalSpace = 0;
 	this->cs.shrinkToFit = 0;
 
-	this->cs.fontSize = 12;
-	this->cs.fontColor = RGB(255, 255, 255);
-	this->cs.fontBold = 0;
-	this->cs.fontOffset = 0;
-	this->cs.fontShadow = 1;
-	this->cs.fontRoundRect = 0;
+	this->cs.textFacename[0] = 0;
+	this->cs.textSize = 12;
+	this->cs.textColor = RGB(255, 255, 255);
+	this->cs.textBold = 0;
+	this->cs.textOffset = 0;
+	this->cs.textShadow = 1;
+	this->cs.textRoundRect = 0;
 
 	this->cs.offset.left = 0;
 	this->cs.offset.top = 0;
@@ -99,12 +100,13 @@ BOOL CConfigurationScreen::loadXMLConfig(TiXmlElement *pRoot)
 			XMLUtils::GetAttr(pElem, "right",  &this->cs.offset.right);
 			XMLUtils::GetAttr(pElem, "bottom", &this->cs.offset.bottom);
 		} else if(_stricmp(nameNode, "Font") == 0) {
-			XMLUtils::GetAttr(pElem, "size",      &this->cs.fontSize);
-			XMLUtils::GetAttr(pElem, "color",     &this->cs.fontColor);
-			XMLUtils::GetAttr(pElem, "bold",      &this->cs.fontBold);
-			XMLUtils::GetAttr(pElem, "offset",    &this->cs.fontOffset);
-			XMLUtils::GetAttr(pElem, "shadow",    &this->cs.fontShadow);
-			XMLUtils::GetAttr(pElem, "roundrect", &this->cs.fontRoundRect);
+			XMLUtils::GetAttr(pElem, "facename",  this->cs.textFacename, CountOf(this->cs.textFacename));
+			XMLUtils::GetAttr(pElem, "size",      &this->cs.textSize);
+			XMLUtils::GetAttr(pElem, "color",     &this->cs.textColor);
+			XMLUtils::GetAttr(pElem, "bold",      &this->cs.textBold);
+			XMLUtils::GetAttr(pElem, "offset",    &this->cs.textOffset);
+			XMLUtils::GetAttr(pElem, "shadow",    &this->cs.textShadow);
+			XMLUtils::GetAttr(pElem, "roundrect", &this->cs.textRoundRect);
 		} else if(_stricmp(nameNode, "Background") == 0) {
 			XMLUtils::GetAttr(pElem, "color1",  &this->cs.backColor1);
 			XMLUtils::GetAttr(pElem, "color2",  &this->cs.backColor2);
@@ -149,12 +151,13 @@ BOOL CConfigurationScreen::saveXMLConfig(TiXmlElement *pRoot)
 	pRoot->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("Font");
-	XMLUtils::SetAttr(pElem, "size",      this->cs.fontSize);
-	XMLUtils::SetAttr(pElem, "color",     this->cs.fontColor);
-	XMLUtils::SetAttr(pElem, "bold",      this->cs.fontBold);
-	XMLUtils::SetAttr(pElem, "offset",    this->cs.fontOffset);
-	XMLUtils::SetAttr(pElem, "shadow",    this->cs.fontShadow);
-	XMLUtils::SetAttr(pElem, "roundrect", this->cs.fontRoundRect);
+	XMLUtils::SetAttr(pElem, "facename",  this->cs.textFacename, CountOf(this->cs.textFacename));
+	XMLUtils::SetAttr(pElem, "size",      this->cs.textSize);
+	XMLUtils::SetAttr(pElem, "color",     this->cs.textColor);
+	XMLUtils::SetAttr(pElem, "bold",      this->cs.textBold);
+	XMLUtils::SetAttr(pElem, "offset",    this->cs.textOffset);
+	XMLUtils::SetAttr(pElem, "shadow",    this->cs.textShadow);
+	XMLUtils::SetAttr(pElem, "roundrect", this->cs.textRoundRect);
 	pRoot->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("Background");
