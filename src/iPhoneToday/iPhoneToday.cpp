@@ -1409,10 +1409,14 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 				DrawSpecialIconText(*hDC, str, icono, width, &configuracion->clck);
 				break;
 			case NOTIF_BATTERY:
-				if (estado->externalPowered) {
-					StringCchCopy(str, CountOf(str), L"AC");
+				if (configuracion->battShowAC) {
+					if (estado->externalPowered) {
+						StringCchCopy(str, CountOf(str), L"AC");
+					} else {
+						StringCchPrintf(str, CountOf(str), L"%d", estado->batteryPercentage);
+					}
 				} else {
-					StringCchPrintf(str, CountOf(str), L"%d", estado->batteryPercentage);
+					StringCchPrintf(str, CountOf(str), L"%s%d", estado->externalPowered ? "-" : "", estado->batteryPercentage);
 				}
 				DrawSpecialIconText(*hDC, str, icono, width, &configuracion->batt);
 				break;

@@ -89,8 +89,11 @@ LRESULT CALLBACK OptionDialog5(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 
 			SendMessage(GetDlgItem(hDlg, IDC_CHECK_CLOCK_FORMAT12), BM_SETCHECK, configuracion->clock12Format ? BST_CHECKED : BST_UNCHECKED, 0);
 			SendMessage(GetDlgItem(hDlg, IDC_CHECK_DOW_USE_LOCALE), BM_SETCHECK, configuracion->dowUseLocale ? BST_CHECKED : BST_UNCHECKED, 0);
+			SendMessage(GetDlgItem(hDlg, IDC_CHECK_BATT_ALWAYS_SHOW_PERC), BM_SETCHECK, !configuracion->battShowAC ? BST_CHECKED : BST_UNCHECKED, 0);
+
 			ShowWindow(GetDlgItem(hDlg, IDC_CHECK_CLOCK_FORMAT12), SW_HIDE);
 			ShowWindow(GetDlgItem(hDlg, IDC_CHECK_DOW_USE_LOCALE), SW_HIDE);
+			ShowWindow(GetDlgItem(hDlg, IDC_CHECK_BATT_ALWAYS_SHOW_PERC), SW_HIDE);
 		}
 		return TRUE;
 	case WM_COMMAND:
@@ -102,11 +105,13 @@ LRESULT CALLBACK OptionDialog5(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 					sis_save(hDlg, cur_sis);
 					ShowWindow(GetDlgItem(hDlg, IDC_CHECK_CLOCK_FORMAT12), SW_HIDE);
 					ShowWindow(GetDlgItem(hDlg, IDC_CHECK_DOW_USE_LOCALE), SW_HIDE);
+					ShowWindow(GetDlgItem(hDlg, IDC_CHECK_BATT_ALWAYS_SHOW_PERC), SW_HIDE);
 					TCHAR str[MAX_PATH];
 					GetDlgItemText(hDlg, IDC_COMBO_SIS, str, MAX_PATH);
 					if (lstrcmpi(str, L"Battery") == 0) {
 						cur_sis = &batt;
 						sis_load(hDlg, cur_sis);
+						ShowWindow(GetDlgItem(hDlg, IDC_CHECK_BATT_ALWAYS_SHOW_PERC), SW_SHOW);
 					} else if (lstrcmpi(str, L"Clock") == 0) {
 						cur_sis = &clck;
 						sis_load(hDlg, cur_sis);
@@ -221,6 +226,7 @@ BOOL SaveConfiguration5(HWND hDlg)
 
 	configuracion->clock12Format = SendMessage(GetDlgItem(hDlg, IDC_CHECK_CLOCK_FORMAT12), BM_GETCHECK, 0, 0) == BST_CHECKED;
 	configuracion->dowUseLocale  = SendMessage(GetDlgItem(hDlg, IDC_CHECK_DOW_USE_LOCALE), BM_GETCHECK, 0, 0) == BST_CHECKED;
+	configuracion->battShowAC    = !SendMessage(GetDlgItem(hDlg, IDC_CHECK_BATT_ALWAYS_SHOW_PERC), BM_GETCHECK, 0, 0) == BST_CHECKED;
 
 	return TRUE;
 }
