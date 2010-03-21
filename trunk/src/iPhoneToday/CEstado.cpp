@@ -43,6 +43,13 @@ BOOL CEstado::actualizaNotificaciones() {
 	BOOL hayCambios = FALSE;
 	DWORD valorRegistro = 0;
 	int newValue;
+	this->changedBubble = FALSE;
+	this->changedState = FALSE;
+	this->changedSignal = FALSE;
+	this->changedTime = FALSE;
+	this->changedBattery = FALSE;
+	this->changedVolume = FALSE;
+	this->changedMemory = FALSE;
 
 	LoadDwordSetting(HKEY_CURRENT_USER, &valorRegistro, 
 		TEXT("System\\State\\Phone"),
@@ -52,6 +59,7 @@ BOOL CEstado::actualizaNotificaciones() {
 	if (numLlamadas != valorRegistro) {
 		numLlamadas = valorRegistro;
 		hayCambios = TRUE;
+		changedBubble = TRUE;
 	}
 
 	LoadDwordSetting(HKEY_CURRENT_USER, &valorRegistro, 
@@ -62,6 +70,7 @@ BOOL CEstado::actualizaNotificaciones() {
 	if (numSMS != valorRegistro) {
 		numSMS = valorRegistro;
 		hayCambios = TRUE;
+		changedBubble = TRUE;
 	}
 
 	LoadDwordSetting(HKEY_CURRENT_USER, &valorRegistro, 
@@ -72,6 +81,7 @@ BOOL CEstado::actualizaNotificaciones() {
 	if (numMMS != valorRegistro) {
 		numMMS = valorRegistro;
 		hayCambios = TRUE;
+		changedBubble = TRUE;
 	}
 
 	LoadDwordSetting(HKEY_CURRENT_USER, &valorRegistro, 
@@ -82,6 +92,7 @@ BOOL CEstado::actualizaNotificaciones() {
 	if (numOtherEmail != valorRegistro) {
 		numOtherEmail = valorRegistro;
 		hayCambios = TRUE;
+		changedBubble = TRUE;
 	}
 
 	LoadDwordSetting(HKEY_CURRENT_USER, &valorRegistro, 
@@ -92,6 +103,7 @@ BOOL CEstado::actualizaNotificaciones() {
 	if (numSyncEmail != valorRegistro) {
 		numSyncEmail = valorRegistro;
 		hayCambios = TRUE;
+		changedBubble = TRUE;
 	}
 
 	LoadDwordSetting(HKEY_CURRENT_USER, &valorRegistro, 
@@ -102,6 +114,7 @@ BOOL CEstado::actualizaNotificaciones() {
 	if (numCitas != valorRegistro) {
 		numCitas = valorRegistro;
 		hayCambios = TRUE;
+		changedBubble = TRUE;
 	}
 
 	LoadDwordSetting(HKEY_CURRENT_USER, &valorRegistro, 
@@ -112,6 +125,7 @@ BOOL CEstado::actualizaNotificaciones() {
 	if (numTareas != valorRegistro) {
 		numTareas = valorRegistro;
 		hayCambios = TRUE;
+		changedBubble = TRUE;
 	}
 
 	LoadDwordSetting(HKEY_LOCAL_MACHINE, &valorRegistro, 
@@ -126,6 +140,7 @@ BOOL CEstado::actualizaNotificaciones() {
 	if (estadoWifi != (valorRegistro > 0)) {
 		estadoWifi = (valorRegistro > 0);
 		hayCambios = TRUE;
+		changedState = TRUE;
 	}
 
 	LoadDwordSetting(HKEY_LOCAL_MACHINE, &valorRegistro, 
@@ -140,6 +155,7 @@ BOOL CEstado::actualizaNotificaciones() {
 	if (estadoBluetooth != valorRegistro) {
 		estadoBluetooth = valorRegistro;
 		hayCambios = TRUE;
+		changedState = TRUE;
 	}
 
 	LoadDwordSetting(HKEY_LOCAL_MACHINE, &valorRegistro, 
@@ -150,6 +166,7 @@ BOOL CEstado::actualizaNotificaciones() {
 	if (estadoGPRS != (valorRegistro > 0)) {
 		estadoGPRS = (valorRegistro > 0);
 		hayCambios = TRUE;
+		changedState = TRUE;
 	}
 
 	LoadDwordSetting(HKEY_LOCAL_MACHINE, &valorRegistro, 
@@ -174,6 +191,7 @@ BOOL CEstado::actualizaNotificaciones() {
 	if (estadoAlarm != (valorRegistro > 0)) {
 		estadoAlarm = (valorRegistro > 0);
 		hayCambios = TRUE;
+		changedState = TRUE;
 	}
 
 	LoadDwordSetting(HKEY_LOCAL_MACHINE, &valorRegistro, 
@@ -184,6 +202,7 @@ BOOL CEstado::actualizaNotificaciones() {
 	if (signalStrength != valorRegistro) {
 		signalStrength = valorRegistro;
 		hayCambios = TRUE;
+		changedSignal = TRUE;
 	}
 
 	LoadTextSetting(HKEY_LOCAL_MACHINE, operatorName,
@@ -199,42 +218,49 @@ BOOL CEstado::actualizaNotificaciones() {
 		st.wDay != st_new.wDay) {
 			memcpy(&st, &st_new, sizeof(SYSTEMTIME));
 			hayCambios = TRUE;
+			changedTime = TRUE;
 	}
 
 	newValue = ExternalPowered();
 	if (externalPowered != newValue) {
 		externalPowered = newValue;
 		hayCambios = TRUE;
+		changedBattery = TRUE;
 	}
 
 	newValue = BatteryPercentage();
 	if (batteryPercentage != newValue) {
 		batteryPercentage = newValue;
 		hayCambios = TRUE;
+		changedBattery = TRUE;
 	}
 
 	newValue = GetVolumePercentage();
 	if (volumePercentage != newValue) {
 		volumePercentage = newValue;
 		hayCambios = TRUE;
+		changedVolume = TRUE;
 	}
 
 	newValue = MemoryLoad();
 	if (memoryLoad != newValue) {
 		memoryLoad = newValue;
 		hayCambios = TRUE;
+		changedMemory = TRUE;
 	}
 
 	newValue = MemoryFree();
-	if (memoryFree != newValue) {
+	if (abs(memoryFree - newValue) > 100 * 1024) {
 		memoryFree = newValue;
 		hayCambios = TRUE;
+		changedMemory = TRUE;
 	}
 
 	newValue = MemoryUsed();
-	if (memoryUsed != newValue) {
+	if (abs(memoryUsed - newValue) > 100 * 1024) {
 		memoryUsed = newValue;
 		hayCambios = TRUE;
+		changedMemory = TRUE;
 	}
 
 	return hayCambios;

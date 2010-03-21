@@ -29,6 +29,7 @@ public:
 
 	// Notificaciones
 
+
 	// Number inside a bubble
 	int numLlamadas;	// HKCU\System\State\Phone\Missed Call Count
 	int numSMS;			// HKCU\System\State\Messages\sms\Unread\Count
@@ -37,25 +38,38 @@ public:
 	int numSyncEmail;	// HKCU\System\State\Messages\sync\Unread\Count
 	int numCitas;		// HKCU\System\State\Appointments\List\Count
 	int numTareas;		// HKCU\System\State\Tasks\Active
+	BOOL changedBubble;
 
 	// State on/off
 	BOOL estadoWifi;	// HKLM\System\State\Hardware\WiFi
 	int estadoBluetooth;// HKLM\System\State\Hardware\Bluetooth
+	BOOL estadoGPRS;	// HKLM\System\State\Connections\Cellular\Count
 	BOOL estadoAlarm;	// HKLM\Software\Microsoft\Clock\0\AlarmFlags HKLM\Software\Microsoft\Clock\1\AlarmFlags HKLM\Software\Microsoft\Clock\2\AlarmFlags
-	BOOL estadoGPRS;	// HKLM\\System\State\Connections\Cellular\Count
+	BOOL changedState;
 
 	// Number inside icon
 	int signalStrength;	// HKLM\System\State\Phone\Signal Strength
+	BOOL changedSignal;
+
 	SYSTEMTIME st;
+	BOOL changedTime;
+
 	BOOL externalPowered;
 	int batteryPercentage;
+	BOOL changedBattery;
+
 	int volumePercentage;
+	BOOL changedVolume;
+
 	int memoryLoad;
 	int memoryFree;
 	int memoryUsed;
+	BOOL changedMemory;
+
 
 	// Text under icon
 	TCHAR operatorName[MAX_PATH];	// HKLM\System\State\Phone\Current Operator Name
+
 
 	int reloadIcons;	// HKLM\Software\iPhoneToday\reloadIcons
 	int reloadIcon;		// HKLM\Software\iPhoneToday\reloadIcon

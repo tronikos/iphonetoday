@@ -109,6 +109,7 @@ LRESULT WINAPI CustomItemOptionsDlgProc(HWND, UINT, WPARAM, LPARAM);
 void RightClick(HWND hwnd, POINTS posCursor);
 void calculateConfiguration(int width, int height);
 void getWindowSize(HWND hwnd, int *windowWidth, int *windowHeight);
+void InvalidateScreenIfNotificationsChanged(CPantalla *pantalla);
 
 #ifndef EXEC_MODE
 /*************************************************************************/
@@ -548,42 +549,12 @@ LRESULT doTimer (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 				estado->clearReloadIcons();
 			} else if (hayCambios) {
 				// Marcamos aquellas pantallas que haya que actualizar
-				CPantalla *pantalla;
-				CIcono *icono;
 				for (UINT i = 0; i < listaPantallas->numPantallas; i++) {
-					pantalla = listaPantallas->listaPantalla[i];
-					if (pantalla != NULL) {
-						for (UINT j = 0; j < pantalla->numIconos; j++) {
-							icono = pantalla->listaIconos[j];
-							if (icono->tipo != NOTIF_NORMAL) {
-								pantalla->debeActualizar = TRUE;
-								break;
-							}
-						}
-					}
+					InvalidateScreenIfNotificationsChanged(listaPantallas->listaPantalla[i]);
 				}
 
-				pantalla = listaPantallas->barraInferior;
-				if (pantalla != NULL) {
-					for (UINT j = 0; j < pantalla->numIconos; j++) {
-						icono = pantalla->listaIconos[j];
-						if (icono->tipo != NOTIF_NORMAL) {
-							pantalla->debeActualizar = TRUE;
-							break;
-						}
-					}
-				}
-
-				pantalla = listaPantallas->topBar;
-				if (pantalla != NULL) {
-					for (UINT j = 0; j < pantalla->numIconos; j++) {
-						icono = pantalla->listaIconos[j];
-						if (icono->tipo != NOTIF_NORMAL) {
-							pantalla->debeActualizar = TRUE;
-							break;
-						}
-					}
-				}
+				InvalidateScreenIfNotificationsChanged(listaPantallas->barraInferior);
+				InvalidateScreenIfNotificationsChanged(listaPantallas->topBar);
 			}
 			shouldInvalidateRect = hayCambios || hayCambiosIcono || hayCambiosIconos;
 		}
@@ -3289,5 +3260,85 @@ void ResetPressed()
 		GetClientRect(g_hWnd, &rcWindBounds);
 		InvalidateRect(g_hWnd, &rcWindBounds, FALSE);
 		UpdateWindow(g_hWnd);
+	}
+}
+
+// "Invalidate" screen (mark that has to be updated) if it contains special icons that their values have changed.
+void InvalidateScreenIfNotificationsChanged(CPantalla *pantalla)
+{
+	if (pantalla == NULL) {
+		return;
+	}
+
+	for (UINT j = 0; j < pantalla->numIconos; j++) {
+		CIcono *icono = pantalla->listaIconos[j];
+		switch(icono->tipo) {
+			case NOTIF_NORMAL:
+				break;
+			case NOTIF_LLAMADAS:
+			case NOTIF_SMS:
+			case NOTIF_MMS:
+			case NOTIF_SMS_MMS:
+			case NOTIF_OTHER_EMAIL:
+			case NOTIF_SYNC_EMAIL:
+			case NOTIF_TOTAL_EMAIL:
+			case NOTIF_CITAS:
+			case NOTIF_TAREAS:
+				if (estado->changedBubble) {
+					pantalla->debeActualizar = TRUE;
+					return;
+				}
+				break;
+			case NOTIF_WIFI:
+			case NOTIF_BLUETOOTH:
+			case NOTIF_GPRS:
+			case NOTIF_ALARM:
+				if (estado->changedState) {
+					pantalla->debeActualizar = TRUE;
+					return;
+				}
+				break;
+			case NOTIF_CALENDAR:
+			case NOTIF_CLOCK:
+				if (estado->changedTime) {
+					pantalla->debeActualizar = TRUE;
+					return;
+				}
+				break;
+			case NOTIF_CLOCK_ALARM:
+				if (estado->changedState || estado->changedTime) {
+					pantalla->debeActualizar = TRUE;
+					return;
+				}
+				break;
+			case NOTIF_BATTERY:
+				if (estado->changedBattery) {
+					pantalla->debeActualizar = TRUE;
+					return;
+				}
+				break;
+			case NOTIF_VOLUME:
+				if (estado->changedVolume) {
+					pantalla->debeActualizar = TRUE;
+					return;
+				}
+				break;
+			case NOTIF_MEMORYLOAD:
+			case NOTIF_MEMORYFREE:
+			case NOTIF_MEMORYUSED:
+				if (estado->changedMemory) {
+					pantalla->debeActualizar = TRUE;
+					return;
+				}
+				break;
+			case NOTIF_SIGNAL:
+			case NOTIF_OPERATOR:
+			case NOTIF_SIGNAL_OPER:
+				if (estado->changedSignal) {
+					pantalla->debeActualizar = TRUE;
+					return;
+				}
+				break;
+		}
 	}
 }
