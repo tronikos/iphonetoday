@@ -13,7 +13,7 @@
         <icon name="Explorer" image="Explorer.png" sound="" exec=":MSFEXPLORE" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
         <icon name="Search" image="Search.png" sound="" exec=":MSFIND" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
         <icon name="Album" image="PicturesAndVideos.png" sound="" exec=":MSPIMG" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
-        <icon name="Alarms" image="Alarms.png" sound="" exec="\Windows\clock.exe" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
+        <icon name="Alarms" image="Alarms.png" sound="" exec="\Windows\clock.exe" parameters="" execAlt="" parametersAlt="" type="11" animation="1" />
     </screen>
     <screen header="Screen2">
         <icon name="Word" image="Word.png" sound="" exec=":MSPWORD" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
@@ -25,15 +25,15 @@
         <icon name="Solitaire" image="Solitaire.png" sound="" exec=":MSSOLITAIRE" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
         <icon name="Bubbles" image="Bubble Breaker.png" sound="" exec="BubbleBreaker.exe" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
         <icon name="ActiveSync" image="ActiveSync.png" sound="" exec=":MSSYNCAPP" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
-        <icon name="Task Manager" image="Task Manager.png" sound="" exec=":MSTASKMGR" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
+        <icon name="TaskMgr" image="Task Manager.png" sound="" exec=":MSTASKMGR" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
         <icon name="Camera" image="Camera.png" sound="" exec="\Windows\camera.exe" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
     </screen>
     <screen header="Screen3">
-        <icon name="Wifi" image="wifi.png" sound="" exec="ctlpnl" parameters="cplmain.cpl,26" execAlt="" parametersAlt="" type="9" animation="1" />
+        <icon name="Wifi" image="wifi.png" sound="" exec="ctlpnl" parameters="cplmain.cpl,17" execAlt="" parametersAlt="" type="9" animation="1" />
         <icon name="Bluetooth" image="Bluetooth.png" sound="" exec="ctlpnl" parameters="cplmain.cpl,23" execAlt="" parametersAlt="" type="10" animation="1" />
         <icon name="GPS" image="GPS.png" sound="" exec="ctlpnl" parameters="cplmain.cpl,25" execAlt="" parametersAlt="" type="0" animation="1" />
         <icon name="GPRS" image="GPRS.png" sound="" exec="" parameters="" execAlt="" parametersAlt="" type="19" animation="1" />
-        <icon name="Connections" image="Connections.png" sound="" exec="ctlpnl" parameters="cplmain.cpl,17" execAlt="" parametersAlt="" type="0" animation="1" />
+        <icon name="Connections" image="Connections.png" sound="" exec="ctlpnl" parameters="cplmain.cpl,19" execAlt="" parametersAlt="" type="0" animation="1" />
         <icon name="Options" image="Options.png" sound="" exec="--options" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
         <icon name="RAM Free" image="RAM.png" sound="" exec="ctlpnl" parameters="cplmain.cpl,4" execAlt="" parametersAlt="" type="17" animation="1" />
         <icon name="Battery" image="Battery.png" sound="" exec="ctlpnl" parameters="cplmain.cpl,3" execAlt="" parametersAlt="" type="14" animation="1" />
