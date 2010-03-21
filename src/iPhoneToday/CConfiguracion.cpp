@@ -500,7 +500,7 @@ void CConfiguracion::defaultValues()
 	StringCchCopy(this->bubble_alarm, CountOf(this->bubble_notif), TEXT("bubble_alarm.png"));
 
 	this->closeOnLaunchIcon = 0;
-	this->vibrateOnLaunchIcon = 40;
+	this->vibrateOnLaunchIcon = 0;
 	this->allowAnimationOnLaunchIcon = 1;
 	this->colorOfAnimationOnLaunchIcon = RGB(255,255,255);
 	this->allowSoundOnLaunchIcon = 1;
@@ -536,8 +536,11 @@ void CConfiguracion::defaultValues()
 
 	if (isPND()) {
 		this->disableRightClickDots = 1;
-		this->vibrateOnLaunchIcon = 0;
 		this->fullscreen = 1;
+	}
+
+	if (isPhone()) {
+		this->vibrateOnLaunchIcon = 40;
 	}
 }
 
