@@ -483,7 +483,6 @@ LRESULT doTimer (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 				CReloadIcon *reloadIcon = new CReloadIcon();
 				CPantalla *pantalla = NULL;
 				CIcono *icono = NULL;
-				BOOL shouldSaveIconsXML = FALSE;
 				for (int nIcon = 0; estado->LoadRegistryIcon(nIcon, reloadIcon); nIcon++) {
 					if (reloadIcon->nScreen >= 0 && reloadIcon->nScreen < listaPantallas->numPantallas) {
 						pantalla = listaPantallas->listaPantalla[reloadIcon->nScreen];
@@ -514,14 +513,13 @@ LRESULT doTimer (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 						}
 						configuracion->cargaImagenIcono(&hDCMem, icono, st);
 						pantalla->debeActualizar = TRUE;
-						shouldSaveIconsXML = TRUE;
 					}
+				}
+				if (estado->reloadIcon == 2) {
+					configuracion->guardaXMLIconos(listaPantallas);
 				}
 				delete reloadIcon;
 				estado->clearReloadIcon();
-				if (shouldSaveIconsXML) {
-					configuracion->guardaXMLIconos(listaPantallas);
-				}
 			} else if (hayCambiosIconos) {
 				// Cargamos la configuracion de iconos
 				configuracion->cargaXMLIconos2(listaPantallas);
