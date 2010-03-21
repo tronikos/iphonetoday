@@ -294,6 +294,8 @@ BOOL CEstado::clearReloadIcons() {
 	SaveDwordSetting(HKEY_LOCAL_MACHINE, TEXT("Software\\iPhoneToday"),
 		&valorRegistro, TEXT("reloadIcons"));
 
+	reloadIcons = 0;
+
 	result = TRUE;
 	return result;
 }
@@ -326,6 +328,8 @@ BOOL CEstado::clearReloadIcon() {
 	// Comprobamos si hay que actualizar los iconos
 	SaveDwordSetting(HKEY_LOCAL_MACHINE, TEXT("Software\\iPhoneToday"),
 		&valorRegistro, TEXT("reloadIcon"));
+
+	reloadIcon = 0;
 
 	int nIcon = 0;
 	BOOL next = true;
