@@ -1,8 +1,8 @@
 <application>
 <name>iPhoneToday</name>
-<version>1.4.9</version>
+<version>1.5.0</version>
 <description>iPhoneToday - An iPhone like interface for Windows Mobile</description>
 <versionurl>http://iphonetoday.googlecode.com/files/version.xml</versionurl>
-<caburl>http://iphonetoday.googlecode.com/files/iPhoneToday-1.4.9-wm.cab</caburl>
-<caburl device='pocketpc' os='4.2'>http://iphonetoday.googlecode.com/files/iPhoneToday-1.4.9-ppc.cab</caburl>
+<caburl>http://iphonetoday.googlecode.com/files/iPhoneToday-1.5.0-wm.cab</caburl>
+<caburl device='pocketpc' os='4.2'>http://iphonetoday.googlecode.com/files/iPhoneToday-1.5.0-ppc.cab</caburl>
 </application>
