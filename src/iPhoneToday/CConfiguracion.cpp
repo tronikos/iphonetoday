@@ -32,6 +32,8 @@ CConfiguracion::CConfiguracion(void)
 	if (p != NULL) *(p+1) = '\0';
 
 	fondoPantalla = NULL;
+	backBottomBar = NULL;
+	backTopBar = NULL;
 	mainScreenConfig = new CConfigurationScreen();
 	bottomBarConfig = new CConfigurationScreen();
 	topBarConfig = new CConfigurationScreen();
@@ -56,6 +58,12 @@ CConfiguracion::~CConfiguracion(void)
 	}
 	if (fondoPantalla != NULL) {
 		delete fondoPantalla;
+	}
+	if (backBottomBar != NULL) {
+		delete backBottomBar;
+	}
+	if (backTopBar != NULL) {
+		delete backTopBar;
 	}
 	if (mainScreenConfig != NULL) {
 		delete mainScreenConfig;
@@ -325,6 +333,37 @@ BOOL CConfiguracion::cargaFondo(HDC *hDC)
 		}
 	}
 #endif
+
+	TCHAR fullPath[MAX_PATH];
+	if (this->backBottomBar != NULL) {
+		delete backBottomBar;
+		backBottomBar = NULL;
+	}
+	if (wcslen(this->bottomBarConfig->cs.backWallpaper) > 0) {
+		backBottomBar = new CIcono();
+		getAbsolutePath(fullPath, CountOf(fullPath), this->bottomBarConfig->cs.backWallpaper);
+		int height = this->bottomBarConfig->distanceIconsV + this->bottomBarConfig->cs.offset.top + this->bottomBarConfig->cs.offset.bottom;
+		backBottomBar->loadImage(hDC, fullPath, this->anchoPantalla, height, PIXFMT_32BPP_ARGB, 1, TRUE);
+		if (backBottomBar->hDC == NULL) {
+			delete backBottomBar;
+			backBottomBar = NULL;
+		}
+	}
+	if (this->backTopBar != NULL) {
+		delete backTopBar;
+		backTopBar = NULL;
+	}
+	if (wcslen(this->topBarConfig->cs.backWallpaper) > 0) {
+		backTopBar = new CIcono();
+		getAbsolutePath(fullPath, CountOf(fullPath), this->topBarConfig->cs.backWallpaper);
+		int height = this->topBarConfig->distanceIconsV + this->topBarConfig->cs.offset.top + this->topBarConfig->cs.offset.bottom;
+		backTopBar->loadImage(hDC, fullPath, this->anchoPantalla, height, PIXFMT_32BPP_ARGB, 1, TRUE);
+		if (backTopBar->hDC == NULL) {
+			delete backTopBar;
+			backTopBar = NULL;
+		}
+	}
+
 	return TRUE;
 }
 
@@ -383,7 +422,7 @@ void CConfiguracion::defaultValues()
 	this->fondoFitHeight = 1;
 	this->fondoCenter = 1;
 	this->fondoFactor = 1;
-	StringCchCopy(this->strFondoPantalla, CountOf(this->strFondoPantalla), L"");
+	this->strFondoPantalla[0] = 0;
 
 	this->umbralMovimiento = 15;
 	this->velMaxima = 140;
@@ -401,7 +440,6 @@ void CConfiguracion::defaultValues()
 	StringCchCopy(this->diasSemana[4], CountOf(this->diasSemana[4]), TEXT("Thu"));
 	StringCchCopy(this->diasSemana[5], CountOf(this->diasSemana[5]), TEXT("Fri"));
 	StringCchCopy(this->diasSemana[6], CountOf(this->diasSemana[6]), TEXT("Sat"));
-	StringCchCopy(this->strFondoPantalla, CountOf(this->strFondoPantalla), TEXT(""));
 
 	this->dow.facename[0] = 0;
 	this->dow.color = RGB(255,255,255);

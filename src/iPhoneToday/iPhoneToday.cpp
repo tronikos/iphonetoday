@@ -1663,8 +1663,10 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type) {
 		rc.bottom = pantalla->altoPantalla;
 
 
-		if (isTransparent || (configuracion->fondoPantalla && configuracion->fondoPantalla->hDC)) {
-			FillRect(pantalla->hDC, &rc, hBrushTrans);
+		if (isTransparent || (configuracion->fondoPantalla && configuracion->fondoPantalla->hDC) ||
+			(screen_type == BOTTOMBAR && configuracion->backBottomBar && configuracion->backBottomBar->hDC) ||
+			(screen_type == TOPBAR && configuracion->backTopBar && configuracion->backTopBar->hDC)) {
+				FillRect(pantalla->hDC, &rc, hBrushTrans);
 		} else {
 			DrawGradientGDI(pantalla->hDC, rc, cs->cs.backColor1,  cs->cs.backColor2,  0xAAAA);
 		}
@@ -1754,6 +1756,61 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type) {
 			}
 		}
 
+		if (screen_type == BOTTOMBAR && configuracion->backBottomBar && configuracion->backBottomBar->hDC) {
+			BOOL ab = FALSE;
+			if (configuracion->alphaBlend) {
+				if (configuracion->alphaBlend == 2 && bmBack.bmBits) {
+					BITMAP bmScreen = {0};
+					bmScreen.bmWidth = pantalla->anchoPantalla;
+					bmScreen.bmHeight = pantalla->altoPantalla;
+					bmScreen.bmBits = configuracion->backBottomBar->pBits;
+					bmScreen.bmBitsPixel = 32;
+					ab = AlphaBlend2(&bmBack, xDestOrg, yDestOrg, &bmScreen, xSrcOrg, ySrcOrg, cx, cy);
+				} else {
+					BLENDFUNCTION bf;
+					bf.BlendOp = AC_SRC_OVER;
+					bf.BlendFlags = 0;
+					bf.SourceConstantAlpha = 255;
+					bf.AlphaFormat = AC_SRC_ALPHA;
+					ab = AlphaBlend(*hDC, xDestOrg, yDestOrg, cx, cy, configuracion->backBottomBar->hDC, xSrcOrg, ySrcOrg, cx, cy, bf);
+				}
+			}
+			if (!ab) {
+				if (isTransparent || (configuracion->fondoPantalla && configuracion->fondoPantalla->hDC)) {
+					TransparentBlt(*hDC, xDestOrg, yDestOrg, cx, cy, configuracion->backBottomBar->hDC, xSrcOrg, ySrcOrg, cx, cy, RGB(0, 0, 0));
+				} else {
+					BitBlt(*hDC, xDestOrg, yDestOrg, cx, cy, configuracion->backBottomBar->hDC, xSrcOrg, ySrcOrg, SRCCOPY);
+				}
+			}
+		}
+		if (screen_type == TOPBAR && configuracion->backTopBar && configuracion->backTopBar->hDC) {
+			BOOL ab = FALSE;
+			if (configuracion->alphaBlend) {
+				if (configuracion->alphaBlend == 2 && bmBack.bmBits) {
+					BITMAP bmScreen = {0};
+					bmScreen.bmWidth = pantalla->anchoPantalla;
+					bmScreen.bmHeight = pantalla->altoPantalla;
+					bmScreen.bmBits = configuracion->backTopBar->pBits;
+					bmScreen.bmBitsPixel = 32;
+					ab = AlphaBlend2(&bmBack, xDestOrg, yDestOrg, &bmScreen, xSrcOrg, ySrcOrg, cx, cy);
+				} else {
+					BLENDFUNCTION bf;
+					bf.BlendOp = AC_SRC_OVER;
+					bf.BlendFlags = 0;
+					bf.SourceConstantAlpha = 255;
+					bf.AlphaFormat = AC_SRC_ALPHA;
+					ab = AlphaBlend(*hDC, xDestOrg, yDestOrg, cx, cy, configuracion->backTopBar->hDC, xSrcOrg, ySrcOrg, cx, cy, bf);
+				}
+			}
+			if (!ab) {
+				if (isTransparent || (configuracion->fondoPantalla && configuracion->fondoPantalla->hDC)) {
+					TransparentBlt(*hDC, xDestOrg, yDestOrg, cx, cy, configuracion->backTopBar->hDC, xSrcOrg, ySrcOrg, cx, cy, RGB(0, 0, 0));
+				} else {
+					BitBlt(*hDC, xDestOrg, yDestOrg, cx, cy, configuracion->backTopBar->hDC, xSrcOrg, ySrcOrg, SRCCOPY);
+				}
+			}
+		}
+
 		BOOL ab = FALSE;
 		if (configuracion->alphaBlend) {
 			if (configuracion->alphaBlend == 2 && bmBack.bmBits) {
@@ -1773,7 +1830,9 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type) {
 			}
 		}
 		if (!ab) {
-			if (isTransparent || (configuracion->fondoPantalla && configuracion->fondoPantalla->hDC)) {
+			if (isTransparent || (configuracion->fondoPantalla && configuracion->fondoPantalla->hDC) ||
+					(screen_type == BOTTOMBAR && configuracion->backBottomBar && configuracion->backBottomBar->hDC) ||
+					(screen_type == TOPBAR && configuracion->backTopBar && configuracion->backTopBar->hDC)) {
 				if (configuracion->useMask && pantalla->mask_hDC) {
 					BitBlt(*hDC, xDestOrg, yDestOrg, cx, cy, pantalla->hDC, xSrcOrg, ySrcOrg, SRCINVERT);
 					BitBlt(*hDC, xDestOrg, yDestOrg, cx, cy, pantalla->mask_hDC, xSrcOrg, ySrcOrg, SRCAND);

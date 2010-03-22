@@ -39,9 +39,10 @@ public:
 	UINT tipo;						// type
 	UINT launchAnimation;			// animation
 
+	HDC hDC;
 	HBITMAP imagen;
 	HBITMAP imagenOld;
-	HDC hDC;
+	BYTE *pBits;
 
 	UINT anchoImagen;				// width
 	UINT altoImagen;				// height

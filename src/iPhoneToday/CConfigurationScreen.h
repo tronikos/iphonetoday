@@ -19,6 +19,7 @@ typedef struct ConfigurationScreen {
 	RECT offset;
 	COLORREF backColor1;
 	COLORREF backColor2;
+	TCHAR backWallpaper[MAX_PATH];
 } ConfigurationScreen;
 
 class CConfigurationScreen
