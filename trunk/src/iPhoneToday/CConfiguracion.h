@@ -59,6 +59,8 @@ public:
 	CIcono *bubbleAlarm;
 
 	CIcono *fondoPantalla;
+	CIcono *backBottomBar;
+	CIcono *backTopBar;
 
 
 	// Variables from XML

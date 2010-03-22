@@ -70,6 +70,8 @@ void CConfigurationScreen::defaultValues()
 	this->cs.backColor1 = 0;
 	this->cs.backColor2 = 0;
 
+	this->cs.backWallpaper[0] = 0;
+
 	this->iconWidth = this->cs.iconWidthXML;
 	this->iconsPerRow = this->cs.iconsPerRowXML;
 }
@@ -108,8 +110,9 @@ BOOL CConfigurationScreen::loadXMLConfig(TiXmlElement *pRoot)
 			XMLUtils::GetAttr(pElem, "shadow",    &this->cs.textShadow);
 			XMLUtils::GetAttr(pElem, "roundrect", &this->cs.textRoundRect);
 		} else if(_stricmp(nameNode, "Background") == 0) {
-			XMLUtils::GetAttr(pElem, "color1",  &this->cs.backColor1);
-			XMLUtils::GetAttr(pElem, "color2",  &this->cs.backColor2);
+			XMLUtils::GetAttr(pElem, "color1",    &this->cs.backColor1);
+			XMLUtils::GetAttr(pElem, "color2",    &this->cs.backColor2);
+			XMLUtils::GetAttr(pElem, "wallpaper", this->cs.backWallpaper, CountOf(this->cs.backWallpaper));
 		}
 	}
 
@@ -161,8 +164,9 @@ BOOL CConfigurationScreen::saveXMLConfig(TiXmlElement *pRoot)
 	pRoot->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("Background");
-	XMLUtils::SetAttr(pElem, "color1", this->cs.backColor1);
-	XMLUtils::SetAttr(pElem, "color2", this->cs.backColor2);
+	XMLUtils::SetAttr(pElem, "color1",    this->cs.backColor1);
+	XMLUtils::SetAttr(pElem, "color2",    this->cs.backColor2);
+	XMLUtils::SetAttr(pElem, "wallpaper", this->cs.backWallpaper, CountOf(this->cs.backWallpaper));
 	pRoot->LinkEndChild(pElem);
 
 	return TRUE;
