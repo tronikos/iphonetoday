@@ -1438,7 +1438,11 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 				break;
 			case NOTIF_SIGNAL:
 			case NOTIF_SIGNAL_OPER:
-				StringCchPrintf(str, CountOf(str), L"%d", estado->signalStrength);
+				if (wcslen(estado->operatorName) == 0) {
+					StringCchCopy(str, CountOf(str), L"NA");
+				} else {
+					StringCchPrintf(str, CountOf(str), L"%d", estado->signalStrength);
+				}
 				DrawSpecialIconText(*hDC, str, icono, width, &configuracion->sign);
 				break;
 			case NOTIF_TAREAS:
