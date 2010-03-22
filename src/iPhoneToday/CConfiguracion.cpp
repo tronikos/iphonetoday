@@ -582,6 +582,8 @@ void CConfiguracion::defaultValues()
 	if (isPhone()) {
 		this->vibrateOnLaunchIcon = 40;
 	}
+
+	this->autoConfigure();
 }
 
 void SpecialIconSettingsLoad(TiXmlElement *pElem, SpecialIconSettings *sis)
@@ -1054,13 +1056,11 @@ void CConfiguracion::autoConfigure()
 		this->topBarConfig->cs.textSize = textSize;
 	}
 
-	//this->mainScreenConfig->cs.minHorizontalSpace = 5;
-	//this->mainScreenConfig->cs.offset.top = 5;
-	//this->bottomBarConfig->cs.offset.top = this->mainScreenConfig->cs.offset.top;
+	this->mainScreenConfig->cs.minHorizontalSpace = max(5, this->mainScreenConfig->cs.minHorizontalSpace);
+	this->mainScreenConfig->cs.offset.top = max(5, this->mainScreenConfig->cs.offset.top);
+	this->bottomBarConfig->cs.offset.top = max(this->bottomBarConfig->cs.offset.top, this->mainScreenConfig->cs.offset.top);
 
 	this->circlesDiameter = iconWidth / 6;
 	this->circlesDistance = this->circlesDiameter / 2;
 	this->circlesOffset = this->circlesDistance;
-
-	this->alreadyConfigured = 1;
 }
