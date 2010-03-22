@@ -1305,7 +1305,9 @@ void DrawSpecialIconText(HDC hDC, TCHAR *str, CIcono *icon, int iconWidth, Speci
 	lf.lfWidth = LONG(sis->width / 100.0 * iconWidth);
 	lf.lfHeight = LONG(sis->height / 100.0 * iconWidth);
 	lf.lfQuality = configuracion->textQuality;
-	wcsncpy(lf.lfFaceName, sis->facename, CountOf(lf.lfFaceName));
+	if (wcslen(sis->facename) > 0) {
+		wcsncpy(lf.lfFaceName, sis->facename, CountOf(lf.lfFaceName));
+	}
 
 	hFont = CreateFontIndirect(&lf);
 
@@ -1652,7 +1654,9 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type) {
 			}
 			lf.lfHeight = cs->cs.textSize;
 			lf.lfQuality = configuracion->textQuality;
-			wcsncpy(lf.lfFaceName, cs->cs.textFacename, CountOf(lf.lfFaceName));
+			if (wcslen(cs->cs.textFacename) > 0) {
+				wcsncpy(lf.lfFaceName, cs->cs.textFacename, CountOf(lf.lfFaceName));
+			}
 
 			HFONT hFont = CreateFontIndirect(&lf);
 
@@ -1686,7 +1690,9 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type) {
 			lf.lfWeight = configuracion->headerTextWeight;
 			lf.lfHeight = configuracion->headerTextSize;
 			lf.lfQuality = configuracion->textQuality;
-			wcsncpy(lf.lfFaceName, configuracion->headerTextFacename, CountOf(lf.lfFaceName));
+			if (wcslen(configuracion->headerTextFacename) > 0) {
+				wcsncpy(lf.lfFaceName, configuracion->headerTextFacename, CountOf(lf.lfFaceName));
+			}
 
 			hFont = CreateFontIndirect(&lf);
 			hFontOld = (HFONT) SelectObject(pantalla->hDC, hFont);
