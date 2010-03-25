@@ -220,3 +220,39 @@ BOOL nativelySupportsAlphaBlend()
 	}
 	return (i == 1);
 }
+
+void AddRemoveFonts(TCHAR *location, BOOL add)
+{
+	int counter = 0;
+	TCHAR fontpath[MAX_PATH];
+	TCHAR findpath[MAX_PATH];
+
+	WIN32_FIND_DATA fd;
+
+	_stprintf(findpath, _T("%s\\*.ttf"), location);
+
+	HANDLE hFind = FindFirstFile(findpath, &fd);
+
+	if(hFind != INVALID_HANDLE_VALUE) {
+		_stprintf(fontpath, _T("%s\\%s"), location, fd.cFileName);
+		if (add) {
+			counter += AddFontResource(fontpath);
+		} else {
+			counter += RemoveFontResource(fontpath);
+		}
+
+		while(FindNextFile(hFind, &fd)) {
+			_stprintf(fontpath, _T("%s\\%s"), location, fd.cFileName);
+			if (add) {
+				counter += AddFontResource(fontpath);
+			} else {
+				counter += RemoveFontResource(fontpath);
+			}
+		}
+	}
+	FindClose(hFind);
+
+	if (counter > 0) {
+		SendMessage(HWND_BROADCAST, WM_FONTCHANGE, NULL, NULL);
+	}
+}
