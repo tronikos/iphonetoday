@@ -2361,60 +2361,60 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 				SendMessage(GetDlgItem(hDlg, IDC_MICON_LAUNCHANIMATION), BM_SETCHECK, icono->launchAnimation ? BST_CHECKED : BST_UNCHECKED, 0);
 
 				if (icono->tipo == NOTIF_NORMAL) {
-					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_NORMAL_TXT);
+					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 0, 0);
 				} else if (icono->tipo == NOTIF_LLAMADAS) {
-					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_LLAMADAS_TXT);
+					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 1, 0);
 				} else if (icono->tipo == NOTIF_SMS) {
-					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_SMS_TXT);
+					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 2, 0);
 				} else if (icono->tipo == NOTIF_MMS) {
-					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_MMS_TXT);
+					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 3, 0);
 				} else if (icono->tipo == NOTIF_OTHER_EMAIL) {
-					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_OTHER_EMAIL_TXT);
+					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 4, 0);
 				} else if (icono->tipo == NOTIF_SYNC_EMAIL) {
-					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_SYNC_EMAIL_TXT);
+					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 5, 0);
 				} else if (icono->tipo == NOTIF_TOTAL_EMAIL) {
-					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_TOTAL_EMAIL_TXT);
+					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 6, 0);
 				} else if (icono->tipo == NOTIF_CITAS) {
-					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_CITAS_TXT);
+					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 7, 0);
 				} else if (icono->tipo == NOTIF_CALENDAR) {
-					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_CALENDAR_TXT);
+					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 8, 0);
 				} else if (icono->tipo == NOTIF_TAREAS) {
-					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_TAREAS_TXT);
+					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 9, 0);
 				} else if (icono->tipo == NOTIF_SMS_MMS) {
-					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_SMS_MMS_TXT);
+					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 10, 0);
 				} else if (icono->tipo == NOTIF_WIFI) {
-					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_WIFI_TXT);
+					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 11, 0);
 				} else if (icono->tipo == NOTIF_BLUETOOTH) {
-					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_BLUETOOTH_TXT);
+					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 12, 0);
 				} else if (icono->tipo == NOTIF_ALARM) {
-					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_ALARM_TXT);
+					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 13, 0);
 				} else if (icono->tipo == NOTIF_CLOCK) {
-					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_CLOCK_TXT);
+					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 14, 0);
 				} else if (icono->tipo == NOTIF_CLOCK_ALARM) {
-					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_CLOCK_ALARM_TXT);
+					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 15, 0);
 				} else if (icono->tipo == NOTIF_BATTERY) {
-					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_BATTERY_TXT);
+					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 16, 0);
 				} else if (icono->tipo == NOTIF_VOLUME) {
-					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_VOLUME_TXT);
+					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 17, 0);
 				} else if (icono->tipo == NOTIF_MEMORYLOAD) {
-					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_MEMORYLOAD_TXT);
+					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 18, 0);
 				} else if (icono->tipo == NOTIF_MEMORYFREE) {
-					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_MEMORYFREE_TXT);
+					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 19, 0);
 				} else if (icono->tipo == NOTIF_MEMORYUSED) {
-					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_MEMORYUSED_TXT);
+					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 20, 0);
 				} else if (icono->tipo == NOTIF_GPRS) {
-					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_GPRS_TXT);
+					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 21, 0);
 				} else if (icono->tipo == NOTIF_SIGNAL) {
-					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_SIGNAL_TXT);
+					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 22, 0);
 				} else if (icono->tipo == NOTIF_OPERATOR) {
-					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_OPERATOR_TXT);
+					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 23, 0);
 				} else if (icono->tipo == NOTIF_SIGNAL_OPER) {
-					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_SIGNAL_OPER_TXT);
+					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 24, 0);
 				} else {
-					SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_NORMAL_TXT);
+					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 0, 0);
 				}
 			} else {
-				SetDlgItemText(hDlg, IDC_MICON_TYPE, NOTIF_NORMAL_TXT);
+				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 0, 0);
 			}
 		}
 		return TRUE;
