@@ -2820,8 +2820,6 @@ BOOL inicializaApp(HWND hwnd) {
 	estado = new CEstado();
 	estado->actualizaNotificaciones();
 
-	HDC hdc = GetDC(hwnd);
-
 	// Debe ser inicializado en modo normal
 	estado->estadoCuadro = 0;
 
@@ -2871,6 +2869,8 @@ BOOL inicializaApp(HWND hwnd) {
 
 	calculateConfiguration(windowWidth, windowHeight);
 
+	HDC hdc = GetDC(hwnd);
+
 	// duration = -(long)GetTickCount();
 	configuracion->cargaIconsImages(&hdc, listaPantallas);
 	// duration += GetTickCount();
@@ -2881,6 +2881,12 @@ BOOL inicializaApp(HWND hwnd) {
 	// duration += GetTickCount();
 	// NKDbgPrintfW(L" *** %d \t to cargaImagenes.\n", duration);
 
+	ReleaseDC(hwnd, hdc);
+
+	TCHAR szFontsPath[MAX_PATH];
+	configuracion->getAbsolutePath(szFontsPath, CountOf(szFontsPath), L"fonts");
+	AddRemoveFonts(szFontsPath, TRUE);
+
 	// Establecemos la ruta por defecto para buscar programas
 	//if (!SHGetSpecialFolderPath(hwnd, lastPathExec, CSIDL_PROGRAMS, FALSE)) {
 	//	StringCchCopy(lastPathExec, CountOf(lastPathExec), L"\\");
@@ -2888,8 +2894,6 @@ BOOL inicializaApp(HWND hwnd) {
 
 	StringCchCopy(lastPathImage, CountOf(lastPathImage), configuracion->pathIconsDir);
 	StringCchCopy(lastPathSound, CountOf(lastPathSound), configuracion->pathExecutableDir);
-
-	ReleaseDC(hwnd, hdc);
 
 	setPosiciones(true, 0, 0);
 
@@ -3181,6 +3185,10 @@ void doDestroy(HWND hwnd) {
 		estado = NULL;
 	}
 	if (configuracion != NULL) {
+		TCHAR szFontsPath[MAX_PATH];
+		configuracion->getAbsolutePath(szFontsPath, CountOf(szFontsPath), L"fonts");
+		AddRemoveFonts(szFontsPath, FALSE);
+
 		delete configuracion;
 		configuracion = NULL;
 	}

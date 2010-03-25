@@ -31,3 +31,5 @@ DWORD MemoryUsed();
 BOOL isPND();
 BOOL isPhone();
 BOOL nativelySupportsAlphaBlend();
+
+void AddRemoveFonts(TCHAR *location, BOOL add);
