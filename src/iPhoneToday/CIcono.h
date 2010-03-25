@@ -42,7 +42,6 @@ public:
 	HDC hDC;
 	HBITMAP imagen;
 	HBITMAP imagenOld;
-	BYTE *pBits;
 
 	UINT anchoImagen;				// width
 	UINT altoImagen;				// height

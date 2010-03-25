@@ -52,6 +52,7 @@ void CIcono::loadImage(HDC *hDC, TCHAR *pathImage, int width, int height, int bi
 	HDC hdcResult = NULL;
 	HBITMAP hbmResult = NULL;
 	HBITMAP hbmResultOld = NULL;
+	BYTE *pBits = NULL;
 
 	const TCHAR *ext = wcsrchr(pathImage, '.');
 	BOOL isPNG = lstrcmpi(ext, L".png") == 0;
@@ -76,7 +77,7 @@ void CIcono::loadImage(HDC *hDC, TCHAR *pathImage, int width, int height, int bi
 	if (!loaded && g_pImgFactory != NULL ) {
 		pBitmap = LoadImageWithImagingApi(&lockedBitmapData, pathImage, width, height, bitsPerPixel, factor);
 		if (pBitmap) {
-			this->pBits = (BYTE *) lockedBitmapData.Scan0;
+			pBits = (BYTE *) lockedBitmapData.Scan0;
 			width = lockedBitmapData.Width;
 			height = lockedBitmapData.Height;
 		}
@@ -133,7 +134,7 @@ void CIcono::loadImage(HDC *hDC, TCHAR *pathImage, int width, int height, int bi
 		bmInfo.bmiHeader.biHeight = height;
 		bmInfo.bmiHeader.biPlanes = 1;
 		bmInfo.bmiHeader.biBitCount = GetPixelFormatSize(bitsPerPixel);
-		hbmResult = CreateDIBSection(hdcResult, (BITMAPINFO *)&bmInfo, DIB_RGB_COLORS, (void **)&this->pBits, NULL, 0);
+		hbmResult = CreateDIBSection(hdcResult, (BITMAPINFO *)&bmInfo, DIB_RGB_COLORS, (void **)&pBits, NULL, 0);
 		hbmResultOld = (HBITMAP) SelectObject(hdcResult, hbmResult);
 
 		// Resize the temp hdc and copy it to the result hdc
@@ -150,7 +151,7 @@ void CIcono::loadImage(HDC *hDC, TCHAR *pathImage, int width, int height, int bi
 
 	TIMER_START(loadImage_fix_duration);
 
-	if (isBMP && GetPixelFormatSize(bitsPerPixel) == 32 && this->pBits != NULL) {
+	if (isBMP && GetPixelFormatSize(bitsPerPixel) == 32 && pBits != NULL) {
 		BOOL blackAsTransparent = TRUE;
 		if (configuracion != NULL) {
 			if (!configuracion->alphaBlend) {
@@ -158,7 +159,7 @@ void CIcono::loadImage(HDC *hDC, TCHAR *pathImage, int width, int height, int bi
 			}
 		}
 		if (!blackAsTransparent) {
-			BYTE *p = this->pBits;
+			BYTE *p = pBits;
 			for (int i = 0; i < width * height; i++) {
 				// Replace black colored pixels with semi-black pixels
 				if (p[0] < 0x0A && p[1] < 0x0A && p[2] < 0x0A) {
@@ -172,8 +173,8 @@ void CIcono::loadImage(HDC *hDC, TCHAR *pathImage, int width, int height, int bi
 	}
 
 	// Since imgdecmp doesn't support transparency use the color of the lower left corner pixel as transparent
-	if (byImgdecmp && isPNG && GetPixelFormatSize(bitsPerPixel) == 32 && this->pBits != NULL) {
-		BYTE *p = this->pBits;
+	if (byImgdecmp && isPNG && GetPixelFormatSize(bitsPerPixel) == 32 && pBits != NULL) {
+		BYTE *p = pBits;
 		// get color of lower left corner pixel
 		COLORREF llc = *(COLORREF*)p;
 		for (int i = 0; i < width * height; i++) {
@@ -191,7 +192,7 @@ void CIcono::loadImage(HDC *hDC, TCHAR *pathImage, int width, int height, int bi
 		}
 	}
 
-	if (!byImgdecmp && isPNG && GetPixelFormatSize(bitsPerPixel) == 32 && this->pBits != NULL) {
+	if (!byImgdecmp && isPNG && GetPixelFormatSize(bitsPerPixel) == 32 && pBits != NULL) {
 		BOOL alphaBlend = FALSE;
 		BYTE alphaThreshold = 25;
 		BOOL premultiply = FALSE;
@@ -216,7 +217,7 @@ void CIcono::loadImage(HDC *hDC, TCHAR *pathImage, int width, int height, int bi
 			fixBlack = FALSE;
 		}
 
-		BYTE *p = (BYTE *) this->pBits;
+		BYTE *p = (BYTE *) pBits;
 		for (int i = 0; i < width * height; i++) {
 			BYTE A = p[3];
 			if (premultiply) {
