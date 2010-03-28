@@ -9,8 +9,8 @@ typedef struct ConfigurationScreen {
 	UINT minHorizontalSpace;
 	UINT additionalVerticalSpace;
 	UINT shrinkToFit;
-	TCHAR textFacename[32];
-	UINT textSize;
+	TCHAR textFacename[LF_FACESIZE];
+	UINT textHeightXML;
 	COLORREF textColor;
 	UINT textBold;
 	INT textOffset;
@@ -40,6 +40,7 @@ public:
 	// Calculated variables
 	UINT iconWidth;
 	UINT iconsPerRow;
+	UINT textHeight;
 	UINT distanceIconsH;
 	UINT distanceIconsV;
 	POINTS posReference;

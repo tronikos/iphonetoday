@@ -1039,21 +1039,21 @@ void CConfiguracion::autoConfigure()
 	}
 
 	int iconWidth = int(float(width) * 0.1875);
-	int textSize = iconWidth / 4;
+	int textHeight = iconWidth / 4;
 
 	this->mainScreenConfig->cs.iconWidthXML = iconWidth;
-	if (this->mainScreenConfig->cs.textSize) {
-		this->mainScreenConfig->cs.textSize = textSize;
+	if (this->mainScreenConfig->cs.textHeightXML) {
+		this->mainScreenConfig->cs.textHeightXML = textHeight;
 	}
 
 	this->bottomBarConfig->cs.iconWidthXML = iconWidth;
-	if (this->bottomBarConfig->cs.textSize) {
-		this->bottomBarConfig->cs.textSize = textSize;
+	if (this->bottomBarConfig->cs.textHeightXML) {
+		this->bottomBarConfig->cs.textHeightXML = textHeight;
 	}
 
 	this->topBarConfig->cs.iconWidthXML = iconWidth;
-	if (this->topBarConfig->cs.textSize) {
-		this->topBarConfig->cs.textSize = textSize;
+	if (this->topBarConfig->cs.textHeightXML) {
+		this->topBarConfig->cs.textHeightXML = textHeight;
 	}
 
 	this->mainScreenConfig->cs.minHorizontalSpace = max(5, this->mainScreenConfig->cs.minHorizontalSpace);

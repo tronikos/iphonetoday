@@ -16,6 +16,7 @@ void CConfigurationScreen::calculate(BOOL isStaticbar, int maxIcons, UINT screen
 	UINT w = screenWidth - cs.offset.left - cs.offset.right;
 
 	iconWidth = cs.iconWidthXML;
+	textHeight = cs.textHeightXML;
 	if (cs.iconsPerRowXML == 0) {
 		if (iconWidth == 0) {
 			iconsPerRow = maxIcons;
@@ -29,6 +30,9 @@ void CConfigurationScreen::calculate(BOOL isStaticbar, int maxIcons, UINT screen
 		if (cs.shrinkToFit && maxIcons != 0) {
 			iconsPerRow = maxIcons;
 			iconWidth = min(cs.iconWidthXML, (w - maxIcons * cs.minHorizontalSpace) / iconsPerRow);
+			if (cs.iconWidthXML > 0) {
+				textHeight = 1.0 * cs.textHeightXML * iconWidth / cs.iconWidthXML;
+			}
 		} else {
 			iconsPerRow = min(iconsPerRow, UINT(maxIcons));
 		}
@@ -43,7 +47,7 @@ void CConfigurationScreen::calculate(BOOL isStaticbar, int maxIcons, UINT screen
 		distanceIconsH = screenWidth / iconsPerRow;
 	}
 	posReference.y = SHORT(cs.offset.top);
-	distanceIconsV = UINT(iconWidth + cs.textSize + cs.textOffset + cs.additionalVerticalSpace);
+	distanceIconsV = UINT(iconWidth + textHeight + cs.textOffset + cs.additionalVerticalSpace);
 }
 
 void CConfigurationScreen::defaultValues()
@@ -55,7 +59,7 @@ void CConfigurationScreen::defaultValues()
 	this->cs.shrinkToFit = 0;
 
 	this->cs.textFacename[0] = 0;
-	this->cs.textSize = 12;
+	this->cs.textHeightXML = 12;
 	this->cs.textColor = RGB(255, 255, 255);
 	this->cs.textBold = 0;
 	this->cs.textOffset = 0;
@@ -74,6 +78,7 @@ void CConfigurationScreen::defaultValues()
 
 	this->iconWidth = this->cs.iconWidthXML;
 	this->iconsPerRow = this->cs.iconsPerRowXML;
+	this->textHeight = this->cs.textHeightXML;
 }
 
 BOOL CConfigurationScreen::loadXMLConfig(TiXmlElement *pRoot)
@@ -103,7 +108,7 @@ BOOL CConfigurationScreen::loadXMLConfig(TiXmlElement *pRoot)
 			XMLUtils::GetAttr(pElem, "bottom", &this->cs.offset.bottom);
 		} else if(_stricmp(nameNode, "Font") == 0) {
 			XMLUtils::GetAttr(pElem, "facename",  this->cs.textFacename, CountOf(this->cs.textFacename));
-			XMLUtils::GetAttr(pElem, "size",      &this->cs.textSize);
+			XMLUtils::GetAttr(pElem, "size",      &this->cs.textHeightXML);
 			XMLUtils::GetAttr(pElem, "color",     &this->cs.textColor);
 			XMLUtils::GetAttr(pElem, "bold",      &this->cs.textBold);
 			XMLUtils::GetAttr(pElem, "offset",    &this->cs.textOffset);
@@ -118,6 +123,7 @@ BOOL CConfigurationScreen::loadXMLConfig(TiXmlElement *pRoot)
 
 	this->iconWidth = this->cs.iconWidthXML;
 	this->iconsPerRow = this->cs.iconsPerRowXML;
+	this->textHeight = this->cs.textHeightXML;
 
 	return TRUE;
 }
@@ -155,7 +161,7 @@ BOOL CConfigurationScreen::saveXMLConfig(TiXmlElement *pRoot)
 
 	pElem = new TiXmlElement("Font");
 	XMLUtils::SetAttr(pElem, "facename",  this->cs.textFacename, CountOf(this->cs.textFacename));
-	XMLUtils::SetAttr(pElem, "size",      this->cs.textSize);
+	XMLUtils::SetAttr(pElem, "size",      this->cs.textHeightXML);
 	XMLUtils::SetAttr(pElem, "color",     this->cs.textColor);
 	XMLUtils::SetAttr(pElem, "bold",      this->cs.textBold);
 	XMLUtils::SetAttr(pElem, "offset",    this->cs.textOffset);

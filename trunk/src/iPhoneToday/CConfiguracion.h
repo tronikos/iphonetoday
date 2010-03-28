@@ -6,7 +6,7 @@
 #include "xmlWrapper.h"
 
 typedef struct SpecialIconSettings {
-	TCHAR facename[32];
+	TCHAR facename[LF_FACESIZE];
 	INT height;
 	INT width;
 	INT weight;
@@ -76,7 +76,7 @@ public:
 	INT circlesOffset;
 
 	// Header
-	TCHAR headerTextFacename[32];
+	TCHAR headerTextFacename[LF_FACESIZE];
 	UINT headerTextSize;
 	UINT headerTextColor;
 	UINT headerTextWeight;
