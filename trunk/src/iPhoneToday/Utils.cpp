@@ -133,7 +133,7 @@ FILETIME FileModifyTime(TCHAR *file)
 	return filetime;
 }
 
-BOOL ExternalPowered()
+/*BOOL ExternalPowered()
 {
 	SYSTEM_POWER_STATUS_EX pwrStatus;
 	if (GetSystemPowerStatusEx(&pwrStatus,TRUE)) {
@@ -179,7 +179,7 @@ DWORD MemoryUsed()
 	mems.dwLength = sizeof(MEMORYSTATUS);
 	GlobalMemoryStatus(&mems);
 	return mems.dwTotalPhys - mems.dwAvailPhys;
-}
+}*/
 
 BOOL isPND()
 {

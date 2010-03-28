@@ -417,6 +417,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\iPhoneToday\CNotifications.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\iPhoneToday\CPantalla.cpp"
 				>
 			</File>
@@ -551,6 +555,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\iPhoneToday\CNotifications.h"
+				>
+			</File>
+			<File
 				RelativePath="..\iPhoneToday\CPantalla.h"
 				>
 			</File>
@@ -587,11 +595,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\iPhoneToday\regext.h"
+				>
+			</File>
+			<File
 				RelativePath="..\iPhoneToday\RegistryUtils.h"
 				>
 			</File>
 			<File
 				RelativePath="..\iPhoneToday\resource.h"
+				>
+			</File>
+			<File
+				RelativePath="..\iPhoneToday\snapi.h"
 				>
 			</File>
 			<File

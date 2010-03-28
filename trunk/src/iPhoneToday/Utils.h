@@ -22,11 +22,11 @@ BOOL FileOrDirExists(TCHAR *file, BOOL dir);
 BOOL FileExists(TCHAR *file);
 FILETIME FileModifyTime(TCHAR *file);
 
-BOOL ExternalPowered();
-int BatteryPercentage();
-int MemoryLoad();
-DWORD MemoryFree();
-DWORD MemoryUsed();
+//BOOL ExternalPowered();
+//int BatteryPercentage();
+//int MemoryLoad();
+//DWORD MemoryFree();
+//DWORD MemoryUsed();
 
 BOOL isPND();
 BOOL isPhone();

@@ -1,11 +1,9 @@
 #include "Utils2.h"
+#include "RegistryUtils.h"
 
-WORD GetVolumePercentage()
+WORD ConvertVolumeToPercentage(DWORD vol)
 {
 	double ret;
-	DWORD vol;
-	waveOutGetVolume(0, &vol);
-
 	WORD leftvol = LOWORD(vol);
 	WORD rightvol = HIWORD(vol);
 
@@ -18,10 +16,19 @@ WORD GetVolumePercentage()
 	return WORD(ret * 100.0 / 0xFFFF + 0.5);
 }
 
+WORD GetVolumePercentage()
+{
+	DWORD vol;
+	waveOutGetVolume(0, &vol);
+	return ConvertVolumeToPercentage(vol);
+}
+
 void SetVolumePercentage(WORD vol)
 {
 	DWORD v = DWORD(min(max(vol, 0), 100) * 0xFFFF / 100.0 + 0.5);
-	waveOutSetVolume(0, v | v << 16);
+	v = v | v << 16;
+	waveOutSetVolume(0, v);
+	SaveDwordSetting(HKEY_CURRENT_USER, TEXT("ControlPanel\\Volume"), &v, TEXT("Volume"));
 }
 
 void Rotate(int angle)

@@ -9,9 +9,13 @@ public:
 	DWORD nIcon;
 	TCHAR strName[MAX_PATH];
 	TCHAR strImage[MAX_PATH];
+	TCHAR strExec[MAX_PATH];
+	TCHAR strParameters[MAX_PATH];
 
 	CReloadIcon(void);
 	~CReloadIcon(void);
 
 	void ClearObject();
+	BOOL LoadRegistryIcon(int i);
+	void DeleteRegistryIcons();
 };

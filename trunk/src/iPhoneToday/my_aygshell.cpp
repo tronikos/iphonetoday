@@ -1,18 +1,24 @@
 #include "StdAfx.h"
 
+#include "regext.h"
+
 typedef DWORD (STDAPICALLTYPE FAR fSHRecognizeGesture)(SHRGINFO*); 
 typedef BOOL (STDAPICALLTYPE FAR fGetOpenFileNameEx)(LPOPENFILENAMEEX); 
 typedef BOOL (STDAPICALLTYPE FAR fSHFullScreen)(HWND,DWORD);
 typedef BOOL (STDAPICALLTYPE FAR fSHCreateMenuBar)(SHMENUBARINFO*);
 typedef BOOL (STDAPICALLTYPE FAR fSHInitDialog)(PSHINITDLGINFO); 
 typedef BOOL (STDAPICALLTYPE FAR fSHInitExtraControls)(); 
+typedef HRESULT (STDAPICALLTYPE FAR fRegistryNotifyWindow)(HKEY,LPCTSTR,LPCTSTR,HWND,UINT,DWORD,NOTIFICATIONCONDITION*,HREGNOTIFY*);
+typedef HRESULT (STDAPICALLTYPE FAR fRegistryCloseNotification)(HREGNOTIFY);
 
-static fSHRecognizeGesture	*pSHRecognizeGesture = NULL;
-static fGetOpenFileNameEx	*pGetOpenFileNameEx = NULL;
-static fSHFullScreen		*pSHFullScreen = NULL;
-static fSHCreateMenuBar		*pSHCreateMenuBar = NULL;
-static fSHInitDialog		*pSHInitDialog = NULL;
-static fSHInitExtraControls	*pSHInitExtraControls = NULL;
+static fSHRecognizeGesture			*pSHRecognizeGesture = NULL;
+static fGetOpenFileNameEx			*pGetOpenFileNameEx = NULL;
+static fSHFullScreen				*pSHFullScreen = NULL;
+static fSHCreateMenuBar				*pSHCreateMenuBar = NULL;
+static fSHInitDialog				*pSHInitDialog = NULL;
+static fSHInitExtraControls			*pSHInitExtraControls = NULL;
+static fRegistryNotifyWindow		*pRegistryNotifyWindow = NULL;
+static fRegistryCloseNotification	*pRegistryCloseNotification = NULL;
 
 BOOL InitAygshell()
 {
@@ -22,12 +28,14 @@ BOOL InitAygshell()
 	hAygshellLib = LoadLibrary(L"aygshell.dll");
 	if (hAygshellLib == NULL)
 		return FALSE;
-	pSHRecognizeGesture		= (fSHRecognizeGesture*)	GetProcAddress(hAygshellLib, L"SHRecognizeGesture");
-	pGetOpenFileNameEx		= (fGetOpenFileNameEx*)		GetProcAddress(hAygshellLib, L"GetOpenFileNameEx");
-	pSHFullScreen			= (fSHFullScreen*)			GetProcAddress(hAygshellLib, L"SHFullScreen");
-	pSHCreateMenuBar		= (fSHCreateMenuBar*)		GetProcAddress(hAygshellLib, L"SHCreateMenuBar");
-	pSHInitDialog			= (fSHInitDialog*)			GetProcAddress(hAygshellLib, L"SHInitDialog");
-	pSHInitExtraControls	= (fSHInitExtraControls*)	GetProcAddress(hAygshellLib, L"SHInitExtraControls");
+	pSHRecognizeGesture			= (fSHRecognizeGesture*)		GetProcAddress(hAygshellLib, L"SHRecognizeGesture");
+	pGetOpenFileNameEx			= (fGetOpenFileNameEx*)			GetProcAddress(hAygshellLib, L"GetOpenFileNameEx");
+	pSHFullScreen				= (fSHFullScreen*)				GetProcAddress(hAygshellLib, L"SHFullScreen");
+	pSHCreateMenuBar			= (fSHCreateMenuBar*)			GetProcAddress(hAygshellLib, L"SHCreateMenuBar");
+	pSHInitDialog				= (fSHInitDialog*)				GetProcAddress(hAygshellLib, L"SHInitDialog");
+	pSHInitExtraControls		= (fSHInitExtraControls*)		GetProcAddress(hAygshellLib, L"SHInitExtraControls");
+	pRegistryNotifyWindow		= (fRegistryNotifyWindow*)		GetProcAddress(hAygshellLib, L"RegistryNotifyWindow");
+	pRegistryCloseNotification	= (fRegistryCloseNotification*)	GetProcAddress(hAygshellLib, L"RegistryCloseNotification");
 	return TRUE;
 }
 
@@ -77,4 +85,25 @@ BOOL SHInitExtraControls(void)
 	if (InitAygshell() && pSHInitExtraControls != NULL)
 		return pSHInitExtraControls();
 	return FALSE;
+}
+
+HRESULT WINAPI RegistryNotifyWindow(HKEY hKey,
+                                    LPCTSTR pszSubKey,
+                                    LPCTSTR pszValueName,
+                                    HWND hWnd,
+                                    UINT msg,
+                                    DWORD dwUserData,
+                                    NOTIFICATIONCONDITION * pCondition,
+                                    HREGNOTIFY * phNotify)
+{
+	if (InitAygshell() && pRegistryNotifyWindow != NULL)
+		return pRegistryNotifyWindow(hKey, pszSubKey, pszValueName, hWnd, msg, dwUserData, pCondition, phNotify);
+	return S_FALSE;
+}
+
+HRESULT WINAPI RegistryCloseNotification(HREGNOTIFY hNotify)
+{
+	if (InitAygshell() && pRegistryCloseNotification != NULL)
+		return pRegistryCloseNotification(hNotify);
+	return S_FALSE;
 }
