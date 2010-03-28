@@ -217,9 +217,19 @@ LRESULT CNotifications::Callback(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lPa
 	int i;
 	if (lParam < MAXDWORDNOTIFICATION) {
 		i = lParam;
-		if (lParam == SN_CLOCKALARMFLAGS0 || lParam == SN_CLOCKALARMFLAGS1 || lParam == SN_CLOCKALARMFLAGS2) {
+		if (i == SN_CLOCKALARMFLAGS0 || i == SN_CLOCKALARMFLAGS1 || i == SN_CLOCKALARMFLAGS2) {
 			dwNotifications[i] = 0;
 			LoadDwordSetting(SN_DW[i].hKey, &dwNotifications[i], SN_DW[i].pszSubKey, SN_DW[i].pszValueName, 0);
+		} else if (i == SN_POWERBATTERYSTATE) {
+			SYSTEM_POWER_STATUS_EX pwrStatus;
+			DWORD value = 0;
+			if (GetSystemPowerStatusEx(&pwrStatus, TRUE)) {
+				value = pwrStatus.BatteryLifePercent << 16;
+				value |= pwrStatus.BatteryFlag;
+			} else {
+				value = BATTERY_PERCENTAGE_UNKNOWN << 16;
+			}
+			dwNotifications[i] = value;
 		} else {
 			dwNotifications[i] = (DWORD) wParam;
 		}
@@ -243,7 +253,7 @@ BOOL CNotifications::PollingUpdate()
 	BOOL changed = FALSE;
 
 	for (int i = 0; i < MAXDWORDNOTIFICATION; i++) {
-		if (!dwHrNotify[i]) {
+		if (!dwHrNotify[i] || i == SN_POWERBATTERYSTATE) {
 			DWORD value = 0;
 			if (i == SN_POWERBATTERYSTATE) {
 				SYSTEM_POWER_STATUS_EX pwrStatus;
