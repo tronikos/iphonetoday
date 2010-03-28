@@ -144,6 +144,7 @@ typedef enum
 #define NOTIF_SIGNAL		20
 #define NOTIF_OPERATOR		21
 #define NOTIF_SIGNAL_OPER	22
+#define NOTIF_PROFILE		23
 
 #define NOTIF_NORMAL_TXT		TEXT("Normal")
 #define NOTIF_LLAMADAS_TXT		TEXT("Missed Calls")
@@ -170,3 +171,4 @@ typedef enum
 #define NOTIF_SIGNAL_TXT		TEXT("Signal Strength")
 #define NOTIF_OPERATOR_TXT		TEXT("Operator Name")
 #define NOTIF_SIGNAL_OPER_TXT	TEXT("Signal Strength & Operator Name")
+#define NOTIF_PROFILE_TXT		TEXT("Phone Profile")

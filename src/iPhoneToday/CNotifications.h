@@ -32,6 +32,7 @@ enum dw_notifications_enum {
 
 enum sz_notifications_enum {
 	SN_PHONEOPERATORNAME,				// HKLM\System\State\Phone\Current Operator Name
+	SN_PHONEPROFILE,					// HKCU\ControlPanel\Profiles\ActiveProfile
 	MAXSTRINGNOTIFICATION
 };
 
