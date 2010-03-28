@@ -1004,7 +1004,7 @@ LRESULT doMouseDown (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 	if (configuracion->pressedIcon->hDC != NULL || _tcsclen(configuracion->pressed_sound) > 0) {
 		procesaPulsacion(hwnd, posCursor, FALSE, TRUE);
 		if (iconoActual.nIconoActual >= 0) {
-			if (_tcsclen(configuracion->pressed_sound) > 0) {
+			if (lstrcmpi(notifications->szNotifications[SN_PHONEPROFILE], L"Silent") != 0 && _tcsclen(configuracion->pressed_sound) > 0) {
 				TCHAR fullPath[MAX_PATH];
 				configuracion->getAbsolutePath(fullPath, CountOf(fullPath), configuracion->pressed_sound);
 				PlaySound(fullPath, 0, SND_ASYNC | SND_FILENAME | SND_NODEFAULT);
@@ -1549,6 +1549,8 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 		TCHAR *p = icono->nombre;
 		if (icono->tipo == NOTIF_OPERATOR || icono->tipo == NOTIF_SIGNAL_OPER) {
 			p = notifications->szNotifications[SN_PHONEOPERATORNAME];
+		} else if (icono->tipo == NOTIF_PROFILE) {
+			p = notifications->szNotifications[SN_PHONEPROFILE];
 		}
 		if (p && p[0]) {
 			DrawText2(*hDC, p, -1, &posTexto, DT_CENTER | DT_TOP, cs->cs.textRoundRect, cs->cs.textShadow);
@@ -2124,20 +2126,22 @@ void procesaPulsacion(HWND hwnd, POINTS posCursor, BOOL doubleClick, BOOL noLanz
 
 	if (!noLanzar && iconoActual.nIconoActual >= 0) {
 
-		if (configuracion->allowSoundOnLaunchIcon) {
-			TCHAR fullPath[MAX_PATH];
-			if (_tcsclen(icono->sound) > 0) {
-				configuracion->getAbsolutePath(fullPath, CountOf(fullPath), icono->sound);
-				PlaySound(fullPath, 0, SND_ASYNC | SND_FILENAME | SND_NODEFAULT);
-			} else if (_tcsclen(configuracion->soundOnLaunchIcon) > 0) {
-				configuracion->getAbsolutePath(fullPath, CountOf(fullPath), configuracion->soundOnLaunchIcon);
-				PlaySound(fullPath, 0, SND_ASYNC | SND_FILENAME | SND_NODEFAULT);
+		if (lstrcmpi(notifications->szNotifications[SN_PHONEPROFILE], L"Silent") != 0) {
+			if (configuracion->allowSoundOnLaunchIcon) {
+				TCHAR fullPath[MAX_PATH];
+				if (_tcsclen(icono->sound) > 0) {
+					configuracion->getAbsolutePath(fullPath, CountOf(fullPath), icono->sound);
+					PlaySound(fullPath, 0, SND_ASYNC | SND_FILENAME | SND_NODEFAULT);
+				} else if (_tcsclen(configuracion->soundOnLaunchIcon) > 0) {
+					configuracion->getAbsolutePath(fullPath, CountOf(fullPath), configuracion->soundOnLaunchIcon);
+					PlaySound(fullPath, 0, SND_ASYNC | SND_FILENAME | SND_NODEFAULT);
+				}
 			}
-		}
 
-		// Vibration
-		if (configuracion->vibrateOnLaunchIcon > 0) {
-			vibrate(configuracion->vibrateOnLaunchIcon);
+			// Vibration
+			if (configuracion->vibrateOnLaunchIcon > 0) {
+				vibrate(configuracion->vibrateOnLaunchIcon);
+			}
 		}
 
 		// Activamos el timer
@@ -2284,6 +2288,7 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_SIGNAL_TXT);
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_OPERATOR_TXT);
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_SIGNAL_OPER_TXT);
+			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_PROFILE_TXT);
 
 			// Configuramos los checks
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_LAUNCHANIMATION), BM_SETCHECK, BST_CHECKED, 0);
@@ -2359,6 +2364,8 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 23, 0);
 				} else if (icono->tipo == NOTIF_SIGNAL_OPER) {
 					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 24, 0);
+				} else if (icono->tipo == NOTIF_PROFILE) {
+					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 25, 0);
 				} else {
 					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 0, 0);
 				}
@@ -2494,6 +2501,8 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 				nType = NOTIF_OPERATOR;
 			} else if (lstrcmpi(strType, NOTIF_SIGNAL_OPER_TXT) == 0) {
 				nType = NOTIF_SIGNAL_OPER;
+			} else if (lstrcmpi(strType, NOTIF_PROFILE_TXT) == 0) {
+				nType = NOTIF_PROFILE;
 			} else {
 				MessageBox(hDlg, TEXT("Type not valid!"), TEXT("Error"), MB_OK);
 				return FALSE;
@@ -3447,6 +3456,12 @@ void InvalidateScreenIfNotificationsChanged(CPantalla *pantalla)
 				break;
 			case NOTIF_SIGNAL_OPER:
 				if (notifications->dwNotificationsChanged[SN_PHONESIGNALSTRENGTH] || notifications->szNotificationsChanged[SN_PHONEOPERATORNAME]) {
+					pantalla->debeActualizar = TRUE;
+					return;
+				}
+				break;
+			case NOTIF_PROFILE:
+				if (notifications->szNotificationsChanged[SN_PHONEPROFILE]) {
 					pantalla->debeActualizar = TRUE;
 					return;
 				}
