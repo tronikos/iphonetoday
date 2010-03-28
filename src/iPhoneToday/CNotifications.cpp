@@ -209,15 +209,22 @@ void CNotifications::InitRegistryNotifications(HWND hWnd)
 // Process WM_REGISTY message for window
 LRESULT CNotifications::Callback(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 {
+	int i;
 	if (lParam < MAXDWORDNOTIFICATION) {
-		dwNotifications[lParam] = (DWORD) wParam;
-		dwNotificationsChanged[lParam] = TRUE;
+		i = lParam;
+		if (lParam == SN_CLOCKALARMFLAGS0 || lParam == SN_CLOCKALARMFLAGS1 || lParam == SN_CLOCKALARMFLAGS2) {
+			dwNotifications[i] = 0;
+			LoadDwordSetting(SN_DW[i].hKey, &dwNotifications[i], SN_DW[i].pszSubKey, SN_DW[i].pszValueName, 0);
+		} else {
+			dwNotifications[i] = (DWORD) wParam;
+		}
+		dwNotificationsChanged[i] = TRUE;
 	} else if (lParam - MAXDWORDNOTIFICATION < MAXSTRINGNOTIFICATION) {
-		int i = lParam - MAXDWORDNOTIFICATION;
+		i = lParam - MAXDWORDNOTIFICATION;
 		LoadTextSetting(SN_SZ[i].hKey, szNotifications[i], SN_SZ[i].pszSubKey, SN_SZ[i].pszValueName, L"");
 		szNotificationsChanged[i] = TRUE;
 	} else if (lParam - MAXDWORDNOTIFICATION - MAXSTRINGNOTIFICATION < MAXFILETIMENOTIFICATION) {
-		int i = lParam - MAXDWORDNOTIFICATION - MAXSTRINGNOTIFICATION;
+		i = lParam - MAXDWORDNOTIFICATION - MAXSTRINGNOTIFICATION;
 		GetLocalTime(&st);
 		ftNotificationsChanged[i] = TRUE;
 	}
@@ -231,8 +238,8 @@ BOOL CNotifications::PollingUpdate()
 	BOOL changed = FALSE;
 
 	for (int i = 0; i < MAXDWORDNOTIFICATION; i++) {
-		DWORD value;
 		if (!dwHrNotify[i]) {
+			DWORD value = 0;
 			if (i == SN_POWERBATTERYSTATE) {
 				SYSTEM_POWER_STATUS_EX pwrStatus;
 				if (GetSystemPowerStatusEx(&pwrStatus, TRUE)) {
