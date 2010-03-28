@@ -36,7 +36,7 @@ void cs_load(HWND hDlg, ConfigurationScreen *cs)
 	if (cs != NULL) {
 		SetDlgItemInt(hDlg, IDC_EDIT_CS_ICON_WIDTH,		cs->iconWidthXML,	TRUE);
 		SetDlgItemInt(hDlg, IDC_EDIT_CS_ICONS_PER_ROW,	cs->iconsPerRowXML,	TRUE);
-		SetDlgItemInt(hDlg, IDC_EDIT_CS_TEXT_HEIGHT,	cs->textSize,		TRUE);
+		SetDlgItemInt(hDlg, IDC_EDIT_CS_TEXT_HEIGHT,	cs->textHeightXML,		TRUE);
 		SetDlgItemInt(hDlg, IDC_EDIT_CS_TEXT_OFFSET,	cs->textOffset,		TRUE);
 
 		SetDlgItemHex(hDlg, IDC_EDIT_CS_TEXT_COLOR,		cs->textColor);
@@ -62,7 +62,7 @@ void cs_save(HWND hDlg, ConfigurationScreen *cs)
 	if (cs != NULL) {
 		cs->iconWidthXML	= GetDlgItemInt(hDlg, IDC_EDIT_CS_ICON_WIDTH,		NULL, TRUE);
 		cs->iconsPerRowXML	= GetDlgItemInt(hDlg, IDC_EDIT_CS_ICONS_PER_ROW,	NULL, TRUE);
-		cs->textSize		= GetDlgItemInt(hDlg, IDC_EDIT_CS_TEXT_HEIGHT,		NULL, TRUE);
+		cs->textHeightXML	= GetDlgItemInt(hDlg, IDC_EDIT_CS_TEXT_HEIGHT,		NULL, TRUE);
 		cs->textOffset		= GetDlgItemInt(hDlg, IDC_EDIT_CS_TEXT_OFFSET,		NULL, TRUE);
 
 		cs->textColor		= GetDlgItemHex(hDlg, IDC_EDIT_CS_TEXT_COLOR,		NULL);
@@ -179,7 +179,7 @@ BOOL cs_check(HWND hDlg, ConfigurationScreen *cs)
 		MessageBox(hDlg, TEXT("Icons per row value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
-	if (cs->textSize < 0 || cs->textSize > 100) {
+	if (cs->textHeightXML < 0 || cs->textHeightXML > 100) {
 		MessageBox(hDlg, TEXT("Text height value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}

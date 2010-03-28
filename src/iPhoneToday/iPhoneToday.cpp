@@ -1541,11 +1541,11 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 
 	// Pintamos el nombre del icono
 	posTexto.top = int(icono->y + width + cs->cs.textOffset);
-	posTexto.bottom = posTexto.top + cs->cs.textSize;
+	posTexto.bottom = posTexto.top + cs->textHeight;
 	posTexto.left = int(icono->x - (cs->distanceIconsH * 0.5) + 0.5);
 	posTexto.right = int(icono->x + width + (cs->distanceIconsH * 0.5) + 0.5);
 
-	if (cs->cs.textSize > 0) {
+	if (cs->textHeight > 0) {
 		TCHAR *p = icono->nombre;
 		if (icono->tipo == NOTIF_OPERATOR || icono->tipo == NOTIF_SIGNAL_OPER) {
 			p = notifications->szNotifications[SN_PHONEOPERATORNAME];
@@ -1605,7 +1605,7 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type) {
 			} else {
 				lf.lfWeight = FW_NORMAL;
 			}
-			lf.lfHeight = cs->cs.textSize;
+			lf.lfHeight = cs->textHeight;
 			lf.lfQuality = configuracion->textQuality;
 			if (wcslen(cs->cs.textFacename) > 0) {
 				wcsncpy(lf.lfFaceName, cs->cs.textFacename, CountOf(lf.lfFaceName));
