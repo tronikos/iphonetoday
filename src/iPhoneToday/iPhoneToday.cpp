@@ -6,9 +6,11 @@
 #include "iPhoneToday.h"
 #include "CListaPantalla.h"
 #include "CEstado.h"
+#include "CNotifications.h"
 #include "vibrate.h"
 #include "CmdLine.h"
 #include "OptionDialog.h"  // CreatePropertySheet includes
+#include "RegistryUtils.h"
 
 #define MAX_LOADSTRING 100
 
@@ -28,6 +30,7 @@ BOOL				g_bInitializing = FALSE;
 CListaPantalla *listaPantallas = NULL;
 CConfiguracion *configuracion = NULL;
 CEstado *estado = NULL;
+CNotifications *notifications = NULL;
 
 BOOL posCursorInitialized = FALSE;
 POINTS posCursor;
@@ -109,7 +112,9 @@ LRESULT WINAPI CustomItemOptionsDlgProc(HWND, UINT, WPARAM, LPARAM);
 void RightClick(HWND hwnd, POINTS posCursor);
 void calculateConfiguration(int width, int height);
 void getWindowSize(HWND hwnd, int *windowWidth, int *windowHeight);
+BOOL InvalidateListScreenIfNotificationsChanged(CListaPantalla *listaPantallas);
 void InvalidateScreenIfNotificationsChanged(CPantalla *pantalla);
+BOOL ProcessNotifications();
 
 #ifndef EXEC_MODE
 /*************************************************************************/
@@ -333,8 +338,8 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lPara
 			inicializaApp(hwnd);
 #endif
 
-			RECT            rcWindBounds;
-			GetClientRect( hwnd, &rcWindBounds);
+			RECT rcWindBounds;
+			GetClientRect(hwnd, &rcWindBounds);
 			InvalidateRect(hwnd, &rcWindBounds, FALSE);
 		}
 		return 0;
@@ -394,6 +399,18 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lPara
 #else
 		return cargaFondoPantalla(hwnd);
 #endif
+	case WM_REGISTRY:
+		if (notifications) {
+			notifications->Callback(hwnd, uimessage, wParam, lParam);
+			if (ProcessNotifications()) {
+				RECT rc;
+				GetClientRect(hwnd, &rc);
+				InvalidateRect(hwnd, &rc, FALSE);
+				UpdateWindow(hwnd);
+			}
+			notifications->ResetChanged();
+		}
+		return 0;
 	}
 
 	return DefWindowProc (hwnd, uimessage, wParam, lParam) ;
@@ -430,8 +447,8 @@ LRESULT doTimer (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 				}
 			}
 
-			RECT            rcWindBounds2;
-			GetClientRect( hwnd, &rcWindBounds2);
+			RECT rcWindBounds2;
+			GetClientRect(hwnd, &rcWindBounds2);
 			InvalidateRect(hwnd, &rcWindBounds2, FALSE);
 			UpdateWindow(hwnd);
 			return 0;
@@ -474,87 +491,9 @@ LRESULT doTimer (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 	} else if (wParam == TIMER_ACTUALIZA_NOTIF) {
 		//NKDbgPrintfW(L"TIMER_ACTUALIZA_NOTIF %ld\n", GetTickCount());
 		if (!estado->hayMovimiento) {
-			// Actualizamos las notificaciones
-			BOOL hayCambios = estado->actualizaNotificaciones();
-			BOOL hayCambiosIconos = estado->checkReloadIcons();
-			BOOL hayCambiosIcono = estado->checkReloadIcon();
-
-			if (hayCambiosIcono) {
-				CReloadIcon *reloadIcon = new CReloadIcon();
-				CPantalla *pantalla = NULL;
-				CIcono *icono = NULL;
-				for (int nIcon = 0; estado->LoadRegistryIcon(nIcon, reloadIcon); nIcon++) {
-					if (reloadIcon->nScreen >= 0 && reloadIcon->nScreen < listaPantallas->numPantallas) {
-						pantalla = listaPantallas->listaPantalla[reloadIcon->nScreen];
-					} else if (reloadIcon->nScreen == -1) {
-						pantalla = listaPantallas->barraInferior;
-					} else if (reloadIcon->nScreen == -2) {
-						pantalla = listaPantallas->topBar;
-					} else {
-						continue;
-					}
-					if (pantalla != NULL && reloadIcon->nIcon >= 0 && reloadIcon->nIcon < pantalla->numIconos) {
-						icono = pantalla->listaIconos[reloadIcon->nIcon];
-					} else {
-						continue;
-					}
-					if (icono != NULL) {
-						if (_tcslen(reloadIcon->strName) > 0) {
-							StringCchCopy(icono->nombre, CountOf(icono->nombre), reloadIcon->strName);
-						}
-						if (_tcslen(reloadIcon->strImage) > 0) {
-							StringCchCopy(icono->rutaImagen, CountOf(icono->rutaImagen), reloadIcon->strImage);
-						}
-						SCREEN_TYPE st = MAINSCREEN;
-						if (pantalla == listaPantallas->barraInferior) {
-							st = BOTTOMBAR;
-						} else if (pantalla == listaPantallas->topBar) {
-							st = TOPBAR;
-						}
-						configuracion->cargaImagenIcono(&hDCMem, icono, st);
-						pantalla->debeActualizar = TRUE;
-					}
-				}
-				if (estado->reloadIcon == 2) {
-					configuracion->guardaXMLIconos(listaPantallas);
-				}
-				delete reloadIcon;
-				estado->clearReloadIcon();
-			} else if (hayCambiosIconos) {
-				// Cargamos la configuracion de iconos
-				configuracion->cargaXMLIconos2(listaPantallas);
-				configuracion->cargaIconsImages(&hDCMem, listaPantallas);
-
-				// Marcamos aquellas pantallas que haya que actualizar
-				CPantalla *pantalla;
-				for (UINT i = 0; i < listaPantallas->numPantallas; i++) {
-					pantalla = listaPantallas->listaPantalla[i];
-					if (pantalla != NULL) {
-						pantalla->debeActualizar = TRUE;
-					}
-				}
-
-				pantalla = listaPantallas->barraInferior;
-				if (pantalla != NULL) {
-					pantalla->debeActualizar = TRUE;
-				}
-
-				pantalla = listaPantallas->topBar;
-				if (pantalla != NULL) {
-					pantalla->debeActualizar = TRUE;
-				}
-
-				estado->clearReloadIcons();
-			} else if (hayCambios) {
-				// Marcamos aquellas pantallas que haya que actualizar
-				for (UINT i = 0; i < listaPantallas->numPantallas; i++) {
-					InvalidateScreenIfNotificationsChanged(listaPantallas->listaPantalla[i]);
-				}
-
-				InvalidateScreenIfNotificationsChanged(listaPantallas->barraInferior);
-				InvalidateScreenIfNotificationsChanged(listaPantallas->topBar);
+			if (notifications->PollingUpdate()) {
+				shouldInvalidateRect = ProcessNotifications();
 			}
-			shouldInvalidateRect = hayCambios || hayCambiosIcono || hayCambiosIconos;
 		}
 	} else if (wParam == TIMER_LONGTAP) {
 		KillTimer(hwnd, TIMER_LONGTAP);
@@ -621,8 +560,8 @@ LRESULT doTimer (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 	}
 
 	if (shouldInvalidateRect) {
-		RECT            rcWindBounds2;
-		GetClientRect( hwnd, &rcWindBounds2);
+		RECT rcWindBounds2;
+		GetClientRect(hwnd, &rcWindBounds2);
 		InvalidateRect(hwnd, &rcWindBounds2, FALSE);
 		UpdateWindow(hwnd);
 	}
@@ -677,7 +616,7 @@ LRESULT WndProcLoading (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 
 		SetBkMode(hDC, TRANSPARENT);
 
-		GetClientRect( hwnd, &rcWindBounds);
+		GetClientRect(hwnd, &rcWindBounds);
 
 		HBRUSH hBrush = CreateSolidBrush(RGB(0,0,0));
 		FillRect(hDC, &rcWindBounds, hBrush);
@@ -892,8 +831,8 @@ LRESULT doMove (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 			posCursor = posCursor2;
 
 			// Actualizamos la imagen
-			RECT            rcWindBounds;
-			GetClientRect( hwnd, &rcWindBounds);
+			RECT rcWindBounds;
+			GetClientRect(hwnd, &rcWindBounds);
 			InvalidateRect(hwnd, &rcWindBounds, FALSE);
 			// UpdateWindow(hwnd);
 		}
@@ -1373,97 +1312,110 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 		int numNotif = 0;
 		switch(icono->tipo) {
 			case NOTIF_LLAMADAS:
-				numNotif = estado->numLlamadas;
+				numNotif = notifications->dwNotifications[SN_PHONEMISSEDCALLS];
 				break;
 			case NOTIF_SMS:
-				numNotif = estado->numSMS;
+				numNotif = notifications->dwNotifications[SN_MESSAGINGSMSUNREAD];
 				break;
 			case NOTIF_MMS:
-				numNotif = estado->numMMS;
+				numNotif = notifications->dwNotifications[SN_MESSAGINGMMSUNREAD];
 				break;
 			case NOTIF_OTHER_EMAIL:
-				numNotif = estado->numOtherEmail;
+				numNotif = notifications->dwNotifications[SN_MESSAGINGOTHEREMAILUNREAD];
 				break;
 			case NOTIF_SYNC_EMAIL:
-				numNotif = estado->numSyncEmail;
+				numNotif = notifications->dwNotifications[SN_MESSAGINGACTIVESYNCEMAILUNREAD];
 				break;
 			case NOTIF_TOTAL_EMAIL:
-				numNotif = estado->numOtherEmail + estado->numSyncEmail;
+				numNotif = notifications->dwNotifications[SN_MESSAGINGOTHEREMAILUNREAD] + notifications->dwNotifications[SN_MESSAGINGACTIVESYNCEMAILUNREAD];
 				break;
-			case NOTIF_CITAS:
-				numNotif = estado->numCitas;
+			case NOTIF_APPOINTS:
+				numNotif = notifications->dwNotifications[SN_APPOINTMENTSLISTCOUINT];
 			case NOTIF_CALENDAR:
-				if (!configuracion->dowUseLocale || !GetDateFormat(LOCALE_USER_DEFAULT, 0, &estado->st, L"ddd", str, CountOf(str))) {
-					StringCchCopy(str, CountOf(str), configuracion->diasSemana[estado->st.wDayOfWeek]);
+				if (!configuracion->dowUseLocale || !GetDateFormat(LOCALE_USER_DEFAULT, 0, &notifications->st, L"ddd", str, CountOf(str))) {
+					StringCchCopy(str, CountOf(str), configuracion->diasSemana[notifications->st.wDayOfWeek]);
 				}
 				DrawSpecialIconText(*hDC, str, icono, width, &configuracion->dow);
-				StringCchPrintf(str, CountOf(str), TEXT("%i"), estado->st.wDay);
+				StringCchPrintf(str, CountOf(str), TEXT("%i"), notifications->st.wDay);
 				DrawSpecialIconText(*hDC, str, icono, width, &configuracion->dom);
 				break;
 			case NOTIF_CLOCK_ALARM:
-				numNotif = estado->estadoAlarm;
+				numNotif = notifications->dwNotifications[SN_CLOCKALARMFLAGS0] + notifications->dwNotifications[SN_CLOCKALARMFLAGS1] + notifications->dwNotifications[SN_CLOCKALARMFLAGS2] > 0;
 			case NOTIF_CLOCK:
 				if (configuracion->clock12Format) {
-					StringCchPrintf(str, CountOf(str), TEXT("%d:%02d"), (estado->st.wHour == 0 ? 12 : (estado->st.wHour > 12 ? (estado->st.wHour - 12) : estado->st.wHour)), estado->st.wMinute);
+					StringCchPrintf(str, CountOf(str), TEXT("%d:%02d"), (notifications->st.wHour == 0 ? 12 : (notifications->st.wHour > 12 ? (notifications->st.wHour - 12) : notifications->st.wHour)), notifications->st.wMinute);
 				} else {
-					StringCchPrintf(str, CountOf(str), TEXT("%02d:%02d"), estado->st.wHour, estado->st.wMinute);
+					StringCchPrintf(str, CountOf(str), TEXT("%02d:%02d"), notifications->st.wHour, notifications->st.wMinute);
 				}
 				DrawSpecialIconText(*hDC, str, icono, width, &configuracion->clck);
 				break;
 			case NOTIF_BATTERY:
-				if (configuracion->battShowAC) {
-					if (estado->externalPowered) {
-						StringCchCopy(str, CountOf(str), L"AC");
+				{
+					WORD batteryFlag = LOWORD(notifications->dwNotifications[SN_POWERBATTERYSTATE]);
+					BOOL charging = batteryFlag & BATTERY_FLAG_CHARGING;
+					// BATTERY_FLAG_HIGH
+					// BATTERY_FLAG_LOW
+					// BATTERY_FLAG_CRITICAL
+					// BATTERY_FLAG_CHARGING
+					int batteryLifePercent = HIWORD(notifications->dwNotifications[SN_POWERBATTERYSTATE]);
+					if (batteryLifePercent == BATTERY_PERCENTAGE_UNKNOWN) {
+						StringCchCopy(str, CountOf(str), L"NA");
 					} else {
-						StringCchPrintf(str, CountOf(str), L"%d", estado->batteryPercentage);
+						if (configuracion->battShowAC) {
+							if (charging) {
+								StringCchCopy(str, CountOf(str), L"AC");
+							} else {
+								StringCchPrintf(str, CountOf(str), L"%d", batteryLifePercent);
+							}
+						} else {
+							StringCchPrintf(str, CountOf(str), L"%s%d", charging ? "." : "", batteryLifePercent);
+						}
 					}
-				} else {
-					StringCchPrintf(str, CountOf(str), L"%s%d", estado->externalPowered ? "-" : "", estado->batteryPercentage);
+					DrawSpecialIconText(*hDC, str, icono, width, &configuracion->batt);
 				}
-				DrawSpecialIconText(*hDC, str, icono, width, &configuracion->batt);
 				break;
 			case NOTIF_VOLUME:
-				StringCchPrintf(str, CountOf(str), L"%d", estado->volumePercentage);
+				StringCchPrintf(str, CountOf(str), L"%d", ConvertVolumeToPercentage(notifications->dwNotifications[SN_VOLUME]));
 				DrawSpecialIconText(*hDC, str, icono, width, &configuracion->vol);
 				break;
 			case NOTIF_MEMORYLOAD:
-				StringCchPrintf(str, CountOf(str), L"%d", estado->memoryLoad);
+				StringCchPrintf(str, CountOf(str), L"%d", notifications->memoryStatus.dwMemoryLoad);
 				DrawSpecialIconText(*hDC, str, icono, width, &configuracion->meml);
 				break;
 			case NOTIF_MEMORYFREE:
-				StringCchPrintf(str, CountOf(str), L"%.1f", estado->memoryFree / 1024.0 / 1024.0);
+				StringCchPrintf(str, CountOf(str), L"%.1f", notifications->memoryStatus.dwAvailPhys / 1024.0 / 1024.0);
 				DrawSpecialIconText(*hDC, str, icono, width, &configuracion->memf);
 				break;
 			case NOTIF_MEMORYUSED:
-				StringCchPrintf(str, CountOf(str), L"%.1f", estado->memoryUsed / 1024.0 / 1024.0);
+				StringCchPrintf(str, CountOf(str), L"%.1f", (notifications->memoryStatus.dwTotalPhys - notifications->memoryStatus.dwAvailPhys) / 1024.0 / 1024.0);
 				DrawSpecialIconText(*hDC, str, icono, width, &configuracion->memu);
 				break;
 			case NOTIF_SIGNAL:
 			case NOTIF_SIGNAL_OPER:
-				if (wcslen(estado->operatorName) == 0) {
+				if (wcslen(notifications->szNotifications[SN_PHONEOPERATORNAME]) == 0) {
 					StringCchCopy(str, CountOf(str), L"NA");
 				} else {
-					StringCchPrintf(str, CountOf(str), L"%d", estado->signalStrength);
+					StringCchPrintf(str, CountOf(str), L"%d", notifications->dwNotifications[SN_PHONESIGNALSTRENGTH]);
 				}
 				DrawSpecialIconText(*hDC, str, icono, width, &configuracion->sign);
 				break;
-			case NOTIF_TAREAS:
-				numNotif = estado->numTareas;
+			case NOTIF_TASKS:
+				numNotif = notifications->dwNotifications[SN_TASKSACTIVE];
 				break;
 			case NOTIF_SMS_MMS:
-				numNotif = estado->numSMS + estado->numMMS;
+				numNotif = notifications->dwNotifications[SN_MESSAGINGSMSUNREAD] + notifications->dwNotifications[SN_MESSAGINGMMSUNREAD];
 				break;
 			case NOTIF_WIFI:
-				numNotif = estado->estadoWifi;
+				numNotif = notifications->dwNotifications[SN_WIFISTATEPOWERON] & SN_WIFISTATEPOWERON_BITMASK;
 				break;
 			case NOTIF_BLUETOOTH:
-				numNotif = estado->estadoBluetooth;
+				numNotif = notifications->dwNotifications[SN_BLUETOOTHSTATEPOWERON] & SN_BLUETOOTHSTATEPOWERON_BITMASK;
 				break;
 			case NOTIF_GPRS:
-				numNotif = estado->estadoGPRS;
+				numNotif = notifications->dwNotifications[SN_CELLSYSTEMCONNECTED] & SN_CELLSYSTEMCONNECTED_GPRS_BITMASK;
 				break;
 			case NOTIF_ALARM:
-				numNotif = estado->estadoAlarm;
+				numNotif = notifications->dwNotifications[SN_CLOCKALARMFLAGS0] + notifications->dwNotifications[SN_CLOCKALARMFLAGS1] + notifications->dwNotifications[SN_CLOCKALARMFLAGS2] > 0;
 				break;
 			default:
 				numNotif = 0;
@@ -1478,9 +1430,9 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 				case NOTIF_OTHER_EMAIL:
 				case NOTIF_SYNC_EMAIL:
 				case NOTIF_TOTAL_EMAIL:
-				case NOTIF_CITAS:
+				case NOTIF_APPOINTS:
 				case NOTIF_CALENDAR:
-				case NOTIF_TAREAS:
+				case NOTIF_TASKS:
 				case NOTIF_SMS_MMS:
 					if (numNotif >= 100) {
 						StringCchCopy(notif, CountOf(notif), TEXT("+"));
@@ -1526,11 +1478,7 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 
 					break;
 				case NOTIF_BLUETOOTH:
-					if (numNotif == 11) {
-						StringCchCopy(notif, CountOf(notif), TEXT("Disc"));
-					} else {
-						StringCchCopy(notif, CountOf(notif), TEXT("On"));
-					}
+					StringCchCopy(notif, CountOf(notif), TEXT("On"));
 
 					/* Centrado grande */
 					/*
@@ -1554,9 +1502,9 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 				case NOTIF_OTHER_EMAIL:
 				case NOTIF_SYNC_EMAIL:
 				case NOTIF_TOTAL_EMAIL:
-				case NOTIF_CITAS:
+				case NOTIF_APPOINTS:
 				case NOTIF_CALENDAR:
-				case NOTIF_TAREAS:
+				case NOTIF_TASKS:
 				case NOTIF_SMS_MMS:
 					// Pintamos la notificacion
 					if (configuracion->bubbleNotif->hDC) {
@@ -1600,7 +1548,7 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 	if (cs->cs.textSize > 0) {
 		TCHAR *p = icono->nombre;
 		if (icono->tipo == NOTIF_OPERATOR || icono->tipo == NOTIF_SIGNAL_OPER) {
-			p = estado->operatorName;
+			p = notifications->szNotifications[SN_PHONEOPERATORNAME];
 		}
 		if (p && p[0]) {
 			DrawText2(*hDC, p, -1, &posTexto, DT_CENTER | DT_TOP, cs->cs.textRoundRect, cs->cs.textShadow);
@@ -1627,6 +1575,11 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type) {
 	// Si debemos recalcular la pantalla
 	if (pantalla->debeActualizar) {
 		pantalla->debeActualizar = FALSE;
+
+		RECT rc = {0};
+		rc.right = pantalla->anchoPantalla;
+		rc.bottom = pantalla->altoPantalla;
+
 		if (pantalla->hDC == NULL) {
 			pantalla->hDC = CreateCompatibleDC(*hDC);
 			if (configuracion->alphaBlend) {
@@ -1663,13 +1616,9 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type) {
 			pantalla->hFontOld = (HFONT)SelectObject(pantalla->hDC, hFont);
 
 			SetTextColor(pantalla->hDC, cs->cs.textColor);
+			FillRect(pantalla->hDC, &rc, hBrushTrans);
 		}
 		SetBkMode(pantalla->hDC, TRANSPARENT);
-
-		RECT rc = {0};
-		rc.right = pantalla->anchoPantalla;
-		rc.bottom = pantalla->altoPantalla;
-
 
 		if (isTransparent || (configuracion->fondoPantalla && configuracion->fondoPantalla->hDC) ||
 			(screen_type == BOTTOMBAR && configuracion->backBottomBar && configuracion->backBottomBar->hDC) ||
@@ -2211,44 +2160,44 @@ int hayNotificacion(int tipo) {
 	int numNotif = 0;
 	switch(tipo) {
 		case NOTIF_LLAMADAS:
-			numNotif = estado->numLlamadas;
+			numNotif = notifications->dwNotifications[SN_PHONEMISSEDCALLS];
 			break;
 		case NOTIF_SMS:
-			numNotif = estado->numSMS;
+			numNotif = notifications->dwNotifications[SN_MESSAGINGSMSUNREAD];
 			break;
 		case NOTIF_MMS:
-			numNotif = estado->numMMS;
+			numNotif = notifications->dwNotifications[SN_MESSAGINGMMSUNREAD];
 			break;
 		case NOTIF_OTHER_EMAIL:
-			numNotif = estado->numOtherEmail;
+			numNotif = notifications->dwNotifications[SN_MESSAGINGOTHEREMAILUNREAD];
 			break;
 		case NOTIF_SYNC_EMAIL:
-			numNotif = estado->numSyncEmail;
+			numNotif = notifications->dwNotifications[SN_MESSAGINGACTIVESYNCEMAILUNREAD];
 			break;
 		case NOTIF_TOTAL_EMAIL:
-			numNotif = estado->numOtherEmail + estado->numSyncEmail;
+			numNotif = notifications->dwNotifications[SN_MESSAGINGOTHEREMAILUNREAD] + notifications->dwNotifications[SN_MESSAGINGACTIVESYNCEMAILUNREAD];
 			break;
-		case NOTIF_CITAS:
-			numNotif = estado->numCitas;
+		case NOTIF_APPOINTS:
+			numNotif = notifications->dwNotifications[SN_APPOINTMENTSLISTCOUINT];
 			break;
-		case NOTIF_TAREAS:
-			numNotif = estado->numTareas;
+		case NOTIF_TASKS:
+			numNotif = notifications->dwNotifications[SN_TASKSACTIVE];
 			break;
 		case NOTIF_SMS_MMS:
-			numNotif = estado->numSMS + estado->numMMS;
+			numNotif = notifications->dwNotifications[SN_MESSAGINGSMSUNREAD] + notifications->dwNotifications[SN_MESSAGINGMMSUNREAD];
 			break;
 		case NOTIF_WIFI:
-			numNotif = estado->estadoWifi;
+			numNotif = notifications->dwNotifications[SN_WIFISTATEPOWERON] & SN_WIFISTATEPOWERON_BITMASK;
 			break;
 		case NOTIF_BLUETOOTH:
-			numNotif = estado->estadoBluetooth;
+			numNotif = notifications->dwNotifications[SN_BLUETOOTHSTATEPOWERON] & SN_BLUETOOTHSTATEPOWERON_BITMASK;
 			break;
 		case NOTIF_GPRS:
-			numNotif = estado->estadoGPRS;
+			numNotif = notifications->dwNotifications[SN_CELLSYSTEMCONNECTED] & SN_CELLSYSTEMCONNECTED_GPRS_BITMASK;
 			break;
 		case NOTIF_CLOCK_ALARM:
 		case NOTIF_ALARM:
-			numNotif = estado->estadoAlarm;
+			numNotif = notifications->dwNotifications[SN_CLOCKALARMFLAGS0] + notifications->dwNotifications[SN_CLOCKALARMFLAGS1] + notifications->dwNotifications[SN_CLOCKALARMFLAGS2] > 0;
 			break;
 		default:
 			numNotif = 0;
@@ -2317,9 +2266,9 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_OTHER_EMAIL_TXT);
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_SYNC_EMAIL_TXT);
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_TOTAL_EMAIL_TXT);
-			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_CITAS_TXT);
+			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_APPOINTS_TXT);
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_CALENDAR_TXT);
-			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_TAREAS_TXT);
+			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_TASKS_TXT);
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_SMS_MMS_TXT);
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_WIFI_TXT);
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_BLUETOOTH_TXT);
@@ -2374,11 +2323,11 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 5, 0);
 				} else if (icono->tipo == NOTIF_TOTAL_EMAIL) {
 					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 6, 0);
-				} else if (icono->tipo == NOTIF_CITAS) {
+				} else if (icono->tipo == NOTIF_APPOINTS) {
 					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 7, 0);
 				} else if (icono->tipo == NOTIF_CALENDAR) {
 					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 8, 0);
-				} else if (icono->tipo == NOTIF_TAREAS) {
+				} else if (icono->tipo == NOTIF_TASKS) {
 					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 9, 0);
 				} else if (icono->tipo == NOTIF_SMS_MMS) {
 					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 10, 0);
@@ -2509,12 +2458,12 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 				nType = NOTIF_SYNC_EMAIL;
 			} else if (lstrcmpi(strType, NOTIF_TOTAL_EMAIL_TXT) == 0) {
 				nType = NOTIF_TOTAL_EMAIL;
-			} else if (lstrcmpi(strType, NOTIF_CITAS_TXT) == 0) {
-				nType = NOTIF_CITAS;
+			} else if (lstrcmpi(strType, NOTIF_APPOINTS_TXT) == 0) {
+				nType = NOTIF_APPOINTS;
 			} else if (lstrcmpi(strType, NOTIF_CALENDAR_TXT) == 0) {
 				nType = NOTIF_CALENDAR;
-			} else if (lstrcmpi(strType, NOTIF_TAREAS_TXT) == 0) {
-				nType = NOTIF_TAREAS;
+			} else if (lstrcmpi(strType, NOTIF_TASKS_TXT) == 0) {
+				nType = NOTIF_TASKS;
 			} else if (lstrcmpi(strType, NOTIF_SMS_MMS_TXT) == 0) {
 				nType = NOTIF_SMS_MMS;
 			} else if (lstrcmpi(strType, NOTIF_WIFI_TXT) == 0) {
@@ -2818,7 +2767,7 @@ BOOL inicializaApp(HWND hwnd) {
 
 	configuracion = new CConfiguracion();
 	estado = new CEstado();
-	estado->actualizaNotificaciones();
+	notifications = new CNotifications(hwnd);
 
 	// Debe ser inicializado en modo normal
 	estado->estadoCuadro = 0;
@@ -3184,6 +3133,10 @@ void doDestroy(HWND hwnd) {
 		delete estado;
 		estado = NULL;
 	}
+	if (notifications != NULL) {
+		delete notifications;
+		notifications = NULL;
+	}
 	if (configuracion != NULL) {
 		TCHAR szFontsPath[MAX_PATH];
 		configuracion->getAbsolutePath(szFontsPath, CountOf(szFontsPath), L"fonts");
@@ -3324,6 +3277,33 @@ void ResetPressed()
 	}
 }
 
+
+BOOL InvalidateListScreenIfNotificationsChanged(CListaPantalla *listaPantallas)
+{
+	BOOL changed = FALSE;
+
+	if (listaPantallas == NULL) {
+		return FALSE;
+	}
+
+	for (UINT i = 0; i < listaPantallas->numPantallas; i++) {
+		InvalidateScreenIfNotificationsChanged(listaPantallas->listaPantalla[i]);
+		if (listaPantallas->listaPantalla[i]->debeActualizar) {
+			changed = TRUE;
+		}
+	}
+
+	InvalidateScreenIfNotificationsChanged(listaPantallas->barraInferior);
+	if (listaPantallas->barraInferior->debeActualizar) {
+		changed = TRUE;
+	}
+	InvalidateScreenIfNotificationsChanged(listaPantallas->topBar);
+	if (listaPantallas->topBar->debeActualizar) {
+		changed = TRUE;
+	}
+	return changed;
+}
+
 // "Invalidate" screen (mark that has to be updated) if it contains special icons that their values have changed.
 void InvalidateScreenIfNotificationsChanged(CPantalla *pantalla)
 {
@@ -3337,49 +3317,110 @@ void InvalidateScreenIfNotificationsChanged(CPantalla *pantalla)
 			case NOTIF_NORMAL:
 				break;
 			case NOTIF_LLAMADAS:
+				if (notifications->dwNotificationsChanged[SN_PHONEMISSEDCALLS]) {
+					pantalla->debeActualizar = TRUE;
+					return;
+				}
+				break;
 			case NOTIF_SMS:
+				if (notifications->dwNotificationsChanged[SN_MESSAGINGSMSUNREAD]) {
+					pantalla->debeActualizar = TRUE;
+					return;
+				}
+				break;
 			case NOTIF_MMS:
+				if (notifications->dwNotificationsChanged[SN_MESSAGINGMMSUNREAD]) {
+					pantalla->debeActualizar = TRUE;
+					return;
+				}
+				break;
 			case NOTIF_SMS_MMS:
+				if (notifications->dwNotificationsChanged[SN_MESSAGINGSMSUNREAD] || notifications->dwNotificationsChanged[SN_MESSAGINGMMSUNREAD]) {
+					pantalla->debeActualizar = TRUE;
+					return;
+				}
+				break;
 			case NOTIF_OTHER_EMAIL:
+				if (notifications->dwNotificationsChanged[SN_MESSAGINGOTHEREMAILUNREAD]) {
+					pantalla->debeActualizar = TRUE;
+					return;
+				}
+				break;
 			case NOTIF_SYNC_EMAIL:
+				if (notifications->dwNotificationsChanged[SN_MESSAGINGACTIVESYNCEMAILUNREAD]) {
+					pantalla->debeActualizar = TRUE;
+					return;
+				}
+				break;
 			case NOTIF_TOTAL_EMAIL:
-			case NOTIF_CITAS:
-			case NOTIF_TAREAS:
-				if (estado->changedBubble) {
+				if (notifications->dwNotificationsChanged[SN_MESSAGINGOTHEREMAILUNREAD] || notifications->dwNotificationsChanged[SN_MESSAGINGACTIVESYNCEMAILUNREAD]) {
+					pantalla->debeActualizar = TRUE;
+					return;
+				}
+				break;
+			case NOTIF_APPOINTS:
+				if (notifications->dwNotificationsChanged[SN_APPOINTMENTSLISTCOUINT]) {
+					pantalla->debeActualizar = TRUE;
+					return;
+				}
+				break;
+			case NOTIF_TASKS:
+				if (notifications->dwNotificationsChanged[SN_TASKSACTIVE]) {
 					pantalla->debeActualizar = TRUE;
 					return;
 				}
 				break;
 			case NOTIF_WIFI:
+				if (notifications->dwNotificationsChanged[SN_WIFISTATEPOWERON]) {
+					pantalla->debeActualizar = TRUE;
+					return;
+				}
+				break;
 			case NOTIF_BLUETOOTH:
+				if (notifications->dwNotificationsChanged[SN_BLUETOOTHSTATEPOWERON]) {
+					pantalla->debeActualizar = TRUE;
+					return;
+				}
+				break;
 			case NOTIF_GPRS:
+				if (notifications->dwNotificationsChanged[SN_CELLSYSTEMCONNECTED]) {
+					pantalla->debeActualizar = TRUE;
+					return;
+				}
+				break;
 			case NOTIF_ALARM:
-				if (estado->changedState) {
+				if (notifications->dwNotificationsChanged[SN_CLOCKALARMFLAGS0] || notifications->dwNotificationsChanged[SN_CLOCKALARMFLAGS1] || notifications->dwNotificationsChanged[SN_CLOCKALARMFLAGS2]) {
 					pantalla->debeActualizar = TRUE;
 					return;
 				}
 				break;
 			case NOTIF_CALENDAR:
+				if (notifications->ftNotificationsChanged[SN_DATE]) {
+					pantalla->debeActualizar = TRUE;
+					return;
+				}
+				break;
 			case NOTIF_CLOCK:
-				if (estado->changedTime) {
+				if (notifications->ftNotificationsChanged[SN_TIME]) {
 					pantalla->debeActualizar = TRUE;
 					return;
 				}
 				break;
 			case NOTIF_CLOCK_ALARM:
-				if (estado->changedState || estado->changedTime) {
+				if (notifications->dwNotificationsChanged[SN_CLOCKALARMFLAGS0] || notifications->dwNotificationsChanged[SN_CLOCKALARMFLAGS1] || notifications->dwNotificationsChanged[SN_CLOCKALARMFLAGS2]
+				|| notifications->ftNotificationsChanged[SN_TIME]) {
 					pantalla->debeActualizar = TRUE;
 					return;
 				}
 				break;
 			case NOTIF_BATTERY:
-				if (estado->changedBattery) {
+				if (notifications->dwNotificationsChanged[SN_POWERBATTERYSTATE]) {
 					pantalla->debeActualizar = TRUE;
 					return;
 				}
 				break;
 			case NOTIF_VOLUME:
-				if (estado->changedVolume) {
+				if (notifications->dwNotificationsChanged[SN_VOLUME]) {
 					pantalla->debeActualizar = TRUE;
 					return;
 				}
@@ -3387,19 +3428,130 @@ void InvalidateScreenIfNotificationsChanged(CPantalla *pantalla)
 			case NOTIF_MEMORYLOAD:
 			case NOTIF_MEMORYFREE:
 			case NOTIF_MEMORYUSED:
-				if (estado->changedMemory) {
+				if (notifications->memory_changed) {
 					pantalla->debeActualizar = TRUE;
 					return;
 				}
 				break;
 			case NOTIF_SIGNAL:
+				if (notifications->dwNotificationsChanged[SN_PHONESIGNALSTRENGTH]) {
+					pantalla->debeActualizar = TRUE;
+					return;
+				}
+				break;
 			case NOTIF_OPERATOR:
+				if (notifications->szNotificationsChanged[SN_PHONEOPERATORNAME]) {
+					pantalla->debeActualizar = TRUE;
+					return;
+				}
+				break;
 			case NOTIF_SIGNAL_OPER:
-				if (estado->changedSignal) {
+				if (notifications->dwNotificationsChanged[SN_PHONESIGNALSTRENGTH] || notifications->szNotificationsChanged[SN_PHONEOPERATORNAME]) {
 					pantalla->debeActualizar = TRUE;
 					return;
 				}
 				break;
 		}
 	}
+}
+
+// Process notifications. Return true if screens needs to be redrawn.
+BOOL ProcessNotifications()
+{
+	BOOL shouldInvalidateRect = FALSE;
+
+	if (notifications->dwNotificationsChanged[SN_RELOADICON] && notifications->dwNotifications[SN_RELOADICON]) {
+		CReloadIcon *reloadIcon = new CReloadIcon();
+		CPantalla *pantalla = NULL;
+		CIcono *icono = NULL;
+		for (int nIcon = 0; reloadIcon->LoadRegistryIcon(nIcon); nIcon++) {
+			if (reloadIcon->nScreen >= 0 && reloadIcon->nScreen < listaPantallas->numPantallas) {
+				pantalla = listaPantallas->listaPantalla[reloadIcon->nScreen];
+			} else if (reloadIcon->nScreen == -1) {
+				pantalla = listaPantallas->barraInferior;
+			} else if (reloadIcon->nScreen == -2) {
+				pantalla = listaPantallas->topBar;
+			} else {
+				continue;
+			}
+			if (pantalla != NULL && reloadIcon->nIcon >= 0 && reloadIcon->nIcon < pantalla->numIconos) {
+				icono = pantalla->listaIconos[reloadIcon->nIcon];
+			} else {
+				continue;
+			}
+			if (icono != NULL) {
+				if (_tcslen(reloadIcon->strName) > 0) {
+					StringCchCopy(icono->nombre, CountOf(icono->nombre), reloadIcon->strName);
+				}
+				if (_tcslen(reloadIcon->strImage) > 0) {
+					StringCchCopy(icono->rutaImagen, CountOf(icono->rutaImagen), reloadIcon->strImage);
+				}
+				if (_tcslen(reloadIcon->strExec) > 0) {
+					StringCchCopy(icono->nombre, CountOf(icono->ejecutable), reloadIcon->strExec);
+					StringCchCopy(icono->nombre, CountOf(icono->parametros), reloadIcon->strParameters);
+				}
+				SCREEN_TYPE st = MAINSCREEN;
+				if (pantalla == listaPantallas->barraInferior) {
+					st = BOTTOMBAR;
+				} else if (pantalla == listaPantallas->topBar) {
+					st = TOPBAR;
+				}
+				configuracion->cargaImagenIcono(&hDCMem, icono, st);
+				pantalla->debeActualizar = TRUE;
+				shouldInvalidateRect = TRUE;
+			}
+		}
+
+		if (notifications->dwNotifications[SN_RELOADICON] == 2) {
+			configuracion->guardaXMLIconos(listaPantallas);
+		}
+
+		reloadIcon->DeleteRegistryIcons();
+		delete reloadIcon;
+
+		DWORD value = 0;
+		SaveDwordSetting(HKEY_LOCAL_MACHINE, TEXT("Software\\iPhoneToday"),
+			&value, TEXT("reloadIcon"));
+
+		notifications->dwNotifications[SN_RELOADICON] = 0;
+	}
+
+	if (notifications->dwNotificationsChanged[SN_RELOADICONS] && notifications->dwNotifications[SN_RELOADICONS]) {
+		// Cargamos la configuracion de iconos
+		configuracion->cargaXMLIconos2(listaPantallas);
+		configuracion->cargaIconsImages(&hDCMem, listaPantallas);
+
+		// Marcamos aquellas pantallas que haya que actualizar
+		CPantalla *pantalla;
+		for (UINT i = 0; i < listaPantallas->numPantallas; i++) {
+			pantalla = listaPantallas->listaPantalla[i];
+			if (pantalla != NULL) {
+				pantalla->debeActualizar = TRUE;
+			}
+		}
+
+		pantalla = listaPantallas->barraInferior;
+		if (pantalla != NULL) {
+			pantalla->debeActualizar = TRUE;
+		}
+
+		pantalla = listaPantallas->topBar;
+		if (pantalla != NULL) {
+			pantalla->debeActualizar = TRUE;
+		}
+
+		// Comprobamos si hay que actualizar los iconos
+		DWORD value = 0;
+		SaveDwordSetting(HKEY_LOCAL_MACHINE, TEXT("Software\\iPhoneToday"),
+			&value, TEXT("reloadIcons"));
+
+		notifications->dwNotifications[SN_RELOADICONS] = 0;
+		shouldInvalidateRect = TRUE;
+	}
+
+	if (InvalidateListScreenIfNotificationsChanged(listaPantallas)) {
+		shouldInvalidateRect = TRUE;
+	}
+
+	return shouldInvalidateRect;
 }

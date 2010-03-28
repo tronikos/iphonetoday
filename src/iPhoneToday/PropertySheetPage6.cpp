@@ -79,7 +79,7 @@ BOOL IsValidConfiguration6(HWND hDlg)
 	heightP = GetDlgItemInt(hDlg, IDC_EDIT_HEIGHTP, NULL, TRUE);
 	heightL = GetDlgItemInt(hDlg, IDC_EDIT_HEIGHTL, NULL, TRUE);
 
-	if (notifyTimer < 0 || notifyTimer > 10000) {
+	if (notifyTimer < 0) {
 		MessageBox(hDlg, TEXT("Notify timer value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
