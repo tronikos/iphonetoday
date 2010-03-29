@@ -140,7 +140,7 @@ typedef enum
 #define NOTIF_MEMORYLOAD	16
 #define NOTIF_MEMORYFREE	17
 #define NOTIF_MEMORYUSED	18
-#define NOTIF_GPRS			19
+#define NOTIF_CELLNETWORK	19
 #define NOTIF_SIGNAL		20
 #define NOTIF_OPERATOR		21
 #define NOTIF_SIGNAL_OPER	22
@@ -167,7 +167,7 @@ typedef enum
 #define NOTIF_MEMORYLOAD_TXT	TEXT("Memory Load")
 #define NOTIF_MEMORYFREE_TXT	TEXT("Memory Free")
 #define NOTIF_MEMORYUSED_TXT	TEXT("Memory Used")
-#define NOTIF_GPRS_TXT			TEXT("GPRS State")
+#define NOTIF_CELLNETWORK_TXT	TEXT("Cell Network State")
 #define NOTIF_SIGNAL_TXT		TEXT("Signal Strength")
 #define NOTIF_OPERATOR_TXT		TEXT("Operator Name")
 #define NOTIF_SIGNAL_OPER_TXT	TEXT("Signal Strength & Operator Name")
