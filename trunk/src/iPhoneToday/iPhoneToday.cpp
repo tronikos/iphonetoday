@@ -1340,7 +1340,7 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 				DrawSpecialIconText(*hDC, str, icono, width, &configuracion->dom);
 				break;
 			case NOTIF_CLOCK_ALARM:
-				numNotif = notifications->dwNotifications[SN_CLOCKALARMFLAGS0] + notifications->dwNotifications[SN_CLOCKALARMFLAGS1] + notifications->dwNotifications[SN_CLOCKALARMFLAGS2] > 0;
+				numNotif = (notifications->dwNotifications[SN_CLOCKALARMFLAGS0] + notifications->dwNotifications[SN_CLOCKALARMFLAGS1] + notifications->dwNotifications[SN_CLOCKALARMFLAGS2]) > 0;
 			case NOTIF_CLOCK:
 				if (configuracion->clock12Format) {
 					StringCchPrintf(str, CountOf(str), TEXT("%d:%02d"), (notifications->st.wHour == 0 ? 12 : (notifications->st.wHour > 12 ? (notifications->st.wHour - 12) : notifications->st.wHour)), notifications->st.wMinute);
@@ -1411,11 +1411,11 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 			case NOTIF_BLUETOOTH:
 				numNotif = notifications->dwNotifications[SN_BLUETOOTHSTATEPOWERON] & SN_BLUETOOTHSTATEPOWERON_BITMASK;
 				break;
-			case NOTIF_GPRS:
-				numNotif = notifications->dwNotifications[SN_CELLSYSTEMCONNECTED] & SN_CELLSYSTEMCONNECTED_GPRS_BITMASK;
+			case NOTIF_CELLNETWORK:
+				numNotif = notifications->dwNotifications[SN_CELLSYSTEMCONNECTED] > 0;
 				break;
 			case NOTIF_ALARM:
-				numNotif = notifications->dwNotifications[SN_CLOCKALARMFLAGS0] + notifications->dwNotifications[SN_CLOCKALARMFLAGS1] + notifications->dwNotifications[SN_CLOCKALARMFLAGS2] > 0;
+				numNotif = (notifications->dwNotifications[SN_CLOCKALARMFLAGS0] + notifications->dwNotifications[SN_CLOCKALARMFLAGS1] + notifications->dwNotifications[SN_CLOCKALARMFLAGS2]) > 0;
 				break;
 			default:
 				numNotif = 0;
@@ -1466,7 +1466,7 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 					posTexto.bottom = int(posTexto.top + width * 0.80);
 
 					break;
-				case NOTIF_GPRS:
+				case NOTIF_CELLNETWORK:
 				case NOTIF_WIFI:
 					StringCchCopy(notif, CountOf(notif), TEXT("On"));
 
@@ -1524,7 +1524,7 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 					}
 					break;
 
-				case NOTIF_GPRS:
+				case NOTIF_CELLNETWORK:
 				case NOTIF_WIFI:
 				case NOTIF_BLUETOOTH:
 					// Pintamos la notificacion
@@ -2196,12 +2196,12 @@ int hayNotificacion(int tipo) {
 		case NOTIF_BLUETOOTH:
 			numNotif = notifications->dwNotifications[SN_BLUETOOTHSTATEPOWERON] & SN_BLUETOOTHSTATEPOWERON_BITMASK;
 			break;
-		case NOTIF_GPRS:
-			numNotif = notifications->dwNotifications[SN_CELLSYSTEMCONNECTED] & SN_CELLSYSTEMCONNECTED_GPRS_BITMASK;
+		case NOTIF_CELLNETWORK:
+			numNotif = notifications->dwNotifications[SN_CELLSYSTEMCONNECTED] > 0;
 			break;
 		case NOTIF_CLOCK_ALARM:
 		case NOTIF_ALARM:
-			numNotif = notifications->dwNotifications[SN_CLOCKALARMFLAGS0] + notifications->dwNotifications[SN_CLOCKALARMFLAGS1] + notifications->dwNotifications[SN_CLOCKALARMFLAGS2] > 0;
+			numNotif = (notifications->dwNotifications[SN_CLOCKALARMFLAGS0] + notifications->dwNotifications[SN_CLOCKALARMFLAGS1] + notifications->dwNotifications[SN_CLOCKALARMFLAGS2]) > 0;
 			break;
 		default:
 			numNotif = 0;
@@ -2284,7 +2284,7 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_MEMORYLOAD_TXT);
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_MEMORYFREE_TXT);
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_MEMORYUSED_TXT);
-			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_GPRS_TXT);
+			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_CELLNETWORK_TXT);
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_SIGNAL_TXT);
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_OPERATOR_TXT);
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_SIGNAL_OPER_TXT);
@@ -2356,7 +2356,7 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 19, 0);
 				} else if (icono->tipo == NOTIF_MEMORYUSED) {
 					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 20, 0);
-				} else if (icono->tipo == NOTIF_GPRS) {
+				} else if (icono->tipo == NOTIF_CELLNETWORK) {
 					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 21, 0);
 				} else if (icono->tipo == NOTIF_SIGNAL) {
 					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 22, 0);
@@ -2493,8 +2493,8 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 				nType = NOTIF_MEMORYFREE;
 			} else if (lstrcmpi(strType, NOTIF_MEMORYUSED_TXT) == 0) {
 				nType = NOTIF_MEMORYUSED;
-			} else if (lstrcmpi(strType, NOTIF_GPRS_TXT) == 0) {
-				nType = NOTIF_GPRS;
+			} else if (lstrcmpi(strType, NOTIF_CELLNETWORK_TXT) == 0) {
+				nType = NOTIF_CELLNETWORK;
 			} else if (lstrcmpi(strType, NOTIF_SIGNAL_TXT) == 0) {
 				nType = NOTIF_SIGNAL;
 			} else if (lstrcmpi(strType, NOTIF_OPERATOR_TXT) == 0) {
@@ -3391,7 +3391,7 @@ void InvalidateScreenIfNotificationsChanged(CPantalla *pantalla)
 					return;
 				}
 				break;
-			case NOTIF_GPRS:
+			case NOTIF_CELLNETWORK:
 				if (notifications->dwNotificationsChanged[SN_CELLSYSTEMCONNECTED]) {
 					pantalla->debeActualizar = TRUE;
 					return;
