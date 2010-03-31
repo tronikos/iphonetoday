@@ -1313,6 +1313,9 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 			case NOTIF_LLAMADAS:
 				numNotif = notifications->dwNotifications[SN_PHONEMISSEDCALLS];
 				break;
+			case NOTIF_VMAIL:
+				numNotif = notifications->dwNotifications[SN_MESSAGINGVOICEMAILTOTALUNREAD];
+				break;
 			case NOTIF_SMS:
 				numNotif = notifications->dwNotifications[SN_MESSAGINGSMSUNREAD];
 				break;
@@ -1410,6 +1413,9 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 			case NOTIF_BLUETOOTH:
 				numNotif = notifications->dwNotifications[SN_BLUETOOTHSTATEPOWERON] & SN_BLUETOOTHSTATEPOWERON_BITMASK;
 				break;
+			case NOTIF_IRDA:
+				numNotif = notifications->dwNotifications[SN_IRDA] > 0;
+				break;
 			case NOTIF_CELLNETWORK:
 				numNotif = notifications->dwNotifications[SN_CELLSYSTEMCONNECTED] > 0;
 				break;
@@ -1424,6 +1430,7 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 
 			switch(icono->tipo) {
 				case NOTIF_LLAMADAS:
+				case NOTIF_VMAIL:
 				case NOTIF_SMS:
 				case NOTIF_MMS:
 				case NOTIF_OTHER_EMAIL:
@@ -1465,27 +1472,13 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 					posTexto.bottom = int(posTexto.top + width * 0.80);
 
 					break;
-				case NOTIF_CELLNETWORK:
 				case NOTIF_WIFI:
-					StringCchCopy(notif, CountOf(notif), TEXT("On"));
-
-					/* Centrado grande */
-					posTexto.left = int(icono->x);
-					posTexto.top = int(icono->y + (width * 0.50));
-					posTexto.right = int(icono->x + (width));
-					posTexto.bottom = int(icono->y + (width));
-
-					break;
 				case NOTIF_BLUETOOTH:
+				case NOTIF_IRDA:
+				case NOTIF_CELLNETWORK:
 					StringCchCopy(notif, CountOf(notif), TEXT("On"));
 
 					/* Centrado grande */
-					/*
-					posTexto.left = int(icono->x + (width * 0.15));
-					posTexto.top = int(icono->y + (width * 0.60));
-					posTexto.right = int(icono->x + (width * 0.85));
-					posTexto.bottom = int(icono->y + (width * 0.95));
-					*/
 					posTexto.left = int(icono->x);
 					posTexto.top = int(icono->y + (width * 0.50));
 					posTexto.right = int(icono->x + (width));
@@ -1496,6 +1489,7 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 
 			switch(icono->tipo) {
 				case NOTIF_LLAMADAS:
+				case NOTIF_VMAIL:
 				case NOTIF_SMS:
 				case NOTIF_MMS:
 				case NOTIF_OTHER_EMAIL:
@@ -1523,9 +1517,10 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 					}
 					break;
 
-				case NOTIF_CELLNETWORK:
 				case NOTIF_WIFI:
 				case NOTIF_BLUETOOTH:
+				case NOTIF_IRDA:
+				case NOTIF_CELLNETWORK:
 					// Pintamos la notificacion
 					if (configuracion->bubbleState->hDC) {
 						drawNotification(*hDC, &posTexto, configuracion->bubbleState, notif);
@@ -2165,6 +2160,9 @@ int hayNotificacion(int tipo) {
 		case NOTIF_LLAMADAS:
 			numNotif = notifications->dwNotifications[SN_PHONEMISSEDCALLS];
 			break;
+		case NOTIF_VMAIL:
+			numNotif = notifications->dwNotifications[SN_MESSAGINGVOICEMAILTOTALUNREAD];
+			break;
 		case NOTIF_SMS:
 			numNotif = notifications->dwNotifications[SN_MESSAGINGSMSUNREAD];
 			break;
@@ -2194,6 +2192,9 @@ int hayNotificacion(int tipo) {
 			break;
 		case NOTIF_BLUETOOTH:
 			numNotif = notifications->dwNotifications[SN_BLUETOOTHSTATEPOWERON] & SN_BLUETOOTHSTATEPOWERON_BITMASK;
+			break;
+		case NOTIF_IRDA:
+			numNotif = notifications->dwNotifications[SN_IRDA] > 0;
 			break;
 		case NOTIF_CELLNETWORK:
 			numNotif = notifications->dwNotifications[SN_CELLSYSTEMCONNECTED] > 0;
@@ -2288,6 +2289,8 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_OPERATOR_TXT);
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_SIGNAL_OPER_TXT);
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_PROFILE_TXT);
+			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_VMAIL_TXT);
+			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_IRDA_TXT);
 
 			// Configuramos los checks
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_LAUNCHANIMATION), BM_SETCHECK, BST_CHECKED, 0);
@@ -2365,6 +2368,10 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 24, 0);
 				} else if (icono->tipo == NOTIF_PROFILE) {
 					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 25, 0);
+				} else if (icono->tipo == NOTIF_VMAIL) {
+					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 26, 0);
+				} else if (icono->tipo == NOTIF_IRDA) {
+					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 27, 0);
 				} else {
 					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 0, 0);
 				}
@@ -2502,6 +2509,10 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 				nType = NOTIF_SIGNAL_OPER;
 			} else if (lstrcmpi(strType, NOTIF_PROFILE_TXT) == 0) {
 				nType = NOTIF_PROFILE;
+			} else if (lstrcmpi(strType, NOTIF_VMAIL_TXT) == 0) {
+				nType = NOTIF_VMAIL;
+			} else if (lstrcmpi(strType, NOTIF_IRDA_TXT) == 0) {
+				nType = NOTIF_IRDA;
 			} else {
 				MessageBox(hDlg, TEXT("Type not valid!"), TEXT("Error"), MB_OK);
 				return FALSE;
@@ -3307,6 +3318,12 @@ void InvalidateScreenIfNotificationsChanged(CPantalla *pantalla)
 					return;
 				}
 				break;
+			case NOTIF_VMAIL:
+				if (notifications->szNotificationsChanged[SN_MESSAGINGVOICEMAILTOTALUNREAD]) {
+					pantalla->debeActualizar = TRUE;
+					return;
+				}
+				break;
 			case NOTIF_SMS:
 				if (notifications->dwNotificationsChanged[SN_MESSAGINGSMSUNREAD]) {
 					pantalla->debeActualizar = TRUE;
@@ -3363,6 +3380,12 @@ void InvalidateScreenIfNotificationsChanged(CPantalla *pantalla)
 				break;
 			case NOTIF_BLUETOOTH:
 				if (notifications->dwNotificationsChanged[SN_BLUETOOTHSTATEPOWERON]) {
+					pantalla->debeActualizar = TRUE;
+					return;
+				}
+				break;
+			case NOTIF_IRDA:
+				if (notifications->szNotificationsChanged[SN_IRDA]) {
 					pantalla->debeActualizar = TRUE;
 					return;
 				}
