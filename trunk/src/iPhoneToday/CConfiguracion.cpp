@@ -552,6 +552,7 @@ void CConfiguracion::defaultValues()
 	this->pressed_sound[0] = 0;
 
 	this->notifyTimer = 2000;
+	this->updateWhenInactive = 0;
 	this->ignoreRotation = 0;
 	this->disableRightClick = 0;
 	this->disableRightClickDots = 0;
@@ -753,6 +754,7 @@ BOOL CConfiguracion::loadXMLConfig()
 			XMLUtils::GetAttr(pElem, "factor",      &this->fondoFactor);
 			XMLUtils::GetAttr(pElem, "wallpaper",   this->strFondoPantalla, CountOf(this->strFondoPantalla));
 		} else if(_stricmp(nameNode, "NotifyTimer") == 0) {
+			XMLUtils::GetAttr(pElem, "UpdateWhenInactive", &this->updateWhenInactive);
 			XMLUtils::GetTextElem(pElem, &this->notifyTimer);
 		} else if(_stricmp(nameNode, "IgnoreRotation") == 0) {
 			XMLUtils::GetTextElem(pElem, &this->ignoreRotation);
@@ -1015,6 +1017,7 @@ BOOL CConfiguracion::saveXMLConfig()
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("NotifyTimer");
+	XMLUtils::SetAttr(pElem, "UpdateWhenInactive", this->updateWhenInactive);
 	XMLUtils::SetTextElem(pElem, this->notifyTimer);
 	root->LinkEndChild(pElem);
 
