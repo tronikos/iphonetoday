@@ -1244,7 +1244,7 @@ void DrawSpecialIconText(HDC hDC, TCHAR *str, CIcono *icon, int iconWidth, Speci
 	lf.lfWeight = sis->weight;
 	lf.lfWidth = LONG(sis->width / 100.0 * iconWidth);
 	lf.lfHeight = LONG(sis->height / 100.0 * iconWidth);
-	lf.lfQuality = configuracion->textQuality;
+	lf.lfQuality = configuracion->textQualityInIcons;
 	if (wcslen(sis->facename) > 0) {
 		wcsncpy(lf.lfFaceName, sis->facename, CountOf(lf.lfFaceName));
 	}
