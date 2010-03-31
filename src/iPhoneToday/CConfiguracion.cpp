@@ -124,7 +124,7 @@ void CConfiguracion::calculaConfiguracion(int maxIconos, int numIconsInBottomBar
 	altoPantallaMax = max(((maxIconos + mainScreenConfig->iconsPerRow - 1) / mainScreenConfig->iconsPerRow) * mainScreenConfig->distanceIconsV + mainScreenConfig->posReference.y * 2, altoPantalla);
 }
 
-BOOL CConfiguracion::cargaXMLIconos(CListaPantalla *listaPantallas)
+BOOL CConfiguracion::loadXMLIcons(CListaPantalla *listaPantallas)
 {
 	if (listaPantallas == NULL) {
 		return FALSE;
@@ -208,12 +208,12 @@ BOOL CConfiguracion::cargaXMLIconos(CListaPantalla *listaPantallas)
 	return TRUE;
 }
 
-BOOL CConfiguracion::cargaXMLIconos2(CListaPantalla *listaPantallas)
+BOOL CConfiguracion::loadXMLIcons2(CListaPantalla *listaPantallas)
 {
 	// long duration = -(long)GetTickCount();
-	BOOL result = cargaXMLIconos(listaPantallas);
+	BOOL result = loadXMLIcons(listaPantallas);
 	// duration += GetTickCount();
-	// NKDbgPrintfW(L" *** %d \t to cargaXMLIconos.\n", duration);
+	// NKDbgPrintfW(L" *** %d \t to loadXMLIcons.\n", duration);
 
 	if (result == false) {
 #if EXEC_MODE
@@ -403,9 +403,14 @@ void CConfiguracion::defaultValues()
 	this->bottomBarConfig->defaultValues();
 	this->topBarConfig->defaultValues();
 
-	this->circlesDiameter = 15;
-	this->circlesDistance = 7;
-	this->circlesOffset = 7;
+	this->mainScreenConfig->cs.offset.top = 5;
+	this->mainScreenConfig->cs.minHorizontalSpace = 5;
+	this->bottomBarConfig->cs.offset.top = 5;
+	//this->bottomBarConfig->cs.minHorizontalSpace = 5;
+
+	this->circlesDiameter = 7;
+	this->circlesDistance = 3;
+	this->circlesOffset = 3;
 
 	this->headerTextFacename[0] = 0;
 	this->headerTextSize = 0;
@@ -424,7 +429,7 @@ void CConfiguracion::defaultValues()
 	this->fondoFactor = 1;
 	this->strFondoPantalla[0] = 0;
 
-	this->umbralMovimiento = 15;
+	this->moveThreshold = 7;
 	this->velMaxima = 140;
 	this->velMinima = 20;
 	this->refreshTime = 20;
@@ -535,10 +540,6 @@ void CConfiguracion::defaultValues()
 	this->sign.offset.right = 0;
 	this->sign.offset.bottom = 0;
 
-	StringCchCopy(this->bubble_notif, CountOf(this->bubble_notif), TEXT("bubble_notif.png"));
-	StringCchCopy(this->bubble_state, CountOf(this->bubble_notif), TEXT("bubble_state.png"));
-	StringCchCopy(this->bubble_alarm, CountOf(this->bubble_notif), TEXT("bubble_alarm.png"));
-
 	this->closeOnLaunchIcon = 0;
 	this->vibrateOnLaunchIcon = 0;
 	this->allowAnimationOnLaunchIcon = 1;
@@ -572,18 +573,67 @@ void CConfiguracion::defaultValues()
 	this->transparentBMP = 1;
 	this->useMask = 0;
 
-	this->alreadyConfigured = 0;
+	this->lastConfiguredAtWidth = 240;
+	this->lastConfiguredAtHeight = 320;
 
 	if (isPND()) {
 		this->disableRightClickDots = 1;
 		this->fullscreen = 1;
+		this->bubble_notif[0] = 0;
+		this->bubble_state[0] = 0;
+		this->bubble_alarm[0] = 0;
+	} else {
+		StringCchCopy(this->bubble_notif, CountOf(this->bubble_notif), TEXT("bubble_notif.png"));
+		StringCchCopy(this->bubble_state, CountOf(this->bubble_notif), TEXT("bubble_state.png"));
+		StringCchCopy(this->bubble_alarm, CountOf(this->bubble_notif), TEXT("bubble_alarm.png"));
 	}
 
 	if (isPhone()) {
 		this->vibrateOnLaunchIcon = 40;
 	}
 
-	this->autoConfigure();
+	this->AutoScale();
+}
+
+BOOL CConfiguracion::AutoScale()
+{
+	int width = GetSystemMetrics(SM_CXSCREEN);
+	int height = GetSystemMetrics(SM_CYSCREEN);
+	if (width > height) {
+		int tmp = height;
+		height = width;
+		width = tmp;
+	}
+
+	if (width == this->lastConfiguredAtWidth) {
+		return FALSE;
+	}
+
+	if (this->lastConfiguredAtWidth == 0) {
+		this->lastConfiguredAtWidth = width;
+		this->lastConfiguredAtHeight = height;
+		return FALSE;
+	}
+
+	double scale = 1.0 * width / this->lastConfiguredAtWidth;
+
+	this->mainScreenConfig->Scale(scale);
+	this->bottomBarConfig->Scale(scale);
+	this->topBarConfig->Scale(scale);
+
+	this->circlesDiameter = UINT(scale * this->circlesDiameter);
+	this->circlesDistance = UINT(scale * this->circlesDistance);
+	this->circlesOffset = INT(scale * this->circlesOffset);
+
+	this->headerTextSize = UINT(scale * this->headerTextSize);
+	this->headerOffset = UINT(scale * this->headerOffset);
+
+	this->moveThreshold = UINT(scale * this->moveThreshold);
+
+	this->lastConfiguredAtWidth = width;
+	this->lastConfiguredAtHeight = height;
+
+	return TRUE;
 }
 
 void SpecialIconSettingsLoad(TiXmlElement *pElem, SpecialIconSettings *sis)
@@ -612,7 +662,7 @@ void SpecialIconSettingsSave(TiXmlElement *pElem, SpecialIconSettings *sis)
 	XMLUtils::SetAttr(pElem, "bottom",   sis->offset.bottom);
 }
 
-BOOL CConfiguracion::cargaXMLConfig()
+BOOL CConfiguracion::loadXMLConfig()
 {
 	TiXmlDocument doc;
 	FILE *f = _wfopen(pathSettingsXML, L"rb");
@@ -642,7 +692,7 @@ BOOL CConfiguracion::cargaXMLConfig()
 			XMLUtils::GetAttr(pElem, "shadow",    &this->headerTextShadow);
 			XMLUtils::GetAttr(pElem, "roundrect", &this->headerTextRoundRect);
 		} else if(_stricmp(nameNode, "Movement") == 0) {
-			XMLUtils::GetAttr(pElem, "MoveThreshold",  &this->umbralMovimiento);
+			XMLUtils::GetAttr(pElem, "MoveThreshold",  &this->moveThreshold);
 			XMLUtils::GetAttr(pElem, "MaxVelocity",    &this->velMaxima);
 			XMLUtils::GetAttr(pElem, "MinVelocity",    &this->velMinima);
 			XMLUtils::GetAttr(pElem, "RefreshTime",    &this->refreshTime);
@@ -732,8 +782,9 @@ BOOL CConfiguracion::cargaXMLConfig()
 		} else if(_stricmp(nameNode, "TodayItemHeight") == 0) {
 			XMLUtils::GetAttr(pElem, "portrait",  &this->heightP);
 			XMLUtils::GetAttr(pElem, "landscape", &this->heightL);
-		} else if(_stricmp(nameNode, "AlreadyConfigured") == 0) {
-			XMLUtils::GetTextElem(pElem, &this->alreadyConfigured);
+		} else if(_stricmp(nameNode, "LastConfiguredAt") == 0) {
+			XMLUtils::GetAttr(pElem, "width",  &this->lastConfiguredAtWidth);
+			XMLUtils::GetAttr(pElem, "height", &this->lastConfiguredAtHeight);
 		} else if(_stricmp(nameNode, "MainScreen") == 0) {
 			mainScreenConfig->loadXMLConfig(pElem);
 		} else if(_stricmp(nameNode, "BottomBar") == 0) {
@@ -743,10 +794,12 @@ BOOL CConfiguracion::cargaXMLConfig()
 		}
     }
 
+	this->AutoScale();
+
 	return TRUE;
 }
 
-BOOL CConfiguracion::guardaXMLIconos(CListaPantalla *listaPantallas)
+BOOL CConfiguracion::saveXMLIcons(CListaPantalla *listaPantallas)
 {
 	if (listaPantallas == NULL) {
 		return FALSE;
@@ -828,7 +881,7 @@ BOOL CConfiguracion::saveXMLScreenIcons(TiXmlElement *pElemScreen, CPantalla *pa
 	return TRUE;
 }
 
-BOOL CConfiguracion::guardaXMLConfig()
+BOOL CConfiguracion::saveXMLConfig()
 {
 	TiXmlDocument doc;
 
@@ -883,7 +936,7 @@ BOOL CConfiguracion::guardaXMLConfig()
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("Movement");
-	XMLUtils::SetAttr(pElem, "MoveThreshold",  this->umbralMovimiento);
+	XMLUtils::SetAttr(pElem, "MoveThreshold",  this->moveThreshold);
 	XMLUtils::SetAttr(pElem, "MaxVelocity",    this->velMaxima);
 	XMLUtils::SetAttr(pElem, "MinVelocity",    this->velMinima);
 	XMLUtils::SetAttr(pElem, "RefreshTime",    this->refreshTime);
@@ -1014,8 +1067,9 @@ BOOL CConfiguracion::guardaXMLConfig()
 	XMLUtils::SetAttr(pElem, "landscape", this->heightL);
 	root->LinkEndChild(pElem);
 
-	pElem = new TiXmlElement("AlreadyConfigured");
-	XMLUtils::SetTextElem(pElem, this->alreadyConfigured);
+	pElem = new TiXmlElement("LastConfiguredAt");
+	XMLUtils::SetAttr(pElem, "width",  this->lastConfiguredAtWidth);
+	XMLUtils::SetAttr(pElem, "height", this->lastConfiguredAtHeight);
 	root->LinkEndChild(pElem);
 
 	FILE *f = _wfopen(pathSettingsXML, L"wb");
@@ -1025,42 +1079,4 @@ BOOL CConfiguracion::guardaXMLConfig()
 	lastModifiedSettingsXML = FileModifyTime(pathSettingsXML);
 
 	return 0;
-}
-
-void CConfiguracion::autoConfigure()
-{
-	int width = GetSystemMetrics(SM_CXSCREEN);
-	int height = GetSystemMetrics(SM_CYSCREEN);
-	int tmp;
-	if (width > height) {
-		tmp = height;
-		height = width;
-		width = tmp;
-	}
-
-	int iconWidth = int(float(width) * 0.1875);
-	int textHeight = iconWidth / 4;
-
-	this->mainScreenConfig->cs.iconWidthXML = iconWidth;
-	if (this->mainScreenConfig->cs.textHeightXML) {
-		this->mainScreenConfig->cs.textHeightXML = textHeight;
-	}
-
-	this->bottomBarConfig->cs.iconWidthXML = iconWidth;
-	if (this->bottomBarConfig->cs.textHeightXML) {
-		this->bottomBarConfig->cs.textHeightXML = textHeight;
-	}
-
-	this->topBarConfig->cs.iconWidthXML = iconWidth;
-	if (this->topBarConfig->cs.textHeightXML) {
-		this->topBarConfig->cs.textHeightXML = textHeight;
-	}
-
-	this->mainScreenConfig->cs.minHorizontalSpace = max(5, this->mainScreenConfig->cs.minHorizontalSpace);
-	this->mainScreenConfig->cs.offset.top = max(5, this->mainScreenConfig->cs.offset.top);
-	this->bottomBarConfig->cs.offset.top = max(this->bottomBarConfig->cs.offset.top, this->mainScreenConfig->cs.offset.top);
-
-	this->circlesDiameter = iconWidth / 6;
-	this->circlesDistance = this->circlesDiameter / 2;
-	this->circlesOffset = this->circlesDistance;
 }

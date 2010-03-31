@@ -31,7 +31,7 @@ void CConfigurationScreen::calculate(BOOL isStaticbar, int maxIcons, UINT screen
 			iconsPerRow = maxIcons;
 			iconWidth = min(cs.iconWidthXML, (w - maxIcons * cs.minHorizontalSpace) / iconsPerRow);
 			if (cs.iconWidthXML > 0) {
-				textHeight = 1.0 * cs.textHeightXML * iconWidth / cs.iconWidthXML;
+				textHeight = UINT(0.5 + 1.0 * cs.textHeightXML * iconWidth / cs.iconWidthXML);
 			}
 		} else {
 			iconsPerRow = min(iconsPerRow, UINT(maxIcons));
@@ -75,6 +75,25 @@ void CConfigurationScreen::defaultValues()
 	this->cs.backColor2 = 0;
 
 	this->cs.backWallpaper[0] = 0;
+
+	this->iconWidth = this->cs.iconWidthXML;
+	this->iconsPerRow = this->cs.iconsPerRowXML;
+	this->textHeight = this->cs.textHeightXML;
+}
+
+void CConfigurationScreen::Scale(double scale)
+{
+	this->cs.iconWidthXML = UINT(scale * this->cs.iconWidthXML);
+	this->cs.minHorizontalSpace = UINT(scale * this->cs.minHorizontalSpace);
+	this->cs.additionalVerticalSpace = UINT(scale * this->cs.additionalVerticalSpace);
+
+	this->cs.textHeightXML = UINT(scale * this->cs.textHeightXML);
+	this->cs.textOffset = INT(scale * this->cs.textOffset);
+
+	this->cs.offset.left = LONG(scale * this->cs.offset.left);
+	this->cs.offset.top = LONG(scale * this->cs.offset.top);
+	this->cs.offset.right = LONG(scale * this->cs.offset.right);
+	this->cs.offset.bottom = LONG(scale * this->cs.offset.bottom);
 
 	this->iconWidth = this->cs.iconWidthXML;
 	this->iconsPerRow = this->cs.iconsPerRowXML;

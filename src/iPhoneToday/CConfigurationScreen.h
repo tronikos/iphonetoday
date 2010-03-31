@@ -29,6 +29,7 @@ public:
 	~CConfigurationScreen(void);
 
 	void defaultValues();
+	void Scale(double scale);
 	BOOL loadXMLConfig(TiXmlElement *pRoot);
 	BOOL saveXMLConfig(TiXmlElement *pRoot);
 

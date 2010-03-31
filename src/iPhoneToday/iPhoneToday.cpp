@@ -107,7 +107,6 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 LRESULT CALLBACK editHeaderDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
 void doDestroy(HWND hwnd);
 void resizeWindow(HWND hwnd, BOOL fullScreen);
-void autoConfigure();
 LRESULT WINAPI CustomItemOptionsDlgProc(HWND, UINT, WPARAM, LPARAM);
 void RightClick(HWND hwnd, POINTS posCursor);
 void calculateConfiguration(int width, int height);
@@ -808,11 +807,11 @@ LRESULT doMove (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 	BOOL flag = estado->hayMovimiento;
 	if (configuracion->verticalScroll) {
 		if (!flag) {
-			movementInitiatedByVertical = abs(posCursor.y - posCursor2.y) > abs(posCursor.x - posCursor2.x) && abs(posCursor.y - posCursor2.y) > int(configuracion->umbralMovimiento);
+			movementInitiatedByVertical = abs(posCursor.y - posCursor2.y) > abs(posCursor.x - posCursor2.x) && abs(posCursor.y - posCursor2.y) > int(configuracion->moveThreshold);
 		}
 		flag = flag || movementInitiatedByVertical;
 	}
-	flag = flag || abs(posCursor.x - posCursor2.x) > int(configuracion->umbralMovimiento);
+	flag = flag || abs(posCursor.x - posCursor2.x) > int(configuracion->moveThreshold);
 	if (flag) {
 		KillTimer(hwnd, TIMER_LONGTAP);
 		estado->hayMovimiento = true;
@@ -925,7 +924,7 @@ void RightClick(HWND hwnd, POINTS posCursor)
 				moveIconoActivo.nIconoActual,
 				iconoActual.nPantallaActual,
 				iconoActual.nIconoActual);
-			configuracion->guardaXMLIconos(listaPantallas);
+			configuracion->saveXMLIcons(listaPantallas);
 			moveIconoActivo.nIconoActual = -1;
 			calculateConfiguration(0, 0);
 			SetTimer(hwnd, TIMER_RECUPERACION, configuracion->refreshTime, NULL);
@@ -964,7 +963,7 @@ void RightClick(HWND hwnd, POINTS posCursor)
 				}
 				configuracion->cargaImagenIcono(&hDCMem, destIcon, st);
 
-				configuracion->guardaXMLIconos(listaPantallas);
+				configuracion->saveXMLIcons(listaPantallas);
 				copyIconoActivo.nIconoActual = -1;
 				calculateConfiguration(0, 0);
 				SetTimer(hwnd, TIMER_RECUPERACION, configuracion->refreshTime, NULL);
@@ -978,7 +977,7 @@ void RightClick(HWND hwnd, POINTS posCursor)
 					MessageBox(hwnd, TEXT("Error deleting icon"), TEXT("Error!"), MB_OK);
 				} else {
 					setPosiciones(true, 0, 0);
-					configuracion->guardaXMLIconos(listaPantallas);
+					configuracion->saveXMLIcons(listaPantallas);
 					calculateConfiguration(0, 0);
 					SetTimer(hwnd, TIMER_RECUPERACION, configuracion->refreshTime, NULL);
 				}
@@ -2554,7 +2553,7 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 
 			setPosiciones(true, 0, 0);
 
-			configuracion->guardaXMLIconos(listaPantallas);
+			configuracion->saveXMLIcons(listaPantallas);
 			calculateConfiguration(0, 0);
 
 			if (g_hWndMenuBar) {
@@ -2701,7 +2700,7 @@ LRESULT CALLBACK editHeaderDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 			GetDlgItemText(hDlg, IDC_EDIT_HEADER, header, MAX_PATH);
 			if (wcscmp(pantalla->header, header) != 0) {
 				StringCchCopy(pantalla->header, CountOf(pantalla->header), header);
-				configuracion->guardaXMLIconos(listaPantallas);
+				configuracion->saveXMLIcons(listaPantallas);
 				pantalla->debeActualizar = TRUE;
 			}
 
@@ -2783,9 +2782,9 @@ BOOL inicializaApp(HWND hwnd) {
 
 	// Cargamos los parametros de configuracion
 	// long duration = -(long)GetTickCount();
-	configuracion->cargaXMLConfig();
+	configuracion->loadXMLConfig();
 	// duration += GetTickCount();
-	// NKDbgPrintfW(L" *** %d \t to cargaXMLConfig.\n", duration);
+	// NKDbgPrintfW(L" *** %d \t to loadXMLConfig.\n", duration);
 
 #ifdef EXEC_MODE
 	if (configuracion->fullscreen) {
@@ -2808,9 +2807,6 @@ BOOL inicializaApp(HWND hwnd) {
 
 	resizeWindow(hwnd, true);
 
-	// Auto-Configure if is neccesary
-	autoConfigure();
-
 	estado->posObjetivo.x = 0;
 	estado->posObjetivo.y = 0;
 	posImage = estado->posObjetivo;
@@ -2823,7 +2819,7 @@ BOOL inicializaApp(HWND hwnd) {
 
 	// Cargamos la configuracion de iconos
 	listaPantallas = new CListaPantalla();
-	configuracion->cargaXMLIconos2(listaPantallas);
+	configuracion->loadXMLIcons2(listaPantallas);
 
 	calculateConfiguration(windowWidth, windowHeight);
 
@@ -3197,26 +3193,6 @@ void resizeWindow(HWND hwnd, BOOL fullScreen)
 	}
 }
 
-void autoConfigure()
-{
-	if (configuracion == NULL || configuracion->alreadyConfigured > 0) {
-		return;
-	}
-
-	// Check if user wants autoconfigure
-#if EXEC_MODE
-	int resp = MessageBox(g_hWnd, TEXT("Auto configure icon and font size?"), TEXT("First Run!"), MB_YESNO);
-#else
-	int resp = IDYES;
-#endif
-	if (resp == IDYES) {
-		configuracion->autoConfigure();
-	}
-
-	configuracion->alreadyConfigured = 1;
-	configuracion->guardaXMLConfig();
-}
-
 void calculateConfiguration(int width, int height)
 {
 	// NKDbgPrintfW(L"calculateConfiguration(%d, %d)\n", width, height);
@@ -3518,7 +3494,7 @@ BOOL ProcessNotifications()
 		}
 
 		if (notifications->dwNotifications[SN_RELOADICON] == 2) {
-			configuracion->guardaXMLIconos(listaPantallas);
+			configuracion->saveXMLIcons(listaPantallas);
 		}
 
 		reloadIcon->DeleteRegistryIcons();
@@ -3533,7 +3509,7 @@ BOOL ProcessNotifications()
 
 	if (notifications->dwNotificationsChanged[SN_RELOADICONS] && notifications->dwNotifications[SN_RELOADICONS]) {
 		// Cargamos la configuracion de iconos
-		configuracion->cargaXMLIconos2(listaPantallas);
+		configuracion->loadXMLIcons2(listaPantallas);
 		configuracion->cargaIconsImages(&hDCMem, listaPantallas);
 
 		// Marcamos aquellas pantallas que haya que actualizar
