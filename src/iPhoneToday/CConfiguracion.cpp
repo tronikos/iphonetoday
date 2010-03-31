@@ -541,6 +541,7 @@ void CConfiguracion::defaultValues()
 	this->sign.offset.bottom = 0;
 
 	this->closeOnLaunchIcon = 0;
+	this->minimizeOnLaunchIcon = 0;
 	this->vibrateOnLaunchIcon = 0;
 	this->allowAnimationOnLaunchIcon = 1;
 	this->colorOfAnimationOnLaunchIcon = RGB(255,255,255);
@@ -732,12 +733,13 @@ BOOL CConfiguracion::loadXMLConfig()
 			XMLUtils::GetAttr(pElem, "state", this->bubble_state, CountOf(this->bubble_state));
 			XMLUtils::GetAttr(pElem, "alarm", this->bubble_alarm, CountOf(this->bubble_alarm));
 		} else if(_stricmp(nameNode, "OnLaunchIcon") == 0) {
-			XMLUtils::GetAttr(pElem, "close",   &this->closeOnLaunchIcon);
-			XMLUtils::GetAttr(pElem, "vibrate", &this->vibrateOnLaunchIcon);
-			XMLUtils::GetAttr(pElem, "animate", &this->allowAnimationOnLaunchIcon);
-			XMLUtils::GetAttr(pElem, "color",   &this->colorOfAnimationOnLaunchIcon);
-			XMLUtils::GetAttr(pElem, "sound",   &this->allowSoundOnLaunchIcon);
-			XMLUtils::GetAttr(pElem, "wav",     this->soundOnLaunchIcon, CountOf(this->soundOnLaunchIcon));
+			XMLUtils::GetAttr(pElem, "close",    &this->closeOnLaunchIcon);
+			XMLUtils::GetAttr(pElem, "minimize", &this->minimizeOnLaunchIcon);
+			XMLUtils::GetAttr(pElem, "vibrate",  &this->vibrateOnLaunchIcon);
+			XMLUtils::GetAttr(pElem, "animate",  &this->allowAnimationOnLaunchIcon);
+			XMLUtils::GetAttr(pElem, "color",    &this->colorOfAnimationOnLaunchIcon);
+			XMLUtils::GetAttr(pElem, "sound",    &this->allowSoundOnLaunchIcon);
+			XMLUtils::GetAttr(pElem, "wav",      this->soundOnLaunchIcon, CountOf(this->soundOnLaunchIcon));
 		} else if(_stricmp(nameNode, "OnPressIcon") == 0) {
 			XMLUtils::GetAttr(pElem, "icon",  this->pressed_icon,  CountOf(this->pressed_icon));
 			XMLUtils::GetAttr(pElem, "sound", this->pressed_sound, CountOf(this->pressed_sound));
@@ -998,12 +1000,13 @@ BOOL CConfiguracion::saveXMLConfig()
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("OnLaunchIcon");
-	XMLUtils::SetAttr(pElem, "close",   this->closeOnLaunchIcon);
-	XMLUtils::SetAttr(pElem, "vibrate", this->vibrateOnLaunchIcon);
-	XMLUtils::SetAttr(pElem, "animate", this->allowAnimationOnLaunchIcon);
-	XMLUtils::SetAttr(pElem, "color",   this->colorOfAnimationOnLaunchIcon);
-	XMLUtils::SetAttr(pElem, "sound",   this->allowSoundOnLaunchIcon);
-	XMLUtils::SetAttr(pElem, "wav",     this->soundOnLaunchIcon, CountOf(this->soundOnLaunchIcon));
+	XMLUtils::SetAttr(pElem, "close",    this->closeOnLaunchIcon);
+	XMLUtils::SetAttr(pElem, "minimize", this->minimizeOnLaunchIcon);
+	XMLUtils::SetAttr(pElem, "vibrate",  this->vibrateOnLaunchIcon);
+	XMLUtils::SetAttr(pElem, "animate",  this->allowAnimationOnLaunchIcon);
+	XMLUtils::SetAttr(pElem, "color",    this->colorOfAnimationOnLaunchIcon);
+	XMLUtils::SetAttr(pElem, "sound",    this->allowSoundOnLaunchIcon);
+	XMLUtils::SetAttr(pElem, "wav",      this->soundOnLaunchIcon, CountOf(this->soundOnLaunchIcon));
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("OnPressIcon");

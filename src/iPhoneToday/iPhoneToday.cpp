@@ -2034,8 +2034,11 @@ BOOL LaunchApplication(LPCTSTR pCmdLine, LPCTSTR pParametros)
 	bWorked = ShellExecuteEx(&sei);
 
 #ifdef EXEC_MODE
-	if (bWorked && configuracion->closeOnLaunchIcon == 1) {
+	if (bWorked && configuracion->closeOnLaunchIcon) {
 		PostQuitMessage(0);
+	}
+	if (bWorked && configuracion->minimizeOnLaunchIcon) {
+		ShowWindow(g_hWnd, SW_MINIMIZE);
 	}
 #endif
 
