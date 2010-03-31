@@ -211,7 +211,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lPara
 			if (configuracion == NULL || estado == NULL) {
 				return FALSE;
 			}
-			if (configuracion->notifyTimer > 0) {
+			if (!configuracion->updateWhenInactive && configuracion->notifyTimer > 0) {
 				static DWORD start = 0;
 				DWORD now = GetTickCount();
 				if (now - start > (DWORD) configuracion->notifyTimer) {
@@ -1129,14 +1129,16 @@ LRESULT doActivate (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 			estado->timeUltimoLanzamiento = 0;
 		}
 		PostMessage(hwnd, WM_TIMER, TIMER_ACTUALIZA_NOTIF, 0);
-		if (configuracion->notifyTimer > 0) {
+		if (!configuracion->updateWhenInactive && configuracion->notifyTimer > 0) {
 			SetTimer(hwnd, TIMER_ACTUALIZA_NOTIF, configuracion->notifyTimer, NULL);
 		}
 	}
 	// The window is being deactivated... restore it to non-fullscreen
 	else if (!::IsChild(hwnd, (HWND)lParam))
 	{
-		KillTimer(hwnd, TIMER_ACTUALIZA_NOTIF);
+		if (!configuracion->updateWhenInactive) {
+			KillTimer(hwnd, TIMER_ACTUALIZA_NOTIF);
+		}
 		resizeWindow(hwnd, false);
 	}
 
@@ -2867,6 +2869,10 @@ BOOL inicializaApp(HWND hwnd) {
 
 #ifdef EXEC_MODE
 	if (configuracion->notifyTimer > 0) {
+		SetTimer(hwnd, TIMER_ACTUALIZA_NOTIF, configuracion->notifyTimer, NULL);
+	}
+#else
+	if (configuracion->updateWhenInactive && configuracion->notifyTimer > 0) {
 		SetTimer(hwnd, TIMER_ACTUALIZA_NOTIF, configuracion->notifyTimer, NULL);
 	}
 #endif

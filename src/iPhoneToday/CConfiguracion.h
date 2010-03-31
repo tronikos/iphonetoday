@@ -138,6 +138,7 @@ public:
 
 	// General
 	UINT notifyTimer;
+	BOOL updateWhenInactive;
 	UINT ignoreRotation;
 	UINT disableRightClick;
 	UINT disableRightClickDots;
