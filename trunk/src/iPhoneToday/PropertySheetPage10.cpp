@@ -38,8 +38,7 @@ LRESULT CALLBACK OptionDialog10(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 				if (MessageBox(hDlg, L"Are you sure you want to reset all settings to defaults?", L"Reset settings?", MB_YESNO) == IDYES) {
 					if (configuracion != NULL) {
 						configuracion->defaultValues();
-						//configuracion->autoConfigure();
-						configuracion->guardaXMLConfig();
+						configuracion->saveXMLConfig();
 						PostMessage(g_hWnd, WM_CREATE, 0, 0);
 						doNotAskToSaveOptions = TRUE;
 						SendMessage(GetParent(hDlg), WM_CLOSE, 0, 0);

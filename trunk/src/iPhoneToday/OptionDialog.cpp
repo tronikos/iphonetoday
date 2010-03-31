@@ -69,7 +69,7 @@ void InitOptionsDialog(HWND hDlg, INT iDlg)
 
 	if (configuracion == NULL) {
 		configuracion = new CConfiguracion();
-		configuracion->cargaXMLConfig();
+		configuracion->loadXMLConfig();
 	}
 }
 
@@ -316,7 +316,7 @@ BOOL SaveConfiguration()
 		result &= SaveConfiguration9(g_hDlg[9]);
 
 	if (result) {
-		configuracion->guardaXMLConfig();
+		configuracion->saveXMLConfig();
 	}
 	return result;
 }

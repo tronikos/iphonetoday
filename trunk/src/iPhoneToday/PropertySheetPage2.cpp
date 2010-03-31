@@ -17,7 +17,7 @@ LRESULT CALLBACK OptionDialog2(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 		{
 			InitOptionsDialog(hDlg, 2);
 
-			SetDlgItemInt(hDlg, IDC_EDIT_MOVE_THRESHOLD,	configuracion->umbralMovimiento,	TRUE);
+			SetDlgItemInt(hDlg, IDC_EDIT_MOVE_THRESHOLD,	configuracion->moveThreshold,		TRUE);
 			SetDlgItemInt(hDlg, IDC_EDIT_MOVE_FACTOR,		configuracion->factorMovimiento,	TRUE);
 			SetDlgItemInt(hDlg, IDC_EDIT_MIN_VELOCITY,		configuracion->velMinima,			TRUE);
 			SetDlgItemInt(hDlg, IDC_EDIT_MAX_VELOCITY,		configuracion->velMaxima,			TRUE);
@@ -87,7 +87,7 @@ BOOL SaveConfiguration2(HWND hDlg)
 	maxVelocity		= GetDlgItemInt(hDlg, IDC_EDIT_MAX_VELOCITY,	NULL, TRUE);
 	refreshTime		= GetDlgItemInt(hDlg, IDC_EDIT_REFRESH_TIME,	NULL, TRUE);
 
-	configuracion->umbralMovimiento	= moveThreshold;
+	configuracion->moveThreshold	= moveThreshold;
 	configuracion->factorMovimiento	= moveFactor;
 	configuracion->velMinima		= minVelocity;
 	configuracion->velMaxima		= maxVelocity;

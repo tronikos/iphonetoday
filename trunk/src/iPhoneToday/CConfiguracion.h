@@ -21,18 +21,18 @@ public:
 	~CConfiguracion(void);
 
 	void calculaConfiguracion(int maxIconos, int numIconsInBottomBar, int numIconsInTopBar, int width, int height);
-	BOOL cargaXMLIconos2(CListaPantalla *listaPantallas);
+	BOOL loadXMLIcons2(CListaPantalla *listaPantallas);
 	BOOL cargaIconsImages(HDC *hDC, CListaPantalla *listaPantallas);
 	BOOL cargaImagenIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type);
 	BOOL cargaImagenes(HDC *hDC);
 	BOOL cargaFondo(HDC *hDC);
 
-	BOOL cargaXMLIconos(CListaPantalla *listaPantallas);
+	BOOL loadXMLIcons(CListaPantalla *listaPantallas);
 	void defaultValues();
-	void autoConfigure();
-	BOOL cargaXMLConfig();
-	BOOL guardaXMLConfig();
-	BOOL guardaXMLIconos(CListaPantalla *listaPantallas);
+	BOOL AutoScale();
+	BOOL loadXMLConfig();
+	BOOL saveXMLConfig();
+	BOOL saveXMLIcons(CListaPantalla *listaPantallas);
 
 	BOOL saveXMLScreenIcons(TiXmlElement *pElemScreen, CPantalla *pantalla);
 
@@ -95,7 +95,7 @@ public:
 	TCHAR strFondoPantalla[MAX_PATH];
 
 	// Movement
-	UINT umbralMovimiento;
+	UINT moveThreshold;
 	UINT velMaxima;
 	UINT velMinima;
 	UINT refreshTime;
@@ -163,5 +163,6 @@ public:
 	BOOL transparentBMP;
 	BOOL useMask;
 
-	UINT alreadyConfigured;
+	UINT lastConfiguredAtWidth;
+	UINT lastConfiguredAtHeight;
 };
