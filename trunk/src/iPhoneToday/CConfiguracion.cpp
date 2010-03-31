@@ -561,6 +561,7 @@ void CConfiguracion::defaultValues()
 	this->noWindowTitle = 0;
 	this->showExit = 1;
 	this->textQuality = 0;
+	this->textQualityInIcons = 0;
 	this->heightP = 0;
 	this->heightL = 0;
 
@@ -772,6 +773,8 @@ BOOL CConfiguracion::loadXMLConfig()
 			XMLUtils::GetTextElem(pElem, &this->showExit);
 		} else if(_stricmp(nameNode, "TextQuality") == 0) {
 			XMLUtils::GetTextElem(pElem, &this->textQuality);
+		} else if(_stricmp(nameNode, "TextQualityInIcons") == 0) {
+			XMLUtils::GetTextElem(pElem, &this->textQualityInIcons);
 		} else if(_stricmp(nameNode, "OutOfScreen") == 0) {
 			XMLUtils::GetAttr(pElem, "left",   this->outOfScreenLeft,   CountOf(this->outOfScreenLeft));
 			XMLUtils::GetAttr(pElem, "right",  this->outOfScreenRight,  CountOf(this->outOfScreenRight));
@@ -1051,6 +1054,10 @@ BOOL CConfiguracion::saveXMLConfig()
 
 	pElem = new TiXmlElement("TextQuality");
 	XMLUtils::SetTextElem(pElem, this->textQuality);
+	root->LinkEndChild(pElem);
+
+	pElem = new TiXmlElement("TextQualityInIcons");
+	XMLUtils::SetTextElem(pElem, this->textQualityInIcons);
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("OutOfScreen");

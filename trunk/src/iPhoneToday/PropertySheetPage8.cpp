@@ -6,6 +6,22 @@
 #include "iPhoneToday.h"
 #include "OptionDialog.h"
 
+void InitializeTextQualityDropList(HWND hWnd, int textQuality)
+{
+	SendMessage(hWnd, CB_ADDSTRING, 0, (LPARAM)L"Default");
+	SendMessage(hWnd, CB_ADDSTRING, 0, (LPARAM)L"Draft");
+	SendMessage(hWnd, CB_ADDSTRING, 0, (LPARAM)L"Nonantialiased");
+	SendMessage(hWnd, CB_ADDSTRING, 0, (LPARAM)L"Antialiased");
+	SendMessage(hWnd, CB_ADDSTRING, 0, (LPARAM)L"Cleartype");
+	SendMessage(hWnd, CB_ADDSTRING, 0, (LPARAM)L"Cleartype compat");
+
+	int tmp = textQuality;
+	if (tmp > 2) {
+		tmp--;
+	}
+	SendMessage(hWnd, CB_SETCURSEL, tmp, 0);
+}
+
 /*************************************************************************/
 /* General options dialog box procedure function                 */
 /*************************************************************************/
@@ -25,18 +41,8 @@ LRESULT CALLBACK OptionDialog8(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 			
 			SetDlgItemInt(hDlg, IDC_EDIT_TRANS_THRESHOLD, configuracion->alphaThreshold, TRUE);
 
-			SendMessage(GetDlgItem(hDlg, IDC_COMBO_TEXT_QUALITY), CB_ADDSTRING, 0, (LPARAM)L"Default");
-			SendMessage(GetDlgItem(hDlg, IDC_COMBO_TEXT_QUALITY), CB_ADDSTRING, 0, (LPARAM)L"Draft");
-			SendMessage(GetDlgItem(hDlg, IDC_COMBO_TEXT_QUALITY), CB_ADDSTRING, 0, (LPARAM)L"Nonantialiased");
-			SendMessage(GetDlgItem(hDlg, IDC_COMBO_TEXT_QUALITY), CB_ADDSTRING, 0, (LPARAM)L"Antialiased");
-			SendMessage(GetDlgItem(hDlg, IDC_COMBO_TEXT_QUALITY), CB_ADDSTRING, 0, (LPARAM)L"Cleartype");
-			SendMessage(GetDlgItem(hDlg, IDC_COMBO_TEXT_QUALITY), CB_ADDSTRING, 0, (LPARAM)L"Cleartype compat");
-
-			int tmp = configuracion->textQuality;
-			if (tmp > 2) {
-				tmp--;
-			}
-			SendMessage(GetDlgItem(hDlg, IDC_COMBO_TEXT_QUALITY), CB_SETCURSEL, tmp, 0);
+			InitializeTextQualityDropList(GetDlgItem(hDlg, IDC_COMBO_TEXT_QUALITY), configuracion->textQuality);
+			InitializeTextQualityDropList(GetDlgItem(hDlg, IDC_COMBO_TEXT_QUALITY2), configuracion->textQualityInIcons);
 
 			if (configuracion->alphaBlend) {
 				EnableWindow(GetDlgItem(hDlg, IDC_CHECK_TRANS_ALPHAONBLACK), FALSE);
@@ -133,6 +139,11 @@ BOOL SaveConfiguration8(HWND hDlg)
 	configuracion->textQuality = SendMessage(GetDlgItem(hDlg, IDC_COMBO_TEXT_QUALITY), CB_GETCURSEL, 0, 0);
 	if (configuracion->textQuality >=2) {
 		configuracion->textQuality++;
+	}
+
+	configuracion->textQualityInIcons = SendMessage(GetDlgItem(hDlg, IDC_COMBO_TEXT_QUALITY2), CB_GETCURSEL, 0, 0);
+	if (configuracion->textQualityInIcons >=2) {
+		configuracion->textQualityInIcons++;
 	}
 
 	return TRUE;

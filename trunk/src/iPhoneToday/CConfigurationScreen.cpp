@@ -59,7 +59,7 @@ void CConfigurationScreen::defaultValues()
 	this->cs.shrinkToFit = 0;
 
 	this->cs.textFacename[0] = 0;
-	this->cs.textHeightXML = 12;
+	this->cs.textHeightXML = 11;
 	this->cs.textColor = RGB(255, 255, 255);
 	this->cs.textBold = 0;
 	this->cs.textOffset = 0;

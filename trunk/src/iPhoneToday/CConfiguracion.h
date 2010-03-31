@@ -147,6 +147,7 @@ public:
 	UINT noWindowTitle;
 	UINT showExit;
 	UINT textQuality;
+	UINT textQualityInIcons;
 
 	// Today item height (Portrait|Landscape)
 	UINT heightP;
