@@ -124,7 +124,8 @@ public:
 	TCHAR bubble_alarm[MAX_PATH];
 
 	// OnLaunch
-	UINT closeOnLaunchIcon;
+	BOOL closeOnLaunchIcon;
+	BOOL minimizeOnLaunchIcon;
 	UINT vibrateOnLaunchIcon;
 	UINT allowAnimationOnLaunchIcon;
 	COLORREF colorOfAnimationOnLaunchIcon;
