@@ -120,7 +120,7 @@ typedef enum
 #define REGISTRY_MAXLENGTH		32
 
 #define NOTIF_NORMAL		0
-#define NOTIF_LLAMADAS		1
+#define NOTIF_MISSEDCALLS	1
 #define NOTIF_SMS			2
 #define NOTIF_MMS			3
 #define NOTIF_OTHER_EMAIL	4
@@ -144,12 +144,13 @@ typedef enum
 #define NOTIF_SIGNAL		20
 #define NOTIF_OPERATOR		21
 #define NOTIF_SIGNAL_OPER	22
-#define NOTIF_PROFILE		23
-#define NOTIF_VMAIL			24
-#define NOTIF_IRDA			25
+#define NOTIF_MC_SIG_OPER	23
+#define NOTIF_PROFILE		24
+#define NOTIF_VMAIL			25
+#define NOTIF_IRDA			26
 
 #define NOTIF_NORMAL_TXT		TEXT("Normal")
-#define NOTIF_LLAMADAS_TXT		TEXT("Missed Calls")
+#define NOTIF_MISSEDCALLS_TXT	TEXT("Missed Calls")
 #define NOTIF_SMS_TXT			TEXT("Unread SMS")
 #define NOTIF_MMS_TXT			TEXT("Unread MMS")
 #define NOTIF_OTHER_EMAIL_TXT	TEXT("Unread Others EMail")
@@ -173,6 +174,7 @@ typedef enum
 #define NOTIF_SIGNAL_TXT		TEXT("Signal Strength")
 #define NOTIF_OPERATOR_TXT		TEXT("Operator Name")
 #define NOTIF_SIGNAL_OPER_TXT	TEXT("Signal Strength & Operator Name")
+#define NOTIF_MC_SIG_OPER_TXT	TEXT("Missed Calls & Signal Strength & Operator Name")
 #define NOTIF_PROFILE_TXT		TEXT("Phone Profile")
 #define NOTIF_VMAIL_TXT			TEXT("Unplayed Voice Mails")
 #define NOTIF_IRDA_TXT			TEXT("Irda State")
