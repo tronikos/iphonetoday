@@ -405,6 +405,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\iPhoneToday\ChooseFont.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\iPhoneToday\CIcono.cpp"
 				>
 			</File>
@@ -540,6 +544,10 @@
 			</File>
 			<File
 				RelativePath="..\iPhoneToday\CEstado.h"
+				>
+			</File>
+			<File
+				RelativePath="..\iPhoneToday\ChooseFont.h"
 				>
 			</File>
 			<File

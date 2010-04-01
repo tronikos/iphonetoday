@@ -12,7 +12,7 @@ typedef struct ConfigurationScreen {
 	TCHAR textFacename[LF_FACESIZE];
 	UINT textHeightXML;
 	COLORREF textColor;
-	UINT textBold;
+	UINT textWeight;
 	INT textOffset;
 	UINT textShadow;
 	BOOL textRoundRect;

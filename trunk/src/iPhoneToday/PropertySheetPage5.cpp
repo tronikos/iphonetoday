@@ -5,12 +5,14 @@
 #include "stdafx.h"
 #include "iPhoneToday.h"
 #include "OptionDialog.h"
+#include "ChooseFont.h"
 
 SpecialIconSettings batt, dow, dom, clck, vol, meml, memf, memu, sign;
 SpecialIconSettings *cur_sis;
 
 void sis_enable(HWND hDlg, BOOL bEnable)
 {
+	EnableWindow(GetDlgItem(hDlg, IDC_COMBO_SIS_FACENAME),		bEnable);
 	EnableWindow(GetDlgItem(hDlg, IDC_EDIT_SIS_HEIGHT),			bEnable);
 	EnableWindow(GetDlgItem(hDlg, IDC_EDIT_SIS_WIDTH),			bEnable);
 	EnableWindow(GetDlgItem(hDlg, IDC_EDIT_SIS_WEIGHT),			bEnable);
@@ -25,6 +27,7 @@ void sis_enable(HWND hDlg, BOOL bEnable)
 void sis_load(HWND hDlg, SpecialIconSettings *sis)
 {
 	if (sis != NULL) {
+		SetDlgItemText(hDlg, IDC_COMBO_SIS_FACENAME, sis->facename);
 		SetDlgItemInt(hDlg, IDC_EDIT_SIS_HEIGHT, sis->height, TRUE);
 		SetDlgItemInt(hDlg, IDC_EDIT_SIS_WIDTH,  sis->width,  TRUE);
 		SetDlgItemInt(hDlg, IDC_EDIT_SIS_WEIGHT, sis->weight, TRUE);
@@ -41,6 +44,7 @@ void sis_load(HWND hDlg, SpecialIconSettings *sis)
 void sis_save(HWND hDlg, SpecialIconSettings *sis)
 {
 	if (sis != NULL) {
+		GetDlgItemText(hDlg, IDC_COMBO_SIS_FACENAME, sis->facename, CountOf(sis->facename));
 		sis->height = GetDlgItemInt(hDlg, IDC_EDIT_SIS_HEIGHT, NULL, TRUE);
 		sis->width  = GetDlgItemInt(hDlg, IDC_EDIT_SIS_WIDTH,  NULL, TRUE);
 		sis->weight = GetDlgItemInt(hDlg, IDC_EDIT_SIS_WEIGHT, NULL, TRUE);
@@ -63,6 +67,8 @@ LRESULT CALLBACK OptionDialog5(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 	case WM_INITDIALOG:
 		{
 			InitOptionsDialog(hDlg, 5);
+
+			EnumFontFamilies(GetDC(NULL), NULL, (FONTENUMPROC)EnumFontFamiliesProc, (LPARAM)GetDlgItem(hDlg, IDC_COMBO_SIS_FACENAME));
 
 			cur_sis = NULL;
 			sis_enable(hDlg, FALSE);
