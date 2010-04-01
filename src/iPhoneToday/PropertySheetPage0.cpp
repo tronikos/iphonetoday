@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include "iPhoneToday.h"
 #include "OptionDialog.h"
+#include "ChooseFont.h"
 
 ConfigurationScreen ms, bb, tb;
 ConfigurationScreen *cur_cs;
@@ -13,11 +14,7 @@ void cs_enable(HWND hDlg, BOOL bEnable)
 {
 	EnableWindow(GetDlgItem(hDlg, IDC_EDIT_CS_ICON_WIDTH),		bEnable);
 	EnableWindow(GetDlgItem(hDlg, IDC_EDIT_CS_ICONS_PER_ROW),	bEnable);
-	EnableWindow(GetDlgItem(hDlg, IDC_EDIT_CS_TEXT_HEIGHT),		bEnable);
 	EnableWindow(GetDlgItem(hDlg, IDC_EDIT_CS_TEXT_OFFSET),		bEnable);
-	EnableWindow(GetDlgItem(hDlg, IDC_EDIT_CS_TEXT_COLOR),		bEnable);
-	EnableWindow(GetDlgItem(hDlg, IDC_BUTTON_CS_TEXT_COLOR),	bEnable);
-	EnableWindow(GetDlgItem(hDlg, IDC_CHECK_CS_TEXT_BOLD),		bEnable);
 	EnableWindow(GetDlgItem(hDlg, IDC_EDIT_CS_BACK_COLOR1),		bEnable);
 	EnableWindow(GetDlgItem(hDlg, IDC_BUTTON_CS_BACK_COLOR1),	bEnable);
 	EnableWindow(GetDlgItem(hDlg, IDC_EDIT_CS_BACK_COLOR2),		bEnable);
@@ -36,17 +33,12 @@ void cs_load(HWND hDlg, ConfigurationScreen *cs)
 	if (cs != NULL) {
 		SetDlgItemInt(hDlg, IDC_EDIT_CS_ICON_WIDTH,		cs->iconWidthXML,	TRUE);
 		SetDlgItemInt(hDlg, IDC_EDIT_CS_ICONS_PER_ROW,	cs->iconsPerRowXML,	TRUE);
-		SetDlgItemInt(hDlg, IDC_EDIT_CS_TEXT_HEIGHT,	cs->textHeightXML,		TRUE);
 		SetDlgItemInt(hDlg, IDC_EDIT_CS_TEXT_OFFSET,	cs->textOffset,		TRUE);
-
-		SetDlgItemHex(hDlg, IDC_EDIT_CS_TEXT_COLOR,		cs->textColor);
-
-		SendMessage(GetDlgItem(hDlg, IDC_CHECK_CS_TEXT_BOLD), BM_SETCHECK, cs->textBold ? BST_CHECKED : BST_UNCHECKED, 0);
 
 		SetDlgItemHex(hDlg, IDC_EDIT_CS_BACK_COLOR1,	cs->backColor1);
 		SetDlgItemHex(hDlg, IDC_EDIT_CS_BACK_COLOR2,	cs->backColor2);
 
-		SetDlgItemInt(hDlg, IDC_EDIT_CS_MINHSPACE,		cs->minHorizontalSpace,	TRUE);
+		SetDlgItemInt(hDlg, IDC_EDIT_CS_MINHSPACE,		cs->minHorizontalSpace,			TRUE);
 		SetDlgItemInt(hDlg, IDC_EDIT_CS_ADDVSPACE,		cs->additionalVerticalSpace,	TRUE);
 
 		SetDlgItemInt(hDlg, IDC_EDIT_CS_OFFSET_LEFT,	cs->offset.left,	TRUE);
@@ -62,18 +54,13 @@ void cs_save(HWND hDlg, ConfigurationScreen *cs)
 	if (cs != NULL) {
 		cs->iconWidthXML	= GetDlgItemInt(hDlg, IDC_EDIT_CS_ICON_WIDTH,		NULL, TRUE);
 		cs->iconsPerRowXML	= GetDlgItemInt(hDlg, IDC_EDIT_CS_ICONS_PER_ROW,	NULL, TRUE);
-		cs->textHeightXML	= GetDlgItemInt(hDlg, IDC_EDIT_CS_TEXT_HEIGHT,		NULL, TRUE);
 		cs->textOffset		= GetDlgItemInt(hDlg, IDC_EDIT_CS_TEXT_OFFSET,		NULL, TRUE);
-
-		cs->textColor		= GetDlgItemHex(hDlg, IDC_EDIT_CS_TEXT_COLOR,		NULL);
-
-		cs->textBold		= SendMessage(GetDlgItem(hDlg, IDC_CHECK_CS_TEXT_BOLD), BM_GETCHECK, 0, 0) == BST_CHECKED;
 
 		cs->backColor1		= GetDlgItemHex(hDlg, IDC_EDIT_CS_BACK_COLOR1,		NULL);
 		cs->backColor2		= GetDlgItemHex(hDlg, IDC_EDIT_CS_BACK_COLOR2,		NULL);
 
-		cs->minHorizontalSpace		= GetDlgItemInt(hDlg, IDC_EDIT_CS_MINHSPACE,		NULL, TRUE);
-		cs->additionalVerticalSpace	= GetDlgItemInt(hDlg, IDC_EDIT_CS_ADDVSPACE,		NULL, TRUE);
+		cs->minHorizontalSpace		= GetDlgItemInt(hDlg, IDC_EDIT_CS_MINHSPACE,	NULL, TRUE);
+		cs->additionalVerticalSpace	= GetDlgItemInt(hDlg, IDC_EDIT_CS_ADDVSPACE,	NULL, TRUE);
 
 		cs->offset.left		= GetDlgItemInt(hDlg, IDC_EDIT_CS_OFFSET_LEFT,		NULL, TRUE);
 		cs->offset.top		= GetDlgItemInt(hDlg, IDC_EDIT_CS_OFFSET_TOP,		NULL, TRUE);
@@ -135,12 +122,6 @@ LRESULT CALLBACK OptionDialog0(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 					}
 				}
 				break;
-			case IDC_BUTTON_CS_TEXT_COLOR:
-				rgbCurrent = GetDlgItemHex(hDlg, IDC_EDIT_CS_TEXT_COLOR, NULL);
-				if (ColorSelector(hDlg, rgbCurrent, &nextColor)) {
-					SetDlgItemHex(hDlg, IDC_EDIT_CS_TEXT_COLOR, nextColor);
-				}
-				break;
 			case IDC_BUTTON_CS_BACK_COLOR1:
 				rgbCurrent = GetDlgItemHex(hDlg, IDC_EDIT_CS_BACK_COLOR1, NULL);
 				if (ColorSelector(hDlg, rgbCurrent, &nextColor)) {
@@ -161,6 +142,24 @@ LRESULT CALLBACK OptionDialog0(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 						MessageBox(hDlg, L"It is recommended to leave this 0. In that case:\nicons_per_row = screen_width / (icon_width + minimum_horizontal_space).", L"Tip", MB_OK);
 					}
 				}
+				break;
+			case IDC_BUTTON_CS_TEXT:
+				wcscpy(cfs.facename, cur_cs->textFacename);
+				cfs.color = cur_cs->textColor;
+				cfs.height = cur_cs->textHeightXML;
+				cfs.weight = cur_cs->textWeight;
+				cfs.shadow = cur_cs->textShadow;
+				cfs.roundrect = cur_cs->textRoundRect;
+				DialogBox(g_hInst, MAKEINTRESOURCE(IDD_DIALOGFONT), hDlg, (DLGPROC)ChooseFontProc);
+				if (bChooseFontOK) {
+					wcscpy(cur_cs->textFacename, cfs.facename);
+					cur_cs->textColor = cfs.color;
+					cur_cs->textHeightXML = cfs.height;
+					cur_cs->textWeight = cfs.weight;
+					cur_cs->textShadow = cfs.shadow;
+					cur_cs->textRoundRect = cfs.roundrect;
+				}
+				break;
 			}
 		}
 		return 0;
@@ -181,6 +180,10 @@ BOOL cs_check(HWND hDlg, ConfigurationScreen *cs)
 	}
 	if (cs->textHeightXML < 0 || cs->textHeightXML > 100) {
 		MessageBox(hDlg, TEXT("Text height value is not valid!"), TEXT("Error"), MB_OK);
+		return FALSE;
+	}
+	if (cs->textWeight < 0 || cs->textWeight > 1000) {
+		MessageBox(hDlg, TEXT("Text weight value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
 	if (cs->textOffset < -256 || cs->textOffset > 256) {

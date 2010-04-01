@@ -41,7 +41,7 @@ LRESULT CALLBACK OptionDialog8(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 			
 			SetDlgItemInt(hDlg, IDC_EDIT_TRANS_THRESHOLD, configuracion->alphaThreshold, TRUE);
 
-			InitializeTextQualityDropList(GetDlgItem(hDlg, IDC_COMBO_TEXT_QUALITY), configuracion->textQuality);
+			InitializeTextQualityDropList(GetDlgItem(hDlg, IDC_COMBO_TEXT_QUALITY),  configuracion->textQuality);
 			InitializeTextQualityDropList(GetDlgItem(hDlg, IDC_COMBO_TEXT_QUALITY2), configuracion->textQualityInIcons);
 
 			if (configuracion->alphaBlend) {
@@ -50,6 +50,7 @@ LRESULT CALLBACK OptionDialog8(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 				EnableWindow(GetDlgItem(hDlg, IDC_CHECK_TRANS_BMP),          FALSE);
 				EnableWindow(GetDlgItem(hDlg, IDC_CHECK_TRANS_MASK),         FALSE);
 				EnableWindow(GetDlgItem(hDlg, IDC_COMBO_TEXT_QUALITY),       FALSE);
+				EnableWindow(GetDlgItem(hDlg, IDC_COMBO_TEXT_QUALITY2),      FALSE);
 				if (configuracion->alphaBlend == 1) {
 					EnableWindow(GetDlgItem(hDlg, IDC_CHECK_TRANS_ALPHABLEND2), FALSE);
 				}else if (configuracion->alphaBlend == 2) {
@@ -75,6 +76,7 @@ LRESULT CALLBACK OptionDialog8(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 			EnableWindow(GetDlgItem(hDlg, IDC_CHECK_TRANS_BMP),          !checked);
 			EnableWindow(GetDlgItem(hDlg, IDC_CHECK_TRANS_MASK),         !checked);
 			EnableWindow(GetDlgItem(hDlg, IDC_COMBO_TEXT_QUALITY),       !checked);
+			EnableWindow(GetDlgItem(hDlg, IDC_COMBO_TEXT_QUALITY2),      !checked);
 			EnableWindow(GetDlgItem(hDlg, IDC_CHECK_TRANS_ALPHABLEND2),  !checked);
 			SendMessage(GetDlgItem(hDlg, IDC_CHECK_TRANS_ALPHABLEND2), BM_SETCHECK, BST_UNCHECKED, 0);
 			break;
@@ -85,6 +87,7 @@ LRESULT CALLBACK OptionDialog8(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 			EnableWindow(GetDlgItem(hDlg, IDC_CHECK_TRANS_BMP),          !checked);
 			EnableWindow(GetDlgItem(hDlg, IDC_CHECK_TRANS_MASK),         !checked);
 			EnableWindow(GetDlgItem(hDlg, IDC_COMBO_TEXT_QUALITY),       !checked);
+			EnableWindow(GetDlgItem(hDlg, IDC_COMBO_TEXT_QUALITY2),      !checked);
 			EnableWindow(GetDlgItem(hDlg, IDC_CHECK_TRANS_ALPHABLEND),   !checked);
 			SendMessage(GetDlgItem(hDlg, IDC_CHECK_TRANS_ALPHABLEND), BM_SETCHECK, BST_UNCHECKED, 0);
 			break;

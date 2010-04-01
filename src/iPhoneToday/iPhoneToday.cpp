@@ -1601,12 +1601,7 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type) {
 			HFONT hSysFont = (HFONT) GetStockObject(SYSTEM_FONT);
 			LOGFONT lf;
 			GetObject(hSysFont, sizeof(LOGFONT), &lf);
-
-			if (cs->cs.textBold) {
-				lf.lfWeight = FW_BOLD;
-			} else {
-				lf.lfWeight = FW_NORMAL;
-			}
+			lf.lfWeight = cs->cs.textWeight;
 			lf.lfHeight = cs->textHeight;
 			lf.lfQuality = configuracion->textQuality;
 			if (wcslen(cs->cs.textFacename) > 0) {
