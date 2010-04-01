@@ -234,7 +234,7 @@ BOOL CConfiguracion::loadXMLIcons2(CListaPantalla *listaPantallas)
 	return TRUE;
 }
 
-BOOL CConfiguracion::cargaIconsImages(HDC *hDC, CListaPantalla *listaPantallas)
+BOOL CConfiguracion::loadIconsImages(HDC *hDC, CListaPantalla *listaPantallas)
 {
 	TIMER_RESET(loadImage_duration);
 	TIMER_RESET(loadImage_load_duration);
@@ -251,7 +251,7 @@ BOOL CConfiguracion::cargaIconsImages(HDC *hDC, CListaPantalla *listaPantallas)
 		nIconos = pantalla->numIconos;
 		for (int j = 0; j < nIconos; j++) {
 			icono = pantalla->listaIconos[j];
-			cargaImagenIcono(hDC, icono, MAINSCREEN);
+			loadIconImage(hDC, icono, MAINSCREEN);
 		}
 	}
 
@@ -261,7 +261,7 @@ BOOL CConfiguracion::cargaIconsImages(HDC *hDC, CListaPantalla *listaPantallas)
 	nIconos = pantalla->numIconos;
 	for (int j = 0; j < nIconos; j++) {
 		icono = pantalla->listaIconos[j];
-		cargaImagenIcono(hDC, icono, BOTTOMBAR);
+		loadIconImage(hDC, icono, BOTTOMBAR);
 	}
 
 	// Load icons for the top bar
@@ -270,7 +270,7 @@ BOOL CConfiguracion::cargaIconsImages(HDC *hDC, CListaPantalla *listaPantallas)
 	nIconos = pantalla->numIconos;
 	for (int j = 0; j < nIconos; j++) {
 		icono = pantalla->listaIconos[j];
-		cargaImagenIcono(hDC, icono, TOPBAR);
+		loadIconImage(hDC, icono, TOPBAR);
 	}
 
 #ifdef TIMING
@@ -283,7 +283,7 @@ BOOL CConfiguracion::cargaIconsImages(HDC *hDC, CListaPantalla *listaPantallas)
 	return TRUE;
 }
 
-BOOL CConfiguracion::cargaImagenIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type)
+BOOL CConfiguracion::loadIconImage(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type)
 {
 	BOOL result;
 	TCHAR rutaImgCompleta[MAX_PATH];
@@ -307,7 +307,8 @@ BOOL CConfiguracion::cargaImagenIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE scree
 	result = true;
 	return result;
 }
-BOOL CConfiguracion::cargaFondo(HDC *hDC)
+
+BOOL CConfiguracion::loadBackground(HDC *hDC)
 {
 #ifndef EXEC_MODE
 	BOOL isTransparent = this->fondoTransparente;
@@ -320,7 +321,7 @@ BOOL CConfiguracion::cargaFondo(HDC *hDC)
 
 		TCHAR rutaImgCompleta[MAX_PATH];
 		getAbsolutePath(rutaImgCompleta, CountOf(rutaImgCompleta), strFondoPantalla);
-		fondoPantalla->loadImage(hDC, rutaImgCompleta, this->fondoFitWidth ? anchoPantalla : 0, this->fondoFitHeight ? altoPantalla : 0, PIXFMT_16BPP_RGB565, this->fondoFactor);
+		fondoPantalla->loadImage(hDC, rutaImgCompleta, this->fondoFitWidth ? this->anchoPantalla : 0, this->fondoFitHeight ? this->altoPantalla : 0, PIXFMT_16BPP_RGB565, this->fondoFactor);
 		if (fondoPantalla->hDC == NULL) {
 			delete fondoPantalla;
 			fondoPantalla = NULL;
@@ -343,7 +344,7 @@ BOOL CConfiguracion::cargaFondo(HDC *hDC)
 		backBottomBar = new CIcono();
 		getAbsolutePath(fullPath, CountOf(fullPath), this->bottomBarConfig->cs.backWallpaper);
 		int height = this->bottomBarConfig->distanceIconsV + this->bottomBarConfig->cs.offset.top + this->bottomBarConfig->cs.offset.bottom;
-		backBottomBar->loadImage(hDC, fullPath, this->anchoPantalla, height, PIXFMT_32BPP_ARGB, 1, TRUE);
+		backBottomBar->loadImage(hDC, fullPath, this->bottomBarConfig->cs.backWallpaperFitWidth ? this->anchoPantalla : 0, this->bottomBarConfig->cs.backWallpaperFitHeight ? height : 0, this->bottomBarConfig->cs.backWallpaperAlphaBlend ? PIXFMT_32BPP_ARGB : PIXFMT_16BPP_RGB565, 1, TRUE);
 		if (backBottomBar->hDC == NULL) {
 			delete backBottomBar;
 			backBottomBar = NULL;
@@ -357,7 +358,7 @@ BOOL CConfiguracion::cargaFondo(HDC *hDC)
 		backTopBar = new CIcono();
 		getAbsolutePath(fullPath, CountOf(fullPath), this->topBarConfig->cs.backWallpaper);
 		int height = this->topBarConfig->distanceIconsV + this->topBarConfig->cs.offset.top + this->topBarConfig->cs.offset.bottom;
-		backTopBar->loadImage(hDC, fullPath, this->anchoPantalla, height, PIXFMT_32BPP_ARGB, 1, TRUE);
+		backTopBar->loadImage(hDC, fullPath, this->topBarConfig->cs.backWallpaperFitWidth ? this->anchoPantalla : 0, this->topBarConfig->cs.backWallpaperFitHeight ? height : 0, this->topBarConfig->cs.backWallpaperAlphaBlend ? PIXFMT_32BPP_ARGB : PIXFMT_16BPP_RGB565, 1, TRUE);
 		if (backTopBar->hDC == NULL) {
 			delete backTopBar;
 			backTopBar = NULL;
@@ -367,13 +368,13 @@ BOOL CConfiguracion::cargaFondo(HDC *hDC)
 	return TRUE;
 }
 
-BOOL CConfiguracion::cargaImagenes(HDC *hDC)
+BOOL CConfiguracion::loadImages(HDC *hDC)
 {
 	BOOL result = false;
 	TCHAR rutaImgCompleta[MAX_PATH];
 
 	// Background
-	cargaFondo(hDC);
+	loadBackground(hDC);
 
 	// Pressed icon
 	pressedIcon = new CIcono();
@@ -904,15 +905,15 @@ BOOL CConfiguracion::saveXMLConfig()
 	TiXmlElement *pElem;
 
 	pElem = new TiXmlElement("MainScreen");
-	mainScreenConfig->saveXMLConfig(pElem);
+	mainScreenConfig->saveXMLConfig(pElem, FALSE);
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("BottomBar");
-	bottomBarConfig->saveXMLConfig(pElem);
+	bottomBarConfig->saveXMLConfig(pElem, TRUE);
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("TopBar");
-	topBarConfig->saveXMLConfig(pElem);
+	topBarConfig->saveXMLConfig(pElem, TRUE);
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("Circles");

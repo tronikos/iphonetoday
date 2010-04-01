@@ -75,6 +75,10 @@ void CConfigurationScreen::defaultValues()
 	this->cs.backColor2 = 0;
 
 	this->cs.backWallpaper[0] = 0;
+	this->cs.backWallpaperAlphaBlend = 0;
+	this->cs.backWallpaperFitWidth = 1;
+	this->cs.backWallpaperFitHeight = 1;
+	this->cs.backWallpaperCenter = 1;
 
 	this->iconWidth = this->cs.iconWidthXML;
 	this->iconsPerRow = this->cs.iconsPerRowXML;
@@ -134,9 +138,13 @@ BOOL CConfigurationScreen::loadXMLConfig(TiXmlElement *pRoot)
 			XMLUtils::GetAttr(pElem, "shadow",    &this->cs.textShadow);
 			XMLUtils::GetAttr(pElem, "roundrect", &this->cs.textRoundRect);
 		} else if(_stricmp(nameNode, "Background") == 0) {
-			XMLUtils::GetAttr(pElem, "color1",    &this->cs.backColor1);
-			XMLUtils::GetAttr(pElem, "color2",    &this->cs.backColor2);
-			XMLUtils::GetAttr(pElem, "wallpaper", this->cs.backWallpaper, CountOf(this->cs.backWallpaper));
+			XMLUtils::GetAttr(pElem, "color1",     &this->cs.backColor1);
+			XMLUtils::GetAttr(pElem, "color2",     &this->cs.backColor2);
+			XMLUtils::GetAttr(pElem, "image",      this->cs.backWallpaper, CountOf(this->cs.backWallpaper));
+			XMLUtils::GetAttr(pElem, "alphablend", &this->cs.backWallpaperAlphaBlend);
+			XMLUtils::GetAttr(pElem, "fitwidth",   &this->cs.backWallpaperFitWidth);
+			XMLUtils::GetAttr(pElem, "fitheight",  &this->cs.backWallpaperFitHeight);
+			XMLUtils::GetAttr(pElem, "center",     &this->cs.backWallpaperCenter);
 		}
 	}
 
@@ -147,7 +155,7 @@ BOOL CConfigurationScreen::loadXMLConfig(TiXmlElement *pRoot)
 	return TRUE;
 }
 
-BOOL CConfigurationScreen::saveXMLConfig(TiXmlElement *pRoot)
+BOOL CConfigurationScreen::saveXMLConfig(TiXmlElement *pRoot, BOOL isStaticbar)
 {
 	TiXmlElement *pElem ;
 
@@ -167,9 +175,11 @@ BOOL CConfigurationScreen::saveXMLConfig(TiXmlElement *pRoot)
 	XMLUtils::SetTextElem(pElem, this->cs.additionalVerticalSpace);
 	pRoot->LinkEndChild(pElem);
 
-	pElem = new TiXmlElement("ShrinkToFit");
-	XMLUtils::SetTextElem(pElem, this->cs.shrinkToFit);
-	pRoot->LinkEndChild(pElem);
+	if (isStaticbar) {
+		pElem = new TiXmlElement("ShrinkToFit");
+		XMLUtils::SetTextElem(pElem, this->cs.shrinkToFit);
+		pRoot->LinkEndChild(pElem);
+	}
 
 	pElem = new TiXmlElement("Offset");
 	XMLUtils::SetAttr(pElem, "left",   this->cs.offset.left);
@@ -191,7 +201,13 @@ BOOL CConfigurationScreen::saveXMLConfig(TiXmlElement *pRoot)
 	pElem = new TiXmlElement("Background");
 	XMLUtils::SetAttr(pElem, "color1",    this->cs.backColor1);
 	XMLUtils::SetAttr(pElem, "color2",    this->cs.backColor2);
-	XMLUtils::SetAttr(pElem, "wallpaper", this->cs.backWallpaper, CountOf(this->cs.backWallpaper));
+	if (isStaticbar) {
+		XMLUtils::SetAttr(pElem, "image",      this->cs.backWallpaper, CountOf(this->cs.backWallpaper));
+		XMLUtils::SetAttr(pElem, "alphablend", this->cs.backWallpaperAlphaBlend);
+		XMLUtils::SetAttr(pElem, "fitwidth",   this->cs.backWallpaperFitWidth);
+		XMLUtils::SetAttr(pElem, "fitheight",  this->cs.backWallpaperFitHeight);
+		XMLUtils::SetAttr(pElem, "center",     this->cs.backWallpaperCenter);
+	}
 	pRoot->LinkEndChild(pElem);
 
 	return TRUE;

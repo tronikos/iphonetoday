@@ -584,7 +584,7 @@ LRESULT doSize (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 			getWindowSize(hwnd, &windowWidth, &windowHeight);
 			if (windowWidth != configuracion->anchoPantalla || windowHeight != configuracion->altoPantalla) {
 				calculateConfiguration(windowWidth, windowHeight);
-				configuracion->cargaFondo(&hDCMem);
+				configuracion->loadBackground(&hDCMem);
 			}
 			borraObjetosHDC();
 			setPosiciones(true, 0, 0);
@@ -961,7 +961,7 @@ void RightClick(HWND hwnd, POINTS posCursor)
 				} else if (iconoActual.nPantallaActual == -2) {
 					st = TOPBAR;
 				}
-				configuracion->cargaImagenIcono(&hDCMem, destIcon, st);
+				configuracion->loadIconImage(&hDCMem, destIcon, st);
 
 				configuracion->saveXMLIcons(listaPantallas);
 				copyIconoActivo.nIconoActual = -1;
@@ -1713,40 +1713,47 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type) {
 			}
 		}
 
-		if (screen_type == BOTTOMBAR && configuracion->backBottomBar && configuracion->backBottomBar->hDC) {
-			BOOL ab = FALSE;
-			if (configuracion->alphaBlend) {
-				BLENDFUNCTION bf;
-				bf.BlendOp = AC_SRC_OVER;
-				bf.BlendFlags = 0;
-				bf.SourceConstantAlpha = 255;
-				bf.AlphaFormat = AC_SRC_ALPHA;
-				ab = AlphaBlend(*hDC, xDestOrg, yDestOrg, cx, cy, configuracion->backBottomBar->hDC, xSrcOrg, ySrcOrg, cx, cy, bf);
-			}
-			if (!ab) {
-				if (isTransparent || (configuracion->fondoPantalla && configuracion->fondoPantalla->hDC)) {
-					TransparentBlt(*hDC, xDestOrg, yDestOrg, cx, cy, configuracion->backBottomBar->hDC, xSrcOrg, ySrcOrg, cx, cy, RGB(0, 0, 0));
-				} else {
-					BitBlt(*hDC, xDestOrg, yDestOrg, cx, cy, configuracion->backBottomBar->hDC, xSrcOrg, ySrcOrg, SRCCOPY);
-				}
-			}
+		// Print background of static bars
+		CIcono *back = NULL;
+		if (screen_type == BOTTOMBAR) {
+			back = configuracion->backBottomBar;
+		} else if (screen_type == TOPBAR) {
+			back = configuracion->backTopBar;
 		}
-		if (screen_type == TOPBAR && configuracion->backTopBar && configuracion->backTopBar->hDC) {
+		if (back && back->hDC) {
+			int bcx = min(cx, (int) back->anchoImagen);
+			int bcy = min(cy, (int) back->altoImagen);
+			int bxDestOrg = xDestOrg;
+			int byDestOrg = yDestOrg;
+			int bxSrcOrg = xSrcOrg;
+			int bySrcOrg = ySrcOrg;
+			if (cs->cs.backWallpaperCenter) {
+				if ((int) back->anchoImagen < cx) {
+					bxDestOrg += (cx - back->anchoImagen) / 2;
+				} else if ((int) back->anchoImagen > cx) {
+					bxSrcOrg += (back->anchoImagen - cx) / 2;
+				}
+				if ((int) back->altoImagen < cy) {
+					byDestOrg += (cy - back->altoImagen) / 2;
+				} else if ((int) back->altoImagen > cy) {
+					bySrcOrg += (back->altoImagen - cy) / 2;
+				}
+			}
 			BOOL ab = FALSE;
-			if (configuracion->alphaBlend) {
+			if (configuracion->alphaBlend && cs->cs.backWallpaperAlphaBlend) {
 				BLENDFUNCTION bf;
 				bf.BlendOp = AC_SRC_OVER;
 				bf.BlendFlags = 0;
 				bf.SourceConstantAlpha = 255;
 				bf.AlphaFormat = AC_SRC_ALPHA;
-				ab = AlphaBlend(*hDC, xDestOrg, yDestOrg, cx, cy, configuracion->backTopBar->hDC, xSrcOrg, ySrcOrg, cx, cy, bf);
+				ab = AlphaBlend(*hDC, bxDestOrg, byDestOrg, bcx, bcy, back->hDC, bxSrcOrg, bySrcOrg, bcx, bcy, bf);
 			}
 			if (!ab) {
-				if (isTransparent || (configuracion->fondoPantalla && configuracion->fondoPantalla->hDC)) {
-					TransparentBlt(*hDC, xDestOrg, yDestOrg, cx, cy, configuracion->backTopBar->hDC, xSrcOrg, ySrcOrg, cx, cy, RGB(0, 0, 0));
-				} else {
-					BitBlt(*hDC, xDestOrg, yDestOrg, cx, cy, configuracion->backTopBar->hDC, xSrcOrg, ySrcOrg, SRCCOPY);
-				}
+				//if (isTransparent || (configuracion->fondoPantalla && configuracion->fondoPantalla->hDC)) {
+				//	TransparentBlt(*hDC, bxDestOrg, byDestOrg, bcx, bcy, back->hDC, bxSrcOrg, bySrcOrg, bcx, bcy, RGB(0, 0, 0));
+				//} else {
+					BitBlt(*hDC, bxDestOrg, byDestOrg, bcx, bcy, back->hDC, bxSrcOrg, bySrcOrg, SRCCOPY);
+				//}
 			}
 		}
 
@@ -2565,7 +2572,7 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 			} else if (pantalla == listaPantallas->topBar) {
 				st = TOPBAR;
 			}
-			configuracion->cargaImagenIcono(&hDCMem, icono, st);
+			configuracion->loadIconImage(&hDCMem, icono, st);
 
 			setPosiciones(true, 0, 0);
 
@@ -2842,14 +2849,14 @@ BOOL inicializaApp(HWND hwnd) {
 	HDC hdc = GetDC(hwnd);
 
 	// duration = -(long)GetTickCount();
-	configuracion->cargaIconsImages(&hdc, listaPantallas);
+	configuracion->loadIconsImages(&hdc, listaPantallas);
 	// duration += GetTickCount();
-	// NKDbgPrintfW(L" *** %d \t to cargaIconsImages.\n", duration);
+	// NKDbgPrintfW(L" *** %d \t to loadIconsImages.\n", duration);
 
 	// duration = -(long)GetTickCount();
-	configuracion->cargaImagenes(&hdc);
+	configuracion->loadImages(&hdc);
 	// duration += GetTickCount();
-	// NKDbgPrintfW(L" *** %d \t to cargaImagenes.\n", duration);
+	// NKDbgPrintfW(L" *** %d \t to loadImages.\n", duration);
 
 	ReleaseDC(hwnd, hdc);
 
@@ -3519,7 +3526,7 @@ BOOL ProcessNotifications()
 				} else if (pantalla == listaPantallas->topBar) {
 					st = TOPBAR;
 				}
-				configuracion->cargaImagenIcono(&hDCMem, icono, st);
+				configuracion->loadIconImage(&hDCMem, icono, st);
 				pantalla->debeActualizar = TRUE;
 				shouldInvalidateRect = TRUE;
 			}
@@ -3542,7 +3549,7 @@ BOOL ProcessNotifications()
 	if (notifications->dwNotificationsChanged[SN_RELOADICONS] && notifications->dwNotifications[SN_RELOADICONS]) {
 		// Cargamos la configuracion de iconos
 		configuracion->loadXMLIcons2(listaPantallas);
-		configuracion->cargaIconsImages(&hDCMem, listaPantallas);
+		configuracion->loadIconsImages(&hDCMem, listaPantallas);
 
 		// Marcamos aquellas pantallas que haya que actualizar
 		CPantalla *pantalla;

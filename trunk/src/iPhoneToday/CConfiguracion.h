@@ -22,10 +22,10 @@ public:
 
 	void calculaConfiguracion(int maxIconos, int numIconsInBottomBar, int numIconsInTopBar, int width, int height);
 	BOOL loadXMLIcons2(CListaPantalla *listaPantallas);
-	BOOL cargaIconsImages(HDC *hDC, CListaPantalla *listaPantallas);
-	BOOL cargaImagenIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type);
-	BOOL cargaImagenes(HDC *hDC);
-	BOOL cargaFondo(HDC *hDC);
+	BOOL loadIconsImages(HDC *hDC, CListaPantalla *listaPantallas);
+	BOOL loadIconImage(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type);
+	BOOL loadImages(HDC *hDC);
+	BOOL loadBackground(HDC *hDC);
 
 	BOOL loadXMLIcons(CListaPantalla *listaPantallas);
 	void defaultValues();

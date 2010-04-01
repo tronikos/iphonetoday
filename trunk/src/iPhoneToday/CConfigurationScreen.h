@@ -20,6 +20,10 @@ typedef struct ConfigurationScreen {
 	COLORREF backColor1;
 	COLORREF backColor2;
 	TCHAR backWallpaper[MAX_PATH];
+	BOOL backWallpaperAlphaBlend;
+	BOOL backWallpaperFitWidth;
+	BOOL backWallpaperFitHeight;
+	BOOL backWallpaperCenter;
 } ConfigurationScreen;
 
 class CConfigurationScreen
@@ -31,7 +35,7 @@ public:
 	void defaultValues();
 	void Scale(double scale);
 	BOOL loadXMLConfig(TiXmlElement *pRoot);
-	BOOL saveXMLConfig(TiXmlElement *pRoot);
+	BOOL saveXMLConfig(TiXmlElement *pRoot, BOOL isStaticbar);
 
 	void calculate(BOOL isStaticbar, int maxIcons, UINT screenWidth, UINT screenHeight);
 
