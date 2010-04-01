@@ -1312,7 +1312,7 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 	if (icono->tipo != NOTIF_NORMAL) {
 		int numNotif = 0;
 		switch(icono->tipo) {
-			case NOTIF_LLAMADAS:
+			case NOTIF_MISSEDCALLS:
 				numNotif = notifications->dwNotifications[SN_PHONEMISSEDCALLS];
 				break;
 			case NOTIF_VMAIL:
@@ -1394,6 +1394,8 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 				StringCchPrintf(str, CountOf(str), L"%.1f", (notifications->memoryStatus.dwTotalPhys - notifications->memoryStatus.dwAvailPhys) / 1024.0 / 1024.0);
 				DrawSpecialIconText(*hDC, str, icono, width, &configuracion->memu);
 				break;
+			case NOTIF_MC_SIG_OPER:
+				numNotif = notifications->dwNotifications[SN_PHONEMISSEDCALLS];
 			case NOTIF_SIGNAL:
 			case NOTIF_SIGNAL_OPER:
 				if (wcslen(notifications->szNotifications[SN_PHONEOPERATORNAME]) == 0) {
@@ -1431,7 +1433,8 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 			TCHAR notif[16];
 
 			switch(icono->tipo) {
-				case NOTIF_LLAMADAS:
+				case NOTIF_MISSEDCALLS:
+				case NOTIF_MC_SIG_OPER:
 				case NOTIF_VMAIL:
 				case NOTIF_SMS:
 				case NOTIF_MMS:
@@ -1490,7 +1493,8 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 			}
 
 			switch(icono->tipo) {
-				case NOTIF_LLAMADAS:
+				case NOTIF_MISSEDCALLS:
+				case NOTIF_MC_SIG_OPER:
 				case NOTIF_VMAIL:
 				case NOTIF_SMS:
 				case NOTIF_MMS:
@@ -1543,7 +1547,7 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 
 	if (cs->textHeight > 0) {
 		TCHAR *p = icono->nombre;
-		if (icono->tipo == NOTIF_OPERATOR || icono->tipo == NOTIF_SIGNAL_OPER) {
+		if (icono->tipo == NOTIF_OPERATOR || icono->tipo == NOTIF_SIGNAL_OPER || icono->tipo == NOTIF_MC_SIG_OPER) {
 			p = notifications->szNotifications[SN_PHONEOPERATORNAME];
 		} else if (icono->tipo == NOTIF_PROFILE) {
 			p = notifications->szNotifications[SN_PHONEPROFILE];
@@ -2169,7 +2173,7 @@ void procesaPulsacion(HWND hwnd, POINTS posCursor, BOOL doubleClick, BOOL noLanz
 int hayNotificacion(int tipo) {
 	int numNotif = 0;
 	switch(tipo) {
-		case NOTIF_LLAMADAS:
+		case NOTIF_MISSEDCALLS:
 			numNotif = notifications->dwNotifications[SN_PHONEMISSEDCALLS];
 			break;
 		case NOTIF_VMAIL:
@@ -2276,7 +2280,7 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 
 			// Configuramos el elemento Type
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_NORMAL_TXT);
-			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_LLAMADAS_TXT);
+			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_MISSEDCALLS_TXT);
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_SMS_TXT);
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_MMS_TXT);
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_OTHER_EMAIL_TXT);
@@ -2300,6 +2304,7 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_SIGNAL_TXT);
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_OPERATOR_TXT);
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_SIGNAL_OPER_TXT);
+			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_MC_SIG_OPER_TXT);
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_PROFILE_TXT);
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_VMAIL_TXT);
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_IRDA_TXT);
@@ -2330,7 +2335,7 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 
 				if (icono->tipo == NOTIF_NORMAL) {
 					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 0, 0);
-				} else if (icono->tipo == NOTIF_LLAMADAS) {
+				} else if (icono->tipo == NOTIF_MISSEDCALLS) {
 					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 1, 0);
 				} else if (icono->tipo == NOTIF_SMS) {
 					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 2, 0);
@@ -2378,12 +2383,14 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 23, 0);
 				} else if (icono->tipo == NOTIF_SIGNAL_OPER) {
 					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 24, 0);
-				} else if (icono->tipo == NOTIF_PROFILE) {
+				} else if (icono->tipo == NOTIF_MC_SIG_OPER) {
 					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 25, 0);
-				} else if (icono->tipo == NOTIF_VMAIL) {
+				} else if (icono->tipo == NOTIF_PROFILE) {
 					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 26, 0);
-				} else if (icono->tipo == NOTIF_IRDA) {
+				} else if (icono->tipo == NOTIF_VMAIL) {
 					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 27, 0);
+				} else if (icono->tipo == NOTIF_IRDA) {
+					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 28, 0);
 				} else {
 					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 0, 0);
 				}
@@ -2471,8 +2478,8 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 			// Type Icon
 			if (lstrcmpi(strType, NOTIF_NORMAL_TXT) == 0) {
 				nType = NOTIF_NORMAL;
-			} else if (lstrcmpi(strType, NOTIF_LLAMADAS_TXT) == 0) {
-				nType = NOTIF_LLAMADAS;
+			} else if (lstrcmpi(strType, NOTIF_MISSEDCALLS_TXT) == 0) {
+				nType = NOTIF_MISSEDCALLS;
 			} else if (lstrcmpi(strType, NOTIF_SMS_TXT) == 0) {
 				nType = NOTIF_SMS;
 			} else if (lstrcmpi(strType, NOTIF_MMS_TXT) == 0) {
@@ -2519,6 +2526,8 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 				nType = NOTIF_OPERATOR;
 			} else if (lstrcmpi(strType, NOTIF_SIGNAL_OPER_TXT) == 0) {
 				nType = NOTIF_SIGNAL_OPER;
+			} else if (lstrcmpi(strType, NOTIF_MC_SIG_OPER_TXT) == 0) {
+				nType = NOTIF_MC_SIG_OPER;
 			} else if (lstrcmpi(strType, NOTIF_PROFILE_TXT) == 0) {
 				nType = NOTIF_PROFILE;
 			} else if (lstrcmpi(strType, NOTIF_VMAIL_TXT) == 0) {
@@ -3328,7 +3337,7 @@ void InvalidateScreenIfNotificationsChanged(CPantalla *pantalla)
 		switch(icono->tipo) {
 			case NOTIF_NORMAL:
 				break;
-			case NOTIF_LLAMADAS:
+			case NOTIF_MISSEDCALLS:
 				if (notifications->dwNotificationsChanged[SN_PHONEMISSEDCALLS]) {
 					pantalla->debeActualizar = TRUE;
 					return;
@@ -3471,6 +3480,12 @@ void InvalidateScreenIfNotificationsChanged(CPantalla *pantalla)
 				break;
 			case NOTIF_SIGNAL_OPER:
 				if (notifications->dwNotificationsChanged[SN_PHONESIGNALSTRENGTH] || notifications->szNotificationsChanged[SN_PHONEOPERATORNAME]) {
+					pantalla->debeActualizar = TRUE;
+					return;
+				}
+				break;
+			case NOTIF_MC_SIG_OPER:
+				if (notifications->dwNotificationsChanged[NOTIF_MISSEDCALLS] || notifications->dwNotificationsChanged[SN_PHONESIGNALSTRENGTH] || notifications->szNotificationsChanged[SN_PHONEOPERATORNAME]) {
 					pantalla->debeActualizar = TRUE;
 					return;
 				}

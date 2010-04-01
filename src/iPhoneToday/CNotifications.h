@@ -20,7 +20,7 @@ enum dw_notifications_enum {
 	SN_WIFISTATEPOWERON,				// HKLM\System\State\Hardware\WiFi
 	SN_BLUETOOTHSTATEPOWERON,			// HKLM\System\State\Hardware\Bluetooth
 	SN_CELLSYSTEMCONNECTED,				// HKLM\System\State\Phone\Cellular System Connected
-	SN_PHONESIGNALSTRENGTH,				// HKLM\System\State\Phone\Signal Strength
+	SN_PHONESIGNALSTRENGTH,				// HKLM\System\State\Phone\Signal Strength Raw
 	SN_POWERBATTERYSTATE,				// HKLM\System\State\Battery\Main
 	SN_VOLUME,							// HKCU\ControlPanel\Volume\Volume
 	SN_CLOCKALARMFLAGS0,				// HKLM\Software\Microsoft\Clock\0\AlarmFlags
