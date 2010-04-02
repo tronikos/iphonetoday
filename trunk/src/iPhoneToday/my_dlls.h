@@ -8,6 +8,7 @@ typedef struct _BLENDFUNCTION
 
 #define AC_SRC_OVER                 0x00
 #define AC_SRC_ALPHA                0x01      // premultiplied alpha
+#define AC_SRC_ALPHA_NONPREMULT     0x02      // non-premultiplied alpha
 
 BOOL AlphaBlend(HDC hdcDest, int nXOriginDest, int nYOriginDest, int nWidthDest, int nHeightDest,
 				HDC hdcSrc, int nXOriginSrc, int nYOriginSrc, int nWidthSrc, int nHeightSrc,
