@@ -53,6 +53,8 @@ BOOL AlphaBlend(HDC hdcDest, int nXOriginDest, int nYOriginDest, int nWidthDest,
 				BLENDFUNCTION blendFunction)
 {
 	BOOL ret = FALSE;
+	if (hdcSrc == NULL || hdcDest == NULL)
+		return FALSE;
 	if (InitCoredll() && pAlphaBlend != NULL)
 		ret = pAlphaBlend(hdcDest, nXOriginDest, nYOriginDest, nWidthDest, nHeightDest,
 							hdcSrc, nXOriginSrc, nYOriginSrc, nWidthSrc, nHeightSrc,
