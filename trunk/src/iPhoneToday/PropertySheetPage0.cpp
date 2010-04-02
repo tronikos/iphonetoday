@@ -7,25 +7,25 @@
 #include "OptionDialog.h"
 #include "ChooseFont.h"
 
+LRESULT CALLBACK ScreenBackSettingsProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
 ConfigurationScreen ms, bb, tb;
 ConfigurationScreen *cur_cs;
+BOOL isStaticBar = FALSE;
 
 void cs_enable(HWND hDlg, BOOL bEnable)
 {
 	EnableWindow(GetDlgItem(hDlg, IDC_EDIT_CS_ICON_WIDTH),		bEnable);
 	EnableWindow(GetDlgItem(hDlg, IDC_EDIT_CS_ICONS_PER_ROW),	bEnable);
 	EnableWindow(GetDlgItem(hDlg, IDC_EDIT_CS_TEXT_OFFSET),		bEnable);
-	EnableWindow(GetDlgItem(hDlg, IDC_EDIT_CS_BACK_COLOR1),		bEnable);
-	EnableWindow(GetDlgItem(hDlg, IDC_BUTTON_CS_BACK_COLOR1),	bEnable);
-	EnableWindow(GetDlgItem(hDlg, IDC_EDIT_CS_BACK_COLOR2),		bEnable);
-	EnableWindow(GetDlgItem(hDlg, IDC_BUTTON_CS_BACK_COLOR2),	bEnable);	
 	EnableWindow(GetDlgItem(hDlg, IDC_EDIT_CS_MINHSPACE),		bEnable);
 	EnableWindow(GetDlgItem(hDlg, IDC_EDIT_CS_ADDVSPACE),		bEnable);
 	EnableWindow(GetDlgItem(hDlg, IDC_EDIT_CS_OFFSET_LEFT),		bEnable);
 	EnableWindow(GetDlgItem(hDlg, IDC_EDIT_CS_OFFSET_TOP),		bEnable);
 	EnableWindow(GetDlgItem(hDlg, IDC_EDIT_CS_OFFSET_RIGHT),	bEnable);
 	EnableWindow(GetDlgItem(hDlg, IDC_EDIT_CS_OFFSET_BOTTOM),	bEnable);
-
+	EnableWindow(GetDlgItem(hDlg, IDC_BUTTON_CS_TEXT),			bEnable);
+	EnableWindow(GetDlgItem(hDlg, IDC_BUTTON_CS_BACK),			bEnable);
 }
 
 void cs_load(HWND hDlg, ConfigurationScreen *cs)
@@ -35,9 +35,6 @@ void cs_load(HWND hDlg, ConfigurationScreen *cs)
 		SetDlgItemInt(hDlg, IDC_EDIT_CS_ICONS_PER_ROW,	cs->iconsPerRowXML,	TRUE);
 		SetDlgItemInt(hDlg, IDC_EDIT_CS_TEXT_OFFSET,	cs->textOffset,		TRUE);
 
-		SetDlgItemHex(hDlg, IDC_EDIT_CS_BACK_COLOR1,	cs->backColor1);
-		SetDlgItemHex(hDlg, IDC_EDIT_CS_BACK_COLOR2,	cs->backColor2);
-
 		SetDlgItemInt(hDlg, IDC_EDIT_CS_MINHSPACE,		cs->minHorizontalSpace,			TRUE);
 		SetDlgItemInt(hDlg, IDC_EDIT_CS_ADDVSPACE,		cs->additionalVerticalSpace,	TRUE);
 
@@ -45,6 +42,8 @@ void cs_load(HWND hDlg, ConfigurationScreen *cs)
 		SetDlgItemInt(hDlg, IDC_EDIT_CS_OFFSET_TOP,		cs->offset.top,		TRUE);
 		SetDlgItemInt(hDlg, IDC_EDIT_CS_OFFSET_RIGHT,	cs->offset.right,	TRUE);
 		SetDlgItemInt(hDlg, IDC_EDIT_CS_OFFSET_BOTTOM,	cs->offset.bottom,	TRUE);
+
+		SendMessage(GetDlgItem(hDlg, IDC_CHECK_CS_SHRINKTOFIT), BM_SETCHECK, cs->shrinkToFit ? BST_CHECKED : BST_UNCHECKED, 0);
 	}
 	cs_enable(hDlg, TRUE);
 }
@@ -56,9 +55,6 @@ void cs_save(HWND hDlg, ConfigurationScreen *cs)
 		cs->iconsPerRowXML	= GetDlgItemInt(hDlg, IDC_EDIT_CS_ICONS_PER_ROW,	NULL, TRUE);
 		cs->textOffset		= GetDlgItemInt(hDlg, IDC_EDIT_CS_TEXT_OFFSET,		NULL, TRUE);
 
-		cs->backColor1		= GetDlgItemHex(hDlg, IDC_EDIT_CS_BACK_COLOR1,		NULL);
-		cs->backColor2		= GetDlgItemHex(hDlg, IDC_EDIT_CS_BACK_COLOR2,		NULL);
-
 		cs->minHorizontalSpace		= GetDlgItemInt(hDlg, IDC_EDIT_CS_MINHSPACE,	NULL, TRUE);
 		cs->additionalVerticalSpace	= GetDlgItemInt(hDlg, IDC_EDIT_CS_ADDVSPACE,	NULL, TRUE);
 
@@ -66,6 +62,8 @@ void cs_save(HWND hDlg, ConfigurationScreen *cs)
 		cs->offset.top		= GetDlgItemInt(hDlg, IDC_EDIT_CS_OFFSET_TOP,		NULL, TRUE);
 		cs->offset.right	= GetDlgItemInt(hDlg, IDC_EDIT_CS_OFFSET_RIGHT,		NULL, TRUE);
 		cs->offset.bottom	= GetDlgItemInt(hDlg, IDC_EDIT_CS_OFFSET_BOTTOM,	NULL, TRUE);
+
+		cs->shrinkToFit		= SendMessage(GetDlgItem(hDlg, IDC_CHECK_CS_SHRINKTOFIT), BM_GETCHECK, 0, 0) == BST_CHECKED;
 	}
 }
 
@@ -80,6 +78,7 @@ LRESULT CALLBACK OptionDialog0(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 		{
 			InitOptionsDialog(hDlg, 0);
 
+			isStaticBar = FALSE;
 			cur_cs = NULL;
 			cs_enable(hDlg, FALSE);
 
@@ -98,14 +97,13 @@ LRESULT CALLBACK OptionDialog0(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 		return TRUE;
 	case WM_COMMAND:
 		{
-			int rgbCurrent;
-			COLORREF nextColor;
 			switch (LOWORD(wParam))
 			{
 			case IDC_COMBO_CS:
 				if (HIWORD(wParam) == CBN_SELCHANGE) {
 					cs_save(hDlg, cur_cs);
-					ShowWindow(GetDlgItem(hDlg, IDC_CHECK_CLOCK_FORMAT12), SW_HIDE);
+					ShowWindow(GetDlgItem(hDlg, IDC_CHECK_CS_SHRINKTOFIT), SW_HIDE);
+					isStaticBar = FALSE;
 					TCHAR str[MAX_PATH];
 					GetDlgItemText(hDlg, IDC_COMBO_CS, str, MAX_PATH);
 					if (lstrcmpi(str, L"Mainscreen") == 0) {
@@ -114,24 +112,16 @@ LRESULT CALLBACK OptionDialog0(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 					} else if (lstrcmpi(str, L"Bottombar") == 0) {
 						cur_cs = &bb;
 						cs_load(hDlg, cur_cs);
+						ShowWindow(GetDlgItem(hDlg, IDC_CHECK_CS_SHRINKTOFIT), SW_SHOW);
+						isStaticBar = TRUE;
 					} else if (lstrcmpi(str, L"Topbar") == 0) {
 						cur_cs = &tb;
 						cs_load(hDlg, cur_cs);
+						ShowWindow(GetDlgItem(hDlg, IDC_CHECK_CS_SHRINKTOFIT), SW_SHOW);
+						isStaticBar = TRUE;
 					} else {
 						cs_enable(hDlg, FALSE);
 					}
-				}
-				break;
-			case IDC_BUTTON_CS_BACK_COLOR1:
-				rgbCurrent = GetDlgItemHex(hDlg, IDC_EDIT_CS_BACK_COLOR1, NULL);
-				if (ColorSelector(hDlg, rgbCurrent, &nextColor)) {
-					SetDlgItemHex(hDlg, IDC_EDIT_CS_BACK_COLOR1, nextColor);
-				}
-				break;
-			case IDC_BUTTON_CS_BACK_COLOR2:
-				rgbCurrent = GetDlgItemHex(hDlg, IDC_EDIT_CS_BACK_COLOR2, NULL);
-				if (ColorSelector(hDlg, rgbCurrent, &nextColor)) {
-					SetDlgItemHex(hDlg, IDC_EDIT_CS_BACK_COLOR2, nextColor);
 				}
 				break;
 			case IDC_EDIT_CS_ICONS_PER_ROW:
@@ -159,6 +149,9 @@ LRESULT CALLBACK OptionDialog0(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 					cur_cs->textShadow = cfs.shadow;
 					cur_cs->textRoundRect = cfs.roundrect;
 				}
+				break;
+			case IDC_BUTTON_CS_BACK:
+				DialogBox(g_hInst, MAKEINTRESOURCE(IDD_DIALOGBACK), hDlg, (DLGPROC)ScreenBackSettingsProc);
 				break;
 			}
 		}
@@ -239,4 +232,88 @@ BOOL SaveConfiguration0(HWND hDlg)
 	memcpy(&configuracion->topBarConfig->cs,     &tb, sizeof(CConfigurationScreen));
 
 	return TRUE;
+}
+
+LRESULT CALLBACK ScreenBackSettingsProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	int rgbCurrent;
+	COLORREF nextColor;
+
+	switch (uMsg)
+	{
+	case WM_INITDIALOG:
+		{
+			SetWindowLong(hDlg, GWL_EXSTYLE, GetWindowLong(hDlg, GWL_EXSTYLE) | WS_EX_CAPTIONOKBTN);
+			if (FindWindow(L"MS_SIPBUTTON", NULL) == NULL) {
+				SetWindowLong(hDlg, GWL_EXSTYLE, GetWindowLong(hDlg, GWL_EXSTYLE) | WS_EX_CONTEXTHELP);
+			}
+
+			if (!isStaticBar) {
+				ShowWindow(GetDlgItem(hDlg, IDC_STATIC_CS_WALLPAPER),		SW_HIDE);
+				ShowWindow(GetDlgItem(hDlg, IDC_EDIT_CS_BACK_WALLPAPER),	SW_HIDE);
+				ShowWindow(GetDlgItem(hDlg, IDC_BUTTON_CS_BACK_WALLPAPER),	SW_HIDE);
+				ShowWindow(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_ALPHABLEND),	SW_HIDE);
+				ShowWindow(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_CENTER),		SW_HIDE);
+				ShowWindow(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_FIT_WIDTH),	SW_HIDE);
+				ShowWindow(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_FIT_HEIGHT),	SW_HIDE);
+			}
+
+			SendMessage(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_GRADIENT), BM_SETCHECK, cur_cs->backGradient ? BST_CHECKED : BST_UNCHECKED, 0);
+			SetDlgItemHex(hDlg, IDC_EDIT_CS_BACK_COLOR1, cur_cs->backColor1);
+			SetDlgItemHex(hDlg, IDC_EDIT_CS_BACK_COLOR2, cur_cs->backColor2);
+			SetDlgItemText(hDlg, IDC_EDIT_CS_BACK_WALLPAPER, cur_cs->backWallpaper);
+			SendMessage(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_ALPHABLEND), BM_SETCHECK, cur_cs->backWallpaperAlphaBlend ? BST_CHECKED : BST_UNCHECKED, 0);
+			SendMessage(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_CENTER), BM_SETCHECK, cur_cs->backWallpaperCenter ? BST_CHECKED : BST_UNCHECKED, 0);
+			SendMessage(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_FIT_WIDTH), BM_SETCHECK, cur_cs->backWallpaperFitWidth ? BST_CHECKED : BST_UNCHECKED, 0);
+			SendMessage(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_FIT_HEIGHT), BM_SETCHECK, cur_cs->backWallpaperFitHeight ? BST_CHECKED : BST_UNCHECKED, 0);
+		}
+		return TRUE;
+
+	case WM_COMMAND:
+		switch(LOWORD(wParam))
+		{
+		case IDOK:
+			cur_cs->backGradient = SendMessage(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_GRADIENT), BM_GETCHECK, 0, 0) == BST_CHECKED;
+			cur_cs->backColor1 = GetDlgItemHex(hDlg, IDC_EDIT_CS_BACK_COLOR1, NULL);
+			cur_cs->backColor2 = GetDlgItemHex(hDlg, IDC_EDIT_CS_BACK_COLOR2, NULL);
+			GetDlgItemText(hDlg, IDC_EDIT_CS_BACK_WALLPAPER, cur_cs->backWallpaper, CountOf(cur_cs->backWallpaper));
+			cur_cs->backWallpaperAlphaBlend = SendMessage(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_ALPHABLEND), BM_GETCHECK, 0, 0) == BST_CHECKED;
+			cur_cs->backWallpaperCenter = SendMessage(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_CENTER), BM_GETCHECK, 0, 0) == BST_CHECKED;
+			cur_cs->backWallpaperFitWidth = SendMessage(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_FIT_WIDTH), BM_GETCHECK, 0, 0) == BST_CHECKED;
+			cur_cs->backWallpaperFitHeight = SendMessage(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_FIT_HEIGHT), BM_GETCHECK, 0, 0) == BST_CHECKED;
+			EndDialog(hDlg, LOWORD(wParam));
+			break;
+		case IDCANCEL:
+			EndDialog(hDlg, LOWORD(wParam));
+			break;
+		case IDC_BUTTON_CS_BACK_COLOR1:
+			rgbCurrent = GetDlgItemHex(hDlg, IDC_EDIT_CS_BACK_COLOR1, NULL);
+			if (ColorSelector(hDlg, rgbCurrent, &nextColor)) {
+				SetDlgItemHex(hDlg, IDC_EDIT_CS_BACK_COLOR1, nextColor);
+			}
+			break;
+		case IDC_BUTTON_CS_BACK_COLOR2:
+			rgbCurrent = GetDlgItemHex(hDlg, IDC_EDIT_CS_BACK_COLOR2, NULL);
+			if (ColorSelector(hDlg, rgbCurrent, &nextColor)) {
+				SetDlgItemHex(hDlg, IDC_EDIT_CS_BACK_COLOR2, nextColor);
+			}
+			break;
+		case IDC_BUTTON_CS_BACK_WALLPAPER:
+			TCHAR str[MAX_PATH];
+			TCHAR fullPath[MAX_PATH];
+			TCHAR browseDir[MAX_PATH];
+			GetDlgItemText(hDlg, IDC_EDIT_CS_BACK_WALLPAPER, str, MAX_PATH);
+			configuracion->getAbsolutePath(fullPath, MAX_PATH, str);
+			getPathFromFile(fullPath, browseDir);
+			if (openFileBrowse(hDlg, OFN_EXFLAG_THUMBNAILVIEW, str, browseDir)) {
+				SetDlgItemText(hDlg, IDC_EDIT_CS_BACK_WALLPAPER, str);
+			}
+			break;
+		}
+		break;
+	case WM_HELP:
+		ToggleKeyboard();
+		break;
+	}
+	return FALSE;
 }

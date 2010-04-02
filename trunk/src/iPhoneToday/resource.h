@@ -15,7 +15,8 @@
 #define IDS_TAB8                        118
 #define IDS_TAB9                        119
 #define IDS_TAB10                       120
-#define IDD_DIALOGFONT                  122
+#define IDD_DIALOGFONT                  121
+#define IDD_DIALOGBACK                  122
 #define IDD_DIALOGDUMMY                 500
 #define IDD_MENU_ICON                   501
 #define IDD_MENU_HEADER                 502
@@ -51,6 +52,8 @@
 #define IDC_EDIT_CS_ICONS_PER_ROW       1033
 #define IDC_BUTTON_CS_TEXT              1034
 #define IDC_EDIT_CS_TEXT_OFFSET         1035
+#define IDC_BUTTON_CS_BACK              1036
+#define IDC_CHECK_CS_SHRINKTOFIT        1037
 #define IDC_EDIT_CS_BACK_COLOR1         1039
 #define IDC_BUTTON_CS_BACK_COLOR1       1040
 #define IDC_EDIT_CS_BACK_COLOR2         1041
@@ -157,6 +160,14 @@
 #define IDC_EDIT_FONT_SHADOW            1187
 #define IDC_SPIN_FONT_SHADOW            1188
 #define IDC_COMBO_SIS_FACENAME          1189
+#define IDC_CHECK_CS_BACK_GRADIENT      1190
+#define IDC_EDIT_CS_BACK_WALLPAPER      1191
+#define IDC_BUTTON_CS_BACK_WALLPAPER    1192
+#define IDC_CHECK_CS_BACK_ALPHABLEND    1193
+#define IDC_CHECK_CS_BACK_CENTER        1194
+#define IDC_CHECK_CS_BACK_FIT_WIDTH     1195
+#define IDC_CHECK_CS_BACK_FIT_HEIGHT    1196
+#define IDC_STATIC_CS_WALLPAPER         1197
 
 // Next default values for new objects
 // 
@@ -164,7 +175,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        123
 #define _APS_NEXT_COMMAND_VALUE         40003
-#define _APS_NEXT_CONTROL_VALUE         1190
+#define _APS_NEXT_CONTROL_VALUE         1198
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
