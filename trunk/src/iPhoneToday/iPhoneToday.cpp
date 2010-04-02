@@ -1290,30 +1290,32 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 	UINT width = cs->iconWidth;
 	TCHAR str[16];
 
-	if (cs->cs.backGradient) {
-		if (configuracion->alphaBlend) {
-			BLENDFUNCTION bf;
-			bf.BlendOp = AC_SRC_OVER;
-			bf.BlendFlags = 0;
-			bf.SourceConstantAlpha = 255;
-			if (cs->cs.backWallpaperAlphaBlend) {
-				bf.AlphaFormat = AC_SRC_ALPHA;
+	if (icono->hDC && icono->imagen) {
+		if (cs->cs.backGradient) {
+			if (configuracion->alphaBlend) {
+				BLENDFUNCTION bf;
+				bf.BlendOp = AC_SRC_OVER;
+				bf.BlendFlags = 0;
+				bf.SourceConstantAlpha = 255;
+				if (cs->cs.backWallpaperAlphaBlend) {
+					bf.AlphaFormat = AC_SRC_ALPHA;
+				} else {
+					bf.AlphaFormat = AC_SRC_ALPHA_NONPREMULT;
+				}
+				AlphaBlend(*hDC, int(icono->x), int(icono->y), width, width,
+					icono->hDC, 0, 0, icono->anchoImagen, icono->altoImagen, bf);
 			} else {
-				bf.AlphaFormat = AC_SRC_ALPHA_NONPREMULT;
+				TransparentBlt(*hDC, int(icono->x), int(icono->y), width, width,
+					icono->hDC, 0, 0, icono->anchoImagen, icono->altoImagen, RGB(0, 0, 0));
 			}
-			AlphaBlend(*hDC, int(icono->x), int(icono->y), width, width,
-				icono->hDC, 0, 0, icono->anchoImagen, icono->altoImagen, bf);
 		} else {
-			TransparentBlt(*hDC, int(icono->x), int(icono->y), width, width,
-				icono->hDC, 0, 0, icono->anchoImagen, icono->altoImagen, RGB(0, 0, 0));
-		}
-	} else {
-		if (icono->anchoImagen == width && icono->altoImagen == width) {
-			BitBlt(*hDC, int(icono->x), int(icono->y), width, width,
-				icono->hDC, 0, 0, SRCCOPY);
-		} else {
-			StretchBlt(*hDC, int(icono->x), int(icono->y), width, width,
-				icono->hDC, 0, 0, icono->anchoImagen, icono->altoImagen, SRCCOPY);
+			if (icono->anchoImagen == width && icono->altoImagen == width) {
+				BitBlt(*hDC, int(icono->x), int(icono->y), width, width,
+					icono->hDC, 0, 0, SRCCOPY);
+			} else {
+				StretchBlt(*hDC, int(icono->x), int(icono->y), width, width,
+					icono->hDC, 0, 0, icono->anchoImagen, icono->altoImagen, SRCCOPY);
+			}
 		}
 	}
 
