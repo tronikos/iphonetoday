@@ -105,9 +105,15 @@ BOOL AlphaBlend(HDC hdcDest, int nXOriginDest, int nYOriginDest, int nWidthDest,
 				pD[2] = pS[2];
 			} else {
 				BYTE na = ~a;
-				pD[0] = ((na * pD[0]) >> 8) + pS[0];
-				pD[1] = ((na * pD[1]) >> 8) + pS[1];
-				pD[2] = ((na * pD[2]) >> 8) + pS[2];
+				if (blendFunction.AlphaFormat == AC_SRC_ALPHA_NONPREMULT) {
+					pD[0] = ((na * pD[0]) >> 8) + (BYTE)((pS[0] * a) >> 8);
+					pD[1] = ((na * pD[1]) >> 8) + (BYTE)((pS[1] * a) >> 8);
+					pD[2] = ((na * pD[2]) >> 8) + (BYTE)((pS[2] * a) >> 8);
+				} else {
+					pD[0] = ((na * pD[0]) >> 8) + pS[0];
+					pD[1] = ((na * pD[1]) >> 8) + pS[1];
+					pD[2] = ((na * pD[2]) >> 8) + pS[2];
+				}
 			}
 		}
 		pD += 4;

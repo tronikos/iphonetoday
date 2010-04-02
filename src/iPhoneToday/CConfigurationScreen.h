@@ -17,6 +17,7 @@ typedef struct ConfigurationScreen {
 	UINT textShadow;
 	BOOL textRoundRect;
 	RECT offset;
+	BOOL backGradient;
 	COLORREF backColor1;
 	COLORREF backColor2;
 	TCHAR backWallpaper[MAX_PATH];

@@ -1290,12 +1290,24 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 	UINT width = cs->iconWidth;
 	TCHAR str[16];
 
-#ifdef EXEC_MODE
-	BOOL isTransparent = FALSE;
-#else
-	BOOL isTransparent = configuracion->fondoTransparente;
-#endif
-	if (configuracion->alphaBlend || isTransparent || (configuracion->fondoPantalla && configuracion->fondoPantalla->hDC)) {
+	if (cs->cs.backGradient) {
+		if (configuracion->alphaBlend) {
+			BLENDFUNCTION bf;
+			bf.BlendOp = AC_SRC_OVER;
+			bf.BlendFlags = 0;
+			bf.SourceConstantAlpha = 255;
+			if (cs->cs.backWallpaperAlphaBlend) {
+				bf.AlphaFormat = AC_SRC_ALPHA;
+			} else {
+				bf.AlphaFormat = AC_SRC_ALPHA_NONPREMULT;
+			}
+			AlphaBlend(*hDC, int(icono->x), int(icono->y), width, width,
+				icono->hDC, 0, 0, icono->anchoImagen, icono->altoImagen, bf);
+		} else {
+			TransparentBlt(*hDC, int(icono->x), int(icono->y), width, width,
+				icono->hDC, 0, 0, icono->anchoImagen, icono->altoImagen, RGB(0, 0, 0));
+		}
+	} else {
 		if (icono->anchoImagen == width && icono->altoImagen == width) {
 			BitBlt(*hDC, int(icono->x), int(icono->y), width, width,
 				icono->hDC, 0, 0, SRCCOPY);
@@ -1303,9 +1315,6 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 			StretchBlt(*hDC, int(icono->x), int(icono->y), width, width,
 				icono->hDC, 0, 0, icono->anchoImagen, icono->altoImagen, SRCCOPY);
 		}
-	} else {
-		TransparentBlt(*hDC, int(icono->x), int(icono->y), width, width,
-			icono->hDC, 0, 0, icono->anchoImagen, icono->altoImagen, RGB(0, 0, 0));
 	}
 
 	// Notificaciones
@@ -1568,12 +1577,6 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type) {
 		cs = configuracion->mainScreenConfig;
 	}
 
-#ifdef EXEC_MODE
-	BOOL isTransparent = FALSE;
-#else
-	BOOL isTransparent = configuracion->fondoTransparente;
-#endif
-
 	// Si debemos recalcular la pantalla
 	if (pantalla->debeActualizar) {
 		pantalla->debeActualizar = FALSE;
@@ -1617,12 +1620,10 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type) {
 		}
 		SetBkMode(pantalla->hDC, TRANSPARENT);
 
-		if (isTransparent || (configuracion->fondoPantalla && configuracion->fondoPantalla->hDC) ||
-			(screen_type == BOTTOMBAR && configuracion->backBottomBar && configuracion->backBottomBar->hDC) ||
-			(screen_type == TOPBAR && configuracion->backTopBar && configuracion->backTopBar->hDC)) {
-				FillRect(pantalla->hDC, &rc, hBrushTrans);
-		} else {
+		if (cs->cs.backGradient) {
 			DrawGradientGDI(pantalla->hDC, rc, cs->cs.backColor1,  cs->cs.backColor2,  0xAAAA);
+		} else {
+			FillRect(pantalla->hDC, &rc, hBrushTrans);
 		}
 
 		if (configuracion->headerTextSize > 0 && _tcslen(pantalla->header) > 0) {
@@ -1663,7 +1664,7 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type) {
 			pintaIcono(&pantalla->hDC, icono, screen_type);
 		}
 
-		if (configuracion->alphaBlend) {
+		if (configuracion->alphaBlend && (!cs->cs.backGradient || (cs->cs.backGradient && cs->cs.backWallpaperAlphaBlend))) {
 			if (pantalla->pBits) {
 				BYTE *p = pantalla->pBits;
 				for (UINT i = 0; i < pantalla->anchoPantalla * pantalla->altoPantalla; i++) {
@@ -1748,16 +1749,12 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type) {
 				ab = AlphaBlend(*hDC, bxDestOrg, byDestOrg, bcx, bcy, back->hDC, bxSrcOrg, bySrcOrg, bcx, bcy, bf);
 			}
 			if (!ab) {
-				//if (isTransparent || (configuracion->fondoPantalla && configuracion->fondoPantalla->hDC)) {
-				//	TransparentBlt(*hDC, bxDestOrg, byDestOrg, bcx, bcy, back->hDC, bxSrcOrg, bySrcOrg, bcx, bcy, RGB(0, 0, 0));
-				//} else {
-					BitBlt(*hDC, bxDestOrg, byDestOrg, bcx, bcy, back->hDC, bxSrcOrg, bySrcOrg, SRCCOPY);
-				//}
+				BitBlt(*hDC, bxDestOrg, byDestOrg, bcx, bcy, back->hDC, bxSrcOrg, bySrcOrg, SRCCOPY);
 			}
 		}
 
 		BOOL ab = FALSE;
-		if (configuracion->alphaBlend) {
+		if (configuracion->alphaBlend && (!cs->cs.backGradient || (cs->cs.backGradient && cs->cs.backWallpaperAlphaBlend))) {
 			if (configuracion->alphaBlend == 2 && bmBack.bmBits) {
 				BITMAP bmScreen = {0};
 				bmScreen.bmWidth = pantalla->anchoPantalla;
@@ -1775,9 +1772,9 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type) {
 			}
 		}
 		if (!ab) {
-			if (isTransparent || (configuracion->fondoPantalla && configuracion->fondoPantalla->hDC) ||
-					(screen_type == BOTTOMBAR && configuracion->backBottomBar && configuracion->backBottomBar->hDC) ||
-					(screen_type == TOPBAR && configuracion->backTopBar && configuracion->backTopBar->hDC)) {
+			if (cs->cs.backGradient) {
+				BitBlt(*hDC, xDestOrg, yDestOrg, cx, cy, pantalla->hDC, xSrcOrg, ySrcOrg, SRCCOPY);
+			} else {
 				if (configuracion->useMask && pantalla->mask_hDC) {
 					BitBlt(*hDC, xDestOrg, yDestOrg, cx, cy, pantalla->hDC, xSrcOrg, ySrcOrg, SRCINVERT);
 					BitBlt(*hDC, xDestOrg, yDestOrg, cx, cy, pantalla->mask_hDC, xSrcOrg, ySrcOrg, SRCAND);
@@ -1785,8 +1782,6 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type) {
 				} else {
 					TransparentBlt(*hDC, xDestOrg, yDestOrg, cx, cy, pantalla->hDC, xSrcOrg, ySrcOrg, cx, cy, RGB(0, 0, 0));
 				}
-			} else {
-				BitBlt(*hDC, xDestOrg, yDestOrg, cx, cy, pantalla->hDC, xSrcOrg, ySrcOrg, SRCCOPY);
 			}
 		}
 	}
