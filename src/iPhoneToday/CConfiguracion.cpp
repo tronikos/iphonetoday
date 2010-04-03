@@ -383,16 +383,16 @@ BOOL CConfiguracion::loadImages(HDC *hDC)
 
 	// Bubbles
 	bubbleNotif = new CIcono();
-	getAbsolutePath(rutaImgCompleta, CountOf(rutaImgCompleta), bubble_notif);
-	bubbleNotif->loadImage(hDC, rutaImgCompleta, UINT(mainScreenConfig->iconWidth * 0.80), UINT(mainScreenConfig->iconWidth * 0.80));
+	getAbsolutePath(rutaImgCompleta, CountOf(rutaImgCompleta), bubble_notif.image);
+	bubbleNotif->loadImage(hDC, rutaImgCompleta, UINT(mainScreenConfig->iconWidth * bubble_notif.width / 100.0), UINT(mainScreenConfig->iconWidth * bubble_notif.height / 100.0), PIXFMT_32BPP_ARGB, 1, TRUE);
 
 	bubbleState = new CIcono();
-	getAbsolutePath(rutaImgCompleta, CountOf(rutaImgCompleta), bubble_state);
-	bubbleState->loadImage(hDC, rutaImgCompleta, mainScreenConfig->iconWidth, UINT(mainScreenConfig->iconWidth * 0.50));
+	getAbsolutePath(rutaImgCompleta, CountOf(rutaImgCompleta), bubble_state.image);
+	bubbleState->loadImage(hDC, rutaImgCompleta, UINT(mainScreenConfig->iconWidth * bubble_state.width / 100.0), UINT(mainScreenConfig->iconWidth * bubble_state.height / 100.0), PIXFMT_32BPP_ARGB, 1, TRUE);
 
 	bubbleAlarm = new CIcono();
-	getAbsolutePath(rutaImgCompleta, CountOf(rutaImgCompleta), bubble_alarm);
-	bubbleAlarm->loadImage(hDC, rutaImgCompleta, UINT(mainScreenConfig->iconWidth * 0.80), UINT(mainScreenConfig->iconWidth * 0.80));
+	getAbsolutePath(rutaImgCompleta, CountOf(rutaImgCompleta), bubble_alarm.image);
+	bubbleAlarm->loadImage(hDC, rutaImgCompleta, UINT(mainScreenConfig->iconWidth * bubble_alarm.width / 100.0), UINT(mainScreenConfig->iconWidth * bubble_alarm.height / 100.0), PIXFMT_32BPP_ARGB, 1, TRUE);
 
 	result = true;
 	return result;
@@ -580,16 +580,49 @@ void CConfiguracion::defaultValues()
 	this->lastConfiguredAtWidth = 240;
 	this->lastConfiguredAtHeight = 320;
 
+	this->bubble_notif.image[0] = 0;
+	this->bubble_notif.x = 55;
+	this->bubble_notif.y = -10;
+	this->bubble_notif.width = 55;
+	this->bubble_notif.height = 50;
+	this->bubble_notif.sis.facename[0] = 0;
+	this->bubble_notif.sis.color = RGB(255, 255, 255);
+	this->bubble_notif.sis.width = 0;
+	this->bubble_notif.sis.height = 25;
+	this->bubble_notif.sis.weight = 700;
+	this->bubble_notif.sis.offset.left = 0;
+	this->bubble_notif.sis.offset.top = 0;
+	this->bubble_notif.sis.offset.right = 0;
+	this->bubble_notif.sis.offset.bottom = 10;
+
+	this->bubble_alarm.image[0] = 0;
+	this->bubble_alarm.x = 55;
+	this->bubble_alarm.y = -10;
+	this->bubble_alarm.width = 55;
+	this->bubble_alarm.height = 50;
+	this->bubble_alarm.sis.facename[0] = 0;
+	this->bubble_alarm.sis.color = RGB(255, 255, 255);
+	this->bubble_alarm.sis.width = 0;
+	this->bubble_alarm.sis.height = 25;
+	this->bubble_alarm.sis.weight = 700;
+	this->bubble_alarm.sis.offset.left = 0;
+	this->bubble_alarm.sis.offset.top = 0;
+	this->bubble_alarm.sis.offset.right = 0;
+	this->bubble_alarm.sis.offset.bottom = 0;
+
+	this->bubble_state.image[0] = 0;
+	this->bubble_state.x = 70;
+	this->bubble_state.y = 70;
+	this->bubble_state.width = 20;
+	this->bubble_state.height = 20;
+
 	if (isPND()) {
 		this->disableRightClickDots = 1;
 		this->fullscreen = 1;
-		this->bubble_notif[0] = 0;
-		this->bubble_state[0] = 0;
-		this->bubble_alarm[0] = 0;
 	} else {
-		StringCchCopy(this->bubble_notif, CountOf(this->bubble_notif), TEXT("bubble_notif.png"));
-		StringCchCopy(this->bubble_state, CountOf(this->bubble_notif), TEXT("bubble_state.png"));
-		StringCchCopy(this->bubble_alarm, CountOf(this->bubble_notif), TEXT("bubble_alarm.png"));
+		StringCchCopy(this->bubble_notif.image, CountOf(this->bubble_notif.image), TEXT("Bubbles\\Notif.png"));
+		StringCchCopy(this->bubble_state.image, CountOf(this->bubble_notif.image), TEXT("Bubbles\\State.png"));
+		StringCchCopy(this->bubble_alarm.image, CountOf(this->bubble_notif.image), TEXT("Bubbles\\Alarm.png"));
 	}
 
 	if (isPhone()) {
@@ -666,6 +699,35 @@ void SpecialIconSettingsSave(TiXmlElement *pElem, SpecialIconSettings *sis)
 	XMLUtils::SetAttr(pElem, "bottom",   sis->offset.bottom);
 }
 
+void BubbleSettingsLoad(TiXmlElement *pElem, BubbleSettings *bs)
+{
+	XMLUtils::GetAttr(pElem, "image",  bs->image, CountOf(bs->image));
+	XMLUtils::GetAttr(pElem, "x",      &bs->x);
+	XMLUtils::GetAttr(pElem, "y",      &bs->y);
+	XMLUtils::GetAttr(pElem, "width",  &bs->width);
+	XMLUtils::GetAttr(pElem, "height", &bs->height);
+	for (TiXmlElement *pElem2 = pElem->FirstChildElement(); pElem2; pElem2 = pElem2->NextSiblingElement()) {
+		const char *nameNode = pElem2->Value();
+		if(_stricmp(nameNode, "Text") == 0) {
+			SpecialIconSettingsLoad(pElem2, &bs->sis);
+		}
+	}
+}
+
+void BubbleSettingsSave(TiXmlElement *pElem, BubbleSettings *bs, BOOL hasText)
+{
+	XMLUtils::SetAttr(pElem, "image",  bs->image, CountOf(bs->image));
+	XMLUtils::SetAttr(pElem, "x",      bs->x);
+	XMLUtils::SetAttr(pElem, "y",      bs->y);
+	XMLUtils::SetAttr(pElem, "width",  bs->width);
+	XMLUtils::SetAttr(pElem, "height", bs->height);
+	if (hasText) {
+		TiXmlElement *pElem2 = new TiXmlElement("Text");
+		SpecialIconSettingsSave(pElem2, &bs->sis);
+		pElem->LinkEndChild(pElem2);
+	}
+}
+
 BOOL CConfiguracion::loadXMLConfig()
 {
 	TiXmlDocument doc;
@@ -731,10 +793,12 @@ BOOL CConfiguracion::loadXMLConfig()
 			SpecialIconSettingsLoad(pElem, &this->memu);
 		} else if(_stricmp(nameNode, "SignalStrength") == 0) {
 			SpecialIconSettingsLoad(pElem, &this->sign);
-		} else if(_stricmp(nameNode, "Bubbles") == 0) {
-			XMLUtils::GetAttr(pElem, "notif", this->bubble_notif, CountOf(this->bubble_notif));
-			XMLUtils::GetAttr(pElem, "state", this->bubble_state, CountOf(this->bubble_state));
-			XMLUtils::GetAttr(pElem, "alarm", this->bubble_alarm, CountOf(this->bubble_alarm));
+		} else if(_stricmp(nameNode, "BubbleNotif") == 0) {
+			BubbleSettingsLoad(pElem, &this->bubble_notif);
+		} else if(_stricmp(nameNode, "BubbleAlarm") == 0) {
+			BubbleSettingsLoad(pElem, &this->bubble_alarm);
+		} else if(_stricmp(nameNode, "BubbleState") == 0) {
+			BubbleSettingsLoad(pElem, &this->bubble_state);
 		} else if(_stricmp(nameNode, "OnLaunchIcon") == 0) {
 			XMLUtils::GetAttr(pElem, "close",    &this->closeOnLaunchIcon);
 			XMLUtils::GetAttr(pElem, "minimize", &this->minimizeOnLaunchIcon);
@@ -999,10 +1063,16 @@ BOOL CConfiguracion::saveXMLConfig()
 	SpecialIconSettingsSave(pElem, &this->sign);
 	root->LinkEndChild(pElem);
 
-	pElem = new TiXmlElement("Bubbles");
-	XMLUtils::SetAttr(pElem, "notif", this->bubble_notif, CountOf(this->bubble_notif));
-	XMLUtils::SetAttr(pElem, "state", this->bubble_state, CountOf(this->bubble_state));
-	XMLUtils::SetAttr(pElem, "alarm", this->bubble_alarm, CountOf(this->bubble_alarm));
+	pElem = new TiXmlElement("BubbleNotif");
+	BubbleSettingsSave(pElem, &this->bubble_notif, TRUE);
+	root->LinkEndChild(pElem);
+
+	pElem = new TiXmlElement("BubbleAlarm");
+	BubbleSettingsSave(pElem, &this->bubble_alarm, FALSE);
+	root->LinkEndChild(pElem);
+
+	pElem = new TiXmlElement("BubbleState");
+	BubbleSettingsSave(pElem, &this->bubble_state, FALSE);
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("OnLaunchIcon");
