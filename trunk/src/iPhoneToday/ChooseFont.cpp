@@ -35,10 +35,10 @@ LRESULT CALLBACK ChooseFontProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM l
 			SendMessage(GetDlgItem(hDlg, IDC_COMBO_FONT_WEIGHT), CB_ADDSTRING, 0, (LPARAM) L"900 Heavy");
 
 			SendMessage(GetDlgItem(hDlg, IDC_SPIN_FONT_HEIGHT), UDM_SETBUDDY, (WPARAM) GetDlgItem(hDlg, IDC_EDIT_FONT_HEIGHT), 0);
-			SendMessage(GetDlgItem(hDlg, IDC_SPIN_FONT_HEIGHT), UDM_SETRANGE, 0, MAKELPARAM(0, 100));
+			SendMessage(GetDlgItem(hDlg, IDC_SPIN_FONT_HEIGHT), UDM_SETRANGE, 0, MAKELPARAM(100, 0));
 
 			SendMessage(GetDlgItem(hDlg, IDC_SPIN_FONT_SHADOW), UDM_SETBUDDY, (WPARAM) GetDlgItem(hDlg, IDC_EDIT_FONT_SHADOW), 0);
-			SendMessage(GetDlgItem(hDlg, IDC_SPIN_FONT_SHADOW), UDM_SETRANGE, 0, MAKELPARAM(0, 5));
+			SendMessage(GetDlgItem(hDlg, IDC_SPIN_FONT_SHADOW), UDM_SETRANGE, 0, MAKELPARAM(5, 0));
 
 			SetDlgItemText(hDlg, IDC_COMBO_FONT_FACENAME, cfs.facename);
 			SetDlgItemHex(hDlg, IDC_EDIT_FONT_COLOR, cfs.color);
