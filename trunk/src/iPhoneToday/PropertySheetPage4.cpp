@@ -187,31 +187,31 @@ LRESULT CALLBACK OptionDialog4(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 BOOL bs_check(HWND hDlg, BubbleSettings *bs)
 {
 	if (bs->sis.height < 0 || bs->sis.height > 100) {
-		MessageBox(hDlg, TEXT("Special icon's height value is not valid!"), TEXT("Error"), MB_OK);
+		MessageBox(hDlg, TEXT("Bubble's text height value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
 	if (bs->sis.width < 0 || bs->sis.width > 100) {
-		MessageBox(hDlg, TEXT("Special icon's width value is not valid!"), TEXT("Error"), MB_OK);
+		MessageBox(hDlg, TEXT("Bubble's text width value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
 	if (bs->sis.weight < 0 || bs->sis.weight > 1000) {
-		MessageBox(hDlg, TEXT("Special icon's weight value is not valid!"), TEXT("Error"), MB_OK);
+		MessageBox(hDlg, TEXT("Bubble's text weight value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
 	if (bs->sis.offset.left < 0 || bs->sis.offset.left > 100) {
-		MessageBox(hDlg, TEXT("Special icon's left offset value is not valid!"), TEXT("Error"), MB_OK);
+		MessageBox(hDlg, TEXT("Bubble's text left offset value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
 	if (bs->sis.offset.top < 0 || bs->sis.offset.top > 100) {
-		MessageBox(hDlg, TEXT("Special icon's top offset value is not valid!"), TEXT("Error"), MB_OK);
+		MessageBox(hDlg, TEXT("Bubble's text top offset value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
 	if (bs->sis.offset.right < 0 || bs->sis.offset.right > 100) {
-		MessageBox(hDlg, TEXT("Special icon's right offset value is not valid!"), TEXT("Error"), MB_OK);
+		MessageBox(hDlg, TEXT("Bubble's text right offset value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
 	if (bs->sis.offset.bottom < 0 || bs->sis.offset.bottom > 100) {
-		MessageBox(hDlg, TEXT("Special icon's bottom offset value is not valid!"), TEXT("Error"), MB_OK);
+		MessageBox(hDlg, TEXT("Bubble's text bottom offset value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
 	return TRUE;
