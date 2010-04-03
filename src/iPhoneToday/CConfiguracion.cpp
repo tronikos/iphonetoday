@@ -580,6 +580,7 @@ void CConfiguracion::defaultValues()
 	this->lastConfiguredAtWidth = 240;
 	this->lastConfiguredAtHeight = 320;
 
+	memset(&this->bubble_notif, 0, sizeof(BubbleSettings));
 	this->bubble_notif.image[0] = 0;
 	this->bubble_notif.x = 55;
 	this->bubble_notif.y = -10;
@@ -595,6 +596,7 @@ void CConfiguracion::defaultValues()
 	this->bubble_notif.sis.offset.right = 0;
 	this->bubble_notif.sis.offset.bottom = 10;
 
+	memset(&this->bubble_alarm, 0, sizeof(BubbleSettings));
 	this->bubble_alarm.image[0] = 0;
 	this->bubble_alarm.x = 55;
 	this->bubble_alarm.y = -10;
@@ -610,6 +612,7 @@ void CConfiguracion::defaultValues()
 	this->bubble_alarm.sis.offset.right = 0;
 	this->bubble_alarm.sis.offset.bottom = 0;
 
+	memset(&this->bubble_state, 0, sizeof(BubbleSettings));
 	this->bubble_state.image[0] = 0;
 	this->bubble_state.x = 70;
 	this->bubble_state.y = 70;
