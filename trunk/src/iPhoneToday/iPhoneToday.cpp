@@ -102,7 +102,6 @@ int hayNotificacion(int tipo);
 BOOL inicializaApp(HWND hwnd);
 BOOL borraObjetosHDC();
 BOOL borraHDC_HBITMPAP(HDC *hdc, HBITMAP *hbm, HBITMAP *hbmOld);
-void drawNotification(HDC hDC, RECT *rect, CIcono *imagen, TCHAR *texto);
 LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK editHeaderDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
 void doDestroy(HWND hwnd);
@@ -1230,6 +1229,83 @@ void pintaIconos(HDC *hDC, RECT *rcWindBounds) {
 
 }
 
+void DrawBubbleText(HDC hDC, CIcono *bubble, int numNotif, CIcono *icon, int iconWidth, BubbleSettings *bs)
+{
+	TCHAR str[4];
+	if (numNotif >= 100) {
+		StringCchCopy(str, CountOf(str), TEXT("+"));
+	} else if (numNotif < 0) {
+		StringCchCopy(str, CountOf(str), TEXT("*"));
+	} else {
+		StringCchPrintf(str, CountOf(str), TEXT("%i"), numNotif);
+	}
+
+	RECT rc;
+	rc.left = int(icon->x + bs->x / 100.0 * iconWidth);
+	rc.top = int(icon->y + bs->y / 100.0 * iconWidth);
+	rc.right = int(rc.left + bs->width / 100.0 * iconWidth);
+	rc.bottom = int(rc.top + bs->height / 100.0 * iconWidth);
+
+	LOGFONT lf;
+	GetObject((HFONT) GetStockObject(SYSTEM_FONT), sizeof(LOGFONT), &lf);
+	lf.lfWeight = bs->sis.weight;
+	lf.lfWidth = LONG(bs->sis.width / 100.0 * iconWidth);
+	lf.lfHeight = LONG(bs->sis.height / 100.0 * iconWidth);
+	lf.lfQuality = configuracion->textQualityInIcons;
+	if (wcslen(bs->sis.facename) > 0) {
+		wcsncpy(lf.lfFaceName, bs->sis.facename, CountOf(lf.lfFaceName));
+	}
+
+	HFONT hFont = CreateFontIndirect(&lf);
+	HFONT hFontOld = (HFONT) SelectObject(hDC, hFont);
+	COLORREF colorOld = SetTextColor(hDC, bs->sis.color);
+
+	if (bubble->hDC) {
+		BLENDFUNCTION bf;
+		bf.BlendOp = AC_SRC_OVER;
+		bf.BlendFlags = 0;
+		bf.SourceConstantAlpha = 255;
+		bf.AlphaFormat = AC_SRC_ALPHA;
+		AlphaBlend(hDC, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top,
+			bubble->hDC, 0, 0, bubble->anchoImagen, bubble->altoImagen, bf);
+		if (numNotif > 0) {
+			int w = rc.right - rc.left;
+			int h = rc.bottom - rc.top;
+			rc.left += LONG(bs->sis.offset.left / 100.0 * w);
+			rc.right -= LONG(bs->sis.offset.right / 100.0 * w);
+			rc.top += LONG(bs->sis.offset.top / 100.0 * w);
+			rc.bottom -= LONG(bs->sis.offset.bottom / 100.0 * w);
+			DrawText(hDC, str, -1, &rc, DT_CENTER | DT_VCENTER);
+		}
+	} else {
+		drawEllipse(hDC, rc.left, rc.top, rc.right, rc.bottom, RGB(200, 0, 0), str);
+	}
+
+	DeleteObject(SelectObject(hDC, hFontOld));
+	SetTextColor(hDC, colorOld);
+}
+
+void DrawState(HDC hDC, CIcono *bubble, CIcono *icon, int iconWidth, BubbleSettings *bs)
+{
+	RECT rc;
+	rc.left = int(icon->x + bs->x / 100.0 * iconWidth);
+	rc.top = int(icon->y + bs->y / 100.0 * iconWidth);
+	rc.right = int(rc.left + bs->width / 100.0 * iconWidth);
+	rc.bottom = int(rc.top + bs->height / 100.0 * iconWidth);
+
+	if (bubble->hDC) {
+		BLENDFUNCTION bf;
+		bf.BlendOp = AC_SRC_OVER;
+		bf.BlendFlags = 0;
+		bf.SourceConstantAlpha = 255;
+		bf.AlphaFormat = AC_SRC_ALPHA;
+		AlphaBlend(hDC, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top,
+			bubble->hDC, 0, 0, bubble->anchoImagen, bubble->altoImagen, bf);
+	} else {
+		drawEllipse(hDC, rc.left, rc.top, rc.right, rc.bottom, RGB(0, 200, 0), L"");
+	}
+}
+
 void DrawSpecialIconText(HDC hDC, TCHAR *str, CIcono *icon, int iconWidth, SpecialIconSettings *sis)
 {
 	RECT posText;
@@ -1319,7 +1395,7 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 		}
 	}
 
-	// Notificaciones
+	// Notifications
 	if (icono->tipo != NOTIF_NORMAL) {
 		int numNotif = 0;
 		switch(icono->tipo) {
@@ -1354,8 +1430,15 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 				StringCchPrintf(str, CountOf(str), TEXT("%i"), notifications->st.wDay);
 				DrawSpecialIconText(*hDC, str, icono, width, &configuracion->dom);
 				break;
+			case NOTIF_ALARM:
+				if ((notifications->dwNotifications[SN_CLOCKALARMFLAGS0] + notifications->dwNotifications[SN_CLOCKALARMFLAGS1] + notifications->dwNotifications[SN_CLOCKALARMFLAGS2]) > 0) {
+					DrawBubbleText(*hDC, configuracion->bubbleAlarm, -1, icono, width, &configuracion->bubble_alarm);
+				}
+				break;
 			case NOTIF_CLOCK_ALARM:
-				numNotif = (notifications->dwNotifications[SN_CLOCKALARMFLAGS0] + notifications->dwNotifications[SN_CLOCKALARMFLAGS1] + notifications->dwNotifications[SN_CLOCKALARMFLAGS2]) > 0;
+				if ((notifications->dwNotifications[SN_CLOCKALARMFLAGS0] + notifications->dwNotifications[SN_CLOCKALARMFLAGS1] + notifications->dwNotifications[SN_CLOCKALARMFLAGS2]) > 0) {
+					DrawBubbleText(*hDC, configuracion->bubbleAlarm, -1, icono, width, &configuracion->bubble_alarm);
+				}
 			case NOTIF_CLOCK:
 				if (configuracion->clock12Format) {
 					StringCchPrintf(str, CountOf(str), TEXT("%d:%02d"), (notifications->st.wHour == 0 ? 12 : (notifications->st.wHour > 12 ? (notifications->st.wHour - 12) : notifications->st.wHour)), notifications->st.wMinute);
@@ -1368,10 +1451,7 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 				{
 					WORD batteryFlag = LOWORD(notifications->dwNotifications[SN_POWERBATTERYSTATE]);
 					BOOL charging = batteryFlag & BATTERY_FLAG_CHARGING;
-					// BATTERY_FLAG_HIGH
-					// BATTERY_FLAG_LOW
-					// BATTERY_FLAG_CRITICAL
-					// BATTERY_FLAG_CHARGING
+					// BATTERY_FLAG_HIGH, BATTERY_FLAG_LOW, BATTERY_FLAG_CRITICAL, BATTERY_FLAG_CHARGING
 					int batteryLifePercent = HIWORD(notifications->dwNotifications[SN_POWERBATTERYSTATE]);
 					if (batteryLifePercent == BATTERY_PERCENTAGE_UNKNOWN) {
 						StringCchCopy(str, CountOf(str), L"NA");
@@ -1423,129 +1503,30 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 				numNotif = notifications->dwNotifications[SN_MESSAGINGSMSUNREAD] + notifications->dwNotifications[SN_MESSAGINGMMSUNREAD];
 				break;
 			case NOTIF_WIFI:
-				numNotif = notifications->dwNotifications[SN_WIFISTATEPOWERON] & SN_WIFISTATEPOWERON_BITMASK;
+				if (notifications->dwNotifications[SN_WIFISTATEPOWERON] & SN_WIFISTATEPOWERON_BITMASK) {
+					DrawState(*hDC, configuracion->bubbleState, icono, width, &configuracion->bubble_state);
+				}
 				break;
 			case NOTIF_BLUETOOTH:
-				numNotif = notifications->dwNotifications[SN_BLUETOOTHSTATEPOWERON] & SN_BLUETOOTHSTATEPOWERON_BITMASK;
+				if (notifications->dwNotifications[SN_BLUETOOTHSTATEPOWERON] & SN_BLUETOOTHSTATEPOWERON_BITMASK) {
+					DrawState(*hDC, configuracion->bubbleState, icono, width, &configuracion->bubble_state);
+				}
 				break;
 			case NOTIF_IRDA:
-				numNotif = notifications->dwNotifications[SN_IRDA] > 0;
+				if (notifications->dwNotifications[SN_IRDA] > 0) {
+					DrawState(*hDC, configuracion->bubbleState, icono, width, &configuracion->bubble_state);
+				}
 				break;
 			case NOTIF_CELLNETWORK:
-				numNotif = notifications->dwNotifications[SN_CELLSYSTEMCONNECTED] > 0;
-				break;
-			case NOTIF_ALARM:
-				numNotif = (notifications->dwNotifications[SN_CLOCKALARMFLAGS0] + notifications->dwNotifications[SN_CLOCKALARMFLAGS1] + notifications->dwNotifications[SN_CLOCKALARMFLAGS2]) > 0;
+				if (notifications->dwNotifications[SN_CELLSYSTEMCONNECTED] > 0) {
+					DrawState(*hDC, configuracion->bubbleState, icono, width, &configuracion->bubble_state);
+				}
 				break;
 			default:
 				numNotif = 0;
 		}
 		if (numNotif > 0) {
-			TCHAR notif[16];
-
-			switch(icono->tipo) {
-				case NOTIF_MISSEDCALLS:
-				case NOTIF_MC_SIG_OPER:
-				case NOTIF_VMAIL:
-				case NOTIF_SMS:
-				case NOTIF_MMS:
-				case NOTIF_OTHER_EMAIL:
-				case NOTIF_SYNC_EMAIL:
-				case NOTIF_TOTAL_EMAIL:
-				case NOTIF_APPOINTS:
-				case NOTIF_CALENDAR:
-				case NOTIF_TASKS:
-				case NOTIF_SMS_MMS:
-					if (numNotif >= 100) {
-						StringCchCopy(notif, CountOf(notif), TEXT("+"));
-					} else {
-						swprintf(notif, TEXT("%i"), numNotif);
-					}
-					/* Bubble with same size that icon and text in top right*/
-					posTexto.left = int(icono->x + (width * 0.44));
-					posTexto.top = int(icono->y - (width * 0.28));
-					posTexto.right = int(posTexto.left + width * 0.80);
-					posTexto.bottom = int(posTexto.top + width * 0.80);
-
-					break;
-				case NOTIF_CLOCK_ALARM:
-					//StringCchCopy(notif, CountOf(notif), TEXT(""));
-
-					/* Bubble with same size that icon and text in top right*/
-					//posTexto.left = int(icono->x + (width * 0.44));
-					//posTexto.top = int(icono->y - (width * 0.36));
-					//posTexto.right = int(posTexto.left + width * 0.80);
-					//posTexto.bottom = int(posTexto.top + width * 0.80);
-
-					//break;
-				case NOTIF_ALARM:
-					StringCchCopy(notif, CountOf(notif), TEXT(""));
-
-					/* Bubble with same size that icon and text in top right*/
-					posTexto.left = int(icono->x + (width * 0.44));
-					posTexto.top = int(icono->y - (width * 0.28));
-					posTexto.right = int(posTexto.left + width * 0.80);
-					posTexto.bottom = int(posTexto.top + width * 0.80);
-
-					break;
-				case NOTIF_WIFI:
-				case NOTIF_BLUETOOTH:
-				case NOTIF_IRDA:
-				case NOTIF_CELLNETWORK:
-					StringCchCopy(notif, CountOf(notif), TEXT("On"));
-
-					/* Centrado grande */
-					posTexto.left = int(icono->x);
-					posTexto.top = int(icono->y + (width * 0.50));
-					posTexto.right = int(icono->x + (width));
-					posTexto.bottom = int(icono->y + (width));
-
-					break;
-			}
-
-			switch(icono->tipo) {
-				case NOTIF_MISSEDCALLS:
-				case NOTIF_MC_SIG_OPER:
-				case NOTIF_VMAIL:
-				case NOTIF_SMS:
-				case NOTIF_MMS:
-				case NOTIF_OTHER_EMAIL:
-				case NOTIF_SYNC_EMAIL:
-				case NOTIF_TOTAL_EMAIL:
-				case NOTIF_APPOINTS:
-				case NOTIF_CALENDAR:
-				case NOTIF_TASKS:
-				case NOTIF_SMS_MMS:
-					// Pintamos la notificacion
-					if (configuracion->bubbleNotif->hDC) {
-						drawNotification(*hDC, &posTexto, configuracion->bubbleNotif, notif);
-					} else {
-						drawEllipse(*hDC, posTexto.left + int(width * 0.2), posTexto.top + int(width * 0.2), posTexto.right - int(width * 0.2), posTexto.bottom - int(width * 0.2), RGB(200, 0, 0), notif);
-					}
-					break;
-
-				case NOTIF_CLOCK_ALARM:
-				case NOTIF_ALARM:
-					// Pintamos la notificacion
-					if (configuracion->bubbleAlarm->hDC) {
-						drawNotification(*hDC, &posTexto, configuracion->bubbleAlarm, notif);
-					} else {
-						drawEllipse(*hDC, posTexto.left + int(width * 0.2), posTexto.top + int(width * 0.2), posTexto.right - int(width * 0.2), posTexto.bottom - int(width * 0.2), RGB(200, 0, 0), L"*");
-					}
-					break;
-
-				case NOTIF_WIFI:
-				case NOTIF_BLUETOOTH:
-				case NOTIF_IRDA:
-				case NOTIF_CELLNETWORK:
-					// Pintamos la notificacion
-					if (configuracion->bubbleState->hDC) {
-						drawNotification(*hDC, &posTexto, configuracion->bubbleState, notif);
-					} else {
-						drawEllipse(*hDC, posTexto.left + int(width * 0.2), posTexto.top + int(width * 0.1), posTexto.right - int(width * 0.2), posTexto.bottom - int(width * 0.1), RGB(0, 200, 0), notif);
-					}
-					break;
-			}
+			DrawBubbleText(*hDC, configuracion->bubbleNotif, numNotif, icono, width, &configuracion->bubble_notif);
 		}
 
 	}
@@ -2959,17 +2940,6 @@ BOOL borraHDC_HBITMPAP(HDC *hdc, HBITMAP *hbm, HBITMAP *hbmOld) {
 
 	return true;
 }
-
-// Draw a ellipse
-void drawNotification(HDC hDC, RECT *rect, CIcono *imagen, TCHAR *texto) {
-	TransparentBlt(hDC, rect->left, rect->top, rect->right - rect->left, rect->bottom - rect->top,
-		imagen->hDC, 0, 0, imagen->anchoImagen, imagen->altoImagen, RGB(0, 0, 0));
-
-	if (texto != NULL) {
-		DrawText(hDC, texto, -1, rect, DT_CENTER | DT_VCENTER);
-	}
-}
-
 
 #ifdef EXEC_MODE
 int WINAPI WinMain(HINSTANCE hInstance,

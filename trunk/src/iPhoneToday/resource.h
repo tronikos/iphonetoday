@@ -68,9 +68,8 @@
 #define IDC_EDIT_HEADER_OFFSET          1069
 #define IDC_EDIT_CIRCLES_DIAMETER       1070
 #define IDC_EDIT_CIRCLES_DISTANCE       1071
-#define IDC_EDIT_BUBBLE_NOTIF           1072
-#define IDC_EDIT_BUBBLE_STATE           1073
-#define IDC_EDIT_BUBBLE_ALARM           1074
+#define IDC_EDIT_BUBBLE_IMAGE           1072
+#define IDC_BUTTON_BUBBLE_IMAGE         1073
 #define IDC_EDIT_MOVE_THRESHOLD         1075
 #define IDC_EDIT_MOVE_FACTOR            1076
 #define IDC_EDIT_MIN_VELOCITY           1077
@@ -103,9 +102,6 @@
 #define IDC_CHECK_ONLAUNCH_ANIMATE      1107
 #define IDC_EDIT_ONLAUNCH_VIBRATE       1108
 #define IDC_EDIT_NOTIFY_TIMER           1109
-#define IDC_BUTTON_BUBBLE_NOTIF         1110
-#define IDC_BUTTON_BUBBLE_STATE         1111
-#define IDC_BUTTON_BUBBLE_ALARM         1112
 #define IDC_BUTTON_HEADER_COLOR         1113
 #define IDC_CHECK_NO_WINDOW_TITLE       1114
 #define IDC_EDIT_HEADER                 1115
@@ -168,6 +164,32 @@
 #define IDC_CHECK_CS_BACK_FIT_WIDTH     1195
 #define IDC_CHECK_CS_BACK_FIT_HEIGHT    1196
 #define IDC_STATIC_CS_WALLPAPER         1197
+#define IDC_COMBO_BUBBLE                1198
+#define IDC_COMBO_BUBBLE_SIS_FACENAME   1199
+#define IDC_EDIT_BUBBLE_SIS_HEIGHT      1200
+#define IDC_EDIT_BUBBLE_SIS_WIDTH       1201
+#define IDC_EDIT_BUBBLE_SIS_COLOR       1202
+#define IDC_BUTTON_BUBBLE_SIS_COLOR     1203
+#define IDC_EDIT_BUBBLE_SIS_OFFSET_LEFT 1204
+#define IDC_EDIT_BUBBLE_SIS_OFFSET_TOP  1205
+#define IDC_EDIT_BUBBLE_SIS_OFFSET_RIGHT 1206
+#define IDC_EDIT_BUBBLE_SIS_OFFSET_BOTTOM 1207
+#define IDC_EDIT_BUBBLE_SIS_WEIGHT      1208
+#define IDC_EDIT_BUBBLE_X               1209
+#define IDC_EDIT_BUBBLE_Y               1210
+#define IDC_EDIT_BUBBLE_W               1211
+#define IDC_EDIT_BUBBLE_H               1212
+#define IDC_STATIC_HINT                 1213
+#define IDC_STATIC_FONT                 1214
+#define IDC_STATIC_HEIGHT               1215
+#define IDC_STATIC_WIDTH                1216
+#define IDC_STATIC_WEIGHT               1217
+#define IDC_STATIC_COLOR                1218
+#define IDC_STATIC_OFFSETS              1219
+#define IDC_STATIC_L                    1220
+#define IDC_STATIC_T                    1221
+#define IDC_STATIC_R                    1222
+#define IDC_STATIC_B                    1223
 
 // Next default values for new objects
 // 
@@ -175,7 +197,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        123
 #define _APS_NEXT_COMMAND_VALUE         40003
-#define _APS_NEXT_CONTROL_VALUE         1198
+#define _APS_NEXT_CONTROL_VALUE         1224
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

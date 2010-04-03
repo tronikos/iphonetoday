@@ -14,6 +14,15 @@ typedef struct SpecialIconSettings {
 	RECT offset;
 } SpecialIconSettings;
 
+typedef struct BubbleSettings {
+	TCHAR image[MAX_PATH];
+	INT x;
+	INT y;
+	INT width;
+	INT height;
+	SpecialIconSettings sis;
+} BubbleSettings;
+
 class CConfiguracion
 {
 public:
@@ -119,9 +128,9 @@ public:
 	SpecialIconSettings sign;	// Signal strength
 
 	// Bubbles
-	TCHAR bubble_notif[MAX_PATH];
-	TCHAR bubble_state[MAX_PATH];
-	TCHAR bubble_alarm[MAX_PATH];
+	BubbleSettings bubble_notif;
+	BubbleSettings bubble_state;
+	BubbleSettings bubble_alarm;
 
 	// OnLaunch
 	BOOL closeOnLaunchIcon;
