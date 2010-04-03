@@ -44,6 +44,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_0D90098BE8F2470F84168EA989D80C11"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_0E4E57991C47429AB027E1F34DA005CD"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -51,12 +57,6 @@
         "Entry"
         {
         "MsmKey" = "8:_0E5E36352A0942F1B518AF9CB081EB2B"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_1AE741C077EE41039D09E3B46AD8DC25"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -81,6 +81,12 @@
         "Entry"
         {
         "MsmKey" = "8:_1EDF90602EC043DD917BF4C417967EE1"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_20F0C3E150F948C6A87E818CCBB9B569"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -140,6 +146,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_531400F304E446C78624886E2335FED4"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_549FA862DDAD4C93BC5C64868E8E6E8E"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -171,6 +183,12 @@
         "Entry"
         {
         "MsmKey" = "8:_6AF552D5CF9A417FAD22836B9B4BD46F"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_6EC8A68F5FF74C088BBC68536EBA281C"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -236,7 +254,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_A41A7F15524E4C65B915DF5CBF7D6D36"
+        "MsmKey" = "8:_A0235AD95434463BBDB156D1A5DB9718"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -248,7 +266,19 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_AD838B688A7746F69E6026679BEB6CCC"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_B2137CDBE73F469D99F1470F8817DCA3"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_B2331D5C981C4F65891E8AAD0DD20EF5"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -261,12 +291,6 @@
         "Entry"
         {
         "MsmKey" = "8:_C0557EF68AA54359997672AD928BF6DF"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_C0DA9E7073A04D8FA9F134A8B65771B8"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -470,12 +494,12 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{BA458234-9B71-4F46-8107-E91156377184}:_0E4E57991C47429AB027E1F34DA005CD"
+            "{BA458234-9B71-4F46-8107-E91156377184}:_0D90098BE8F2470F84168EA989D80C11"
             {
-            "SourcePath" = "8:..\\..\\res\\icons\\SMS.png"
-            "TargetName" = "8:SMS.png"
+            "SourcePath" = "8:..\\..\\res\\backgrounds\\BottomBar.png"
+            "TargetName" = "8:BottomBar.png"
             "Tag" = "8:"
-            "Folder" = "8:_CB770C7AC2BA431FAE2CC7F1E1214841"
+            "Folder" = "8:_888ADC51859845CA8080DA9654CFC2C7"
             "Condition" = "8:"
             "Vital" = "11:TRUE"
             "ReadOnly" = "11:FALSE"
@@ -488,10 +512,10 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{BA458234-9B71-4F46-8107-E91156377184}:_1AE741C077EE41039D09E3B46AD8DC25"
+            "{BA458234-9B71-4F46-8107-E91156377184}:_0E4E57991C47429AB027E1F34DA005CD"
             {
-            "SourcePath" = "8:..\\..\\res\\icons\\bubble_state.png"
-            "TargetName" = "8:bubble_state.png"
+            "SourcePath" = "8:..\\..\\res\\icons\\SMS.png"
+            "TargetName" = "8:SMS.png"
             "Tag" = "8:"
             "Folder" = "8:_CB770C7AC2BA431FAE2CC7F1E1214841"
             "Condition" = "8:"
@@ -566,6 +590,24 @@
             "TargetName" = "8:Alarms.png"
             "Tag" = "8:"
             "Folder" = "8:_CB770C7AC2BA431FAE2CC7F1E1214841"
+            "Condition" = "8:"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "Register" = "3:0"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{BA458234-9B71-4F46-8107-E91156377184}:_20F0C3E150F948C6A87E818CCBB9B569"
+            {
+            "SourcePath" = "8:..\\..\\res\\icons\\Bubbles\\Alarm.png"
+            "TargetName" = "8:Alarm.png"
+            "Tag" = "8:"
+            "Folder" = "8:_254B90F526954A78AEB276BE2E32E914"
             "Condition" = "8:"
             "Vital" = "11:TRUE"
             "ReadOnly" = "11:FALSE"
@@ -740,6 +782,24 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{BA458234-9B71-4F46-8107-E91156377184}:_531400F304E446C78624886E2335FED4"
+            {
+            "SourcePath" = "8:..\\..\\res\\icons\\Pressed\\RoundedPressedNew.png"
+            "TargetName" = "8:RoundedPressedNew.png"
+            "Tag" = "8:"
+            "Folder" = "8:_EBB07BDF07D243A3A8726399065ED69D"
+            "Condition" = "8:"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "Register" = "3:0"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{BA458234-9B71-4F46-8107-E91156377184}:_5552DDEE645842E480F257F78F63C368"
             {
             "SourcePath" = "8:..\\..\\res\\icons\\RAM.png"
@@ -818,6 +878,24 @@
             "TargetName" = "8:Tasks.png"
             "Tag" = "8:"
             "Folder" = "8:_CB770C7AC2BA431FAE2CC7F1E1214841"
+            "Condition" = "8:"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "Register" = "3:0"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{BA458234-9B71-4F46-8107-E91156377184}:_6EC8A68F5FF74C088BBC68536EBA281C"
+            {
+            "SourcePath" = "8:..\\..\\res\\icons\\Pressed\\RoundedPressedGlow.png"
+            "TargetName" = "8:RoundedPressedGlow.png"
+            "Tag" = "8:"
+            "Folder" = "8:_EBB07BDF07D243A3A8726399065ED69D"
             "Condition" = "8:"
             "Vital" = "11:TRUE"
             "ReadOnly" = "11:FALSE"
@@ -1010,12 +1088,12 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{BA458234-9B71-4F46-8107-E91156377184}:_A41A7F15524E4C65B915DF5CBF7D6D36"
+            "{BA458234-9B71-4F46-8107-E91156377184}:_A0235AD95434463BBDB156D1A5DB9718"
             {
-            "SourcePath" = "8:..\\..\\res\\icons\\bubble_alarm.png"
-            "TargetName" = "8:bubble_alarm.png"
+            "SourcePath" = "8:..\\..\\res\\icons\\Bubbles\\State.png"
+            "TargetName" = "8:State.png"
             "Tag" = "8:"
-            "Folder" = "8:_CB770C7AC2BA431FAE2CC7F1E1214841"
+            "Folder" = "8:_254B90F526954A78AEB276BE2E32E914"
             "Condition" = "8:"
             "Vital" = "11:TRUE"
             "ReadOnly" = "11:FALSE"
@@ -1046,6 +1124,24 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{BA458234-9B71-4F46-8107-E91156377184}:_AD838B688A7746F69E6026679BEB6CCC"
+            {
+            "SourcePath" = "8:..\\..\\res\\icons\\Bubbles\\Notif.png"
+            "TargetName" = "8:Notif.png"
+            "Tag" = "8:"
+            "Folder" = "8:_254B90F526954A78AEB276BE2E32E914"
+            "Condition" = "8:"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "Register" = "3:0"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{BA458234-9B71-4F46-8107-E91156377184}:_B2137CDBE73F469D99F1470F8817DCA3"
             {
             "SourcePath" = "8:..\\..\\res\\sounds\\Click.wav"
@@ -1064,12 +1160,12 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{BA458234-9B71-4F46-8107-E91156377184}:_C0557EF68AA54359997672AD928BF6DF"
+            "{BA458234-9B71-4F46-8107-E91156377184}:_B2331D5C981C4F65891E8AAD0DD20EF5"
             {
-            "SourcePath" = "8:..\\..\\res\\icons\\Search.png"
-            "TargetName" = "8:Search.png"
+            "SourcePath" = "8:..\\..\\res\\icons\\Pressed\\RoundedPressedLight.png"
+            "TargetName" = "8:RoundedPressedLight.png"
             "Tag" = "8:"
-            "Folder" = "8:_CB770C7AC2BA431FAE2CC7F1E1214841"
+            "Folder" = "8:_EBB07BDF07D243A3A8726399065ED69D"
             "Condition" = "8:"
             "Vital" = "11:TRUE"
             "ReadOnly" = "11:FALSE"
@@ -1082,10 +1178,10 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{BA458234-9B71-4F46-8107-E91156377184}:_C0DA9E7073A04D8FA9F134A8B65771B8"
+            "{BA458234-9B71-4F46-8107-E91156377184}:_C0557EF68AA54359997672AD928BF6DF"
             {
-            "SourcePath" = "8:..\\..\\res\\icons\\bubble_notif.png"
-            "TargetName" = "8:bubble_notif.png"
+            "SourcePath" = "8:..\\..\\res\\icons\\Search.png"
+            "TargetName" = "8:Search.png"
             "Tag" = "8:"
             "Folder" = "8:_CB770C7AC2BA431FAE2CC7F1E1214841"
             "Condition" = "8:"
@@ -1336,6 +1432,24 @@
                         {
                         }
                     }
+                    "{5943FCFD-5B64-4EE4-96C9-4618EC95352A}:_7865083131CE4CCDB132A73D27D1CA1F"
+                    {
+                    "Name" = "8:fonts"
+                    "Condition" = "8:"
+                    "Property" = "8:_F772C5E769EA4B7BB821E098D2345EF6"
+                        "Folders"
+                        {
+                        }
+                    }
+                    "{5943FCFD-5B64-4EE4-96C9-4618EC95352A}:_888ADC51859845CA8080DA9654CFC2C7"
+                    {
+                    "Name" = "8:backgrounds"
+                    "Condition" = "8:"
+                    "Property" = "8:_0462710FDB244F13996D4055BB626E5B"
+                        "Folders"
+                        {
+                        }
+                    }
                     "{5943FCFD-5B64-4EE4-96C9-4618EC95352A}:_CB770C7AC2BA431FAE2CC7F1E1214841"
                     {
                     "Name" = "8:icons"
@@ -1343,6 +1457,15 @@
                     "Property" = "8:_5660F236CAE84F7392450A3AD8DA8416"
                         "Folders"
                         {
+                            "{5943FCFD-5B64-4EE4-96C9-4618EC95352A}:_254B90F526954A78AEB276BE2E32E914"
+                            {
+                            "Name" = "8:Bubbles"
+                            "Condition" = "8:"
+                            "Property" = "8:_DC513BBA62384FFC9F148AD19B40F8EC"
+                                "Folders"
+                                {
+                                }
+                            }
                             "{5943FCFD-5B64-4EE4-96C9-4618EC95352A}:_EBB07BDF07D243A3A8726399065ED69D"
                             {
                             "Name" = "8:Pressed"
