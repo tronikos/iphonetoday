@@ -241,6 +241,9 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lPara
 			case VK_UP:
 				PostMessage(hwnd, WM_USER_GOTO_UP, 0, 0);
 				break;
+			case VK_RETURN:
+				PostMessage(hwnd, WM_USER_GOTO, 0, 0);
+				break;
 		}
 		return 0;
 	case WM_USER_RELAUNCH:
