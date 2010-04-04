@@ -80,7 +80,7 @@ LRESULT WndProcLoading (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 LRESULT doActivate (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam);
 #else
 INT InitializeClasses();
-BOOL cargaFondoPantalla(HWND hwnd);
+BOOL doEraseBackground(HWND hwnd);
 #endif
 
 LRESULT CALLBACK WndProc (HWND, UINT, WPARAM, LPARAM);
@@ -336,6 +336,8 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lPara
 			inicializaApp(hwnd);
 #endif
 
+			PostMessage(hwnd, WM_ERASEBKGND, 0, 0);
+
 			RECT rcWindBounds;
 			GetClientRect(hwnd, &rcWindBounds);
 			InvalidateRect(hwnd, &rcWindBounds, FALSE);
@@ -395,7 +397,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lPara
 #ifdef EXEC_MODE
 		return FALSE;
 #else
-		return cargaFondoPantalla(hwnd);
+		return doEraseBackground(hwnd);
 #endif
 	case WM_REGISTRY:
 		if (notifications) {
@@ -583,7 +585,7 @@ LRESULT doSize (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 			getWindowSize(hwnd, &windowWidth, &windowHeight);
 			if (windowWidth != configuracion->anchoPantalla || windowHeight != configuracion->altoPantalla) {
 				calculateConfiguration(windowWidth, windowHeight);
-				configuracion->loadBackground(&hDCMem);
+				configuracion->loadBackgrounds(&hDCMem);
 			}
 			borraObjetosHDC();
 			setPosiciones(true, 0, 0);
@@ -2727,8 +2729,8 @@ LRESULT CALLBACK editHeaderDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 }
 
 #ifndef EXEC_MODE
-BOOL cargaFondoPantalla(HWND hwnd) {
-
+BOOL doEraseBackground(HWND hwnd)
+{
 	if (!configuracion) {
 		return FALSE;
 	}
@@ -2742,35 +2744,18 @@ BOOL cargaFondoPantalla(HWND hwnd) {
 		return FALSE;
 	}
 
-	if (configuracion->fondoPantalla == NULL) {
-		configuracion->fondoPantalla = new CIcono();
-	}
-
-
 	RECT rc;
 	// GetClientRect(hwnd, &rc);
 	rc.left = 0;
 	rc.top = 0;
 	rc.right = configuracion->anchoPantalla;
 	rc.bottom = configuracion->altoPantalla;
-	if (configuracion->fondoPantalla->hDC == NULL) {
-		HDC hdc = GetDC(hwnd);
-		configuracion->fondoPantalla->hDC = CreateCompatibleDC(hdc);
-		configuracion->fondoPantalla->imagen = CreateCompatibleBitmap(hdc, rc.right - rc.left, rc.bottom - rc.top);
-		configuracion->fondoPantalla->imagenOld = (HBITMAP)SelectObject(configuracion->fondoPantalla->hDC, configuracion->fondoPantalla->imagen);
-
-		configuracion->fondoPantalla->anchoImagen = rc.right - rc.left;
-		configuracion->fondoPantalla->altoImagen = rc.bottom - rc.top;
-
-		ReleaseDC(hwnd, hdc);
-	}
 
 	TODAYDRAWWATERMARKINFO	dwi;
 	dwi.hdc = configuracion->fondoPantalla->hDC;
 	dwi.hwnd = hwnd;
 	dwi.rc = rc;
 	SendMessage(GetParent(hwnd), TODAYM_DRAWWATERMARK, 0, (LPARAM)&dwi);
-
 
 	return TRUE;
 }

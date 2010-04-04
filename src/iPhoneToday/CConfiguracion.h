@@ -35,6 +35,7 @@ public:
 	BOOL loadIconImage(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type);
 	BOOL loadImages(HDC *hDC);
 	BOOL loadBackground(HDC *hDC);
+	BOOL loadBackgrounds(HDC *hDC);
 
 	BOOL loadXMLIcons(CListaPantalla *listaPantallas);
 	void defaultValues();
