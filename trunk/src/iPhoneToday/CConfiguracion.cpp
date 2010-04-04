@@ -310,15 +310,15 @@ BOOL CConfiguracion::loadIconImage(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_t
 
 BOOL CConfiguracion::loadBackground(HDC *hDC)
 {
+	if (fondoPantalla != NULL) {
+		delete fondoPantalla;
+	}
+	fondoPantalla = new CIcono();
+
 #ifndef EXEC_MODE
 	BOOL isTransparent = this->fondoTransparente;
 	if (!isTransparent) {
 #endif
-		if (fondoPantalla != NULL) {
-			delete fondoPantalla;
-		}
-		fondoPantalla = new CIcono();
-
 		TCHAR rutaImgCompleta[MAX_PATH];
 		getAbsolutePath(rutaImgCompleta, CountOf(rutaImgCompleta), strFondoPantalla);
 		fondoPantalla->loadImage(hDC, rutaImgCompleta, this->fondoFitWidth ? this->anchoPantalla : 0, this->fondoFitHeight ? this->altoPantalla : 0, PIXFMT_16BPP_RGB565, this->fondoFactor);
@@ -328,12 +328,20 @@ BOOL CConfiguracion::loadBackground(HDC *hDC)
 		}
 #ifndef EXEC_MODE
 	} else {
-		if (fondoPantalla != NULL) {
-			delete fondoPantalla;
-			fondoPantalla = NULL;
-		}
+		fondoPantalla->hDC = CreateCompatibleDC(*hDC);
+		fondoPantalla->imagen = CreateCompatibleBitmap(*hDC, anchoPantalla, altoPantalla);
+		fondoPantalla->imagenOld = (HBITMAP)SelectObject(fondoPantalla->hDC, fondoPantalla->imagen);
+		fondoPantalla->anchoImagen = anchoPantalla;
+		fondoPantalla->altoImagen = altoPantalla;
 	}
 #endif
+
+	return TRUE;
+}
+
+BOOL CConfiguracion::loadBackgrounds(HDC *hDC)
+{
+	loadBackground(hDC);
 
 	TCHAR fullPath[MAX_PATH];
 	if (this->backBottomBar != NULL) {
@@ -374,7 +382,7 @@ BOOL CConfiguracion::loadImages(HDC *hDC)
 	TCHAR rutaImgCompleta[MAX_PATH];
 
 	// Background
-	loadBackground(hDC);
+	loadBackgrounds(hDC);
 
 	// Pressed icon
 	pressedIcon = new CIcono();
