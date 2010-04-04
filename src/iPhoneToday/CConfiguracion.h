@@ -23,6 +23,13 @@ typedef struct BubbleSettings {
 	SpecialIconSettings sis;
 } BubbleSettings;
 
+typedef struct OutOfScreenSettings {
+	BOOL stop;
+	UINT stopAt;
+	BOOL wrap;
+	TCHAR exec[MAX_PATH];
+} OutOfScreenSettings;
+
 class CConfiguracion
 {
 public:
@@ -164,10 +171,10 @@ public:
 	UINT heightL;
 
 	// Out of screen
-	TCHAR outOfScreenLeft[MAX_PATH];
-	TCHAR outOfScreenRight[MAX_PATH];
-	TCHAR outOfScreenTop[MAX_PATH];
-	TCHAR outOfScreenBottom[MAX_PATH];
+	OutOfScreenSettings ooss_left;
+	OutOfScreenSettings ooss_right;
+	OutOfScreenSettings ooss_up;
+	OutOfScreenSettings ooss_down;
 
 	// Transparency
 	UINT alphaBlend;

@@ -113,6 +113,8 @@ void getWindowSize(HWND hwnd, int *windowWidth, int *windowHeight);
 BOOL InvalidateListScreenIfNotificationsChanged(CListaPantalla *listaPantallas);
 void InvalidateScreenIfNotificationsChanged(CPantalla *pantalla);
 BOOL ProcessNotifications();
+BOOL hasTopBar();
+BOOL hasBottomBar();
 
 #ifndef EXEC_MODE
 /*************************************************************************/
@@ -288,10 +290,10 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lPara
 	case WM_USER_GOTO_UP:
 		if (estado != NULL && configuracion != NULL) {
 			int h = configuracion->altoPantalla;
-			if (listaPantallas->barraInferior != NULL && listaPantallas->barraInferior->numIconos > 0 && configuracion->bottomBarConfig->iconWidth > 0) {
+			if (hasBottomBar()) {
 				h -= listaPantallas->barraInferior->altoPantalla;
 			}
-			if (listaPantallas->topBar != NULL && listaPantallas->topBar->numIconos > 0 && configuracion->topBarConfig->iconWidth > 0) {
+			if (hasTopBar()) {
 				h -= listaPantallas->topBar->altoPantalla;
 			}
 			int newy = estado->posObjetivo.y + ((h + configuracion->mainScreenConfig->cs.offset.top) / configuracion->mainScreenConfig->distanceIconsV) * configuracion->mainScreenConfig->distanceIconsV;
@@ -307,10 +309,10 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lPara
 	case WM_USER_GOTO_DOWN:
 		if (estado != NULL && configuracion != NULL && listaPantallas != NULL) {
 			int h = configuracion->altoPantalla;
-			if (listaPantallas->barraInferior != NULL && listaPantallas->barraInferior->numIconos > 0 && configuracion->bottomBarConfig->iconWidth > 0) {
+			if (hasBottomBar()) {
 				h -= listaPantallas->barraInferior->altoPantalla;
 			}
-			if (listaPantallas->topBar != NULL && listaPantallas->topBar->numIconos > 0 && configuracion->topBarConfig->iconWidth > 0) {
+			if (hasTopBar()) {
 				h -= listaPantallas->topBar->altoPantalla;
 			}
 			int newy = estado->posObjetivo.y -
@@ -827,17 +829,61 @@ LRESULT doMove (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 		if (!movementInitiatedByVertical || configuracion->freestyleScroll) {
 			movx = int((posCursor2.x - posCursor.x)*(1 + float(configuracion->factorMovimiento) / 10));
 		}
+
 		if (movx != 0 || movy != 0) {
-			posImage.x += movx;
-			posImage.y += movy;
-			setPosiciones(false, movx, movy);
+
+			if (movx != 0 && (configuracion->ooss_left.stop || configuracion->ooss_right.stop)) {
+				int tmp = (int) (configuracion->anchoPantalla * configuracion->ooss_left.stopAt / 100);
+				if (configuracion->ooss_left.stop && posImage.x + movx > tmp) {
+					movx = tmp - posImage.x;
+				} else {
+					tmp = -(int) ((listaPantallas->numPantallas - 1) * configuracion->anchoPantalla + configuracion->anchoPantalla * configuracion->ooss_right.stopAt / 100);
+					if (configuracion->ooss_right.stop && posImage.x + movx < tmp) {
+						movx = tmp - posImage.x;
+					}
+				}
+			}
+			if (movy != 0 && (configuracion->ooss_up.stop || configuracion->ooss_down.stop)) {
+				int h = configuracion->altoPantalla;
+				if (hasBottomBar()) {
+					h -= listaPantallas->barraInferior->altoPantalla;
+				}
+				if (hasTopBar()) {
+					h -= listaPantallas->topBar->altoPantalla;
+				}
+				int tmp = h * configuracion->ooss_up.stopAt / 100;
+				if (configuracion->ooss_up.stop && posImage.y + movy > tmp) {
+					movy = tmp - posImage.y;
+				} else {
+					int hh;
+					if (configuracion->freestyleScroll) {
+						hh = configuracion->altoPantallaMax;
+					} else {
+						hh = ((listaPantallas->listaPantalla[estado->pantallaActiva]->numIconos
+							+ configuracion->mainScreenConfig->iconsPerRow - 1)
+							/ configuracion->mainScreenConfig->iconsPerRow)
+							* configuracion->mainScreenConfig->distanceIconsV;
+					}
+					int tmp = -(hh - h + h * (int) configuracion->ooss_down.stopAt / 100);
+					if (configuracion->ooss_down.stop && posImage.y + movy < tmp) {
+						movy = tmp - posImage.y;
+					}
+				}
+			}
+
 			posCursor = posCursor2;
 
-			// Actualizamos la imagen
-			RECT rcWindBounds;
-			GetClientRect(hwnd, &rcWindBounds);
-			InvalidateRect(hwnd, &rcWindBounds, FALSE);
-			// UpdateWindow(hwnd);
+			if (movx != 0 || movy != 0) {
+				posImage.x += movx;
+				posImage.y += movy;
+				setPosiciones(false, movx, movy);
+
+				// Actualizamos la imagen
+				RECT rcWindBounds;
+				GetClientRect(hwnd, &rcWindBounds);
+				InvalidateRect(hwnd, &rcWindBounds, FALSE);
+				// UpdateWindow(hwnd);
+			}
 		}
 	}
 
@@ -1029,7 +1075,7 @@ LRESULT doMouseDown (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 					icono = listaPantallas->listaPantalla[iconoActual.nPantallaActual]->listaIconos[iconoActual.nIconoActual];
 					x = int(icono->x);
 					int offset = estado->posObjetivo.y;
-					if (listaPantallas->topBar != NULL && listaPantallas->topBar->numIconos > 0 && configuracion->topBarConfig->iconWidth > 0) {
+					if (hasTopBar()) {
 						offset += listaPantallas->topBar->altoPantalla;
 					}
 					y = int(icono->y) + offset;
@@ -1109,8 +1155,6 @@ LRESULT doMouseUp (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 	}
 
 	if (estado->hayMovimiento) {
-		doMove (hwnd, uimessage, wParam, lParam);
-
 		// Calculamos la posicion objetivo
 		calculaPosicionObjetivo();
 
@@ -1176,20 +1220,20 @@ INT InitializeClasses()
 }
 #endif
 
-void pintaIconos(HDC *hDC, RECT *rcWindBounds) {
+void pintaIconos(HDC *hDC, RECT *rcWindBounds)
+{
 	for (UINT i = 0; i < listaPantallas->numPantallas; i++) {
 		CPantalla *pantalla = listaPantallas->listaPantalla[i];
 		pintaPantalla(hDC, pantalla, MAINSCREEN);
 	}
 
 	// Pintamos la barra inferior de botones
-	BOOL hasBottomBar = listaPantallas->barraInferior != NULL && listaPantallas->barraInferior->numIconos > 0 && configuracion->bottomBarConfig->iconWidth > 0;
-	if (hasBottomBar) {
+	BOOL bHasBottomBar = hasBottomBar();
+	if (bHasBottomBar) {
 		pintaPantalla(hDC, listaPantallas->barraInferior, BOTTOMBAR);
 	}
 
-	BOOL hasTopBar = listaPantallas->topBar != NULL && listaPantallas->topBar->numIconos > 0 && configuracion->topBarConfig->iconWidth > 0;
-	if (hasTopBar) {
+	if (hasTopBar()) {
 		pintaPantalla(hDC, listaPantallas->topBar, TOPBAR);
 	}
 
@@ -1205,7 +1249,7 @@ void pintaIconos(HDC *hDC, RECT *rcWindBounds) {
 		xReferencia = int((configuracion->anchoPantalla / 2) - ((nCirculos - 1) * (anchoCirculo + distanciaCirculo) + anchoCirculo) / 2);
 
 		posCirculos.top = int(configuracion->altoPantalla) - anchoCirculo - configuracion->circlesOffset;
-		if (hasBottomBar) {
+		if (bHasBottomBar) {
 			posCirculos.top -= listaPantallas->barraInferior->altoPantalla;
 		}
 		posCirculos.bottom = posCirculos.top + anchoCirculo;
@@ -1357,7 +1401,8 @@ void DrawSpecialIconText(HDC hDC, TCHAR *str, CIcono *icon, int iconWidth, Speci
 	SetTextColor(hDC, colorOld);
 }
 
-void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
+void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type)
+{
 	// Iniciamos el proceso de pintado
 	RECT posTexto;
 	CConfigurationScreen *cs;
@@ -1555,7 +1600,8 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type) {
 	}
 }
 
-void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type) {
+void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type)
+{
 	CConfigurationScreen *cs;
 	if (screen_type == BOTTOMBAR) {
 		cs = configuracion->bottomBarConfig;
@@ -1691,12 +1737,12 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type) {
 		if (screen_type != MAINSCREEN) {
 			cy = pantalla->altoPantalla;
 		} else {
-			if (listaPantallas->topBar != NULL && listaPantallas->topBar->numIconos > 0 && configuracion->topBarConfig->iconWidth > 0) {
+			if (hasTopBar()) {
 				yDestOrg = max(posY, int(listaPantallas->topBar->altoPantalla));
 				ySrcOrg = abs(min(posY - int(listaPantallas->topBar->altoPantalla), 0));
 			}
 			cy = configuracion->altoPantalla - yDestOrg;
-			if (listaPantallas->barraInferior != NULL && listaPantallas->barraInferior->numIconos > 0 && configuracion->bottomBarConfig->iconWidth > 0) {
+			if (hasBottomBar()) {
 				cy -= listaPantallas->barraInferior->altoPantalla;
 			}
 		}
@@ -1775,7 +1821,8 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type) {
 	}
 }
 
-void setPosicionesIconos(CPantalla *pantalla, SCREEN_TYPE screen_type) {
+void setPosicionesIconos(CPantalla *pantalla, SCREEN_TYPE screen_type)
+{
 	CConfigurationScreen *cs;
 	if (screen_type == BOTTOMBAR) {
 		cs = configuracion->bottomBarConfig;
@@ -1793,18 +1840,16 @@ void setPosicionesIconos(CPantalla *pantalla, SCREEN_TYPE screen_type) {
 	}
 }
 
-void setPosiciones(BOOL inicializa, int offsetX, int offsetY) {
-	BOOL hasBottomBar = listaPantallas->barraInferior != NULL && listaPantallas->barraInferior->numIconos > 0 && configuracion->bottomBarConfig->iconWidth > 0;
-	BOOL hasTopBar = listaPantallas->topBar != NULL && listaPantallas->topBar->numIconos > 0 && configuracion->topBarConfig->iconWidth > 0;
-
-	if (hasBottomBar) {
+void setPosiciones(BOOL inicializa, int offsetX, int offsetY)
+{
+	if (hasBottomBar()) {
 		listaPantallas->barraInferior->altoPantalla = configuracion->bottomBarConfig->distanceIconsV + configuracion->bottomBarConfig->cs.offset.top + configuracion->bottomBarConfig->cs.offset.bottom;
 		listaPantallas->barraInferior->anchoPantalla = configuracion->anchoPantalla;
 		listaPantallas->barraInferior->x = 0;
 		listaPantallas->barraInferior->y = float(configuracion->altoPantalla - listaPantallas->barraInferior->altoPantalla);
 	}
 
-	if (hasTopBar) {
+	if (hasTopBar()) {
 		listaPantallas->topBar->altoPantalla = configuracion->topBarConfig->distanceIconsV + configuracion->topBarConfig->cs.offset.top + configuracion->topBarConfig->cs.offset.bottom;
 		listaPantallas->topBar->anchoPantalla = configuracion->anchoPantalla;
 		listaPantallas->topBar->x = 0;
@@ -1817,7 +1862,7 @@ void setPosiciones(BOOL inicializa, int offsetX, int offsetY) {
 		if (inicializa) {
 			pantalla->x = estado->posObjetivo.x + float(i * configuracion->anchoPantalla);
 			pantalla->y = estado->posObjetivo.y;
-			if (hasTopBar) {
+			if (hasTopBar()) {
 				pantalla->y += listaPantallas->topBar->altoPantalla;
 			}
 		} else {
@@ -1830,58 +1875,41 @@ void setPosiciones(BOOL inicializa, int offsetX, int offsetY) {
 	}
 }
 
-void calculaPosicionObjetivo() {
-	CPantalla *pantalla = NULL;
-	UINT distanciaMinima = 0xFFFF;
-	UINT distAux;
+void calculaPosicionObjetivo()
+{
 	UINT pantallaActivaOld = estado->pantallaActiva;
-	estado->pantallaActiva = 0;
-	for (UINT i = 0; i < listaPantallas->numPantallas; i++) {
-		pantalla = listaPantallas->listaPantalla[i];
-		if (pantalla != NULL && pantalla->numIconos > 0) {
-			distAux = abs(int(pantalla->x));
-			if (distAux < distanciaMinima) {
-				distanciaMinima = distAux;
-				estado->pantallaActiva = i;
-			}
-		}
-	}
+	estado->pantallaActiva = posImage.x > 0 ? 0 : min(listaPantallas->numPantallas - 1, (-posImage.x + configuracion->anchoPantalla / 2) / configuracion->anchoPantalla);
 
-	if (distanciaMinima >= configuracion->anchoPantalla * 4 / 5) {
-		if (estado->pantallaActiva == 0) {
-			if (_tcsclen(configuracion->outOfScreenLeft) > 0) {
-				LaunchApplication(configuracion->outOfScreenLeft, L"");
-			} else {
-				estado->pantallaActiva = listaPantallas->numPantallas - 1;
-			}
-		} else {
-			if (_tcsclen(configuracion->outOfScreenRight) > 0) {
-				LaunchApplication(configuracion->outOfScreenRight, L"");
-			} else {
-				estado->pantallaActiva = 0;
-			}
+	if (posImage.x >= (int) configuracion->anchoPantalla * 4 / 5) {
+		if (_tcsclen(configuracion->ooss_left.exec) > 0) {
+			LaunchApplication(configuracion->ooss_left.exec, L"");
+		} else if (configuracion->ooss_left.wrap) {
+			estado->pantallaActiva = listaPantallas->numPantallas - 1;
+		}
+	} else if (-posImage.x - (int) (listaPantallas->numPantallas - 1) * (int) configuracion->anchoPantalla >= (int) configuracion->anchoPantalla * 4 / 5) {
+		if (_tcsclen(configuracion->ooss_right.exec) > 0) {
+			LaunchApplication(configuracion->ooss_right.exec, L"");
+		} else if (configuracion->ooss_right.wrap) {
+			estado->pantallaActiva = 0;
 		}
 	}
 
 	estado->posObjetivo.x = 0 - (estado->pantallaActiva * configuracion->anchoPantalla);
-	if (posImage.y >= int(configuracion->altoPantalla) * 4 / 5) {
-		if (_tcsclen(configuracion->outOfScreenTop) > 0) {
-			LaunchApplication(configuracion->outOfScreenTop, L"");
-		}
+
+	int h = configuracion->altoPantalla;
+	if (hasBottomBar()) {
+		h -= listaPantallas->barraInferior->altoPantalla;
 	}
+	if (hasTopBar()) {
+		h -= listaPantallas->topBar->altoPantalla;
+	}
+	int nrows_screen = ((listaPantallas->listaPantalla[estado->pantallaActiva]->numIconos + configuracion->mainScreenConfig->iconsPerRow - 1) / configuracion->mainScreenConfig->iconsPerRow);
+
 	if (posImage.y >= 0 || pantallaActivaOld != estado->pantallaActiva) {
 		estado->posObjetivo.y = 0;
 	} else {
-		INT h = configuracion->altoPantalla;
-		if (listaPantallas->barraInferior != NULL && listaPantallas->barraInferior->numIconos > 0 && configuracion->bottomBarConfig->iconWidth > 0) {
-			h -= listaPantallas->barraInferior->altoPantalla;
-		}
-		if (listaPantallas->topBar != NULL && listaPantallas->topBar->numIconos > 0 && configuracion->topBarConfig->iconWidth > 0) {
-			h -= listaPantallas->topBar->altoPantalla;
-		}
-		INT nrows_scroll = (-posImage.y + configuracion->mainScreenConfig->distanceIconsV / 2) / configuracion->mainScreenConfig->distanceIconsV;
-		INT nrows_screen = ((listaPantallas->listaPantalla[estado->pantallaActiva]->numIconos + configuracion->mainScreenConfig->iconsPerRow - 1) / configuracion->mainScreenConfig->iconsPerRow);
-		INT nrows_fit = (h - configuracion->mainScreenConfig->cs.offset.top) / configuracion->mainScreenConfig->distanceIconsV;
+		int nrows_scroll = (-posImage.y + configuracion->mainScreenConfig->distanceIconsV / 2) / configuracion->mainScreenConfig->distanceIconsV;
+		int nrows_fit = (h - configuracion->mainScreenConfig->cs.offset.top) / configuracion->mainScreenConfig->distanceIconsV;
 		if (nrows_scroll > nrows_screen - nrows_fit) {
 			nrows_scroll = nrows_screen - nrows_fit;
 			if (nrows_scroll < 0) {
@@ -1889,10 +1917,20 @@ void calculaPosicionObjetivo() {
 			}
 		}
 		estado->posObjetivo.y = - nrows_scroll * (int) configuracion->mainScreenConfig->distanceIconsV;
-		if (-posImage.y >= int(nrows_screen * configuracion->mainScreenConfig->distanceIconsV)) {
-			if (_tcsclen(configuracion->outOfScreenBottom) > 0) {
-				LaunchApplication(configuracion->outOfScreenBottom, L"");
+		if (-posImage.y >= nrows_screen * (int) configuracion->mainScreenConfig->distanceIconsV) {
+			if (_tcsclen(configuracion->ooss_down.exec) > 0) {
+				LaunchApplication(configuracion->ooss_down.exec, L"");
+			} else if (configuracion->ooss_down.wrap) {
+				estado->posObjetivo.y = 0;
 			}
+		}
+	}
+
+	if (posImage.y >= h) {
+		if (_tcsclen(configuracion->ooss_up.exec) > 0) {
+			LaunchApplication(configuracion->ooss_up.exec, L"");
+		} else if (configuracion->ooss_up.wrap) {
+			estado->posObjetivo.y = -(nrows_screen * (int) configuracion->mainScreenConfig->distanceIconsV - h);
 		}
 	}
 }
@@ -2036,10 +2074,10 @@ BOOL LaunchApplication(LPCTSTR pCmdLine, LPCTSTR pParametros)
 	return bWorked;
 }
 
-void procesaPulsacion(HWND hwnd, POINTS posCursor, BOOL doubleClick, BOOL noLanzar) {
-
-	BOOL hasBottomBar = listaPantallas->barraInferior != NULL && listaPantallas->barraInferior->numIconos > 0 && configuracion->bottomBarConfig->iconWidth > 0;
-	BOOL hasTopBar = listaPantallas->topBar != NULL && listaPantallas->topBar->numIconos > 0 && configuracion->topBarConfig->iconWidth > 0;
+void procesaPulsacion(HWND hwnd, POINTS posCursor, BOOL doubleClick, BOOL noLanzar)
+{
+	BOOL bHasBottomBar = hasBottomBar();
+	BOOL bHasTopBar = hasTopBar();
 
 	int nCirculos = listaPantallas->numPantallas;
 	int anchoCirculo = configuracion->circlesDiameter;
@@ -2051,7 +2089,7 @@ void procesaPulsacion(HWND hwnd, POINTS posCursor, BOOL doubleClick, BOOL noLanz
 	xRight = xLeft + (nCirculos - 1) * (anchoCirculo + distanciaCirculo) + anchoCirculo;
 
 	yTop = int(configuracion->altoPantalla) - anchoCirculo - configuracion->circlesOffset;
-	if (hasBottomBar) {
+	if (bHasBottomBar) {
 		yTop -= listaPantallas->barraInferior->altoPantalla;
 	}
 	yBottom = yTop + anchoCirculo;
@@ -2081,10 +2119,10 @@ void procesaPulsacion(HWND hwnd, POINTS posCursor, BOOL doubleClick, BOOL noLanz
 	CIcono *icono = NULL;
 	int iconWidth;
 
-	BOOL isClickOnBottomBar = hasBottomBar
+	BOOL isClickOnBottomBar = bHasBottomBar
 		&& posCursor.x >= listaPantallas->barraInferior->x && posCursor.x <= (listaPantallas->barraInferior->x + listaPantallas->barraInferior->anchoPantalla)
 		&& posCursor.y >= listaPantallas->barraInferior->y && posCursor.y <= (listaPantallas->barraInferior->y + listaPantallas->barraInferior->altoPantalla);
-	BOOL isClickOnTopBar = hasTopBar
+	BOOL isClickOnTopBar = bHasTopBar
 		&& posCursor.x >= listaPantallas->topBar->x && posCursor.x <= (listaPantallas->topBar->x + listaPantallas->topBar->anchoPantalla)
 		&& posCursor.y >= listaPantallas->topBar->y && posCursor.y <= (listaPantallas->topBar->y + listaPantallas->topBar->altoPantalla);
 
@@ -2148,7 +2186,8 @@ void procesaPulsacion(HWND hwnd, POINTS posCursor, BOOL doubleClick, BOOL noLanz
 	}
 }
 
-int hayNotificacion(int tipo) {
+int hayNotificacion(int tipo)
+{
 	int numNotif = 0;
 	switch(tipo) {
 		case NOTIF_MISSEDCALLS:
@@ -2764,8 +2803,8 @@ BOOL doEraseBackground(HWND hwnd)
 }
 #endif
 
-BOOL inicializaApp(HWND hwnd) {
-
+BOOL inicializaApp(HWND hwnd)
+{
 	configuracion = new CConfiguracion();
 	estado = new CEstado();
 	notifications = new CNotifications(hwnd);
@@ -2857,7 +2896,8 @@ BOOL inicializaApp(HWND hwnd) {
 	return TRUE;
 }
 
-BOOL borraObjetosHDC() {
+BOOL borraObjetosHDC()
+{
 	borraHDC_HBITMPAP(&hDCMem, &hbmMem, &hbmMemOld);
 	borraHDC_HBITMPAP(&hDCMem2, &hbmMem2, &hbmMemOld2);
 
@@ -2917,7 +2957,8 @@ BOOL borraObjetosHDC() {
 	return true;
 }
 
-BOOL borraHDC_HBITMPAP(HDC *hdc, HBITMAP *hbm, HBITMAP *hbmOld) {
+BOOL borraHDC_HBITMPAP(HDC *hdc, HBITMAP *hbm, HBITMAP *hbmOld)
+{
 	if(*hbm && *hdc) {
 		SelectObject(*hdc, *hbmOld);
 		DeleteDC(*hdc);
@@ -3549,4 +3590,14 @@ BOOL ProcessNotifications()
 	}
 
 	return shouldInvalidateRect;
+}
+
+BOOL hasTopBar()
+{
+	return listaPantallas->topBar != NULL && listaPantallas->topBar->numIconos > 0 && configuracion->topBarConfig->iconWidth > 0;
+}
+
+BOOL hasBottomBar()
+{
+	return listaPantallas->barraInferior != NULL && listaPantallas->barraInferior->numIconos > 0 && configuracion->bottomBarConfig->iconWidth > 0;
 }

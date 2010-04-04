@@ -574,10 +574,25 @@ void CConfiguracion::defaultValues()
 	this->heightP = 0;
 	this->heightL = 0;
 
-	this->outOfScreenLeft[0] = 0;
-	this->outOfScreenRight[0] = 0;
-	this->outOfScreenTop[0] = 0;
-	this->outOfScreenBottom[0] = 0;
+	this->ooss_left.stop = 0;
+	this->ooss_left.wrap = 1;
+	this->ooss_left.stopAt = 40;
+	this->ooss_left.exec[0] = 0;
+
+	this->ooss_right.stop = 0;
+	this->ooss_right.wrap = 1;
+	this->ooss_right.stopAt = 40;
+	this->ooss_right.exec[0] = 0;
+
+	this->ooss_up.stop = 0;
+	this->ooss_up.wrap = 0;
+	this->ooss_up.stopAt = 40;
+	this->ooss_up.exec[0] = 0;
+
+	this->ooss_down.stop = 0;
+	this->ooss_down.wrap = 0;
+	this->ooss_down.stopAt = 40;
+	this->ooss_down.exec[0] = 0;
 
 	this->alphaBlend = 0;
 	this->alphaOnBlack = 0;
@@ -739,6 +754,22 @@ void BubbleSettingsSave(TiXmlElement *pElem, BubbleSettings *bs, BOOL hasText)
 	}
 }
 
+void OutOfScreenSettingsLoad(TiXmlElement *pElem, OutOfScreenSettings *ooss)
+{
+	XMLUtils::GetAttr(pElem, "stop",   &ooss->stop);
+	XMLUtils::GetAttr(pElem, "stopAt", &ooss->stopAt);
+	XMLUtils::GetAttr(pElem, "wrap",   &ooss->wrap);
+	XMLUtils::GetAttr(pElem, "exec",   ooss->exec, CountOf(ooss->exec));
+}
+
+void OutOfScreenSettingsSave(TiXmlElement *pElem, OutOfScreenSettings *ooss)
+{
+	XMLUtils::SetAttr(pElem, "stop",   ooss->stop);
+	XMLUtils::SetAttr(pElem, "stopAt", ooss->stopAt);
+	XMLUtils::SetAttr(pElem, "wrap",   ooss->wrap);
+	XMLUtils::SetAttr(pElem, "exec",   ooss->exec, CountOf(ooss->exec));
+}
+
 BOOL CConfiguracion::loadXMLConfig()
 {
 	TiXmlDocument doc;
@@ -851,11 +882,14 @@ BOOL CConfiguracion::loadXMLConfig()
 			XMLUtils::GetTextElem(pElem, &this->textQuality);
 		} else if(_stricmp(nameNode, "TextQualityInIcons") == 0) {
 			XMLUtils::GetTextElem(pElem, &this->textQualityInIcons);
-		} else if(_stricmp(nameNode, "OutOfScreen") == 0) {
-			XMLUtils::GetAttr(pElem, "left",   this->outOfScreenLeft,   CountOf(this->outOfScreenLeft));
-			XMLUtils::GetAttr(pElem, "right",  this->outOfScreenRight,  CountOf(this->outOfScreenRight));
-			XMLUtils::GetAttr(pElem, "top",    this->outOfScreenTop,    CountOf(this->outOfScreenTop));
-			XMLUtils::GetAttr(pElem, "bottom", this->outOfScreenBottom, CountOf(this->outOfScreenBottom));
+		} else if(_stricmp(nameNode, "OutOfScreenLeft") == 0) {
+			OutOfScreenSettingsLoad(pElem, &this->ooss_left);
+		} else if(_stricmp(nameNode, "OutOfScreenRight") == 0) {
+			OutOfScreenSettingsLoad(pElem, &this->ooss_right);
+		} else if(_stricmp(nameNode, "OutOfScreenUp") == 0) {
+			OutOfScreenSettingsLoad(pElem, &this->ooss_up);
+		} else if(_stricmp(nameNode, "OutOfScreenDown") == 0) {
+			OutOfScreenSettingsLoad(pElem, &this->ooss_down);
 		} else if(_stricmp(nameNode, "Transparency") == 0) {
 			XMLUtils::GetAttr(pElem, "alphablend",     &this->alphaBlend);
 			XMLUtils::GetAttr(pElem, "alphaonblack",   &this->alphaOnBlack);
@@ -1142,11 +1176,20 @@ BOOL CConfiguracion::saveXMLConfig()
 	XMLUtils::SetTextElem(pElem, this->textQualityInIcons);
 	root->LinkEndChild(pElem);
 
-	pElem = new TiXmlElement("OutOfScreen");
-	XMLUtils::SetAttr(pElem, "left",   this->outOfScreenLeft,   CountOf(this->outOfScreenLeft));
-	XMLUtils::SetAttr(pElem, "right",  this->outOfScreenRight,  CountOf(this->outOfScreenRight));
-	XMLUtils::SetAttr(pElem, "top",    this->outOfScreenTop,    CountOf(this->outOfScreenTop));
-	XMLUtils::SetAttr(pElem, "bottom", this->outOfScreenBottom, CountOf(this->outOfScreenBottom));
+	pElem = new TiXmlElement("OutOfScreenLeft");
+	OutOfScreenSettingsSave(pElem, &this->ooss_left);
+	root->LinkEndChild(pElem);
+
+	pElem = new TiXmlElement("OutOfScreenRight");
+	OutOfScreenSettingsSave(pElem, &this->ooss_right);
+	root->LinkEndChild(pElem);
+
+	pElem = new TiXmlElement("OutOfScreenUp");
+	OutOfScreenSettingsSave(pElem, &this->ooss_up);
+	root->LinkEndChild(pElem);
+
+	pElem = new TiXmlElement("OutOfScreenDown");
+	OutOfScreenSettingsSave(pElem, &this->ooss_down);
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("Transparency");
