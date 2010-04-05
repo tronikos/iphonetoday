@@ -2197,6 +2197,7 @@ int hayNotificacion(int tipo)
 	int numNotif = 0;
 	switch(tipo) {
 		case NOTIF_MISSEDCALLS:
+		case NOTIF_MC_SIG_OPER:
 			numNotif = notifications->dwNotifications[SN_PHONEMISSEDCALLS];
 			break;
 		case NOTIF_VMAIL:
