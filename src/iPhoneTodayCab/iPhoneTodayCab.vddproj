@@ -86,6 +86,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_21C550A206A042A3A9013167078AD6D1"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_239510A96B5D4A2F953D2A46A7C43CD1"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -248,6 +254,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_9C38CE2BE5D54117A91D152E4BE8D4D1"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_A0235AD95434463BBDB156D1A5DB9718"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -302,12 +314,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_CA529B104CFD453F99C37822A0FB4CF7"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_D64B6FA2A2A042AD81657FF8CEA9D46B"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -339,12 +345,6 @@
         "Entry"
         {
         "MsmKey" = "8:_E2AB98B14DF54A10966EE3655B30760C"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_E94D12B392FA4EE1A592719F7DFB074D"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -596,6 +596,24 @@
             "TargetName" = "8:Alarm.png"
             "Tag" = "8:"
             "Folder" = "8:_254B90F526954A78AEB276BE2E32E914"
+            "Condition" = "8:"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "Register" = "3:0"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{BA458234-9B71-4F46-8107-E91156377184}:_21C550A206A042A3A9013167078AD6D1"
+            {
+            "SourcePath" = "8:..\\..\\res\\backgrounds\\BottomBar\\iPhoneBG_All_Sizes_(turn_fitwidth_&_fitheight_off).png"
+            "TargetName" = "8:iPhoneBG_All_Sizes_(turn_fitwidth_&_fitheight_off).png"
+            "Tag" = "8:"
+            "Folder" = "8:_FEBF06C1CAC745F39E8B220DAABE4537"
             "Condition" = "8:"
             "Vital" = "11:TRUE"
             "ReadOnly" = "11:FALSE"
@@ -1076,6 +1094,24 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{BA458234-9B71-4F46-8107-E91156377184}:_9C38CE2BE5D54117A91D152E4BE8D4D1"
+            {
+            "SourcePath" = "8:..\\..\\res\\backgrounds\\BottomBar\\iPhoneBG_240px_wide.png"
+            "TargetName" = "8:iPhoneBG_240px_wide.png"
+            "Tag" = "8:"
+            "Folder" = "8:_FEBF06C1CAC745F39E8B220DAABE4537"
+            "Condition" = "8:"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "Register" = "3:0"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{BA458234-9B71-4F46-8107-E91156377184}:_A0235AD95434463BBDB156D1A5DB9718"
             {
             "SourcePath" = "8:..\\..\\res\\icons\\Bubbles\\State.png"
@@ -1220,24 +1256,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{BA458234-9B71-4F46-8107-E91156377184}:_CA529B104CFD453F99C37822A0FB4CF7"
-            {
-            "SourcePath" = "8:..\\..\\res\\backgrounds\\iPhoneBG_All_Sizes_(turn_fitwidth_&_fitheight_off).png"
-            "TargetName" = "8:iPhoneBG_All_Sizes_(turn_fitwidth_&_fitheight_off).png"
-            "Tag" = "8:"
-            "Folder" = "8:_888ADC51859845CA8080DA9654CFC2C7"
-            "Condition" = "8:"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "Register" = "3:0"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{BA458234-9B71-4F46-8107-E91156377184}:_D64B6FA2A2A042AD81657FF8CEA9D46B"
             {
             "SourcePath" = "8:..\\..\\res\\icons\\Email.png"
@@ -1316,24 +1334,6 @@
             "TargetName" = "8:CrackedGlass.png"
             "Tag" = "8:"
             "Folder" = "8:_EBB07BDF07D243A3A8726399065ED69D"
-            "Condition" = "8:"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "Register" = "3:0"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{BA458234-9B71-4F46-8107-E91156377184}:_E94D12B392FA4EE1A592719F7DFB074D"
-            {
-            "SourcePath" = "8:..\\..\\res\\backgrounds\\iPhoneBG_240px_wide.png"
-            "TargetName" = "8:iPhoneBG_240px_wide.png"
-            "Tag" = "8:"
-            "Folder" = "8:_888ADC51859845CA8080DA9654CFC2C7"
             "Condition" = "8:"
             "Vital" = "11:TRUE"
             "ReadOnly" = "11:FALSE"
@@ -1472,6 +1472,15 @@
                     "Property" = "8:_0462710FDB244F13996D4055BB626E5B"
                         "Folders"
                         {
+                            "{5943FCFD-5B64-4EE4-96C9-4618EC95352A}:_FEBF06C1CAC745F39E8B220DAABE4537"
+                            {
+                            "Name" = "8:BottomBar"
+                            "Condition" = "8:"
+                            "Property" = "8:_BDA1CC377D7448CF98601AAD50E2E891"
+                                "Folders"
+                                {
+                                }
+                            }
                         }
                     }
                     "{5943FCFD-5B64-4EE4-96C9-4618EC95352A}:_CB770C7AC2BA431FAE2CC7F1E1214841"
