@@ -15,7 +15,7 @@ enum dw_notifications_enum {
 	SN_MESSAGINGMMSUNREAD,				// HKCU\System\State\Messages\MMS\Unread\Count
 	SN_MESSAGINGOTHEREMAILUNREAD,		// HKCU\System\State\Messages\OtherEmail\Unread\Count
 	SN_MESSAGINGACTIVESYNCEMAILUNREAD,	// HKCU\System\State\Messages\Sync\Unread\Count
-	SN_APPOINTMENTSLISTCOUINT,			// HKCU\System\State\Appointments\List\Count
+	SN_APPOINTMENTSLISTCOUNT,			// HKCU\System\State\Appointments\List\Count
 	SN_TASKSACTIVE,						// HKCU\System\State\Tasks\Active
 	SN_WIFISTATEPOWERON,				// HKLM\System\State\Hardware\WiFi
 	SN_BLUETOOTHSTATEPOWERON,			// HKLM\System\State\Hardware\Bluetooth
