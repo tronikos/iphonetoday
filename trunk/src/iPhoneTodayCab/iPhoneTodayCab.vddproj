@@ -44,12 +44,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_0D90098BE8F2470F84168EA989D80C11"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_0E4E57991C47429AB027E1F34DA005CD"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -308,6 +302,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_CA529B104CFD453F99C37822A0FB4CF7"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_D64B6FA2A2A042AD81657FF8CEA9D46B"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -339,6 +339,12 @@
         "Entry"
         {
         "MsmKey" = "8:_E2AB98B14DF54A10966EE3655B30760C"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E94D12B392FA4EE1A592719F7DFB074D"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -482,24 +488,6 @@
             "TargetName" = "8:Google Maps.png"
             "Tag" = "8:"
             "Folder" = "8:_CB770C7AC2BA431FAE2CC7F1E1214841"
-            "Condition" = "8:"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "Register" = "3:0"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{BA458234-9B71-4F46-8107-E91156377184}:_0D90098BE8F2470F84168EA989D80C11"
-            {
-            "SourcePath" = "8:..\\..\\res\\backgrounds\\BottomBar.png"
-            "TargetName" = "8:BottomBar.png"
-            "Tag" = "8:"
-            "Folder" = "8:_888ADC51859845CA8080DA9654CFC2C7"
             "Condition" = "8:"
             "Vital" = "11:TRUE"
             "ReadOnly" = "11:FALSE"
@@ -1232,6 +1220,24 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{BA458234-9B71-4F46-8107-E91156377184}:_CA529B104CFD453F99C37822A0FB4CF7"
+            {
+            "SourcePath" = "8:..\\..\\res\\backgrounds\\iPhoneBG_All_Sizes_(turn_fitwidth_&_fitheight_off).png"
+            "TargetName" = "8:iPhoneBG_All_Sizes_(turn_fitwidth_&_fitheight_off).png"
+            "Tag" = "8:"
+            "Folder" = "8:_888ADC51859845CA8080DA9654CFC2C7"
+            "Condition" = "8:"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "Register" = "3:0"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{BA458234-9B71-4F46-8107-E91156377184}:_D64B6FA2A2A042AD81657FF8CEA9D46B"
             {
             "SourcePath" = "8:..\\..\\res\\icons\\Email.png"
@@ -1310,6 +1316,24 @@
             "TargetName" = "8:CrackedGlass.png"
             "Tag" = "8:"
             "Folder" = "8:_EBB07BDF07D243A3A8726399065ED69D"
+            "Condition" = "8:"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "Register" = "3:0"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{BA458234-9B71-4F46-8107-E91156377184}:_E94D12B392FA4EE1A592719F7DFB074D"
+            {
+            "SourcePath" = "8:..\\..\\res\\backgrounds\\iPhoneBG_240px_wide.png"
+            "TargetName" = "8:iPhoneBG_240px_wide.png"
+            "Tag" = "8:"
+            "Folder" = "8:_888ADC51859845CA8080DA9654CFC2C7"
             "Condition" = "8:"
             "Vital" = "11:TRUE"
             "ReadOnly" = "11:FALSE"
