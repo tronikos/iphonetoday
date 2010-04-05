@@ -9,4 +9,4 @@ WORD GetVolumePercentage();
 void SetVolumePercentage(WORD vol);
 
 void Rotate(int angle);
-void ToggleKeyboard();
+void ToggleKeyboard(int bShow = -1);

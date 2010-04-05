@@ -1051,7 +1051,7 @@ LRESULT doMouseDown (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 	// Cacelamos el timer anterior en caso de haberlo
 	KillTimer(hwnd, TIMER_RECUPERACION);
 	posCursor = MAKEPOINTS(lParam);
-	NKDbgPrintfW(L"WM_LBUTTONDOWN at (%d,%d)\n", posCursor.x, posCursor.y);
+	//NKDbgPrintfW(L"WM_LBUTTONDOWN at (%d,%d)\n", posCursor.x, posCursor.y);
 	posCursorInitialized = TRUE;
 
 	if (configuracion->pressedIcon->hDC != NULL || _tcsclen(configuracion->pressed_sound) > 0) {
@@ -2251,194 +2251,203 @@ int hayNotificacion(int tipo)
 
 LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	static HWND hwndKB = NULL;
+
 	switch (message)
 	{
 	case WM_INITDIALOG:
-		{
-			if (FindWindow(L"MS_SIPBUTTON", NULL) != NULL) {
-				SHMENUBARINFO mbi;
+		if (FindWindow(L"MS_SIPBUTTON", NULL) != NULL) {
+			SHMENUBARINFO mbi;
 
-				memset(&mbi, 0, sizeof(SHMENUBARINFO));  // Reset mbi to 0.
-				mbi.cbSize = sizeof(SHMENUBARINFO);
-				mbi.dwFlags = SHCMBF_EMPTYBAR;
-				mbi.hwndParent = hDlg;  // Soft key bar's owner.
-				mbi.nToolBarId = NULL;  // Soft key bar resource.
-				mbi.hInstRes = NULL;  // HINST in which resource is located.
+			memset(&mbi, 0, sizeof(SHMENUBARINFO));  // Reset mbi to 0.
+			mbi.cbSize = sizeof(SHMENUBARINFO);
+			mbi.dwFlags = SHCMBF_EMPTYBAR;
+			mbi.hwndParent = hDlg;  // Soft key bar's owner.
+			mbi.nToolBarId = NULL;  // Soft key bar resource.
+			mbi.hInstRes = NULL;  // HINST in which resource is located.
 
+			g_hWndMenuBar = mbi.hwndMB;
+
+			if (g_hWndMenuBar) {
+				CommandBar_Destroy(g_hWndMenuBar);
+			}
+			// Create the Soft key bar.
+			if (!SHCreateMenuBar(&mbi))
+			{
+				g_hWndMenuBar = NULL;
+			}
+			else
+			{
 				g_hWndMenuBar = mbi.hwndMB;
-
-				if (g_hWndMenuBar) {
-					CommandBar_Destroy(g_hWndMenuBar);
-				}
-				// Create the Soft key bar.
-				if (!SHCreateMenuBar(&mbi))
-				{
-					g_hWndMenuBar = NULL;
-				}
-				else
-				{
-					g_hWndMenuBar = mbi.hwndMB;
-				}
 			}
+		} else {
+			SetWindowLong(hDlg, GWL_EXSTYLE, GetWindowLong(hDlg, GWL_EXSTYLE) | WS_EX_CAPTIONOKBTN);
+//			SetWindowLong(hDlg, GWL_EXSTYLE, GetWindowLong(hDlg, GWL_EXSTYLE) | WS_EX_CONTEXTHELP);
+			hwndKB = CreateDialog(g_hInst, MAKEINTRESOURCE(IDD_KB_BUTTON), hDlg, (DLGPROC) KBButtonDlgProc);
+		}
 
-			SHINITDLGINFO shidi;
-			shidi.dwMask = SHIDIM_FLAGS;
-			shidi.dwFlags = SHIDIF_DONEBUTTON | SHIDIF_SIZEDLG | SHIDIF_WANTSCROLLBAR;
-			shidi.hDlg = hDlg;
-			SHInitDialog(&shidi);
+		SHINITDLGINFO shidi;
+		shidi.dwMask = SHIDIM_FLAGS;
+		shidi.dwFlags = SHIDIF_DONEBUTTON | SHIDIF_SIZEDLG | SHIDIF_WANTSCROLLBAR;
+		shidi.hDlg = hDlg;
+		SHInitDialog(&shidi);
 
-			if (FindWindow(L"MS_SIPBUTTON", NULL) == NULL) {
-				SetWindowLong(hDlg, GWL_EXSTYLE, GetWindowLong(hDlg, GWL_EXSTYLE) | WS_EX_CONTEXTHELP | WS_EX_CAPTIONOKBTN);
-			}
+		// Configuramos el elemento Screen
+		SendMessage(GetDlgItem(hDlg, IDC_MICON_SPIN_SCREEN), UDM_SETBUDDY, (WPARAM) GetDlgItem(hDlg, IDC_MICON_SCREEN), 0);
+		SendMessage(GetDlgItem(hDlg, IDC_MICON_SPIN_SCREEN), UDM_SETRANGE, 0, MAKELPARAM(MAX_PANTALLAS - 1, -2));
+		SendMessage(GetDlgItem(hDlg, IDC_MICON_SPIN_SCREEN), UDM_SETPOS, 0, iconoActual.nPantallaActual);
 
-			// Configuramos el elemento Screen
-			SendMessage(GetDlgItem(hDlg, IDC_MICON_SPIN_SCREEN), UDM_SETBUDDY, (WPARAM) GetDlgItem(hDlg, IDC_MICON_SCREEN), 0);
-			SendMessage(GetDlgItem(hDlg, IDC_MICON_SPIN_SCREEN), UDM_SETRANGE, 0, MAKELPARAM(MAX_PANTALLAS - 1, -2));
-			SendMessage(GetDlgItem(hDlg, IDC_MICON_SPIN_SCREEN), UDM_SETPOS, 0, iconoActual.nPantallaActual);
-
-			// Configuramos el elemento Icon
-			SendMessage(GetDlgItem(hDlg, IDC_MICON_SPIN_ICON), UDM_SETBUDDY, (WPARAM) GetDlgItem(hDlg, IDC_MICON_ICON), 0);
-			SendMessage(GetDlgItem(hDlg, IDC_MICON_SPIN_ICON), UDM_SETRANGE, 0, MAKELPARAM(MAX_ICONOS_PANTALLA - 1, 0));
-			if (iconoActual.nIconoActual >= 0) {
-				SendMessage(GetDlgItem(hDlg, IDC_MICON_SPIN_ICON), UDM_SETPOS, 0, iconoActual.nIconoActual);
+		// Configuramos el elemento Icon
+		SendMessage(GetDlgItem(hDlg, IDC_MICON_SPIN_ICON), UDM_SETBUDDY, (WPARAM) GetDlgItem(hDlg, IDC_MICON_ICON), 0);
+		SendMessage(GetDlgItem(hDlg, IDC_MICON_SPIN_ICON), UDM_SETRANGE, 0, MAKELPARAM(MAX_ICONOS_PANTALLA - 1, 0));
+		if (iconoActual.nIconoActual >= 0) {
+			SendMessage(GetDlgItem(hDlg, IDC_MICON_SPIN_ICON), UDM_SETPOS, 0, iconoActual.nIconoActual);
+		} else {
+			CPantalla *pantalla = NULL;
+			if (iconoActual.nPantallaActual == -1) {
+				pantalla = listaPantallas->barraInferior;
+			} else if (iconoActual.nPantallaActual == -2) {
+				pantalla = listaPantallas->topBar;
 			} else {
-				CPantalla *pantalla = NULL;
-				if (iconoActual.nPantallaActual == -1) {
-					pantalla = listaPantallas->barraInferior;
-				} else if (iconoActual.nPantallaActual == -2) {
-					pantalla = listaPantallas->topBar;
-				} else {
-					pantalla = listaPantallas->listaPantalla[iconoActual.nPantallaActual];
-				}
-				int tmp = 0;
-				if (pantalla) {
-					tmp = pantalla->numIconos;
-				}
-				SendMessage(GetDlgItem(hDlg, IDC_MICON_SPIN_ICON), UDM_SETPOS, 0, tmp);
+				pantalla = listaPantallas->listaPantalla[iconoActual.nPantallaActual];
+			}
+			int tmp = 0;
+			if (pantalla) {
+				tmp = pantalla->numIconos;
+			}
+			SendMessage(GetDlgItem(hDlg, IDC_MICON_SPIN_ICON), UDM_SETPOS, 0, tmp);
+		}
+
+		// Configuramos el elemento Type
+		SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_NORMAL_TXT);
+		SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_MISSEDCALLS_TXT);
+		SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_SMS_TXT);
+		SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_MMS_TXT);
+		SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_OTHER_EMAIL_TXT);
+		SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_SYNC_EMAIL_TXT);
+		SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_TOTAL_EMAIL_TXT);
+		SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_APPOINTS_TXT);
+		SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_CALENDAR_TXT);
+		SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_TASKS_TXT);
+		SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_SMS_MMS_TXT);
+		SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_WIFI_TXT);
+		SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_BLUETOOTH_TXT);
+		SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_ALARM_TXT);
+		SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_CLOCK_TXT);
+		SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_CLOCK_ALARM_TXT);
+		SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_BATTERY_TXT);
+		SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_VOLUME_TXT);
+		SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_MEMORYLOAD_TXT);
+		SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_MEMORYFREE_TXT);
+		SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_MEMORYUSED_TXT);
+		SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_CELLNETWORK_TXT);
+		SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_SIGNAL_TXT);
+		SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_OPERATOR_TXT);
+		SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_SIGNAL_OPER_TXT);
+		SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_MC_SIG_OPER_TXT);
+		SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_PROFILE_TXT);
+		SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_VMAIL_TXT);
+		SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_IRDA_TXT);
+
+		// Configuramos los checks
+		SendMessage(GetDlgItem(hDlg, IDC_MICON_LAUNCHANIMATION), BM_SETCHECK, BST_CHECKED, 0);
+
+		// Si es editar ponemos los valores
+		if (iconoActual.nIconoActual >= 0) {
+			CIcono *icono = NULL;
+			if (iconoActual.nPantallaActual == -1) {
+				icono = listaPantallas->barraInferior->listaIconos[iconoActual.nIconoActual];
+			} else if (iconoActual.nPantallaActual == -2) {
+				icono = listaPantallas->topBar->listaIconos[iconoActual.nIconoActual];
+			} else {
+				icono = listaPantallas->listaPantalla[iconoActual.nPantallaActual]->listaIconos[iconoActual.nIconoActual];
 			}
 
-			// Configuramos el elemento Type
-			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_NORMAL_TXT);
-			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_MISSEDCALLS_TXT);
-			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_SMS_TXT);
-			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_MMS_TXT);
-			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_OTHER_EMAIL_TXT);
-			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_SYNC_EMAIL_TXT);
-			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_TOTAL_EMAIL_TXT);
-			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_APPOINTS_TXT);
-			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_CALENDAR_TXT);
-			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_TASKS_TXT);
-			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_SMS_MMS_TXT);
-			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_WIFI_TXT);
-			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_BLUETOOTH_TXT);
-			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_ALARM_TXT);
-			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_CLOCK_TXT);
-			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_CLOCK_ALARM_TXT);
-			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_BATTERY_TXT);
-			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_VOLUME_TXT);
-			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_MEMORYLOAD_TXT);
-			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_MEMORYFREE_TXT);
-			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_MEMORYUSED_TXT);
-			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_CELLNETWORK_TXT);
-			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_SIGNAL_TXT);
-			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_OPERATOR_TXT);
-			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_SIGNAL_OPER_TXT);
-			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_MC_SIG_OPER_TXT);
-			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_PROFILE_TXT);
-			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_VMAIL_TXT);
-			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_IRDA_TXT);
+			SetDlgItemText(hDlg, IDC_MICON_NAME, icono->nombre);
+			SetDlgItemText(hDlg, IDC_MICON_IMAGE, icono->rutaImagen);
+			SetDlgItemText(hDlg, IDC_MICON_SOUND, icono->sound);
+			SetDlgItemText(hDlg, IDC_MICON_EXEC, icono->ejecutable);
+			SetDlgItemText(hDlg, IDC_MICON_PARAMETERS, icono->parametros);
+			SetDlgItemText(hDlg, IDC_MICON_EXECALT, icono->ejecutableAlt);
+			SetDlgItemText(hDlg, IDC_MICON_PARAMETERSALT, icono->parametrosAlt);
 
-			// Configuramos los checks
-			SendMessage(GetDlgItem(hDlg, IDC_MICON_LAUNCHANIMATION), BM_SETCHECK, BST_CHECKED, 0);
+			SendMessage(GetDlgItem(hDlg, IDC_MICON_LAUNCHANIMATION), BM_SETCHECK, icono->launchAnimation ? BST_CHECKED : BST_UNCHECKED, 0);
 
-			// Si es editar ponemos los valores
-			if (iconoActual.nIconoActual >= 0) {
-				CIcono *icono = NULL;
-				if (iconoActual.nPantallaActual == -1) {
-					icono = listaPantallas->barraInferior->listaIconos[iconoActual.nIconoActual];
-				} else if (iconoActual.nPantallaActual == -2) {
-					icono = listaPantallas->topBar->listaIconos[iconoActual.nIconoActual];
-				} else {
-					icono = listaPantallas->listaPantalla[iconoActual.nPantallaActual]->listaIconos[iconoActual.nIconoActual];
-				}
-
-				SetDlgItemText(hDlg, IDC_MICON_NAME, icono->nombre);
-				SetDlgItemText(hDlg, IDC_MICON_IMAGE, icono->rutaImagen);
-				SetDlgItemText(hDlg, IDC_MICON_SOUND, icono->sound);
-				SetDlgItemText(hDlg, IDC_MICON_EXEC, icono->ejecutable);
-				SetDlgItemText(hDlg, IDC_MICON_PARAMETERS, icono->parametros);
-				SetDlgItemText(hDlg, IDC_MICON_EXECALT, icono->ejecutableAlt);
-				SetDlgItemText(hDlg, IDC_MICON_PARAMETERSALT, icono->parametrosAlt);
-
-				SendMessage(GetDlgItem(hDlg, IDC_MICON_LAUNCHANIMATION), BM_SETCHECK, icono->launchAnimation ? BST_CHECKED : BST_UNCHECKED, 0);
-
-				if (icono->tipo == NOTIF_NORMAL) {
-					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 0, 0);
-				} else if (icono->tipo == NOTIF_MISSEDCALLS) {
-					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 1, 0);
-				} else if (icono->tipo == NOTIF_SMS) {
-					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 2, 0);
-				} else if (icono->tipo == NOTIF_MMS) {
-					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 3, 0);
-				} else if (icono->tipo == NOTIF_OTHER_EMAIL) {
-					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 4, 0);
-				} else if (icono->tipo == NOTIF_SYNC_EMAIL) {
-					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 5, 0);
-				} else if (icono->tipo == NOTIF_TOTAL_EMAIL) {
-					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 6, 0);
-				} else if (icono->tipo == NOTIF_APPOINTS) {
-					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 7, 0);
-				} else if (icono->tipo == NOTIF_CALENDAR) {
-					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 8, 0);
-				} else if (icono->tipo == NOTIF_TASKS) {
-					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 9, 0);
-				} else if (icono->tipo == NOTIF_SMS_MMS) {
-					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 10, 0);
-				} else if (icono->tipo == NOTIF_WIFI) {
-					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 11, 0);
-				} else if (icono->tipo == NOTIF_BLUETOOTH) {
-					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 12, 0);
-				} else if (icono->tipo == NOTIF_ALARM) {
-					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 13, 0);
-				} else if (icono->tipo == NOTIF_CLOCK) {
-					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 14, 0);
-				} else if (icono->tipo == NOTIF_CLOCK_ALARM) {
-					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 15, 0);
-				} else if (icono->tipo == NOTIF_BATTERY) {
-					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 16, 0);
-				} else if (icono->tipo == NOTIF_VOLUME) {
-					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 17, 0);
-				} else if (icono->tipo == NOTIF_MEMORYLOAD) {
-					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 18, 0);
-				} else if (icono->tipo == NOTIF_MEMORYFREE) {
-					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 19, 0);
-				} else if (icono->tipo == NOTIF_MEMORYUSED) {
-					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 20, 0);
-				} else if (icono->tipo == NOTIF_CELLNETWORK) {
-					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 21, 0);
-				} else if (icono->tipo == NOTIF_SIGNAL) {
-					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 22, 0);
-				} else if (icono->tipo == NOTIF_OPERATOR) {
-					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 23, 0);
-				} else if (icono->tipo == NOTIF_SIGNAL_OPER) {
-					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 24, 0);
-				} else if (icono->tipo == NOTIF_MC_SIG_OPER) {
-					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 25, 0);
-				} else if (icono->tipo == NOTIF_PROFILE) {
-					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 26, 0);
-				} else if (icono->tipo == NOTIF_VMAIL) {
-					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 27, 0);
-				} else if (icono->tipo == NOTIF_IRDA) {
-					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 28, 0);
-				} else {
-					SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 0, 0);
-				}
+			if (icono->tipo == NOTIF_NORMAL) {
+				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 0, 0);
+			} else if (icono->tipo == NOTIF_MISSEDCALLS) {
+				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 1, 0);
+			} else if (icono->tipo == NOTIF_SMS) {
+				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 2, 0);
+			} else if (icono->tipo == NOTIF_MMS) {
+				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 3, 0);
+			} else if (icono->tipo == NOTIF_OTHER_EMAIL) {
+				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 4, 0);
+			} else if (icono->tipo == NOTIF_SYNC_EMAIL) {
+				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 5, 0);
+			} else if (icono->tipo == NOTIF_TOTAL_EMAIL) {
+				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 6, 0);
+			} else if (icono->tipo == NOTIF_APPOINTS) {
+				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 7, 0);
+			} else if (icono->tipo == NOTIF_CALENDAR) {
+				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 8, 0);
+			} else if (icono->tipo == NOTIF_TASKS) {
+				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 9, 0);
+			} else if (icono->tipo == NOTIF_SMS_MMS) {
+				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 10, 0);
+			} else if (icono->tipo == NOTIF_WIFI) {
+				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 11, 0);
+			} else if (icono->tipo == NOTIF_BLUETOOTH) {
+				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 12, 0);
+			} else if (icono->tipo == NOTIF_ALARM) {
+				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 13, 0);
+			} else if (icono->tipo == NOTIF_CLOCK) {
+				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 14, 0);
+			} else if (icono->tipo == NOTIF_CLOCK_ALARM) {
+				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 15, 0);
+			} else if (icono->tipo == NOTIF_BATTERY) {
+				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 16, 0);
+			} else if (icono->tipo == NOTIF_VOLUME) {
+				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 17, 0);
+			} else if (icono->tipo == NOTIF_MEMORYLOAD) {
+				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 18, 0);
+			} else if (icono->tipo == NOTIF_MEMORYFREE) {
+				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 19, 0);
+			} else if (icono->tipo == NOTIF_MEMORYUSED) {
+				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 20, 0);
+			} else if (icono->tipo == NOTIF_CELLNETWORK) {
+				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 21, 0);
+			} else if (icono->tipo == NOTIF_SIGNAL) {
+				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 22, 0);
+			} else if (icono->tipo == NOTIF_OPERATOR) {
+				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 23, 0);
+			} else if (icono->tipo == NOTIF_SIGNAL_OPER) {
+				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 24, 0);
+			} else if (icono->tipo == NOTIF_MC_SIG_OPER) {
+				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 25, 0);
+			} else if (icono->tipo == NOTIF_PROFILE) {
+				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 26, 0);
+			} else if (icono->tipo == NOTIF_VMAIL) {
+				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 27, 0);
+			} else if (icono->tipo == NOTIF_IRDA) {
+				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 28, 0);
 			} else {
 				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 0, 0);
 			}
+		} else {
+			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 0, 0);
 		}
 		return TRUE;
-
+	case WM_MOVE:
+		PositionKBButton(hwndKB, hDlg);
+		break;
+	case WM_ACTIVATE:
+		if (wParam == WA_CLICKACTIVE || wParam == WA_ACTIVE) {
+			EnableWindow(hwndKB, TRUE);
+		} else if (!::IsChild(hDlg, (HWND)lParam)) {
+			EnableWindow(hwndKB, FALSE);
+		}
+		break;
 	case WM_COMMAND:
 		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
 		{
@@ -2696,10 +2705,11 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 			}
 		}
 		break;
-	case WM_HELP:
-		ToggleKeyboard();
-		break;
+//	case WM_HELP:
+//		ToggleKeyboard();
+//		break;
 	case WM_DESTROY:
+		hwndKB = NULL;
 		break;
 	}
 	return FALSE;
@@ -2707,50 +2717,60 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 
 LRESULT CALLBACK editHeaderDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	static HWND hwndKB = NULL;
+
 	switch (message)
 	{
 	case WM_INITDIALOG:
-		{
-			if (FindWindow(L"MS_SIPBUTTON", NULL) != NULL) {
-				SHMENUBARINFO mbi;
+		if (FindWindow(L"MS_SIPBUTTON", NULL) != NULL) {
+			SHMENUBARINFO mbi;
 
-				memset(&mbi, 0, sizeof(SHMENUBARINFO));  // Reset mbi to 0.
-				mbi.cbSize = sizeof(SHMENUBARINFO);
-				mbi.dwFlags = SHCMBF_EMPTYBAR;
-				mbi.hwndParent = hDlg;  // Soft key bar's owner.
-				mbi.nToolBarId = NULL;  // Soft key bar resource.
-				mbi.hInstRes = NULL;  // HINST in which resource is located.
+			memset(&mbi, 0, sizeof(SHMENUBARINFO));  // Reset mbi to 0.
+			mbi.cbSize = sizeof(SHMENUBARINFO);
+			mbi.dwFlags = SHCMBF_EMPTYBAR;
+			mbi.hwndParent = hDlg;  // Soft key bar's owner.
+			mbi.nToolBarId = NULL;  // Soft key bar resource.
+			mbi.hInstRes = NULL;  // HINST in which resource is located.
 
+			g_hWndMenuBar = mbi.hwndMB;
+
+			if (g_hWndMenuBar) {
+				CommandBar_Destroy(g_hWndMenuBar);
+			}
+			// Create the Soft key bar.
+			if (!SHCreateMenuBar(&mbi))
+			{
+				g_hWndMenuBar = NULL;
+			}
+			else
+			{
 				g_hWndMenuBar = mbi.hwndMB;
-
-				if (g_hWndMenuBar) {
-					CommandBar_Destroy(g_hWndMenuBar);
-				}
-				// Create the Soft key bar.
-				if (!SHCreateMenuBar(&mbi))
-				{
-					g_hWndMenuBar = NULL;
-				}
-				else
-				{
-					g_hWndMenuBar = mbi.hwndMB;
-				}
 			}
-
-			SHINITDLGINFO shidi;
-			shidi.dwMask = SHIDIM_FLAGS;
-			shidi.dwFlags = SHIDIF_DONEBUTTON | SHIDIF_SIZEDLG | SHIDIF_WANTSCROLLBAR;
-			shidi.hDlg = hDlg;
-			SHInitDialog(&shidi);
-
-			if (FindWindow(L"MS_SIPBUTTON", NULL) == NULL) {
-				SetWindowLong(hDlg, GWL_EXSTYLE, GetWindowLong(hDlg, GWL_EXSTYLE) | WS_EX_CONTEXTHELP | WS_EX_CAPTIONOKBTN);
-			}
-
-			SetDlgItemText(hDlg, IDC_EDIT_HEADER, listaPantallas->listaPantalla[estado->pantallaActiva]->header);
+		} else {
+			SetWindowLong(hDlg, GWL_EXSTYLE, GetWindowLong(hDlg, GWL_EXSTYLE) | WS_EX_CAPTIONOKBTN);
+//			SetWindowLong(hDlg, GWL_EXSTYLE, GetWindowLong(hDlg, GWL_EXSTYLE) | WS_EX_CONTEXTHELP);
+			hwndKB = CreateDialog(g_hInst, MAKEINTRESOURCE(IDD_KB_BUTTON), hDlg, (DLGPROC) KBButtonDlgProc);
 		}
-		return TRUE;
 
+		SHINITDLGINFO shidi;
+		shidi.dwMask = SHIDIM_FLAGS;
+		shidi.dwFlags = SHIDIF_DONEBUTTON | SHIDIF_SIZEDLG | SHIDIF_WANTSCROLLBAR;
+		shidi.hDlg = hDlg;
+		SHInitDialog(&shidi);
+
+		SetDlgItemText(hDlg, IDC_EDIT_HEADER, listaPantallas->listaPantalla[estado->pantallaActiva]->header);
+
+		return TRUE;
+	case WM_MOVE:
+		PositionKBButton(hwndKB, hDlg);
+		break;
+	case WM_ACTIVATE:
+		if (wParam == WA_CLICKACTIVE || wParam == WA_ACTIVE) {
+			EnableWindow(hwndKB, TRUE);
+		} else if (!::IsChild(hDlg, (HWND)lParam)) {
+			EnableWindow(hwndKB, FALSE);
+		}
+		break;
 	case WM_COMMAND:
 		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
 		{
@@ -2783,10 +2803,11 @@ LRESULT CALLBACK editHeaderDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 			return FALSE;
 		}
 		break;
-	case WM_HELP:
-		ToggleKeyboard();
-		break;
+//	case WM_HELP:
+//		ToggleKeyboard();
+//		break;
 	case WM_DESTROY:
+		hwndKB = NULL;
 		break;
 	}
 	return FALSE;

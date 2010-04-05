@@ -1,27 +1,4 @@
 //////////////////////////////////////////////////////////////////////////////
-// Pocket Digital Clock
-// Copyright 2008 ProjectION
-// Written by Chia Chee Kit "Ionized"
-// http://project.ionized.googlepages.com/pdc
-//
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-//////////////////////////////////////////////////////////////////////////////
-
-
-//////////////////////////////////////////////////////////////////////////////
 // OptionDialog.cpp : Defines the option dialog procedures of the application.
 //
 
@@ -32,8 +9,9 @@
 
 
 // Handles to the dialog pages
-HWND		g_hDlg[NUM_CONFIG_SCREENS];  
+HWND		g_hDlg[NUM_CONFIG_SCREENS];
 
+HWND g_hwndKB = NULL;
 BOOL doNotAskToSaveOptions = FALSE;
 int saveOptionsAnswer = -1;
 int initializedDialogs = 0;
@@ -57,7 +35,8 @@ void InitOptionsDialog(HWND hDlg, INT iDlg)
 			shmbi.dwFlags = SHCMBF_EMPTYBAR;
 			SHCreateMenuBar(&shmbi);
 		} else {
-			SetWindowLong(GetParent(hDlg), GWL_EXSTYLE, GetWindowLong(hDlg, GWL_EXSTYLE) | WS_EX_CONTEXTHELP | WS_EX_CAPTIONOKBTN);
+//			SetWindowLong(GetParent(hDlg), GWL_EXSTYLE, GetWindowLong(GetParent(hDlg), GWL_EXSTYLE) | WS_EX_CONTEXTHELP);
+			g_hwndKB = CreateDialog(g_hInst, MAKEINTRESOURCE(IDD_KB_BUTTON), GetParent(hDlg), (DLGPROC) KBButtonDlgProc);
 		}
 	}
 
@@ -80,7 +59,7 @@ void PaintOptionsDialog(HWND hDlg, INT iDlg)
 	RECT rcDlg;
 	HBRUSH hBrush;
 
-	hdc = BeginPaint(hDlg, &ps);	
+	hdc = BeginPaint(hDlg, &ps);
 	GetClientRect(hDlg, &rcDlg);
 	hBrush = CreateSolidBrush(GetSysColor(COLOR_MENU));
 	FillRect(hdc, &rcDlg, hBrush);
@@ -130,15 +109,23 @@ LRESULT DefOptionWindowProc(HWND hDlg, INT iDlg, UINT uMsg, WPARAM wParam, LPARA
 {
 	switch (uMsg)
 	{
+		case WM_ACTIVATE:
+			if (wParam == WA_CLICKACTIVE || wParam == WA_ACTIVE) {
+				EnableWindow(g_hwndKB, TRUE);
+			} else if (!::IsChild(hDlg, (HWND)lParam)) {
+				EnableWindow(g_hwndKB, FALSE);
+			}
+			break;
 		case WM_PAINT:
+			PositionKBButton(g_hwndKB, GetParent(hDlg));
 			PaintOptionsDialog(hDlg, iDlg);
 			return 0;
 		case WM_NOTIFY:
 			switch (((LPNMHDR) lParam)->code)
 			{
-				case PSN_HELP:
-					ToggleKeyboard();
-					return 0;
+//				case PSN_HELP:
+//					ToggleKeyboard();
+//					return 0;
 				case PSN_QUERYCANCEL:
 					if (!doNotAskToSaveOptions && MessageBox(hDlg, TEXT("Close without saving?"), TEXT("Exit"), MB_YESNO) == IDNO) {
 						SetWindowLong(hDlg, DWL_MSGRESULT, PSNRET_INVALID_NOCHANGEPAGE);
@@ -205,12 +192,11 @@ UINT CALLBACK PropSheetPageProc(HWND hwnd,UINT uMsg,LPPROPSHEETPAGE ppsp)
 /*************************************************************************/
 INT PropSheetCallback(HWND hwndDlg, UINT message, LPARAM lParam)
 {
-	// This is necessary so that dialog tabs get drawn in the flat Pocket PC style
 	switch (message)
 	{
 		case PSCB_GETVERSION:
-	        return COMCTL32_VERSION;
-		
+			// This is necessary so that dialog tabs get drawn in the flat Pocket PC style
+			return COMCTL32_VERSION;
 		default:
 			break;
     }
@@ -234,7 +220,7 @@ BOOL CreatePropertySheet(HWND hwnd)
 	appliedDialogs = 0;
 
 
-	
+
     PROPSHEETPAGE	psp[NUM_CONFIG_SCREENS];
     PROPSHEETHEADER	psh;
 
@@ -268,7 +254,7 @@ BOOL CreatePropertySheet(HWND hwnd)
     //
     // See http://msdn.microsoft.com/library/default.asp?url=/library/en-us/win_ce/htm/pwc_propertysheets.asp
     // for more information about PSH_MAXIMIZE and handling PSCB_GETVERSION in the
-    // PropertySheet callback. 
+    // PropertySheet callback.
     //
 
 	// Initialize property sheet header
@@ -367,4 +353,100 @@ BOOL SetDlgItemFloat(HWND hDlg, int nIDDlgItem, float fValue)
 	TCHAR str[MAX_PATH];
 	swprintf(str, L"%.3f", fValue);
 	return SetDlgItemText(hDlg, nIDDlgItem, str);
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+#define HAS_DLGFRAME(style,exStyle) \
+    (((exStyle) & WS_EX_DLGMODALFRAME) || \
+     (((style) & WS_DLGFRAME) && !((style) & WS_THICKFRAME)))
+
+#define HAS_THICKFRAME(style,exStyle) \
+    (((style) & WS_THICKFRAME) && \
+     !(((style) & (WS_DLGFRAME|WS_BORDER)) == WS_DLGFRAME))
+
+#define HAS_THINFRAME(style) \
+    (((style) & WS_BORDER) || !((style) & (WS_CHILD | WS_POPUP)))
+
+
+// Place a (KB) button on the left of any possible (?)(OK)(X) buttons.
+BOOL PositionKBButton(HWND hwndKB, HWND hwnd)
+{
+	if (hwndKB == NULL || hwnd == NULL) {
+		return FALSE;
+	}
+
+	LONG style = GetWindowLong(hwnd, GWL_STYLE);
+	LONG exStyle = GetWindowLong(hwnd, GWL_EXSTYLE);
+
+	// The (KB) button can only be placed on windows with a title bar
+	if ((style|WS_CAPTION) != style) {
+		SetWindowPos(hwndKB, 0, 0, 0, 0, 0, SWP_NOACTIVATE | SWP_HIDEWINDOW | SWP_NOMOVE | SWP_NOSIZE);
+		return FALSE;
+	}
+
+	int i = 0;
+	if ((style|WS_SYSMENU) == style) i++;	// has a close (X) button
+	if ((exStyle|WS_EX_CAPTIONOKBTN) == exStyle) i++;	// has an OK button
+	if ((exStyle|WS_EX_CONTEXTHELP) == exStyle) i++;	// has a Help (?) button
+
+	int x = 0;
+	int y = 0;
+
+	if (HAS_THICKFRAME(style, exStyle)) {
+//		x = GetSystemMetrics(SM_CXFRAME);
+//		y = GetSystemMetrics(SM_CYFRAME);
+	//} else if (HAS_DLGFRAME(style, exStyle)) {
+	} else if (HAS_DLGFRAME(style, exStyle) && (exStyle|WS_EX_NODRAG) != exStyle) {
+		x = GetSystemMetrics(SM_CXDLGFRAME);
+		y = GetSystemMetrics(SM_CYDLGFRAME);
+	} else if (HAS_THINFRAME(style)) {
+		x = GetSystemMetrics(SM_CXBORDER);
+		y = GetSystemMetrics(SM_CYBORDER);
+	}
+
+	if ((style & WS_CHILD)) {
+		if (exStyle & WS_EX_CLIENTEDGE) {
+			x += GetSystemMetrics(SM_CXEDGE);
+			y += GetSystemMetrics(SM_CYEDGE);
+		}
+		if (exStyle & WS_EX_STATICEDGE) {
+			x += GetSystemMetrics(SM_CXBORDER);
+			y += GetSystemMetrics(SM_CYBORDER);
+		}
+	}
+
+	RECT rc;
+	GetWindowRect(hwnd, &rc);
+
+	int w = GetSystemMetrics(SM_CYCAPTION) - 2;
+	int h = w;
+	x = rc.right - i * (w + 4) - w - x - 2;	// 4 is the space between buttons, 2 is the space between the right most button and the border
+	y += rc.top + 1;
+
+	SetWindowPos(hwndKB, HWND_TOP, x, y, w, h, SWP_NOACTIVATE | SWP_SHOWWINDOW);
+	MoveWindow(GetDlgItem(hwndKB, IDC_KB_BUTTON), 0, 0, w, h, TRUE);
+
+	return TRUE;
+}
+
+LRESULT CALLBACK KBButtonDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	switch (message)
+	{
+	case WM_INITDIALOG:
+		SetWindowLong(hDlg, GWL_EXSTYLE, GetWindowLong(hDlg, GWL_EXSTYLE) | WS_EX_NOACTIVATE);
+		break;
+	case WM_COMMAND:
+		switch (LOWORD(wParam))
+		{
+		case IDC_KB_BUTTON:
+			ToggleKeyboard();
+			break;
+		}
+		break;
+	case WM_DESTROY:
+		ToggleKeyboard(FALSE);
+	}
+	return 0;
 }

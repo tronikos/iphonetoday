@@ -373,6 +373,12 @@ BEGIN
     CONTROL         "Fit height",IDC_CHECK_CS_BACK_FIT_HEIGHT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,78,76,46,10
 END
 
+IDD_KB_BUTTON DIALOG  0, 0, 39, 31
+STYLE WS_POPUP
+BEGIN
+    PUSHBUTTON      "KB",IDC_KB_BUTTON,0,0,21,15
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
