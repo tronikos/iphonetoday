@@ -657,6 +657,7 @@ LRESULT WndProcLoading (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 
 LRESULT doPaint (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 {
+	//NKDbgPrintfW(L"WM_PAINT\n");
 	PAINTSTRUCT     ps;
 	RECT            rcWindBounds;
 	HDC             hDC;
@@ -797,12 +798,13 @@ LRESULT doPaint (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 
 LRESULT doMove (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 {
-	ResetPressed();
-
 	// Cogemos la posicion del raton
 	POINTS posCursor2;
 	posCursor2 = MAKEPOINTS(lParam);
+	//NKDbgPrintfW(L"WM_MOUSEMOVE at (%d,%d)\n", posCursor2.x, posCursor2.y);
 	static BOOL movementInitiatedByVertical = FALSE;
+
+	ResetPressed();
 
 	if (!posCursorInitialized) {
 		posCursor = posCursor2;
@@ -818,6 +820,7 @@ LRESULT doMove (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 		flag = flag || movementInitiatedByVertical;
 	}
 	flag = flag || abs(posCursor.x - posCursor2.x) > int(configuracion->moveThreshold);
+	flag = flag || abs(posCursor.y - posCursor2.y) > int(configuracion->moveThreshold);
 	if (flag) {
 		KillTimer(hwnd, TIMER_LONGTAP);
 		estado->hayMovimiento = true;
@@ -1048,6 +1051,7 @@ LRESULT doMouseDown (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 	// Cacelamos el timer anterior en caso de haberlo
 	KillTimer(hwnd, TIMER_RECUPERACION);
 	posCursor = MAKEPOINTS(lParam);
+	NKDbgPrintfW(L"WM_LBUTTONDOWN at (%d,%d)\n", posCursor.x, posCursor.y);
 	posCursorInitialized = TRUE;
 
 	if (configuracion->pressedIcon->hDC != NULL || _tcsclen(configuracion->pressed_sound) > 0) {
@@ -1128,11 +1132,12 @@ LRESULT doMouseDown (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 
 LRESULT doMouseUp (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 {
-	ResetPressed();
-
 	POINTS point;
 	point = MAKEPOINTS(lParam);
+	//NKDbgPrintfW(L"WM_LBUTTONUP at (%d,%d)\n", point.x, point.y);
 	bool doubleClick = false;
+
+	ResetPressed();
 
 	KillTimer(hwnd, TIMER_LONGTAP);
 
@@ -1877,6 +1882,7 @@ void setPosiciones(BOOL inicializa, int offsetX, int offsetY)
 
 void calculaPosicionObjetivo()
 {
+	//NKDbgPrintfW(L"posImage = %d %d\n", posImage.x, posImage.y);
 	UINT pantallaActivaOld = estado->pantallaActiva;
 	estado->pantallaActiva = posImage.x > 0 ? 0 : min(listaPantallas->numPantallas - 1, (-posImage.x + configuracion->anchoPantalla / 2) / configuracion->anchoPantalla);
 
