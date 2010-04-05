@@ -1476,7 +1476,7 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type)
 				numNotif = notifications->dwNotifications[SN_MESSAGINGOTHEREMAILUNREAD] + notifications->dwNotifications[SN_MESSAGINGACTIVESYNCEMAILUNREAD];
 				break;
 			case NOTIF_APPOINTS:
-				numNotif = notifications->dwNotifications[SN_APPOINTMENTSLISTCOUINT];
+				numNotif = notifications->dwNotifications[SN_APPOINTMENTSLISTCOUNT];
 			case NOTIF_CALENDAR:
 				if (!configuracion->dowUseLocale || !GetDateFormat(LOCALE_USER_DEFAULT, 0, &notifications->st, L"ddd", str, CountOf(str))) {
 					StringCchCopy(str, CountOf(str), configuracion->diasSemana[notifications->st.wDayOfWeek]);
@@ -2218,7 +2218,7 @@ int hayNotificacion(int tipo)
 			numNotif = notifications->dwNotifications[SN_MESSAGINGOTHEREMAILUNREAD] + notifications->dwNotifications[SN_MESSAGINGACTIVESYNCEMAILUNREAD];
 			break;
 		case NOTIF_APPOINTS:
-			numNotif = notifications->dwNotifications[SN_APPOINTMENTSLISTCOUINT];
+			numNotif = notifications->dwNotifications[SN_APPOINTMENTSLISTCOUNT];
 			break;
 		case NOTIF_TASKS:
 			numNotif = notifications->dwNotifications[SN_TASKSACTIVE];
@@ -3399,7 +3399,7 @@ void InvalidateScreenIfNotificationsChanged(CPantalla *pantalla)
 				}
 				break;
 			case NOTIF_APPOINTS:
-				if (notifications->dwNotificationsChanged[SN_APPOINTMENTSLISTCOUINT]) {
+				if (notifications->dwNotificationsChanged[SN_APPOINTMENTSLISTCOUNT] || notifications->ftNotificationsChanged[SN_DATE]) {
 					pantalla->debeActualizar = TRUE;
 					return;
 				}
