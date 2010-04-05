@@ -2299,7 +2299,23 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 			// Configuramos el elemento Icon
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_SPIN_ICON), UDM_SETBUDDY, (WPARAM) GetDlgItem(hDlg, IDC_MICON_ICON), 0);
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_SPIN_ICON), UDM_SETRANGE, 0, MAKELPARAM(MAX_ICONOS_PANTALLA - 1, 0));
-			SendMessage(GetDlgItem(hDlg, IDC_MICON_SPIN_ICON), UDM_SETPOS, 0, max(iconoActual.nIconoActual, 0));
+			if (iconoActual.nIconoActual >= 0) {
+				SendMessage(GetDlgItem(hDlg, IDC_MICON_SPIN_ICON), UDM_SETPOS, 0, iconoActual.nIconoActual);
+			} else {
+				CPantalla *pantalla = NULL;
+				if (iconoActual.nPantallaActual == -1) {
+					pantalla = listaPantallas->barraInferior;
+				} else if (iconoActual.nPantallaActual == -2) {
+					pantalla = listaPantallas->topBar;
+				} else {
+					pantalla = listaPantallas->listaPantalla[iconoActual.nPantallaActual];
+				}
+				int tmp = 0;
+				if (pantalla) {
+					tmp = pantalla->numIconos;
+				}
+				SendMessage(GetDlgItem(hDlg, IDC_MICON_SPIN_ICON), UDM_SETPOS, 0, tmp);
+			}
 
 			// Configuramos el elemento Type
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_NORMAL_TXT);
