@@ -236,39 +236,49 @@ BOOL SaveConfiguration0(HWND hDlg)
 
 LRESULT CALLBACK ScreenBackSettingsProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+	static HWND hwndKB = NULL;
+
 	int rgbCurrent;
 	COLORREF nextColor;
 
 	switch (uMsg)
 	{
 	case WM_INITDIALOG:
-		{
-			SetWindowLong(hDlg, GWL_EXSTYLE, GetWindowLong(hDlg, GWL_EXSTYLE) | WS_EX_CAPTIONOKBTN);
-			if (FindWindow(L"MS_SIPBUTTON", NULL) == NULL) {
-				SetWindowLong(hDlg, GWL_EXSTYLE, GetWindowLong(hDlg, GWL_EXSTYLE) | WS_EX_CONTEXTHELP);
-			}
-
-			if (!isStaticBar) {
-				ShowWindow(GetDlgItem(hDlg, IDC_STATIC_CS_WALLPAPER),		SW_HIDE);
-				ShowWindow(GetDlgItem(hDlg, IDC_EDIT_CS_BACK_WALLPAPER),	SW_HIDE);
-				ShowWindow(GetDlgItem(hDlg, IDC_BUTTON_CS_BACK_WALLPAPER),	SW_HIDE);
-				ShowWindow(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_ALPHABLEND),	SW_HIDE);
-				ShowWindow(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_CENTER),		SW_HIDE);
-				ShowWindow(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_FIT_WIDTH),	SW_HIDE);
-				ShowWindow(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_FIT_HEIGHT),	SW_HIDE);
-			}
-
-			SendMessage(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_GRADIENT), BM_SETCHECK, cur_cs->backGradient ? BST_CHECKED : BST_UNCHECKED, 0);
-			SetDlgItemHex(hDlg, IDC_EDIT_CS_BACK_COLOR1, cur_cs->backColor1);
-			SetDlgItemHex(hDlg, IDC_EDIT_CS_BACK_COLOR2, cur_cs->backColor2);
-			SetDlgItemText(hDlg, IDC_EDIT_CS_BACK_WALLPAPER, cur_cs->backWallpaper);
-			SendMessage(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_ALPHABLEND), BM_SETCHECK, cur_cs->backWallpaperAlphaBlend ? BST_CHECKED : BST_UNCHECKED, 0);
-			SendMessage(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_CENTER), BM_SETCHECK, cur_cs->backWallpaperCenter ? BST_CHECKED : BST_UNCHECKED, 0);
-			SendMessage(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_FIT_WIDTH), BM_SETCHECK, cur_cs->backWallpaperFitWidth ? BST_CHECKED : BST_UNCHECKED, 0);
-			SendMessage(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_FIT_HEIGHT), BM_SETCHECK, cur_cs->backWallpaperFitHeight ? BST_CHECKED : BST_UNCHECKED, 0);
+		SetWindowLong(hDlg, GWL_EXSTYLE, GetWindowLong(hDlg, GWL_EXSTYLE) | WS_EX_CAPTIONOKBTN);
+		if (FindWindow(L"MS_SIPBUTTON", NULL) == NULL) {
+//			SetWindowLong(hDlg, GWL_EXSTYLE, GetWindowLong(hDlg, GWL_EXSTYLE) | WS_EX_CONTEXTHELP);
+			hwndKB = CreateDialog(g_hInst, MAKEINTRESOURCE(IDD_KB_BUTTON), hDlg, (DLGPROC) KBButtonDlgProc);
 		}
-		return TRUE;
 
+		if (!isStaticBar) {
+			ShowWindow(GetDlgItem(hDlg, IDC_STATIC_CS_WALLPAPER),		SW_HIDE);
+			ShowWindow(GetDlgItem(hDlg, IDC_EDIT_CS_BACK_WALLPAPER),	SW_HIDE);
+			ShowWindow(GetDlgItem(hDlg, IDC_BUTTON_CS_BACK_WALLPAPER),	SW_HIDE);
+			ShowWindow(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_ALPHABLEND),	SW_HIDE);
+			ShowWindow(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_CENTER),		SW_HIDE);
+			ShowWindow(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_FIT_WIDTH),	SW_HIDE);
+			ShowWindow(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_FIT_HEIGHT),	SW_HIDE);
+		}
+
+		SendMessage(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_GRADIENT), BM_SETCHECK, cur_cs->backGradient ? BST_CHECKED : BST_UNCHECKED, 0);
+		SetDlgItemHex(hDlg, IDC_EDIT_CS_BACK_COLOR1, cur_cs->backColor1);
+		SetDlgItemHex(hDlg, IDC_EDIT_CS_BACK_COLOR2, cur_cs->backColor2);
+		SetDlgItemText(hDlg, IDC_EDIT_CS_BACK_WALLPAPER, cur_cs->backWallpaper);
+		SendMessage(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_ALPHABLEND), BM_SETCHECK, cur_cs->backWallpaperAlphaBlend ? BST_CHECKED : BST_UNCHECKED, 0);
+		SendMessage(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_CENTER), BM_SETCHECK, cur_cs->backWallpaperCenter ? BST_CHECKED : BST_UNCHECKED, 0);
+		SendMessage(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_FIT_WIDTH), BM_SETCHECK, cur_cs->backWallpaperFitWidth ? BST_CHECKED : BST_UNCHECKED, 0);
+		SendMessage(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_FIT_HEIGHT), BM_SETCHECK, cur_cs->backWallpaperFitHeight ? BST_CHECKED : BST_UNCHECKED, 0);
+		return TRUE;
+	case WM_MOVE:
+		PositionKBButton(hwndKB, hDlg);
+		break;
+	case WM_ACTIVATE:
+		if (wParam == WA_CLICKACTIVE || wParam == WA_ACTIVE) {
+			EnableWindow(hwndKB, TRUE);
+		} else if (!::IsChild(hDlg, (HWND)lParam)) {
+			EnableWindow(hwndKB, FALSE);
+		}
+		break;
 	case WM_COMMAND:
 		switch(LOWORD(wParam))
 		{
@@ -311,9 +321,9 @@ LRESULT CALLBACK ScreenBackSettingsProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPA
 			break;
 		}
 		break;
-	case WM_HELP:
-		ToggleKeyboard();
-		break;
+//	case WM_HELP:
+//		ToggleKeyboard();
+//		break;
 	}
 	return FALSE;
 }

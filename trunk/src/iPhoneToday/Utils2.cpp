@@ -69,13 +69,17 @@ void Rotate(int angle)
 typedef BOOL (STDAPICALLTYPE FAR fSipGetInfo)(SIPINFO*);
 typedef BOOL (STDAPICALLTYPE FAR fSipShowIM)(DWORD);
 
-void ToggleKeyboard()
+void ToggleKeyboard(int bShow)
 {
 	SIPINFO si;
 	memset(&si, 0, sizeof(si));
 	si.cbSize = sizeof(SIPINFO);
 	if (SipGetInfo(&si)) {
-		SipShowIM((si.fdwFlags|SIPF_ON) == si.fdwFlags ? SIPF_OFF : SIPF_ON);
+		if (bShow == -1) {
+			SipShowIM((si.fdwFlags|SIPF_ON) == si.fdwFlags ? SIPF_OFF : SIPF_ON);
+		} else {
+			SipShowIM(bShow ? SIPF_ON : SIPF_OFF);
+		}
 	} else {
 		HMODULE hCoredllLib = LoadLibrary(L"coredl2.dll");
 		if (hCoredllLib != NULL) {
@@ -85,7 +89,11 @@ void ToggleKeyboard()
 				memset(&si, 0, sizeof(si));
 				si.cbSize = sizeof(SIPINFO);
 				if (pSipGetInfo(&si)) {
-					pSipShowIM((si.fdwFlags|SIPF_ON) == si.fdwFlags ? SIPF_OFF : SIPF_ON);
+					if (bShow == -1) {
+						pSipShowIM((si.fdwFlags|SIPF_ON) == si.fdwFlags ? SIPF_OFF : SIPF_ON);
+					} else {
+						pSipShowIM(bShow ? SIPF_ON : SIPF_OFF);
+					}
 				}
 			}
 			FreeLibrary(hCoredllLib);
