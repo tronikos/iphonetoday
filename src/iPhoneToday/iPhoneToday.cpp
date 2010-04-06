@@ -666,14 +666,14 @@ LRESULT doPaint (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 
 	hDC = BeginPaint(hwnd, &ps);
 
-	if (configuracion->alphaBlend == 2 && hDCMem2 == NULL) {
+	if (!configuracion->mainScreenConfig->cs.backGradient && configuracion->alphaBlend == 2 && hDCMem2 == NULL) {
 		hDCMem2 = CreateCompatibleDC(hDC);
 		hbmMem2 = CreateCompatibleBitmap(hDC, rcWindBounds.right - rcWindBounds.left, rcWindBounds.bottom - rcWindBounds.top);
 		hbmMemOld2 = (HBITMAP)SelectObject(hDCMem2, hbmMem2);
 	}
 	if (hDCMem == NULL) {
 		hDCMem = CreateCompatibleDC(hDC);
-		if (configuracion->alphaBlend == 2) {
+		if (!configuracion->mainScreenConfig->cs.backGradient && configuracion->alphaBlend == 2) {
 			BITMAPINFO bmBackInfo;
 			memset(&bmBackInfo.bmiHeader, 0, sizeof(BITMAPINFOHEADER));
 			bmBackInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
@@ -783,7 +783,7 @@ LRESULT doPaint (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 			estado->estadoCuadro = 3;
 		}
 	}
-	if (configuracion->alphaBlend == 2) {
+	if (configuracion->alphaBlend == 2 && hDCMem2 != NULL) {
 		// to avoid screen tearing first copy the DIB section of hDCMem to the device compatible bitmap of hDCMem2 and then copy it to the window's device context hDC
 		BitBlt(hDCMem2, rcWindBounds.left, rcWindBounds.top, rcWindBounds.right - rcWindBounds.left, rcWindBounds.bottom - rcWindBounds.top, hDCMem, rcWindBounds.left, rcWindBounds.top, SRCCOPY);
 		BitBlt(hDC, rcWindBounds.left, rcWindBounds.top, rcWindBounds.right - rcWindBounds.left, rcWindBounds.bottom - rcWindBounds.top, hDCMem2, rcWindBounds.left, rcWindBounds.top, SRCCOPY);
@@ -862,7 +862,8 @@ LRESULT doMove (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 					if (configuracion->freestyleScroll) {
 						hh = configuracion->altoPantallaMax;
 					} else {
-						hh = ((listaPantallas->listaPantalla[estado->pantallaActiva]->numIconos
+						hh = configuracion->mainScreenConfig->cs.offset.top
+							+ ((listaPantallas->listaPantalla[estado->pantallaActiva]->numIconos
 							+ configuracion->mainScreenConfig->iconsPerRow - 1)
 							/ configuracion->mainScreenConfig->iconsPerRow)
 							* configuracion->mainScreenConfig->distanceIconsV;
@@ -1626,7 +1627,7 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type)
 
 		if (pantalla->hDC == NULL) {
 			pantalla->hDC = CreateCompatibleDC(*hDC);
-			if (configuracion->alphaBlend) {
+			if (!configuracion->mainScreenConfig->cs.backGradient && configuracion->alphaBlend) {
 				BITMAPINFO bmInfo;
 				memset(&bmInfo.bmiHeader, 0, sizeof(BITMAPINFOHEADER));
 				bmInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
