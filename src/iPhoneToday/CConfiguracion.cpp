@@ -607,8 +607,8 @@ void CConfiguracion::defaultValues()
 	this->bubble_notif.image[0] = 0;
 	this->bubble_notif.x = 55;
 	this->bubble_notif.y = -10;
-	this->bubble_notif.width = 55;
-	this->bubble_notif.height = 50;
+	this->bubble_notif.width = 63;
+	this->bubble_notif.height = 63;
 	this->bubble_notif.sis.facename[0] = 0;
 	this->bubble_notif.sis.color = RGB(255, 255, 255);
 	this->bubble_notif.sis.width = 0;
@@ -617,14 +617,14 @@ void CConfiguracion::defaultValues()
 	this->bubble_notif.sis.offset.left = 0;
 	this->bubble_notif.sis.offset.top = 0;
 	this->bubble_notif.sis.offset.right = 0;
-	this->bubble_notif.sis.offset.bottom = 10;
+	this->bubble_notif.sis.offset.bottom = 0;
 
 	memset(&this->bubble_alarm, 0, sizeof(BubbleSettings));
 	this->bubble_alarm.image[0] = 0;
 	this->bubble_alarm.x = 55;
 	this->bubble_alarm.y = -10;
-	this->bubble_alarm.width = 55;
-	this->bubble_alarm.height = 50;
+	this->bubble_alarm.width = 63;
+	this->bubble_alarm.height = 63;
 	this->bubble_alarm.sis.facename[0] = 0;
 	this->bubble_alarm.sis.color = RGB(255, 255, 255);
 	this->bubble_alarm.sis.width = 0;
@@ -639,8 +639,8 @@ void CConfiguracion::defaultValues()
 	this->bubble_state.image[0] = 0;
 	this->bubble_state.x = 70;
 	this->bubble_state.y = 70;
-	this->bubble_state.width = 20;
-	this->bubble_state.height = 20;
+	this->bubble_state.width = 30;
+	this->bubble_state.height = 30;
 
 	if (isPND()) {
 		this->disableRightClickDots = 1;
