@@ -56,7 +56,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_122ED949A09B4488B933FFD71FD88AB7"
+        "MsmKey" = "8:_1B0C5A5C750C4140AD2D9A1032BA8A9C"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -183,6 +183,12 @@
         "Entry"
         {
         "MsmKey" = "8:_5EDB577FCEE344E5B56DD5ED0547CA47"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_5F6557674DF246B7AEE327DDB442B95F"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -536,10 +542,10 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{BA458234-9B71-4F46-8107-E91156377184}:_122ED949A09B4488B933FFD71FD88AB7"
+            "{BA458234-9B71-4F46-8107-E91156377184}:_1B0C5A5C750C4140AD2D9A1032BA8A9C"
             {
-            "SourcePath" = "8:..\\..\\res\\backgrounds\\Tiles\\Metal.jpg"
-            "TargetName" = "8:Metal.jpg"
+            "SourcePath" = "8:..\\..\\res\\backgrounds\\Tiles\\diamond-plate-metal-small.png"
+            "TargetName" = "8:diamond-plate-metal-small.png"
             "Tag" = "8:"
             "Folder" = "8:_EE935AC3F86648DD8F646D2C8D491840"
             "Condition" = "8:"
@@ -902,6 +908,24 @@
             "TargetName" = "8:OneNote.png"
             "Tag" = "8:"
             "Folder" = "8:_CB770C7AC2BA431FAE2CC7F1E1214841"
+            "Condition" = "8:"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "Register" = "3:0"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{BA458234-9B71-4F46-8107-E91156377184}:_5F6557674DF246B7AEE327DDB442B95F"
+            {
+            "SourcePath" = "8:..\\..\\res\\backgrounds\\Tiles\\diamond-plate-metal-large.png"
+            "TargetName" = "8:diamond-plate-metal-large.png"
+            "Tag" = "8:"
+            "Folder" = "8:_EE935AC3F86648DD8F646D2C8D491840"
             "Condition" = "8:"
             "Vital" = "11:TRUE"
             "ReadOnly" = "11:FALSE"
