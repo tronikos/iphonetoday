@@ -172,7 +172,8 @@ LRESULT CALLBACK OptionDialog4(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 				GetDlgItemText(hDlg, IDC_EDIT_BUBBLE_IMAGE, str, MAX_PATH);
 				configuracion->getAbsolutePath(fullPath, MAX_PATH, str);
 				getPathFromFile(fullPath, browseDir);
-				if (openFileBrowse(hDlg, OFN_EXFLAG_THUMBNAILVIEW, str, browseDir)) {
+				if (openFileBrowse(hDlg, OFN_EXFLAG_THUMBNAILVIEW, fullPath, browseDir)) {
+					configuracion->getRelativePath(str, MAX_PATH, fullPath);
 					SetDlgItemText(hDlg, IDC_EDIT_BUBBLE_IMAGE, str);
 				}
 				break;

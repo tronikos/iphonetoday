@@ -2716,7 +2716,9 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 				// Extract Path for save lastPath
 				getPathFromFile(pathFile, lastPathImage);
 
-				SetDlgItemText(hDlg, IDC_MICON_IMAGE, pathFile);
+				TCHAR str[MAX_PATH];
+				configuracion->getRelativePath(str, MAX_PATH, pathFile);
+				SetDlgItemText(hDlg, IDC_MICON_IMAGE, str);
 			}
 		} else if (LOWORD(wParam) == IDC_MICON_SOUND_B) {
 			TCHAR pathFile[MAX_PATH];
@@ -2725,7 +2727,9 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 				// Extract Path for save lastPath
 				getPathFromFile(pathFile, lastPathSound);
 
-				SetDlgItemText(hDlg, IDC_MICON_SOUND, pathFile);
+				TCHAR str[MAX_PATH];
+				configuracion->getRelativePath(str, MAX_PATH, pathFile);
+				SetDlgItemText(hDlg, IDC_MICON_SOUND, str);
 			}
 		} else if (LOWORD(wParam) == IDC_BUTTON_WAV_PLAY) {
 			TCHAR pathFile[MAX_PATH];
@@ -2752,7 +2756,10 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 					SHGetFileInfo(pathFile, 0, &cbFileInfo, sizeof(cbFileInfo), SHGFI_DISPLAYNAME);
 					SetDlgItemText(hDlg, IDC_MICON_NAME, cbFileInfo.szDisplayName);
 				}
-				SetDlgItemText(hDlg, IDC_MICON_EXEC, pathFile);
+
+				TCHAR str[MAX_PATH];
+				configuracion->getRelativePath(str, MAX_PATH, pathFile);
+				SetDlgItemText(hDlg, IDC_MICON_EXEC, str);
 			}
 		} else if (LOWORD(wParam) == IDC_MICON_EXECALT_B) {
 			if (lastPathExec[0] == 0) {
@@ -2766,7 +2773,9 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 				// Extract Path for save lastPath
 				getPathFromFile(pathFile, lastPathExec);
 
-				SetDlgItemText(hDlg, IDC_MICON_EXECALT, pathFile);
+				TCHAR str[MAX_PATH];
+				configuracion->getRelativePath(str, MAX_PATH, pathFile);
+				SetDlgItemText(hDlg, IDC_MICON_EXECALT, str);
 			}
 		}
 		break;

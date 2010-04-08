@@ -42,7 +42,8 @@ LRESULT CALLBACK OptionDialog7(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 				GetDlgItemText(hDlg, IDC_EDIT_WAV, str, MAX_PATH);
 				configuracion->getAbsolutePath(fullPath, MAX_PATH, str);
 				getPathFromFile(fullPath, browseDir);
-				if (openFileBrowse(hDlg, OFN_EXFLAG_DETAILSVIEW, str, browseDir)) {
+				if (openFileBrowse(hDlg, OFN_EXFLAG_DETAILSVIEW, fullPath, browseDir)) {
+					configuracion->getRelativePath(str, MAX_PATH, fullPath);
 					SetDlgItemText(hDlg, IDC_EDIT_WAV, str);
 				}
 				break;
@@ -63,7 +64,8 @@ LRESULT CALLBACK OptionDialog7(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 				GetDlgItemText(hDlg, IDC_EDIT_PRESSED_ICON, str, MAX_PATH);
 				configuracion->getAbsolutePath(fullPath, MAX_PATH, str);
 				getPathFromFile(fullPath, browseDir);
-				if (openFileBrowse(hDlg, OFN_EXFLAG_THUMBNAILVIEW, str, browseDir)) {
+				if (openFileBrowse(hDlg, OFN_EXFLAG_THUMBNAILVIEW, fullPath, browseDir)) {
+					configuracion->getRelativePath(str, MAX_PATH, fullPath);
 					SetDlgItemText(hDlg, IDC_EDIT_PRESSED_ICON, str);
 				}
 				break;
@@ -71,7 +73,8 @@ LRESULT CALLBACK OptionDialog7(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 				GetDlgItemText(hDlg, IDC_EDIT_PRESSED_SOUND, str, MAX_PATH);
 				configuracion->getAbsolutePath(fullPath, MAX_PATH, str);
 				getPathFromFile(fullPath, browseDir);
-				if (openFileBrowse(hDlg, OFN_EXFLAG_DETAILSVIEW, str, browseDir)) {
+				if (openFileBrowse(hDlg, OFN_EXFLAG_DETAILSVIEW, fullPath, browseDir)) {
+					configuracion->getRelativePath(str, MAX_PATH, fullPath);
 					SetDlgItemText(hDlg, IDC_EDIT_PRESSED_SOUND, str);
 				}
 				break;
