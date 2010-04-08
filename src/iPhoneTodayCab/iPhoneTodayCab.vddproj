@@ -56,6 +56,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_122ED949A09B4488B933FFD71FD88AB7"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_1BEDBB8CC62A40259F0A114EB0A59FB1"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -506,6 +512,24 @@
             "TargetName" = "8:SMS.png"
             "Tag" = "8:"
             "Folder" = "8:_CB770C7AC2BA431FAE2CC7F1E1214841"
+            "Condition" = "8:"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "Register" = "3:0"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{BA458234-9B71-4F46-8107-E91156377184}:_122ED949A09B4488B933FFD71FD88AB7"
+            {
+            "SourcePath" = "8:..\\..\\res\\backgrounds\\Tiles\\Metal.jpg"
+            "TargetName" = "8:Metal.jpg"
+            "Tag" = "8:"
+            "Folder" = "8:_EE935AC3F86648DD8F646D2C8D491840"
             "Condition" = "8:"
             "Vital" = "11:TRUE"
             "ReadOnly" = "11:FALSE"
@@ -1472,6 +1496,15 @@
                     "Property" = "8:_0462710FDB244F13996D4055BB626E5B"
                         "Folders"
                         {
+                            "{5943FCFD-5B64-4EE4-96C9-4618EC95352A}:_EE935AC3F86648DD8F646D2C8D491840"
+                            {
+                            "Name" = "8:Tiles"
+                            "Condition" = "8:"
+                            "Property" = "8:_6A96DE784D6041859CDDB999F6A91AAD"
+                                "Folders"
+                                {
+                                }
+                            }
                             "{5943FCFD-5B64-4EE4-96C9-4618EC95352A}:_FEBF06C1CAC745F39E8B220DAABE4537"
                             {
                             "Name" = "8:BottomBar"
