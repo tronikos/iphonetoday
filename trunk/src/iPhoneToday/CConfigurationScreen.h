@@ -25,6 +25,7 @@ typedef struct ConfigurationScreen {
 	BOOL backWallpaperFitWidth;
 	BOOL backWallpaperFitHeight;
 	BOOL backWallpaperCenter;
+	BOOL backWallpaperTile;
 } ConfigurationScreen;
 
 class CConfigurationScreen

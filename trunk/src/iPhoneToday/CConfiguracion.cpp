@@ -32,6 +32,7 @@ CConfiguracion::CConfiguracion(void)
 	if (p != NULL) *(p+1) = '\0';
 
 	fondoPantalla = NULL;
+	backMainScreen = NULL;
 	backBottomBar = NULL;
 	backTopBar = NULL;
 	mainScreenConfig = new CConfigurationScreen();
@@ -58,6 +59,9 @@ CConfiguracion::~CConfiguracion(void)
 	}
 	if (fondoPantalla != NULL) {
 		delete fondoPantalla;
+	}
+	if (backMainScreen != NULL) {
+		delete backMainScreen;
 	}
 	if (backBottomBar != NULL) {
 		delete backBottomBar;
@@ -341,9 +345,26 @@ BOOL CConfiguracion::loadBackground(HDC *hDC)
 
 BOOL CConfiguracion::loadBackgrounds(HDC *hDC)
 {
-	loadBackground(hDC);
-
 	TCHAR fullPath[MAX_PATH];
+
+	if (this->backMainScreen != NULL) {
+		delete backMainScreen;
+		backMainScreen = NULL;
+	}
+	if (wcslen(this->mainScreenConfig->cs.backWallpaper) > 0) {
+		backMainScreen = new CIcono();
+		getAbsolutePath(fullPath, CountOf(fullPath), this->mainScreenConfig->cs.backWallpaper);
+		backMainScreen->loadImage(hDC, fullPath,
+			this->mainScreenConfig->cs.backWallpaperFitWidth ? this->anchoPantalla : 0,
+			this->mainScreenConfig->cs.backWallpaperFitHeight ? this->altoPantallaMax : 0,
+			PIXFMT_16BPP_RGB565,
+			1, TRUE);
+		if (backMainScreen->hDC == NULL) {
+			delete backMainScreen;
+			backMainScreen = NULL;
+		}
+	}
+
 	if (this->backBottomBar != NULL) {
 		delete backBottomBar;
 		backBottomBar = NULL;
@@ -352,12 +373,19 @@ BOOL CConfiguracion::loadBackgrounds(HDC *hDC)
 		backBottomBar = new CIcono();
 		getAbsolutePath(fullPath, CountOf(fullPath), this->bottomBarConfig->cs.backWallpaper);
 		int height = this->bottomBarConfig->distanceIconsV + this->bottomBarConfig->cs.offset.top + this->bottomBarConfig->cs.offset.bottom;
-		backBottomBar->loadImage(hDC, fullPath, this->bottomBarConfig->cs.backWallpaperFitWidth ? this->anchoPantalla : 0, this->bottomBarConfig->cs.backWallpaperFitHeight ? height : 0, this->bottomBarConfig->cs.backWallpaperAlphaBlend ? PIXFMT_32BPP_ARGB : PIXFMT_16BPP_RGB565, 1, TRUE);
+		const TCHAR *ext = wcsrchr(fullPath, '.');
+		BOOL isPNG = lstrcmpi(ext, L".png") == 0;
+		backBottomBar->loadImage(hDC, fullPath,
+			this->bottomBarConfig->cs.backWallpaperFitWidth ? this->anchoPantalla : 0,
+			this->bottomBarConfig->cs.backWallpaperFitHeight ? height : 0,
+			this->bottomBarConfig->cs.backWallpaperAlphaBlend && isPNG ? PIXFMT_32BPP_ARGB : PIXFMT_16BPP_RGB565,
+			1, TRUE);
 		if (backBottomBar->hDC == NULL) {
 			delete backBottomBar;
 			backBottomBar = NULL;
 		}
 	}
+
 	if (this->backTopBar != NULL) {
 		delete backTopBar;
 		backTopBar = NULL;
@@ -366,11 +394,27 @@ BOOL CConfiguracion::loadBackgrounds(HDC *hDC)
 		backTopBar = new CIcono();
 		getAbsolutePath(fullPath, CountOf(fullPath), this->topBarConfig->cs.backWallpaper);
 		int height = this->topBarConfig->distanceIconsV + this->topBarConfig->cs.offset.top + this->topBarConfig->cs.offset.bottom;
-		backTopBar->loadImage(hDC, fullPath, this->topBarConfig->cs.backWallpaperFitWidth ? this->anchoPantalla : 0, this->topBarConfig->cs.backWallpaperFitHeight ? height : 0, this->topBarConfig->cs.backWallpaperAlphaBlend ? PIXFMT_32BPP_ARGB : PIXFMT_16BPP_RGB565, 1, TRUE);
+		const TCHAR *ext = wcsrchr(fullPath, '.');
+		BOOL isPNG = lstrcmpi(ext, L".png") == 0;
+		backTopBar->loadImage(hDC, fullPath,
+			this->topBarConfig->cs.backWallpaperFitWidth ? this->anchoPantalla : 0,
+			this->topBarConfig->cs.backWallpaperFitHeight ? height : 0,
+			this->topBarConfig->cs.backWallpaperAlphaBlend && isPNG ? PIXFMT_32BPP_ARGB : PIXFMT_16BPP_RGB565,
+			1, TRUE);
 		if (backTopBar->hDC == NULL) {
 			delete backTopBar;
 			backTopBar = NULL;
 		}
+	}
+
+	// do not load background if mainscreen pages already have a background (gradient or image)
+	if ((backMainScreen && backMainScreen->hDC) || mainScreenConfig->cs.backGradient) {
+		if (fondoPantalla != NULL) {
+			delete fondoPantalla;
+			fondoPantalla = NULL;
+		}
+	} else {
+		loadBackground(hDC);
 	}
 
 	return TRUE;

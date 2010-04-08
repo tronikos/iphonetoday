@@ -251,13 +251,7 @@ LRESULT CALLBACK ScreenBackSettingsProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPA
 		}
 
 		if (!isStaticBar) {
-			ShowWindow(GetDlgItem(hDlg, IDC_STATIC_CS_WALLPAPER),		SW_HIDE);
-			ShowWindow(GetDlgItem(hDlg, IDC_EDIT_CS_BACK_WALLPAPER),	SW_HIDE);
-			ShowWindow(GetDlgItem(hDlg, IDC_BUTTON_CS_BACK_WALLPAPER),	SW_HIDE);
 			ShowWindow(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_ALPHABLEND),	SW_HIDE);
-			ShowWindow(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_CENTER),		SW_HIDE);
-			ShowWindow(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_FIT_WIDTH),	SW_HIDE);
-			ShowWindow(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_FIT_HEIGHT),	SW_HIDE);
 		}
 
 		SendMessage(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_GRADIENT), BM_SETCHECK, cur_cs->backGradient ? BST_CHECKED : BST_UNCHECKED, 0);
@@ -266,6 +260,7 @@ LRESULT CALLBACK ScreenBackSettingsProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPA
 		SetDlgItemText(hDlg, IDC_EDIT_CS_BACK_WALLPAPER, cur_cs->backWallpaper);
 		SendMessage(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_ALPHABLEND), BM_SETCHECK, cur_cs->backWallpaperAlphaBlend ? BST_CHECKED : BST_UNCHECKED, 0);
 		SendMessage(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_CENTER), BM_SETCHECK, cur_cs->backWallpaperCenter ? BST_CHECKED : BST_UNCHECKED, 0);
+		SendMessage(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_TILE), BM_SETCHECK, cur_cs->backWallpaperTile ? BST_CHECKED : BST_UNCHECKED, 0);
 		SendMessage(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_FIT_WIDTH), BM_SETCHECK, cur_cs->backWallpaperFitWidth ? BST_CHECKED : BST_UNCHECKED, 0);
 		SendMessage(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_FIT_HEIGHT), BM_SETCHECK, cur_cs->backWallpaperFitHeight ? BST_CHECKED : BST_UNCHECKED, 0);
 		return TRUE;
@@ -289,6 +284,7 @@ LRESULT CALLBACK ScreenBackSettingsProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPA
 			GetDlgItemText(hDlg, IDC_EDIT_CS_BACK_WALLPAPER, cur_cs->backWallpaper, CountOf(cur_cs->backWallpaper));
 			cur_cs->backWallpaperAlphaBlend = SendMessage(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_ALPHABLEND), BM_GETCHECK, 0, 0) == BST_CHECKED;
 			cur_cs->backWallpaperCenter = SendMessage(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_CENTER), BM_GETCHECK, 0, 0) == BST_CHECKED;
+			cur_cs->backWallpaperTile = SendMessage(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_TILE), BM_GETCHECK, 0, 0) == BST_CHECKED;
 			cur_cs->backWallpaperFitWidth = SendMessage(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_FIT_WIDTH), BM_GETCHECK, 0, 0) == BST_CHECKED;
 			cur_cs->backWallpaperFitHeight = SendMessage(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_FIT_HEIGHT), BM_GETCHECK, 0, 0) == BST_CHECKED;
 			EndDialog(hDlg, LOWORD(wParam));
@@ -317,6 +313,18 @@ LRESULT CALLBACK ScreenBackSettingsProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPA
 			getPathFromFile(fullPath, browseDir);
 			if (openFileBrowse(hDlg, OFN_EXFLAG_THUMBNAILVIEW, str, browseDir)) {
 				SetDlgItemText(hDlg, IDC_EDIT_CS_BACK_WALLPAPER, str);
+			}
+			break;
+		case IDC_CHECK_CS_BACK_ALPHABLEND:
+			if (SendMessage(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_ALPHABLEND), BM_GETCHECK, 0, 0) == BST_CHECKED) {
+				int resp = MessageBox(hDlg,
+					L"You should enable this only if the selected image has transparency information "
+					L"and you want to alphablend it to the background.\n"
+					L"Enable it?\n",
+					L"Are you sure?", MB_YESNO);
+				if (resp == IDNO) {
+					SendMessage(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_ALPHABLEND), BM_SETCHECK, BST_UNCHECKED, 0);
+				}
 			}
 			break;
 		}

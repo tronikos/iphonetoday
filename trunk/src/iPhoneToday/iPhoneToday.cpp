@@ -92,7 +92,7 @@ LRESULT doMouseDown (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam);
 LRESULT doMouseUp (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam);
 BOOL LaunchApplication(LPCTSTR pCmdLine, LPCTSTR pParameters);
 void pintaIconos(HDC *hDC, RECT *rcWindBounds);
-void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type);
+void pintaIcono(HDC *hDC, CIcono *icono, CPantalla *pantalla, SCREEN_TYPE screen_type);
 void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type = MAINSCREEN);
 void setPosicionesIconos(CPantalla *pantalla, SCREEN_TYPE screen_type);
 void setPosiciones(BOOL inicializa, int offsetX, int offsetY);
@@ -666,14 +666,33 @@ LRESULT doPaint (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 
 	hDC = BeginPaint(hwnd, &ps);
 
-	if (!configuracion->mainScreenConfig->cs.backGradient && configuracion->alphaBlend == 2 && hDCMem2 == NULL) {
-		hDCMem2 = CreateCompatibleDC(hDC);
-		hbmMem2 = CreateCompatibleBitmap(hDC, rcWindBounds.right - rcWindBounds.left, rcWindBounds.bottom - rcWindBounds.top);
-		hbmMemOld2 = (HBITMAP)SelectObject(hDCMem2, hbmMem2);
+	if (pressed && estado->estadoCuadro == 0 && configuracion->pressedIcon && configuracion->pressedIcon->hDC
+		&& ps.rcPaint.right - ps.rcPaint.left == ps.rcPaint.bottom - ps.rcPaint.top
+		&& (ps.rcPaint.right - ps.rcPaint.left == configuracion->mainScreenConfig->iconWidth
+			|| ps.rcPaint.right - ps.rcPaint.left == configuracion->bottomBarConfig->iconWidth
+			|| ps.rcPaint.right - ps.rcPaint.left == configuracion->topBarConfig->iconWidth)) {
+		BLENDFUNCTION bf;
+		bf.BlendOp = AC_SRC_OVER;
+		bf.BlendFlags = 0;
+		bf.SourceConstantAlpha = 255;
+		bf.AlphaFormat = AC_SRC_ALPHA;
+		AlphaBlend(hDC, ps.rcPaint.left, ps.rcPaint.top, ps.rcPaint.right - ps.rcPaint.left, ps.rcPaint.bottom - ps.rcPaint.top,
+				configuracion->pressedIcon->hDC, 0, 0, configuracion->pressedIcon->anchoImagen, configuracion->pressedIcon->altoImagen, bf);
+		EndPaint(hwnd, &ps);
+		return 0;
+	}
+
+	if (configuracion->alphaBlend == 2 && hDCMem2 == NULL) {
+		BOOL mainScreenPagesHaveBackground = !(configuracion->fondoPantalla && configuracion->fondoPantalla->hDC) || configuracion->mainScreenConfig->cs.backGradient || (configuracion->backMainScreen && configuracion->backMainScreen->hDC);
+		if (!mainScreenPagesHaveBackground) {
+			hDCMem2 = CreateCompatibleDC(hDC);
+			hbmMem2 = CreateCompatibleBitmap(hDC, rcWindBounds.right - rcWindBounds.left, rcWindBounds.bottom - rcWindBounds.top);
+			hbmMemOld2 = (HBITMAP)SelectObject(hDCMem2, hbmMem2);
+		}
 	}
 	if (hDCMem == NULL) {
 		hDCMem = CreateCompatibleDC(hDC);
-		if (!configuracion->mainScreenConfig->cs.backGradient && configuracion->alphaBlend == 2) {
+		if (configuracion->alphaBlend == 2 && hDCMem2 != NULL) {
 			BITMAPINFO bmBackInfo;
 			memset(&bmBackInfo.bmiHeader, 0, sizeof(BITMAPINFOHEADER));
 			bmBackInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
@@ -698,22 +717,6 @@ LRESULT doPaint (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 		hBrushFondo = CreateSolidBrush(configuracion->fondoColor);
 		hBrushTrans = CreateSolidBrush(RGB(0, 0, 0));
 		hBrushAnimation = CreateSolidBrush(configuracion->colorOfAnimationOnLaunchIcon);
-	}
-
-	if (pressed && estado->estadoCuadro == 0 && configuracion->pressedIcon->hDC != NULL
-		&& ps.rcPaint.right - ps.rcPaint.left == ps.rcPaint.bottom - ps.rcPaint.top
-		&& (ps.rcPaint.right - ps.rcPaint.left == configuracion->mainScreenConfig->iconWidth
-			|| ps.rcPaint.right - ps.rcPaint.left == configuracion->bottomBarConfig->iconWidth
-			|| ps.rcPaint.right - ps.rcPaint.left == configuracion->topBarConfig->iconWidth)) {
-		BLENDFUNCTION bf;
-		bf.BlendOp = AC_SRC_OVER;
-		bf.BlendFlags = 0;
-		bf.SourceConstantAlpha = 255;
-		bf.AlphaFormat = AC_SRC_ALPHA;
-		AlphaBlend(hDC, ps.rcPaint.left, ps.rcPaint.top, ps.rcPaint.right - ps.rcPaint.left, ps.rcPaint.bottom - ps.rcPaint.top,
-				configuracion->pressedIcon->hDC, 0, 0, configuracion->pressedIcon->anchoImagen, configuracion->pressedIcon->altoImagen, bf);
-		EndPaint(hwnd, &ps);
-		return 0;
 	}
 
 #ifdef EXEC_MODE
@@ -1407,7 +1410,7 @@ void DrawSpecialIconText(HDC hDC, TCHAR *str, CIcono *icon, int iconWidth, Speci
 	SetTextColor(hDC, colorOld);
 }
 
-void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type)
+void pintaIcono(HDC *hDC, CIcono *icono, CPantalla *pantalla, SCREEN_TYPE screen_type)
 {
 	// Iniciamos el proceso de pintado
 	RECT posTexto;
@@ -1423,30 +1426,32 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type)
 	TCHAR str[16];
 
 	if (icono->hDC && icono->imagen) {
-		if (cs->cs.backGradient) {
-			if (configuracion->alphaBlend) {
-				BLENDFUNCTION bf;
-				bf.BlendOp = AC_SRC_OVER;
-				bf.BlendFlags = 0;
-				bf.SourceConstantAlpha = 255;
-				if (cs->cs.backWallpaperAlphaBlend) {
-					bf.AlphaFormat = AC_SRC_ALPHA;
-				} else {
-					bf.AlphaFormat = AC_SRC_ALPHA_NONPREMULT;
-				}
-				AlphaBlend(*hDC, int(icono->x), int(icono->y), width, width,
-					icono->hDC, 0, 0, icono->anchoImagen, icono->altoImagen, bf);
-			} else {
-				TransparentBlt(*hDC, int(icono->x), int(icono->y), width, width,
-					icono->hDC, 0, 0, icono->anchoImagen, icono->altoImagen, RGB(0, 0, 0));
-			}
-		} else {
+		if (pantalla->hasBackground == 0 || (pantalla->hasBackground == 1 && configuracion->fondoColor == RGB(0, 0, 0))) {
 			if (icono->anchoImagen == width && icono->altoImagen == width) {
 				BitBlt(*hDC, int(icono->x), int(icono->y), width, width,
 					icono->hDC, 0, 0, SRCCOPY);
 			} else {
 				StretchBlt(*hDC, int(icono->x), int(icono->y), width, width,
 					icono->hDC, 0, 0, icono->anchoImagen, icono->altoImagen, SRCCOPY);
+			}
+		} else {
+			BOOL ab = FALSE;
+			if (configuracion->alphaBlend && icono->rutaImagen != NULL && _tcslen(icono->rutaImagen) > 0) {
+				BLENDFUNCTION bf;
+				bf.BlendOp = AC_SRC_OVER;
+				bf.BlendFlags = 0;
+				bf.SourceConstantAlpha = 255;
+				if (cs->cs.backWallpaperAlphaBlend && pantalla->pBits) {
+					bf.AlphaFormat = AC_SRC_ALPHA;
+				} else {
+					bf.AlphaFormat = AC_SRC_ALPHA_NONPREMULT;
+				}
+				ab = AlphaBlend(*hDC, int(icono->x), int(icono->y), width, width,
+					icono->hDC, 0, 0, icono->anchoImagen, icono->altoImagen, bf);
+			}
+			if (!ab) {
+				TransparentBlt(*hDC, int(icono->x), int(icono->y), width, width,
+					icono->hDC, 0, 0, icono->anchoImagen, icono->altoImagen, RGB(0, 0, 0));
 			}
 		}
 	}
@@ -1606,15 +1611,81 @@ void pintaIcono(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type)
 	}
 }
 
+BOOL PrintBack(HDC hdcDest, int nXDest, int nYDest, int nWidthDest, int nHeightDest,
+			   HDC hdcSrc,  int nXSrc,  int nYSrc,  int nWidthSrc,  int nHeightSrc,
+			   BOOL alphablend, BOOL center, BOOL tile)
+{
+	if (!hdcDest || !hdcSrc) {
+		return FALSE;
+	}
+
+	int bnWidthDest = min(nWidthDest, nWidthSrc);
+	int bnHeightDest = min(nHeightDest, nHeightSrc);
+	int bnXDest = nXDest;
+	int bnYDest = nYDest;
+	int bnXSrc = nXSrc;
+	int bnYSrc = nYSrc;
+	if (center) {
+		if (nWidthSrc < nWidthDest) {
+			bnXDest += (nWidthDest - nWidthSrc) / 2;
+		} else if (nWidthSrc > nWidthDest) {
+			bnXSrc += (nWidthSrc - nWidthDest) / 2;
+		}
+		if (nHeightSrc < nHeightDest) {
+			bnYDest += (nHeightDest - nHeightSrc) / 2;
+		} else if (nHeightSrc > nHeightDest) {
+			bnYSrc += (nHeightSrc - nHeightDest) / 2;
+		}
+	}
+	if (tile) {
+		for (bnXDest = nXDest; bnXDest < nXDest + nWidthDest; bnXDest += bnWidthDest) {
+			for (bnYDest = nYDest; bnYDest < nYDest + nHeightDest; bnYDest += bnHeightDest) {
+				BOOL ab = FALSE;
+				if (alphablend) {
+					BLENDFUNCTION bf;
+					bf.BlendOp = AC_SRC_OVER;
+					bf.BlendFlags = 0;
+					bf.SourceConstantAlpha = 255;
+					bf.AlphaFormat = AC_SRC_ALPHA;
+					ab = AlphaBlend(hdcDest, bnXDest, bnYDest, bnWidthDest, bnHeightDest, hdcSrc, bnXSrc, bnYSrc, bnWidthDest, bnHeightDest, bf);
+				}
+				if (!ab) {
+					BitBlt(hdcDest, bnXDest, bnYDest, bnWidthDest, bnHeightDest, hdcSrc, bnXSrc, bnYSrc, SRCCOPY);
+				}
+			}
+		}
+	} else {
+		BOOL ab = FALSE;
+		if (alphablend) {
+			BLENDFUNCTION bf;
+			bf.BlendOp = AC_SRC_OVER;
+			bf.BlendFlags = 0;
+			bf.SourceConstantAlpha = 255;
+			bf.AlphaFormat = AC_SRC_ALPHA;
+			ab = AlphaBlend(hdcDest, bnXDest, bnYDest, bnWidthDest, bnHeightDest, hdcSrc, bnXSrc, bnYSrc, bnWidthDest, bnHeightDest, bf);
+		}
+		if (!ab) {
+			BitBlt(hdcDest, bnXDest, bnYDest, bnWidthDest, bnHeightDest, hdcSrc, bnXSrc, bnYSrc, SRCCOPY);
+		}
+	}
+
+	return TRUE;
+}
+
 void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type)
 {
 	CConfigurationScreen *cs;
+	CIcono *back = NULL;
+
 	if (screen_type == BOTTOMBAR) {
 		cs = configuracion->bottomBarConfig;
+		back = configuracion->backBottomBar;
 	} else if (screen_type == TOPBAR) {
 		cs = configuracion->topBarConfig;
+		back = configuracion->backTopBar;
 	} else {
 		cs = configuracion->mainScreenConfig;
+		back = configuracion->backMainScreen;
 	}
 
 	// Si debemos recalcular la pantalla
@@ -1627,7 +1698,19 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type)
 
 		if (pantalla->hDC == NULL) {
 			pantalla->hDC = CreateCompatibleDC(*hDC);
-			if (!configuracion->mainScreenConfig->cs.backGradient && configuracion->alphaBlend) {
+			if (cs->cs.backGradient) {
+				pantalla->hasBackground = 2;
+			} else {
+				if (configuracion->fondoPantalla && configuracion->fondoPantalla->hDC) {
+					pantalla->hasBackground = 0;
+				} else {
+					pantalla->hasBackground = 1;
+				}
+			}
+			if (!(configuracion->alphaBlend && cs->cs.backWallpaperAlphaBlend && configuracion->fondoPantalla && configuracion->fondoPantalla->hDC) && back && back->hDC) {
+				pantalla->hasBackground = 3;
+			}
+			if (!pantalla->hasBackground && configuracion->alphaBlend) {
 				BITMAPINFO bmInfo;
 				memset(&bmInfo.bmiHeader, 0, sizeof(BITMAPINFOHEADER));
 				bmInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
@@ -1661,9 +1744,22 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type)
 		SetBkMode(pantalla->hDC, TRANSPARENT);
 
 		if (cs->cs.backGradient) {
+			pantalla->hasBackground = 2;
 			DrawGradientGDI(pantalla->hDC, rc, cs->cs.backColor1,  cs->cs.backColor2,  0xAAAA);
 		} else {
-			FillRect(pantalla->hDC, &rc, hBrushTrans);
+			if (configuracion->fondoPantalla && configuracion->fondoPantalla->hDC) {
+				pantalla->hasBackground = 0;
+				FillRect(pantalla->hDC, &rc, hBrushTrans);
+			} else {
+				pantalla->hasBackground = 1;
+				FillRect(pantalla->hDC, &rc, hBrushFondo);
+			}
+		}
+		if (!(configuracion->alphaBlend && cs->cs.backWallpaperAlphaBlend && configuracion->fondoPantalla && configuracion->fondoPantalla->hDC) && back && back->hDC) {
+			pantalla->hasBackground = 3;
+			PrintBack(pantalla->hDC, 0, 0, pantalla->anchoPantalla, pantalla->altoPantalla,
+				back->hDC, 0, 0, back->anchoImagen, back->altoImagen,
+				cs->cs.backWallpaperAlphaBlend, cs->cs.backWallpaperCenter, cs->cs.backWallpaperTile);
 		}
 
 		if (configuracion->headerTextSize > 0 && _tcslen(pantalla->header) > 0) {
@@ -1701,10 +1797,10 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type)
 
 		for (UINT j = 0; j < pantalla->numIconos; j++) {
 			CIcono *icono = pantalla->listaIconos[j];
-			pintaIcono(&pantalla->hDC, icono, screen_type);
+			pintaIcono(&pantalla->hDC, icono, pantalla, screen_type);
 		}
 
-		if (configuracion->alphaBlend && (!cs->cs.backGradient || (cs->cs.backGradient && cs->cs.backWallpaperAlphaBlend))) {
+		if (configuracion->alphaBlend && !pantalla->hasBackground) {
 			if (pantalla->pBits) {
 				BYTE *p = pantalla->pBits;
 				for (UINT i = 0; i < pantalla->anchoPantalla * pantalla->altoPantalla; i++) {
@@ -1753,48 +1849,15 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type)
 			}
 		}
 
-		// Print background of static bars
-		CIcono *back = NULL;
-		if (screen_type == BOTTOMBAR) {
-			back = configuracion->backBottomBar;
-		} else if (screen_type == TOPBAR) {
-			back = configuracion->backTopBar;
-		}
-		if (back && back->hDC) {
-			int bcx = min(cx, (int) back->anchoImagen);
-			int bcy = min(cy, (int) back->altoImagen);
-			int bxDestOrg = xDestOrg;
-			int byDestOrg = yDestOrg;
-			int bxSrcOrg = xSrcOrg;
-			int bySrcOrg = ySrcOrg;
-			if (cs->cs.backWallpaperCenter) {
-				if ((int) back->anchoImagen < cx) {
-					bxDestOrg += (cx - back->anchoImagen) / 2;
-				} else if ((int) back->anchoImagen > cx) {
-					bxSrcOrg += (back->anchoImagen - cx) / 2;
-				}
-				if ((int) back->altoImagen < cy) {
-					byDestOrg += (cy - back->altoImagen) / 2;
-				} else if ((int) back->altoImagen > cy) {
-					bySrcOrg += (back->altoImagen - cy) / 2;
-				}
-			}
-			BOOL ab = FALSE;
-			if (configuracion->alphaBlend && cs->cs.backWallpaperAlphaBlend) {
-				BLENDFUNCTION bf;
-				bf.BlendOp = AC_SRC_OVER;
-				bf.BlendFlags = 0;
-				bf.SourceConstantAlpha = 255;
-				bf.AlphaFormat = AC_SRC_ALPHA;
-				ab = AlphaBlend(*hDC, bxDestOrg, byDestOrg, bcx, bcy, back->hDC, bxSrcOrg, bySrcOrg, bcx, bcy, bf);
-			}
-			if (!ab) {
-				BitBlt(*hDC, bxDestOrg, byDestOrg, bcx, bcy, back->hDC, bxSrcOrg, bySrcOrg, SRCCOPY);
-			}
+		// Print background of static bars here only if it is to be alphablended to the background
+		if ((configuracion->alphaBlend && cs->cs.backWallpaperAlphaBlend && configuracion->fondoPantalla && configuracion->fondoPantalla->hDC) && back && back->hDC) {
+			PrintBack(*hDC, xDestOrg, yDestOrg, cx, cy,
+				back->hDC, xSrcOrg, ySrcOrg, back->anchoImagen, back->altoImagen,
+				TRUE, cs->cs.backWallpaperCenter, cs->cs.backWallpaperTile);
 		}
 
 		BOOL ab = FALSE;
-		if (configuracion->alphaBlend && (!cs->cs.backGradient || (cs->cs.backGradient && cs->cs.backWallpaperAlphaBlend))) {
+		if (configuracion->alphaBlend && !pantalla->hasBackground) {
 			if (configuracion->alphaBlend == 2 && bmBack.bmBits) {
 				BITMAP bmScreen = {0};
 				bmScreen.bmWidth = pantalla->anchoPantalla;
@@ -1812,7 +1875,7 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type)
 			}
 		}
 		if (!ab) {
-			if (cs->cs.backGradient) {
+			if (pantalla->hasBackground) {
 				BitBlt(*hDC, xDestOrg, yDestOrg, cx, cy, pantalla->hDC, xSrcOrg, ySrcOrg, SRCCOPY);
 			} else {
 				if (configuracion->useMask && pantalla->mask_hDC) {
