@@ -311,7 +311,8 @@ LRESULT CALLBACK ScreenBackSettingsProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPA
 			GetDlgItemText(hDlg, IDC_EDIT_CS_BACK_WALLPAPER, str, MAX_PATH);
 			configuracion->getAbsolutePath(fullPath, MAX_PATH, str);
 			getPathFromFile(fullPath, browseDir);
-			if (openFileBrowse(hDlg, OFN_EXFLAG_THUMBNAILVIEW, str, browseDir)) {
+			if (openFileBrowse(hDlg, OFN_EXFLAG_THUMBNAILVIEW, fullPath, browseDir)) {
+				configuracion->getRelativePath(str, MAX_PATH, fullPath);
 				SetDlgItemText(hDlg, IDC_EDIT_CS_BACK_WALLPAPER, str);
 			}
 			break;
@@ -319,7 +320,7 @@ LRESULT CALLBACK ScreenBackSettingsProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPA
 			if (SendMessage(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_ALPHABLEND), BM_GETCHECK, 0, 0) == BST_CHECKED) {
 				int resp = MessageBox(hDlg,
 					L"You should enable this only if the selected image has transparency information "
-					L"and you want to alphablend it to the background.\n"
+					L"and you want to alphablend it to the wallpaper.\n"
 					L"Enable it?\n",
 					L"Are you sure?", MB_YESNO);
 				if (resp == IDNO) {

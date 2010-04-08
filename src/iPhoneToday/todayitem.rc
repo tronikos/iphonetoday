@@ -570,7 +570,7 @@ END
 STRINGTABLE 
 BEGIN
     IDS_TAB0                "Screen"
-    IDS_TAB1                "Background"
+    IDS_TAB1                "Wallpaper"
 END
 
 STRINGTABLE 

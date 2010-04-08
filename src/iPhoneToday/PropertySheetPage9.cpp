@@ -99,10 +99,13 @@ LRESULT CALLBACK OptionDialog9(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 			break;
 		case IDC_BUTTON_OUTOFSCREEN_EXEC:
 			TCHAR str[MAX_PATH];
+			TCHAR fullPath[MAX_PATH];
 			TCHAR browseDir[MAX_PATH];
 			GetDlgItemText(hDlg, IDC_EDIT_OUTOFSCREEN_EXEC, str, MAX_PATH);
-			getPathFromFile(str, browseDir);
-			if (openFileBrowse(hDlg, OFN_EXFLAG_DETAILSVIEW, str, browseDir)) {
+			configuracion->getAbsolutePath(fullPath, MAX_PATH, str);
+			getPathFromFile(fullPath, browseDir);
+			if (openFileBrowse(hDlg, OFN_EXFLAG_DETAILSVIEW, fullPath, browseDir)) {
+				configuracion->getRelativePath(str, MAX_PATH, fullPath);
 				SetDlgItemText(hDlg, IDC_EDIT_OUTOFSCREEN_EXEC, str);
 			}
 			break;

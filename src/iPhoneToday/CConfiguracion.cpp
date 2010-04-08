@@ -110,6 +110,25 @@ void CConfiguracion::getAbsolutePath(LPTSTR pszDest, size_t cchDest, LPCTSTR psz
 	}
 }
 
+// Convert absolute path to relative
+void CConfiguracion::getRelativePath(LPTSTR pszDest, size_t cchDest, LPCTSTR pszSrc)
+{
+	int offset = 0;
+	if (pszSrc[0] == L'\\') {
+		// First check whether it could be relative to the Icons directory
+		if (wcslen(pszSrc) > wcslen(pathIconsDir) && wcsnicmp(pszSrc, pathIconsDir, wcslen(pathIconsDir)) == 0) {
+			offset = wcslen(pathIconsDir);
+		// Second check whether it could be relative to the icons.xml directory
+		} else if (wcslen(pszSrc) > wcslen(pathIconsXMLDir) && wcsnicmp(pszSrc, pathIconsXMLDir, wcslen(pathIconsXMLDir)) == 0) {
+			offset = wcslen(pathIconsXMLDir);
+		// Third check whether it could be relative to the executable's directory
+		} else if (wcslen(pszSrc) > wcslen(pathIconsXMLDir) && wcsnicmp(pszSrc, pathExecutableDir, wcslen(pathExecutableDir)) == 0) {
+			offset = wcslen(pathExecutableDir);
+		}
+	}
+	StringCchCopy(pszDest, cchDest, pszSrc + offset);
+}
+
 // maxIconos = Maximo de iconos que hay en una pantalla
 void CConfiguracion::calculaConfiguracion(int maxIconos, int numIconsInBottomBar, int numIconsInTopBar, int width, int height)
 {
@@ -1005,7 +1024,7 @@ BOOL CConfiguracion::saveXMLIcons(CListaPantalla *listaPantallas)
 		root->LinkEndChild(pElemScreen);
 	}
 
-	FILE *f = _wfopen(pathIconsXML, L"wb");
+	FILE *f = _wfopen(pathIconsXML, L"w");
 	doc.SaveFile(f);
 	fclose(f);
 
@@ -1254,7 +1273,7 @@ BOOL CConfiguracion::saveXMLConfig()
 	XMLUtils::SetAttr(pElem, "height", this->lastConfiguredAtHeight);
 	root->LinkEndChild(pElem);
 
-	FILE *f = _wfopen(pathSettingsXML, L"wb");
+	FILE *f = _wfopen(pathSettingsXML, L"w");
 	doc.SaveFile(f);
 	fclose(f);
 
