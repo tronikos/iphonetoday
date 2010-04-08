@@ -188,6 +188,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_66CB1226587D4E2784F28FB95DC80400"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_6AF552D5CF9A417FAD22836B9B4BD46F"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -303,6 +309,12 @@
         "Entry"
         {
         "MsmKey" = "8:_C0557EF68AA54359997672AD928BF6DF"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_C1A61EF9F2AE4E439E241A808C708505"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -902,6 +914,24 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{BA458234-9B71-4F46-8107-E91156377184}:_66CB1226587D4E2784F28FB95DC80400"
+            {
+            "SourcePath" = "8:..\\..\\res\\icons\\Bubbles\\Alarm Transparent.png"
+            "TargetName" = "8:Alarm Transparent.png"
+            "Tag" = "8:"
+            "Folder" = "8:_254B90F526954A78AEB276BE2E32E914"
+            "Condition" = "8:"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "Register" = "3:0"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{BA458234-9B71-4F46-8107-E91156377184}:_6AF552D5CF9A417FAD22836B9B4BD46F"
             {
             "SourcePath" = "8:..\\..\\res\\icons\\Tasks.png"
@@ -1232,6 +1262,24 @@
             "TargetName" = "8:Search.png"
             "Tag" = "8:"
             "Folder" = "8:_CB770C7AC2BA431FAE2CC7F1E1214841"
+            "Condition" = "8:"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "Register" = "3:0"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{BA458234-9B71-4F46-8107-E91156377184}:_C1A61EF9F2AE4E439E241A808C708505"
+            {
+            "SourcePath" = "8:..\\..\\res\\icons\\Bubbles\\Notif Transparent.png"
+            "TargetName" = "8:Notif Transparent.png"
+            "Tag" = "8:"
+            "Folder" = "8:_254B90F526954A78AEB276BE2E32E914"
             "Condition" = "8:"
             "Vital" = "11:TRUE"
             "ReadOnly" = "11:FALSE"
