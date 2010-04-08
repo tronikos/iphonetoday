@@ -9,6 +9,7 @@ public:
 	CIcono *listaIconos[MAX_ICONOS_PANTALLA];
 	UINT numIconos;
 	BOOL debeActualizar;
+	int hasBackground; // 0: no background (filled with RGB(0,0,0)), 1: solid color (configuracion->fondoColor), 2: gradient background, 3: background image
 
 	FLOAT x;
 	FLOAT y;

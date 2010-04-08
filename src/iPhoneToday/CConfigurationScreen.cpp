@@ -80,6 +80,7 @@ void CConfigurationScreen::defaultValues()
 	this->cs.backWallpaperFitWidth = 1;
 	this->cs.backWallpaperFitHeight = 1;
 	this->cs.backWallpaperCenter = 1;
+	this->cs.backWallpaperTile = 0;
 
 	this->iconWidth = this->cs.iconWidthXML;
 	this->iconsPerRow = this->cs.iconsPerRowXML;
@@ -147,6 +148,7 @@ BOOL CConfigurationScreen::loadXMLConfig(TiXmlElement *pRoot)
 			XMLUtils::GetAttr(pElem, "fitwidth",   &this->cs.backWallpaperFitWidth);
 			XMLUtils::GetAttr(pElem, "fitheight",  &this->cs.backWallpaperFitHeight);
 			XMLUtils::GetAttr(pElem, "center",     &this->cs.backWallpaperCenter);
+			XMLUtils::GetAttr(pElem, "tile",       &this->cs.backWallpaperTile);
 		}
 	}
 
@@ -204,13 +206,12 @@ BOOL CConfigurationScreen::saveXMLConfig(TiXmlElement *pRoot, BOOL isStaticbar)
 	XMLUtils::SetAttr(pElem, "gradient",   this->cs.backGradient);
 	XMLUtils::SetAttr(pElem, "color1",     this->cs.backColor1);
 	XMLUtils::SetAttr(pElem, "color2",     this->cs.backColor2);
-	if (isStaticbar) {
-		XMLUtils::SetAttr(pElem, "image",      this->cs.backWallpaper, CountOf(this->cs.backWallpaper));
-		XMLUtils::SetAttr(pElem, "alphablend", this->cs.backWallpaperAlphaBlend);
-		XMLUtils::SetAttr(pElem, "fitwidth",   this->cs.backWallpaperFitWidth);
-		XMLUtils::SetAttr(pElem, "fitheight",  this->cs.backWallpaperFitHeight);
-		XMLUtils::SetAttr(pElem, "center",     this->cs.backWallpaperCenter);
-	}
+	XMLUtils::SetAttr(pElem, "image",      this->cs.backWallpaper, CountOf(this->cs.backWallpaper));
+	XMLUtils::SetAttr(pElem, "alphablend", this->cs.backWallpaperAlphaBlend);
+	XMLUtils::SetAttr(pElem, "fitwidth",   this->cs.backWallpaperFitWidth);
+	XMLUtils::SetAttr(pElem, "fitheight",  this->cs.backWallpaperFitHeight);
+	XMLUtils::SetAttr(pElem, "center",     this->cs.backWallpaperCenter);
+	XMLUtils::SetAttr(pElem, "tile",       this->cs.backWallpaperTile);
 	pRoot->LinkEndChild(pElem);
 
 	return TRUE;

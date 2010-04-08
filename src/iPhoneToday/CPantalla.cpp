@@ -3,6 +3,7 @@
 CPantalla::CPantalla(void)
 {
 	debeActualizar = TRUE;
+	hasBackground = 0;
 	header[0] = '\0';
 	hDC = NULL;
 	imagen = NULL;

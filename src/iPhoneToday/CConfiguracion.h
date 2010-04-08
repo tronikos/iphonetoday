@@ -76,6 +76,7 @@ public:
 	CIcono *bubbleAlarm;
 
 	CIcono *fondoPantalla;
+	CIcono *backMainScreen;
 	CIcono *backBottomBar;
 	CIcono *backTopBar;
 

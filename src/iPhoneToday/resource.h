@@ -190,6 +190,7 @@
 #define IDC_STATIC_R                    1222
 #define IDC_STATIC_B                    1223
 #define IDC_KB_BUTTON                   1224
+#define IDC_CHECK_CS_BACK_TILE          1225
 
 // Next default values for new objects
 // 
@@ -197,7 +198,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        124
 #define _APS_NEXT_COMMAND_VALUE         40003
-#define _APS_NEXT_CONTROL_VALUE         1225
+#define _APS_NEXT_CONTROL_VALUE         1226
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
