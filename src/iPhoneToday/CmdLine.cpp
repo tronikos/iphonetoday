@@ -36,9 +36,9 @@ BOOL CommandLineArguements(HWND hwnd, LPCTSTR pCmdLine)
 #endif
 	} else if (_wcsnicmp(pCmdLine, L"goto:", wcslen(L"goto:")) == 0) {
 		int l = wcslen(L"goto:");
-		if (wcsicmp(pCmdLine + l, L"next") == 0) {
+		if (wcsicmp(pCmdLine + l, L"next") == 0 || wcsicmp(pCmdLine + l, L"right") == 0) {
 			PostMessage(hwnd, WM_USER_GOTO_NEXT, 0, 0);
-		} else if (wcsicmp(pCmdLine + l, L"previous") == 0) {
+		} else if (wcsicmp(pCmdLine + l, L"previous") == 0 || wcsicmp(pCmdLine + l, L"left") == 0) {
 			PostMessage(hwnd, WM_USER_GOTO_PREV, 0, 0);
 		} else if (wcsicmp(pCmdLine + l, L"up") == 0) {
 			PostMessage(hwnd, WM_USER_GOTO_UP, 0, 0);
