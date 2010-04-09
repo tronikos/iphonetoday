@@ -1426,7 +1426,7 @@ void pintaIcono(HDC *hDC, CIcono *icono, CPantalla *pantalla, SCREEN_TYPE screen
 	TCHAR str[16];
 
 	if (icono->hDC && icono->imagen) {
-		if (pantalla->hasBackground == 0 || (pantalla->hasBackground == 1 && configuracion->fondoColor == RGB(0, 0, 0))) {
+		if (pantalla->hasBackground == 0 || (!configuracion->alphaBlend && pantalla->hasBackground == 1 && configuracion->fondoColor == RGB(0, 0, 0))) {
 			if (icono->anchoImagen == width && icono->altoImagen == width) {
 				BitBlt(*hDC, int(icono->x), int(icono->y), width, width,
 					icono->hDC, 0, 0, SRCCOPY);
