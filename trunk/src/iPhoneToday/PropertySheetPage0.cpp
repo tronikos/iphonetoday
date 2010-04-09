@@ -155,7 +155,7 @@ LRESULT CALLBACK OptionDialog0(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 				break;
 			}
 		}
-		return 0;
+		break;
 	}
 
 	return DefOptionWindowProc(hDlg, 0, uMsg, wParam, lParam);
@@ -236,6 +236,7 @@ BOOL SaveConfiguration0(HWND hDlg)
 
 LRESULT CALLBACK ScreenBackSettingsProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+	static BOOL focus = FALSE;
 	static HWND hwndKB = NULL;
 
 	int rgbCurrent;
@@ -274,7 +275,21 @@ LRESULT CALLBACK ScreenBackSettingsProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPA
 			EnableWindow(hwndKB, FALSE);
 		}
 		break;
+	case WM_CTLCOLOREDIT:
+		if (focus) {
+			PostMessage((HWND) lParam, EM_SETSEL, 0, -1);
+			focus = FALSE;
+		}
+		return 0;
 	case WM_COMMAND:
+		if (HIWORD(wParam) == EN_SETFOCUS) {
+			ToggleKeyboard(TRUE);
+			focus = TRUE;
+			PostMessage((HWND) lParam, EM_SETSEL, 0, -1);
+		} else if (HIWORD(wParam) == EN_KILLFOCUS) {
+			ToggleKeyboard(FALSE);
+			focus = FALSE;
+		}
 		switch(LOWORD(wParam))
 		{
 		case IDOK:

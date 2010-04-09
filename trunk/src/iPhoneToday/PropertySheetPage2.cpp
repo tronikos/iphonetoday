@@ -35,7 +35,7 @@ LRESULT CALLBACK OptionDialog2(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 			EnableWindow(GetDlgItem(hDlg, IDC_CHECK_FREESTYLE_SCROLL), SendMessage(GetDlgItem(hDlg, IDC_CHECK_VERTICAL_SCROLL), BM_GETCHECK, 0, 0) == BST_CHECKED);
 			break;
 		}
-		return 0;
+		break;
 	}
 
 	return DefOptionWindowProc(hDlg, 2, uMsg, wParam, lParam);

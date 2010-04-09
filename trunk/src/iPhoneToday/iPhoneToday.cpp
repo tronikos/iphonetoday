@@ -2316,6 +2316,7 @@ int hayNotificacion(int tipo)
 
 LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	static BOOL focus = FALSE;
 	static HWND hwndKB = NULL;
 
 	switch (message)
@@ -2513,7 +2514,21 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 			EnableWindow(hwndKB, FALSE);
 		}
 		break;
+	case WM_CTLCOLOREDIT:
+		if (focus) {
+			PostMessage((HWND) lParam, EM_SETSEL, 0, -1);
+			focus = FALSE;
+		}
+		return 0;
 	case WM_COMMAND:
+		if (HIWORD(wParam) == EN_SETFOCUS) {
+			ToggleKeyboard(TRUE);
+			focus = TRUE;
+			PostMessage((HWND) lParam, EM_SETSEL, 0, -1);
+		} else if (HIWORD(wParam) == EN_KILLFOCUS) {
+			ToggleKeyboard(FALSE);
+			focus = FALSE;
+		}
 		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
 		{
 			// Comprobamos si quiere guardar o solo salir
