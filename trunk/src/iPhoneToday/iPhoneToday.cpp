@@ -682,6 +682,26 @@ LRESULT doPaint (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 		return 0;
 	}
 
+	if (estado->estadoCuadro) {
+		if (hDCMem2) {
+			BitBlt(hDC, rcWindBounds.left, rcWindBounds.top, rcWindBounds.right - rcWindBounds.left, rcWindBounds.bottom - rcWindBounds.top, hDCMem2, rcWindBounds.left, rcWindBounds.top, SRCCOPY);
+		} else if (hDCMem) {
+			BitBlt(hDC, rcWindBounds.left, rcWindBounds.top, rcWindBounds.right - rcWindBounds.left, rcWindBounds.bottom - rcWindBounds.top, hDCMem, rcWindBounds.left, rcWindBounds.top, SRCCOPY);
+		}
+		if (estado->estadoCuadro == 1 || estado->estadoCuadro == 3) {
+			FillRect(hDC, &estado->cuadroLanzando, hBrushAnimation);
+		} else if (estado->estadoCuadro == 2) {
+			FillRect(hDC, &estado->cuadroLanzando, hBrushAnimation);
+			if (GetTickCount() - estado->timeUltimoLanzamiento >= 2000) {
+				SetTimer(hwnd, TIMER_LANZANDO_APP, configuracion->refreshTime, NULL);
+				estado->timeUltimoLanzamiento = GetTickCount();
+				estado->estadoCuadro = 3;
+			}
+		}
+		EndPaint(hwnd, &ps);
+		return 0;
+	}
+
 	if (configuracion->alphaBlend == 2 && hDCMem2 == NULL) {
 		BOOL mainScreenPagesHaveBackground = !(configuracion->fondoPantalla && configuracion->fondoPantalla->hDC) || configuracion->mainScreenConfig->cs.backGradient || (configuracion->backMainScreen && configuracion->backMainScreen->hDC);
 		if (!mainScreenPagesHaveBackground) {
@@ -775,17 +795,6 @@ LRESULT doPaint (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 	// Pintamos los iconos
 	pintaIconos(&hDCMem, &rcWindBounds);
 
-
-	if (estado->estadoCuadro == 1 || estado->estadoCuadro == 3) {
-		FillRect(hDCMem, &estado->cuadroLanzando, hBrushAnimation);
-	} else if (estado->estadoCuadro == 2) {
-		FillRect(hDCMem, &estado->cuadroLanzando, hBrushAnimation);
-		if (GetTickCount() - estado->timeUltimoLanzamiento >= 2000) {
-			SetTimer(hwnd, TIMER_LANZANDO_APP, configuracion->refreshTime, NULL);
-			estado->timeUltimoLanzamiento = GetTickCount();
-			estado->estadoCuadro = 3;
-		}
-	}
 	if (configuracion->alphaBlend == 2 && hDCMem2 != NULL) {
 		// to avoid screen tearing first copy the DIB section of hDCMem to the device compatible bitmap of hDCMem2 and then copy it to the window's device context hDC
 		BitBlt(hDCMem2, rcWindBounds.left, rcWindBounds.top, rcWindBounds.right - rcWindBounds.left, rcWindBounds.bottom - rcWindBounds.top, hDCMem, rcWindBounds.left, rcWindBounds.top, SRCCOPY);
