@@ -3452,7 +3452,7 @@ void InvalidateScreenIfNotificationsChanged(CPantalla *pantalla)
 				}
 				break;
 			case NOTIF_VMAIL:
-				if (notifications->szNotificationsChanged[SN_MESSAGINGVOICEMAILTOTALUNREAD]) {
+				if (notifications->dwNotificationsChanged[SN_MESSAGINGVOICEMAILTOTALUNREAD]) {
 					pantalla->debeActualizar = TRUE;
 					return;
 				}
@@ -3518,7 +3518,7 @@ void InvalidateScreenIfNotificationsChanged(CPantalla *pantalla)
 				}
 				break;
 			case NOTIF_IRDA:
-				if (notifications->szNotificationsChanged[SN_IRDA]) {
+				if (notifications->dwNotificationsChanged[SN_IRDA]) {
 					pantalla->debeActualizar = TRUE;
 					return;
 				}
