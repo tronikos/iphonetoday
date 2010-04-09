@@ -107,8 +107,26 @@ BOOL IsValidConfiguration(HWND hDlg, INT iDlg)
 
 LRESULT DefOptionWindowProc(HWND hDlg, INT iDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+	static BOOL focus = FALSE;
+
 	switch (uMsg)
 	{
+		case WM_CTLCOLOREDIT:
+			if (focus) {
+				PostMessage((HWND) lParam, EM_SETSEL, 0, -1);
+				focus = FALSE;
+			}
+			return 0;
+		case WM_COMMAND:
+			if (HIWORD(wParam) == EN_SETFOCUS) {
+				ToggleKeyboard(TRUE);
+				focus = TRUE;
+				PostMessage((HWND) lParam, EM_SETSEL, 0, -1);
+			} else if (HIWORD(wParam) == EN_KILLFOCUS) {
+				ToggleKeyboard(FALSE);
+				focus = FALSE;
+			}
+			return 0;
 		case WM_ACTIVATE:
 			if (wParam == WA_CLICKACTIVE || wParam == WA_ACTIVE) {
 				EnableWindow(g_hwndKB, TRUE);

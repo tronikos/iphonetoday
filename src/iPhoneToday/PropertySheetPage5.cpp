@@ -158,7 +158,7 @@ LRESULT CALLBACK OptionDialog5(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 				break;
 			}
 		}
-		return 0;
+		break;
 	}
 
 	return DefOptionWindowProc(hDlg, 5, uMsg, wParam, lParam);

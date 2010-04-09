@@ -84,7 +84,7 @@ LRESULT CALLBACK OptionDialog7(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 				PlaySound(fullPath, 0, SND_ASYNC | SND_FILENAME | SND_NODEFAULT);
 				break;
 		}
-		return 0;
+		break;
 	}
 
 	return DefOptionWindowProc(hDlg, 7, uMsg, wParam, lParam);

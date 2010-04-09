@@ -113,7 +113,7 @@ LRESULT CALLBACK OptionDialog9(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 			ooss_enable(hDlg, TRUE);
 			break;
 		}
-		return 0;
+		break;
 	}
 
 	return DefOptionWindowProc(hDlg, 9, uMsg, wParam, lParam);
