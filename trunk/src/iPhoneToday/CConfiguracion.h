@@ -118,6 +118,7 @@ public:
 	UINT velMaxima;
 	UINT velMinima;
 	UINT refreshTime;
+	UINT animationTime;
 	UINT factorMovimiento;
 	UINT verticalScroll;
 	UINT freestyleScroll;

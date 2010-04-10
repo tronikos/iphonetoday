@@ -464,7 +464,7 @@ LRESULT doTimer (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 		long despY = configuracion->altoPantalla / 2;
 		long timeInicial = GetTickCount() - estado->timeUltimoLanzamiento;
 		float porcent = 1;
-		long timeLanzamiento = 200;
+		long timeLanzamiento = configuracion->animationTime;
 
 		long time = timeLanzamiento - max(0, timeLanzamiento - timeInicial);
 		if (time > 0) {

@@ -505,6 +505,7 @@ void CConfiguracion::defaultValues()
 	this->velMaxima = 140;
 	this->velMinima = 20;
 	this->refreshTime = 20;
+	this->animationTime = 200;
 	this->factorMovimiento = 4;
 	this->verticalScroll = 0;
 	this->freestyleScroll = 0;
@@ -863,12 +864,13 @@ BOOL CConfiguracion::loadXMLConfig()
 			XMLUtils::GetAttr(pElem, "shadow",    &this->headerTextShadow);
 			XMLUtils::GetAttr(pElem, "roundrect", &this->headerTextRoundRect);
 		} else if(_stricmp(nameNode, "Movement") == 0) {
-			XMLUtils::GetAttr(pElem, "MoveThreshold",  &this->moveThreshold);
-			XMLUtils::GetAttr(pElem, "MaxVelocity",    &this->velMaxima);
-			XMLUtils::GetAttr(pElem, "MinVelocity",    &this->velMinima);
-			XMLUtils::GetAttr(pElem, "RefreshTime",    &this->refreshTime);
-			XMLUtils::GetAttr(pElem, "FactorMov",      &this->factorMovimiento);
-			XMLUtils::GetAttr(pElem, "VerticalScroll", &this->verticalScroll);
+			XMLUtils::GetAttr(pElem, "MoveThreshold",   &this->moveThreshold);
+			XMLUtils::GetAttr(pElem, "MaxVelocity",     &this->velMaxima);
+			XMLUtils::GetAttr(pElem, "MinVelocity",     &this->velMinima);
+			XMLUtils::GetAttr(pElem, "RefreshTime",     &this->refreshTime);
+			XMLUtils::GetAttr(pElem, "AnimationTime",   &this->animationTime);
+			XMLUtils::GetAttr(pElem, "FactorMov",       &this->factorMovimiento);
+			XMLUtils::GetAttr(pElem, "VerticalScroll",  &this->verticalScroll);
 			XMLUtils::GetAttr(pElem, "FreestyleScroll", &this->freestyleScroll);
 		} else if(_stricmp(nameNode, "DayOfWeek") == 0) {
 			SpecialIconSettingsLoad(pElem, &this->dow);
@@ -1116,12 +1118,13 @@ BOOL CConfiguracion::saveXMLConfig()
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("Movement");
-	XMLUtils::SetAttr(pElem, "MoveThreshold",  this->moveThreshold);
-	XMLUtils::SetAttr(pElem, "MaxVelocity",    this->velMaxima);
-	XMLUtils::SetAttr(pElem, "MinVelocity",    this->velMinima);
-	XMLUtils::SetAttr(pElem, "RefreshTime",    this->refreshTime);
-	XMLUtils::SetAttr(pElem, "FactorMov",      this->factorMovimiento);
-	XMLUtils::SetAttr(pElem, "VerticalScroll", this->verticalScroll);
+	XMLUtils::SetAttr(pElem, "MoveThreshold",   this->moveThreshold);
+	XMLUtils::SetAttr(pElem, "MaxVelocity",     this->velMaxima);
+	XMLUtils::SetAttr(pElem, "MinVelocity",     this->velMinima);
+	XMLUtils::SetAttr(pElem, "RefreshTime",     this->refreshTime);
+	XMLUtils::SetAttr(pElem, "AnimationTime",   this->animationTime);
+	XMLUtils::SetAttr(pElem, "FactorMov",       this->factorMovimiento);
+	XMLUtils::SetAttr(pElem, "VerticalScroll",  this->verticalScroll);
 	XMLUtils::SetAttr(pElem, "FreestyleScroll", this->freestyleScroll);
 	root->LinkEndChild(pElem);
 

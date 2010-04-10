@@ -110,6 +110,7 @@
 #define IDC_STATICAPPVER                1117
 #define IDC_STATICURL                   1118
 #define IDC_CHECK_FREESTYLE_SCROLL      1124
+#define IDC_EDIT_ANIMATION_TIME         1125
 #define IDC_EDIT_BACK_FACTOR            1142
 #define IDC_COMBO_CS                    1144
 #define IDC_CHECK_ONLAUNCH_SOUND        1145
