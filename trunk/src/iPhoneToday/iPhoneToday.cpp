@@ -2525,8 +2525,15 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 		break;
 	case WM_CTLCOLOREDIT:
 		if (focus) {
+			static DWORD start = -1;
+			if (start == -1) {
+				start = GetTickCount();
+			}
 			PostMessage((HWND) lParam, EM_SETSEL, 0, -1);
-			focus = FALSE;
+			if (GetTickCount() - start > 1000) {
+				start = -1;
+				focus = FALSE;
+			}
 		}
 		return 0;
 	case WM_COMMAND:
