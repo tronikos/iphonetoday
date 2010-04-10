@@ -111,6 +111,7 @@ public:
 	BOOL fondoFitWidth;
 	BOOL fondoFitHeight;
 	BOOL fondoCenter;
+	BOOL fondoTile;
 	TCHAR strFondoPantalla[MAX_PATH];
 
 	// Movement
@@ -143,7 +144,7 @@ public:
 	BubbleSettings bubble_state;
 	BubbleSettings bubble_alarm;
 
-	// OnLaunch
+	// OnLaunchIcon
 	BOOL closeOnLaunchIcon;
 	BOOL minimizeOnLaunchIcon;
 	UINT vibrateOnLaunchIcon;
@@ -152,7 +153,7 @@ public:
 	UINT allowSoundOnLaunchIcon;
 	TCHAR soundOnLaunchIcon[MAX_PATH];
 
-	// OnPush
+	// OnPressIcon
 	TCHAR pressed_icon[MAX_PATH];
 	TCHAR pressed_sound[MAX_PATH];
 
