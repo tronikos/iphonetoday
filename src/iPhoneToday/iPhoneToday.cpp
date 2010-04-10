@@ -45,6 +45,11 @@ HBITMAP	hbmMem2 = NULL;
 HBITMAP	hbmMemOld2 = NULL;
 BITMAP bmBack = {0};
 
+// Used for the animation
+HDC		hDCMem3 = NULL;
+HBITMAP	hbmMem3 = NULL;
+HBITMAP	hbmMemOld3 = NULL;
+
 HBRUSH  hBrushFondo = NULL;
 HBRUSH  hBrushTrans = NULL;
 HBRUSH  hBrushAnimation = NULL;
@@ -683,23 +688,36 @@ LRESULT doPaint (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 	}
 
 	if (estado->estadoCuadro) {
+		if (hDCMem3 == NULL) {
+			hDCMem3 = CreateCompatibleDC(hDC);
+			hbmMem3 = CreateCompatibleBitmap(hDC, rcWindBounds.right - rcWindBounds.left, rcWindBounds.bottom - rcWindBounds.top);
+			hbmMemOld3 = (HBITMAP)SelectObject(hDCMem3, hbmMem3);
+		}
 		if (hDCMem2) {
-			BitBlt(hDC, rcWindBounds.left, rcWindBounds.top, rcWindBounds.right - rcWindBounds.left, rcWindBounds.bottom - rcWindBounds.top, hDCMem2, rcWindBounds.left, rcWindBounds.top, SRCCOPY);
+			BitBlt(hDCMem3, rcWindBounds.left, rcWindBounds.top, rcWindBounds.right - rcWindBounds.left, rcWindBounds.bottom - rcWindBounds.top, hDCMem2, rcWindBounds.left, rcWindBounds.top, SRCCOPY);
 		} else if (hDCMem) {
-			BitBlt(hDC, rcWindBounds.left, rcWindBounds.top, rcWindBounds.right - rcWindBounds.left, rcWindBounds.bottom - rcWindBounds.top, hDCMem, rcWindBounds.left, rcWindBounds.top, SRCCOPY);
+			BitBlt(hDCMem3, rcWindBounds.left, rcWindBounds.top, rcWindBounds.right - rcWindBounds.left, rcWindBounds.bottom - rcWindBounds.top, hDCMem, rcWindBounds.left, rcWindBounds.top, SRCCOPY);
 		}
 		if (estado->estadoCuadro == 1 || estado->estadoCuadro == 3) {
-			FillRect(hDC, &estado->cuadroLanzando, hBrushAnimation);
+			FillRect(hDCMem3, &estado->cuadroLanzando, hBrushAnimation);
 		} else if (estado->estadoCuadro == 2) {
-			FillRect(hDC, &estado->cuadroLanzando, hBrushAnimation);
+			FillRect(hDCMem3, &estado->cuadroLanzando, hBrushAnimation);
 			if (GetTickCount() - estado->timeUltimoLanzamiento >= 2000) {
 				SetTimer(hwnd, TIMER_LANZANDO_APP, configuracion->refreshTime, NULL);
 				estado->timeUltimoLanzamiento = GetTickCount();
 				estado->estadoCuadro = 3;
 			}
 		}
+		BitBlt(hDC, rcWindBounds.left, rcWindBounds.top, rcWindBounds.right - rcWindBounds.left, rcWindBounds.bottom - rcWindBounds.top, hDCMem3, rcWindBounds.left, rcWindBounds.top, SRCCOPY);
+		if (estado->estadoCuadro == 2) {
+			borraHDC_HBITMPAP(&hDCMem3, &hbmMem3, &hbmMemOld3);
+		}
 		EndPaint(hwnd, &ps);
 		return 0;
+	} else {
+		if (hDCMem3) {
+			borraHDC_HBITMPAP(&hDCMem3, &hbmMem3, &hbmMemOld3);
+		}
 	}
 
 	if (configuracion->alphaBlend == 2 && hDCMem2 == NULL) {
@@ -707,7 +725,7 @@ LRESULT doPaint (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 		if (!mainScreenPagesHaveBackground) {
 			hDCMem2 = CreateCompatibleDC(hDC);
 			hbmMem2 = CreateCompatibleBitmap(hDC, rcWindBounds.right - rcWindBounds.left, rcWindBounds.bottom - rcWindBounds.top);
-			hbmMemOld2 = (HBITMAP)SelectObject(hDCMem2, hbmMem2);
+			hbmMemOld2 = (HBITMAP) SelectObject(hDCMem2, hbmMem2);
 		}
 	}
 	if (hDCMem == NULL) {
@@ -730,7 +748,7 @@ LRESULT doPaint (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 		} else {
 			hbmMem = CreateCompatibleBitmap(hDC, rcWindBounds.right - rcWindBounds.left, rcWindBounds.bottom - rcWindBounds.top);
 		}
-		hbmMemOld = (HBITMAP)SelectObject(hDCMem, hbmMem);
+		hbmMemOld = (HBITMAP) SelectObject(hDCMem, hbmMem);
 
 		SetBkMode(hDCMem, TRANSPARENT);
 
@@ -3048,6 +3066,7 @@ BOOL borraObjetosHDC()
 {
 	borraHDC_HBITMPAP(&hDCMem, &hbmMem, &hbmMemOld);
 	borraHDC_HBITMPAP(&hDCMem2, &hbmMem2, &hbmMemOld2);
+	borraHDC_HBITMPAP(&hDCMem3, &hbmMem3, &hbmMemOld3);
 
 	if (listaPantallas != NULL) {
 		if (listaPantallas->barraInferior != NULL) {
