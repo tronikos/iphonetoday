@@ -805,8 +805,17 @@ LRESULT doPaint (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 				srcX = int(posX);
 				srcY = int(posY);
 			}
-			BitBlt(hDCMem, destX, destY, configuracion->fondoPantalla->anchoImagen, configuracion->fondoPantalla->altoImagen,
-				configuracion->fondoPantalla->hDC, srcX, srcY, SRCCOPY);
+			if (configuracion->fondoTile) {
+				for (destX = min(0, destX); destX < (int) configuracion->anchoPantalla; destX += (int) configuracion->fondoPantalla->anchoImagen) {
+					for (destY = min(0, destY); destY < (int) configuracion->altoPantalla; destY += (int) configuracion->fondoPantalla->altoImagen) {
+						BitBlt(hDCMem, destX, destY, configuracion->fondoPantalla->anchoImagen, configuracion->fondoPantalla->altoImagen,
+							configuracion->fondoPantalla->hDC, srcX, srcY, SRCCOPY);
+					}
+				}
+			} else {
+				BitBlt(hDCMem, destX, destY, configuracion->fondoPantalla->anchoImagen, configuracion->fondoPantalla->altoImagen,
+					configuracion->fondoPantalla->hDC, srcX, srcY, SRCCOPY);
+			}
 		}
 	}
 

@@ -498,6 +498,7 @@ void CConfiguracion::defaultValues()
 	this->fondoFitWidth = 1;
 	this->fondoFitHeight = 1;
 	this->fondoCenter = 1;
+	this->fondoTile = 0;
 	this->fondoFactor = 1;
 	this->strFondoPantalla[0] = 0;
 
@@ -924,6 +925,7 @@ BOOL CConfiguracion::loadXMLConfig()
 			XMLUtils::GetAttr(pElem, "fitwidth",    &this->fondoFitWidth);
 			XMLUtils::GetAttr(pElem, "fitheight",   &this->fondoFitHeight);
 			XMLUtils::GetAttr(pElem, "center",      &this->fondoCenter);
+			XMLUtils::GetAttr(pElem, "tile",        &this->fondoTile);
 			XMLUtils::GetAttr(pElem, "factor",      &this->fondoFactor);
 			XMLUtils::GetAttr(pElem, "wallpaper",   this->strFondoPantalla, CountOf(this->strFondoPantalla));
 		} else if(_stricmp(nameNode, "NotifyTimer") == 0) {
@@ -1113,6 +1115,7 @@ BOOL CConfiguracion::saveXMLConfig()
 	XMLUtils::SetAttr(pElem, "fitwidth",    this->fondoFitWidth);
 	XMLUtils::SetAttr(pElem, "fitheight",   this->fondoFitHeight);
 	XMLUtils::SetAttr(pElem, "center",      this->fondoCenter);
+	XMLUtils::SetAttr(pElem, "tile",        this->fondoTile);
 	XMLUtils::SetAttr(pElem, "factor",      this->fondoFactor);
 	XMLUtils::SetAttr(pElem, "wallpaper",   this->strFondoPantalla, CountOf(this->strFondoPantalla));
 	root->LinkEndChild(pElem);

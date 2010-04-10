@@ -15,6 +15,7 @@ void EnableAllDlgItems1(HWND hDlg, BOOL bEnable)
 	EnableWindow(GetDlgItem(hDlg, IDC_CHECK_BACK_FIT_WIDTH),	bEnable);
 	EnableWindow(GetDlgItem(hDlg, IDC_CHECK_BACK_FIT_HEIGHT),	bEnable);
 	EnableWindow(GetDlgItem(hDlg, IDC_CHECK_BACK_CENTER),		bEnable);
+	EnableWindow(GetDlgItem(hDlg, IDC_CHECK_BACK_TILE),			bEnable);
 	EnableWindow(GetDlgItem(hDlg, IDC_EDIT_BACK_COLOR),			bEnable);
 	EnableWindow(GetDlgItem(hDlg, IDC_BUTTON_BACK_COLOR),		bEnable);
 }
@@ -35,6 +36,7 @@ LRESULT CALLBACK OptionDialog1(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 			SendMessage(GetDlgItem(hDlg, IDC_CHECK_BACK_FIT_WIDTH),		BM_SETCHECK, configuracion->fondoFitWidth ? BST_CHECKED : BST_UNCHECKED, 0);
 			SendMessage(GetDlgItem(hDlg, IDC_CHECK_BACK_FIT_HEIGHT),	BM_SETCHECK, configuracion->fondoFitHeight ? BST_CHECKED : BST_UNCHECKED, 0);
 			SendMessage(GetDlgItem(hDlg, IDC_CHECK_BACK_CENTER),		BM_SETCHECK, configuracion->fondoCenter ? BST_CHECKED : BST_UNCHECKED, 0);
+			SendMessage(GetDlgItem(hDlg, IDC_CHECK_BACK_TILE),			BM_SETCHECK, configuracion->fondoTile ? BST_CHECKED : BST_UNCHECKED, 0);
 			SendMessage(GetDlgItem(hDlg, IDC_CHECK_BACK_TRANSPARENT),	BM_SETCHECK, configuracion->fondoTransparente ? BST_CHECKED : BST_UNCHECKED, 0);
 			SetDlgItemHex(hDlg, IDC_EDIT_BACK_COLOR, configuracion->fondoColor);
 
@@ -102,6 +104,7 @@ BOOL SaveConfiguration1(HWND hDlg)
 	configuracion->fondoFitWidth	= SendMessage(GetDlgItem(hDlg, IDC_CHECK_BACK_FIT_WIDTH), BM_GETCHECK, 0, 0) == BST_CHECKED;
 	configuracion->fondoFitHeight	= SendMessage(GetDlgItem(hDlg, IDC_CHECK_BACK_FIT_HEIGHT), BM_GETCHECK, 0, 0) == BST_CHECKED;
 	configuracion->fondoCenter		= SendMessage(GetDlgItem(hDlg, IDC_CHECK_BACK_CENTER), BM_GETCHECK, 0, 0) == BST_CHECKED;
+	configuracion->fondoTile		= SendMessage(GetDlgItem(hDlg, IDC_CHECK_BACK_TILE), BM_GETCHECK, 0, 0) == BST_CHECKED;
 	configuracion->fondoTransparente= SendMessage(GetDlgItem(hDlg, IDC_CHECK_BACK_TRANSPARENT), BM_GETCHECK, 0, 0) == BST_CHECKED;
 	configuracion->fondoColor		= GetDlgItemHex(hDlg,   IDC_EDIT_BACK_COLOR, NULL);
 	configuracion->fondoFactor		= GetDlgItemFloat(hDlg, IDC_EDIT_BACK_FACTOR, NULL);
