@@ -117,8 +117,6 @@ typedef enum
 #define MENU_POPUP_EXIT			109
 #define MENU_POPUP_EDIT_HEADER	110
 
-#define REGISTRY_MAXLENGTH		32
-
 #define NOTIF_NORMAL		0
 #define NOTIF_MISSEDCALLS	1
 #define NOTIF_SMS			2
@@ -148,6 +146,7 @@ typedef enum
 #define NOTIF_PROFILE		24
 #define NOTIF_VMAIL			25
 #define NOTIF_IRDA			26
+#define NOTIF_CRADLE		27
 
 #define NOTIF_NORMAL_TXT		TEXT("Normal")
 #define NOTIF_MISSEDCALLS_TXT	TEXT("Missed Calls")
@@ -178,3 +177,4 @@ typedef enum
 #define NOTIF_PROFILE_TXT		TEXT("Phone Profile")
 #define NOTIF_VMAIL_TXT			TEXT("Unplayed Voice Mails")
 #define NOTIF_IRDA_TXT			TEXT("Irda State")
+#define NOTIF_CRADLE_TXT		TEXT("Cradle State")

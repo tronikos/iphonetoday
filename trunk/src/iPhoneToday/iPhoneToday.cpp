@@ -1637,6 +1637,11 @@ void pintaIcono(HDC *hDC, CIcono *icono, CPantalla *pantalla, SCREEN_TYPE screen
 					DrawState(*hDC, configuracion->bubbleState, icono, width, &configuracion->bubble_state);
 				}
 				break;
+			case NOTIF_CRADLE:
+				if (notifications->dwNotifications[SN_CRADLEPRESENT]) {
+					DrawState(*hDC, configuracion->bubbleState, icono, width, &configuracion->bubble_state);
+				}
+				break;
 			case NOTIF_IRDA:
 				if (notifications->dwNotifications[SN_IRDA] > 0) {
 					DrawState(*hDC, configuracion->bubbleState, icono, width, &configuracion->bubble_state);
@@ -2373,6 +2378,9 @@ int hayNotificacion(int tipo)
 		case NOTIF_BLUETOOTH:
 			numNotif = notifications->dwNotifications[SN_BLUETOOTHSTATEPOWERON] & SN_BLUETOOTHSTATEPOWERON_BITMASK;
 			break;
+		case NOTIF_CRADLE:
+			numNotif = notifications->dwNotifications[SN_CRADLEPRESENT];
+			break;
 		case NOTIF_IRDA:
 			numNotif = notifications->dwNotifications[SN_IRDA] > 0;
 			break;
@@ -2490,6 +2498,7 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 		SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_PROFILE_TXT);
 		SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_VMAIL_TXT);
 		SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_IRDA_TXT);
+		SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_CRADLE_TXT);
 
 		// Configuramos los checks
 		SendMessage(GetDlgItem(hDlg, IDC_MICON_LAUNCHANIMATION), BM_SETCHECK, BST_CHECKED, 0);
@@ -2573,6 +2582,8 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 27, 0);
 			} else if (icono->tipo == NOTIF_IRDA) {
 				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 28, 0);
+			} else if (icono->tipo == NOTIF_CRADLE) {
+				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 29, 0);
 			} else {
 				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 0, 0);
 			}
@@ -2745,6 +2756,8 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 				nType = NOTIF_VMAIL;
 			} else if (lstrcmpi(strType, NOTIF_IRDA_TXT) == 0) {
 				nType = NOTIF_IRDA;
+			} else if (lstrcmpi(strType, NOTIF_CRADLE_TXT) == 0) {
+				nType = NOTIF_CRADLE;
 			} else {
 				MessageBox(hDlg, TEXT("Type not valid!"), TEXT("Error"), MB_OK);
 				return FALSE;
@@ -3610,6 +3623,12 @@ void InvalidateScreenIfNotificationsChanged(CPantalla *pantalla)
 				break;
 			case NOTIF_BLUETOOTH:
 				if (notifications->dwNotificationsChanged[SN_BLUETOOTHSTATEPOWERON]) {
+					pantalla->debeActualizar = TRUE;
+					return;
+				}
+				break;
+			case NOTIF_CRADLE:
+				if (notifications->dwNotificationsChanged[SN_CRADLEPRESENT]) {
 					pantalla->debeActualizar = TRUE;
 					return;
 				}
