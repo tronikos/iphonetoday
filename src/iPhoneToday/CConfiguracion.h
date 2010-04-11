@@ -149,6 +149,7 @@ public:
 	BOOL minimizeOnLaunchIcon;
 	UINT vibrateOnLaunchIcon;
 	UINT allowAnimationOnLaunchIcon;
+	BOOL launchOnStartOfAnimation;
 	COLORREF colorOfAnimationOnLaunchIcon;
 	UINT allowSoundOnLaunchIcon;
 	TCHAR soundOnLaunchIcon[MAX_PATH];
