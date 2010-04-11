@@ -19,6 +19,7 @@ enum dw_notifications_enum {
 	SN_TASKSACTIVE,						// HKCU\System\State\Tasks\Active
 	SN_WIFISTATEPOWERON,				// HKLM\System\State\Hardware\WiFi
 	SN_BLUETOOTHSTATEPOWERON,			// HKLM\System\State\Hardware\Bluetooth
+	SN_CRADLEPRESENT,					// HKLM\System\State\Hardware\Cradled
 	SN_CELLSYSTEMCONNECTED,				// HKLM\System\State\Phone\Cellular System Connected
 	SN_PHONESIGNALSTRENGTH,				// HKLM\System\State\Phone\Signal Strength Raw
 	SN_POWERBATTERYSTATE,				// HKLM\System\State\Battery\Main
