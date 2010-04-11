@@ -618,6 +618,7 @@ void CConfiguracion::defaultValues()
 	this->minimizeOnLaunchIcon = 0;
 	this->vibrateOnLaunchIcon = 0;
 	this->allowAnimationOnLaunchIcon = 1;
+	this->launchOnStartOfAnimation = 0;
 	this->colorOfAnimationOnLaunchIcon = RGB(255,255,255);
 	this->allowSoundOnLaunchIcon = 1;
 	this->soundOnLaunchIcon[0] = 0;
@@ -912,6 +913,7 @@ BOOL CConfiguracion::loadXMLConfig()
 			XMLUtils::GetAttr(pElem, "minimize", &this->minimizeOnLaunchIcon);
 			XMLUtils::GetAttr(pElem, "vibrate",  &this->vibrateOnLaunchIcon);
 			XMLUtils::GetAttr(pElem, "animate",  &this->allowAnimationOnLaunchIcon);
+			XMLUtils::GetAttr(pElem, "LaunchOnStartOfAnimation", &this->launchOnStartOfAnimation);
 			XMLUtils::GetAttr(pElem, "color",    &this->colorOfAnimationOnLaunchIcon);
 			XMLUtils::GetAttr(pElem, "sound",    &this->allowSoundOnLaunchIcon);
 			XMLUtils::GetAttr(pElem, "wav",      this->soundOnLaunchIcon, CountOf(this->soundOnLaunchIcon));
@@ -1194,6 +1196,7 @@ BOOL CConfiguracion::saveXMLConfig()
 	XMLUtils::SetAttr(pElem, "minimize", this->minimizeOnLaunchIcon);
 	XMLUtils::SetAttr(pElem, "vibrate",  this->vibrateOnLaunchIcon);
 	XMLUtils::SetAttr(pElem, "animate",  this->allowAnimationOnLaunchIcon);
+	XMLUtils::SetAttr(pElem, "LaunchOnStartOfAnimation", this->launchOnStartOfAnimation);
 	XMLUtils::SetAttr(pElem, "color",    this->colorOfAnimationOnLaunchIcon);
 	XMLUtils::SetAttr(pElem, "sound",    this->allowSoundOnLaunchIcon);
 	XMLUtils::SetAttr(pElem, "wav",      this->soundOnLaunchIcon, CountOf(this->soundOnLaunchIcon));

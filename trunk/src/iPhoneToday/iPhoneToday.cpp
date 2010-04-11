@@ -21,6 +21,7 @@ HWND                g_hWnd;
 TCHAR               g_szTitle[MAX_LOADSTRING];
 IImagingFactory*    g_pImgFactory = NULL;
 HINSTANCE           g_hImgdecmpDll = NULL;
+BOOL                g_bFirstPaint = TRUE;
 #ifdef EXEC_MODE
 BOOL				g_bLoading = FALSE;
 BOOL				g_bInitializing = FALSE;
@@ -444,7 +445,7 @@ LRESULT doTimer (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 
 				estado->timeUltimoLanzamiento = GetTickCount();
 
-				if (estado->iconoActivo) {
+				if (estado->iconoActivo && !configuracion->launchOnStartOfAnimation) {
 					BOOL bWorked = FALSE;
 					if (hayNotificacion(estado->iconoActivo->tipo) > 0 && _tcsclen(estado->iconoActivo->ejecutableAlt) > 0) {
 						bWorked = LaunchApplication(estado->iconoActivo->ejecutableAlt, estado->iconoActivo->parametrosAlt);
@@ -476,20 +477,24 @@ LRESULT doTimer (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 			porcent = (((float) time) / timeLanzamiento);
 		}
 
-		despX = (long) (((float) despX) * porcent + 1);
-		despY = (long) (((float) despY) * porcent + 1);
+		despX = (long) (((float) despX) * porcent);
+		despY = (long) (((float) despY) * porcent);
 
-		if (estado->estadoCuadro == 3) {
-			estado->cuadroLanzando.left = despX;
-			estado->cuadroLanzando.right = configuracion->anchoPantalla - despX;
-			estado->cuadroLanzando.top = despY;
-			estado->cuadroLanzando.bottom = configuracion->altoPantalla - despY;
-		} else {
-			estado->estadoCuadro = 1;
+		if ((estado->estadoCuadro == 3 && configuracion->allowAnimationOnLaunchIcon == 2) ||
+			(estado->estadoCuadro != 3 && configuracion->allowAnimationOnLaunchIcon != 2))
+		{
 			estado->cuadroLanzando.left = configuracion->anchoPantalla / 2 - despX;
 			estado->cuadroLanzando.right = configuracion->anchoPantalla / 2 + despX;
 			estado->cuadroLanzando.top = configuracion->altoPantalla / 2 - despY;
 			estado->cuadroLanzando.bottom = configuracion->altoPantalla / 2 + despY;
+		} else {
+			estado->cuadroLanzando.left = despX;
+			estado->cuadroLanzando.right = configuracion->anchoPantalla - despX;
+			estado->cuadroLanzando.top = despY;
+			estado->cuadroLanzando.bottom = configuracion->altoPantalla - despY;
+		}
+		if (estado->estadoCuadro != 3) {
+			estado->estadoCuadro = 1;
 		}
 
 		if (timeInicial > timeLanzamiento) {
@@ -693,13 +698,24 @@ LRESULT doPaint (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 			hbmMem3 = CreateCompatibleBitmap(hDC, rcWindBounds.right - rcWindBounds.left, rcWindBounds.bottom - rcWindBounds.top);
 			hbmMemOld3 = (HBITMAP)SelectObject(hDCMem3, hbmMem3);
 		}
+		HDC *hDCMemSrc;
 		if (hDCMem2) {
-			BitBlt(hDCMem3, rcWindBounds.left, rcWindBounds.top, rcWindBounds.right - rcWindBounds.left, rcWindBounds.bottom - rcWindBounds.top, hDCMem2, rcWindBounds.left, rcWindBounds.top, SRCCOPY);
-		} else if (hDCMem) {
-			BitBlt(hDCMem3, rcWindBounds.left, rcWindBounds.top, rcWindBounds.right - rcWindBounds.left, rcWindBounds.bottom - rcWindBounds.top, hDCMem, rcWindBounds.left, rcWindBounds.top, SRCCOPY);
+			hDCMemSrc = &hDCMem2;
+		} else {
+			hDCMemSrc = &hDCMem;
+		}
+		if (configuracion->allowAnimationOnLaunchIcon == 2) {
+			FillRect(hDCMem3, &rcWindBounds, hBrushAnimation);
+		} else {
+			BitBlt(hDCMem3, rcWindBounds.left, rcWindBounds.top, rcWindBounds.right - rcWindBounds.left, rcWindBounds.bottom - rcWindBounds.top, *hDCMemSrc, rcWindBounds.left, rcWindBounds.top, SRCCOPY);
 		}
 		if (estado->estadoCuadro == 1 || estado->estadoCuadro == 3) {
-			FillRect(hDCMem3, &estado->cuadroLanzando, hBrushAnimation);
+			if (configuracion->allowAnimationOnLaunchIcon == 2) {
+				StretchBlt(hDCMem3, estado->cuadroLanzando.left, estado->cuadroLanzando.top, estado->cuadroLanzando.right - estado->cuadroLanzando.left, estado->cuadroLanzando.bottom - estado->cuadroLanzando.top,
+					*hDCMemSrc, rcWindBounds.left, rcWindBounds.top, rcWindBounds.right - rcWindBounds.left, rcWindBounds.bottom - rcWindBounds.top, SRCCOPY);
+			} else {
+				FillRect(hDCMem3, &estado->cuadroLanzando, hBrushAnimation);
+			}
 		} else if (estado->estadoCuadro == 2) {
 			FillRect(hDCMem3, &estado->cuadroLanzando, hBrushAnimation);
 			if (GetTickCount() - estado->timeUltimoLanzamiento >= 2000) {
@@ -822,6 +838,16 @@ LRESULT doPaint (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 	// Pintamos los iconos
 	pintaIconos(&hDCMem, &rcWindBounds);
 
+	if (g_bFirstPaint) {
+		g_bFirstPaint = FALSE;
+		estado->estadoCuadro = 3;
+		estado->timeUltimoLanzamiento = GetTickCount();
+		SetTimer(hwnd, TIMER_LANZANDO_APP, configuracion->refreshTime, NULL);
+
+		EndPaint(hwnd, &ps);
+		return 0;
+	}
+
 	if (configuracion->alphaBlend == 2 && hDCMem2 != NULL) {
 		// to avoid screen tearing first copy the DIB section of hDCMem to the device compatible bitmap of hDCMem2 and then copy it to the window's device context hDC
 		BitBlt(hDCMem2, rcWindBounds.left, rcWindBounds.top, rcWindBounds.right - rcWindBounds.left, rcWindBounds.bottom - rcWindBounds.top, hDCMem, rcWindBounds.left, rcWindBounds.top, SRCCOPY);
@@ -831,7 +857,6 @@ LRESULT doPaint (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 	}
 
 	EndPaint(hwnd, &ps);
-
 	return 0;
 }
 
@@ -1220,6 +1245,9 @@ LRESULT doActivate (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 		resizeWindow(hwnd, true);
 		if (estado->estadoCuadro == 2) {
 			estado->timeUltimoLanzamiento = 0;
+		}
+		if (estado->estadoCuadro == 1) {
+			estado->estadoCuadro = 3;
 		}
 		PostMessage(hwnd, WM_TIMER, TIMER_ACTUALIZA_NOTIF, 0);
 		if (!configuracion->updateWhenInactive && configuracion->notifyTimer > 0) {
@@ -2156,14 +2184,14 @@ BOOL LaunchApplication(LPCTSTR pCmdLine, LPCTSTR pParametros)
 
 	memset(&sei, 0, sizeof(sei));
 	sei.cbSize = sizeof(sei);
+	sei.nShow = SW_SHOWNORMAL;
+	sei.hwnd = g_hWnd;
 
 	if (FileExists(fullPath)) {
 		sei.lpFile = fullPath;
 	} else {
 		sei.lpFile = pCmdLine;
 	}
-	sei.nShow = SW_SHOWNORMAL;
-	sei.nShow = SW_SHOWNORMAL;
 	sei.lpParameters = pParametros;
 
 	bWorked = ShellExecuteEx(&sei);
@@ -2276,17 +2304,29 @@ void procesaPulsacion(HWND hwnd, POINTS posCursor, BOOL doubleClick, BOOL noLanz
 			}
 		}
 
-		// Activamos el timer
-		if (configuracion->allowAnimationOnLaunchIcon && icono->launchAnimation > 0) {
+		BOOL hasAnimation = configuracion->allowAnimationOnLaunchIcon && icono->launchAnimation > 0;
+		if (hasAnimation) {
 			SetTimer(hwnd, TIMER_LANZANDO_APP, configuracion->refreshTime, NULL);
 			estado->timeUltimoLanzamiento = GetTickCount();
-
 			estado->iconoActivo = icono;
-		} else {
+		}
+		if (!hasAnimation || configuracion->launchOnStartOfAnimation) {
+			BOOL bWorked = FALSE;
 			if (hayNotificacion(icono->tipo) > 0 && _tcsclen(icono->ejecutableAlt) > 0) {
-				LaunchApplication(icono->ejecutableAlt, icono->parametrosAlt);
+				bWorked = LaunchApplication(icono->ejecutableAlt, icono->parametrosAlt);
 			} else if (_tcsclen(icono->ejecutable) > 0) {
-				LaunchApplication(icono->ejecutable, icono->parametros);
+				bWorked = LaunchApplication(icono->ejecutable, icono->parametros);
+			}
+			if (!bWorked) {
+				if (estado->estadoCuadro == 2) {
+					estado->timeUltimoLanzamiento = 0;
+				}
+				if (estado->estadoCuadro == 1) {
+					estado->estadoCuadro = 3;
+				}
+				if (estado->estadoCuadro == 0) {
+					KillTimer(hwnd, TIMER_LANZANDO_APP);
+				}
 			}
 		}
 	}
@@ -3019,10 +3059,6 @@ BOOL inicializaApp(HWND hwnd)
 	posImage = estado->posObjetivo;
 
 	estado->estadoCuadro = 0;
-	estado->cuadroLanzando.left = configuracion->anchoPantalla / 2;
-	estado->cuadroLanzando.right = estado->cuadroLanzando.left;
-	estado->cuadroLanzando.top = configuracion->altoPantalla / 2;
-	estado->cuadroLanzando.bottom = estado->cuadroLanzando.top;
 
 	// Cargamos la configuracion de iconos
 	listaPantallas = new CListaPantalla();
@@ -3067,6 +3103,8 @@ BOOL inicializaApp(HWND hwnd)
 		SetTimer(hwnd, TIMER_ACTUALIZA_NOTIF, configuracion->notifyTimer, NULL);
 	}
 #endif
+
+	g_bFirstPaint = TRUE;
 
 	return TRUE;
 }
