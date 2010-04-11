@@ -300,6 +300,30 @@ LRESULT CALLBACK ScreenBackSettingsProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPA
 		switch(LOWORD(wParam))
 		{
 		case IDOK:
+			if (cur_cs == &ms) {
+				BOOL backGradient = SendMessage(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_GRADIENT), BM_GETCHECK, 0, 0) == BST_CHECKED;
+				TCHAR backWallpaper[MAX_PATH];
+				GetDlgItemText(hDlg, IDC_EDIT_CS_BACK_WALLPAPER, backWallpaper, CountOf(backWallpaper));
+				TCHAR wallpaper[MAX_PATH];
+				StringCchCopy(wallpaper, CountOf(wallpaper), configuracion->strFondoPantalla);
+				if (g_hDlg[1]) {
+					GetDlgItemText(g_hDlg[1], IDC_EDIT_BACK_WALLPAPER, wallpaper, CountOf(wallpaper));
+				}
+#ifdef EXEC_MODE
+				BOOL isTransparent = FALSE;
+#else
+				BOOL isTransparent = configuracion->fondoTransparente;
+				if (g_hDlg[1]) {
+					configuracion->fondoTransparente = SendMessage(GetDlgItem(g_hDlg[1], IDC_CHECK_BACK_TRANSPARENT), BM_GETCHECK, 0, 0) == BST_CHECKED;
+				}
+#endif
+				if ((backGradient || wcslen(backWallpaper) > 0) && (isTransparent || wcslen(wallpaper) > 0)) {
+					int resp = MessageBox(hDlg, L"Enabling a gradient or image background for the mainscreen pages, disables any wallpaper set in the \"Wallpaper\" tab. Continue?", L"Continue", MB_YESNO);
+					if (resp == IDNO) {
+						break;
+					}
+				}
+			}
 			cur_cs->backGradient = SendMessage(GetDlgItem(hDlg, IDC_CHECK_CS_BACK_GRADIENT), BM_GETCHECK, 0, 0) == BST_CHECKED;
 			cur_cs->backColor1 = GetDlgItemHex(hDlg, IDC_EDIT_CS_BACK_COLOR1, NULL);
 			cur_cs->backColor2 = GetDlgItemHex(hDlg, IDC_EDIT_CS_BACK_COLOR2, NULL);
