@@ -9,7 +9,7 @@
 
 
 // Handles to the dialog pages
-HWND		g_hDlg[NUM_CONFIG_SCREENS];
+HWND		g_hDlg[NUM_TABS];
 
 HWND g_hwndKB = NULL;
 BOOL doNotAskToSaveOptions = FALSE;
@@ -71,35 +71,35 @@ BOOL IsValidConfiguration(HWND hDlg, INT iDlg)
 {
 	BOOL isValid = TRUE;
 	switch (iDlg) {
-		case 0:
-			isValid = IsValidConfiguration0(hDlg);
+		case TAB_SCREEN:
+			isValid = IsValidConfigurationScreen(hDlg);
 			break;
-		case 1:
-			isValid = IsValidConfiguration1(hDlg);
+		case TAB_WALLPAPER:
+			isValid = IsValidConfigurationWallpaper(hDlg);
 			break;
-		case 2:
-			isValid = IsValidConfiguration2(hDlg);
+		case TAB_MOVEMENT:
+			isValid = IsValidConfigurationMovement(hDlg);
 			break;
-		case 3:
-			isValid = IsValidConfiguration3(hDlg);
+		case TAB_HEADER:
+			isValid = IsValidConfigurationHeader(hDlg);
 			break;
-		case 4:
-			isValid = IsValidConfiguration4(hDlg);
+		case TAB_BUBBLES:
+			isValid = IsValidConfigurationBubbles(hDlg);
 			break;
-		case 5:
-			isValid = IsValidConfiguration5(hDlg);
+		case TAB_SPECIALICONS:
+			isValid = IsValidConfigurationSpecialIcons(hDlg);
 			break;
-		case 6:
-			isValid = IsValidConfiguration6(hDlg);
+		case TAB_GENERAL:
+			isValid = IsValidConfigurationGeneral(hDlg);
 			break;
-		case 7:
-			isValid = IsValidConfiguration7(hDlg);
+		case TAB_ONLAUNCH:
+			isValid = IsValidConfigurationOnLaunch(hDlg);
 			break;
-		case 8:
-			isValid = IsValidConfiguration8(hDlg);
+		case TAB_TRANSPARENCY:
+			isValid = IsValidConfigurationTransparency(hDlg);
 			break;
-		case 9:
-			isValid = IsValidConfiguration9(hDlg);
+		case TAB_OUTOFSCREEN:
+			isValid = IsValidConfigurationOutOfScreen(hDlg);
 			break;
 	}
 	return isValid;
@@ -236,7 +236,7 @@ INT PropSheetCallback(HWND hwndDlg, UINT message, LPARAM lParam)
 BOOL CreatePropertySheet(HWND hwnd)
 {
 	// Initialize handles to the dialog pages
-	for (int i = 0; i < NUM_CONFIG_SCREENS; i++)
+	for (int i = 0; i < NUM_TABS; i++)
 		g_hDlg[i] = NULL;
 
 	doNotAskToSaveOptions = FALSE;
@@ -246,34 +246,66 @@ BOOL CreatePropertySheet(HWND hwnd)
 
 
 
-    PROPSHEETPAGE	psp[NUM_CONFIG_SCREENS];
+    PROPSHEETPAGE	psp[NUM_TABS];
     PROPSHEETHEADER	psh;
 
     // Fill in default values in property page structures
-    for (int i = 0; i < NUM_CONFIG_SCREENS; i++)
-	{
+    for (int i = 0; i < NUM_TABS; i++) {
 		psp[i].dwSize = sizeof(psp[i]);
 		psp[i].dwFlags = PSP_DEFAULT | PSP_USETITLE| PSP_USECALLBACK;
 		psp[i].hInstance = g_hInst;
-		psp[i].pszTemplate = MAKEINTRESOURCE(IDD_DIALOGPAGE0 + i);  // Make sure the Resource Value is in sequence for all the dialog boxes
-		psp[i].pszTitle = (LPCTSTR)LoadString(g_hInst, (IDS_TAB0 + i), NULL, 0);  // Make sure the value of the tab titles in string table is in sequence too
+		//psp[i].pszTemplate = MAKEINTRESOURCE(IDD_DIALOGPAGE0 + i);  // Make sure the Resource Value is in sequence for all the dialog boxes
+		//psp[i].pszTitle = (LPCTSTR)LoadString(g_hInst, (IDS_TAB0 + i), NULL, 0);  // Make sure the value of the tab titles in string table is in sequence too
 		psp[i].lParam = (LPARAM)i;
 		psp[i].pfnCallback = PropSheetPageProc;
 	}
 
 
     // Set the dialog box procedures for each page
-	psp[0].pfnDlgProc = (DLGPROC)&OptionDialog0;
-	psp[1].pfnDlgProc = (DLGPROC)&OptionDialog1;
-	psp[2].pfnDlgProc = (DLGPROC)&OptionDialog2;
-	psp[3].pfnDlgProc = (DLGPROC)&OptionDialog3;
-	psp[4].pfnDlgProc = (DLGPROC)&OptionDialog4;
-	psp[5].pfnDlgProc = (DLGPROC)&OptionDialog5;
-	psp[6].pfnDlgProc = (DLGPROC)&OptionDialog6;
-	psp[7].pfnDlgProc = (DLGPROC)&OptionDialog7;
-	psp[8].pfnDlgProc = (DLGPROC)&OptionDialog8;
-	psp[9].pfnDlgProc = (DLGPROC)&OptionDialog9;
-	psp[10].pfnDlgProc = (DLGPROC)&OptionDialog10;
+
+	psp[TAB_SCREEN].pszTemplate = MAKEINTRESOURCE(IDD_DIALOGPAGE_SCREEN);
+	psp[TAB_SCREEN].pszTitle = (LPCTSTR) LoadString(g_hInst, IDS_TAB_SCREEN, NULL, 0);
+	psp[TAB_SCREEN].pfnDlgProc = (DLGPROC) &OptionDialogScreen;
+
+	psp[TAB_WALLPAPER].pszTemplate = MAKEINTRESOURCE(IDD_DIALOGPAGE_WALLPAPER);
+	psp[TAB_WALLPAPER].pszTitle = (LPCTSTR) LoadString(g_hInst, IDS_TAB_WALLPAPER, NULL, 0);
+	psp[TAB_WALLPAPER].pfnDlgProc = (DLGPROC) &OptionDialogWallpaper;
+
+	psp[TAB_MOVEMENT].pszTemplate = MAKEINTRESOURCE(IDD_DIALOGPAGE_MOVEMENT);
+	psp[TAB_MOVEMENT].pszTitle = (LPCTSTR) LoadString(g_hInst, IDS_TAB_MOVEMENT, NULL, 0);
+	psp[TAB_MOVEMENT].pfnDlgProc = (DLGPROC) &OptionDialogMovement;
+
+	psp[TAB_HEADER].pszTemplate = MAKEINTRESOURCE(IDD_DIALOGPAGE_HEADER);
+	psp[TAB_HEADER].pszTitle = (LPCTSTR) LoadString(g_hInst, IDS_TAB_HEADER, NULL, 0);
+	psp[TAB_HEADER].pfnDlgProc = (DLGPROC) &OptionDialogHeader;
+
+	psp[TAB_BUBBLES].pszTemplate = MAKEINTRESOURCE(IDD_DIALOGPAGE_BUBBLES);
+	psp[TAB_BUBBLES].pszTitle = (LPCTSTR) LoadString(g_hInst, IDS_TAB_BUBBLES, NULL, 0);
+	psp[TAB_BUBBLES].pfnDlgProc = (DLGPROC) &OptionDialogBubbles;
+
+	psp[TAB_SPECIALICONS].pszTemplate = MAKEINTRESOURCE(IDD_DIALOGPAGE_SPECIALICONS);
+	psp[TAB_SPECIALICONS].pszTitle = (LPCTSTR) LoadString(g_hInst, IDS_TAB_SPECIALICONS, NULL, 0);
+	psp[TAB_SPECIALICONS].pfnDlgProc = (DLGPROC) &OptionDialogSpecialIcons;
+
+	psp[TAB_GENERAL].pszTemplate = MAKEINTRESOURCE(IDD_DIALOGPAGE_GENERAL);
+	psp[TAB_GENERAL].pszTitle = (LPCTSTR) LoadString(g_hInst, IDS_TAB_GENERAL, NULL, 0);
+	psp[TAB_GENERAL].pfnDlgProc = (DLGPROC) &OptionDialogGeneral;
+
+	psp[TAB_ONLAUNCH].pszTemplate = MAKEINTRESOURCE(IDD_DIALOGPAGE_ONLAUNCH);
+	psp[TAB_ONLAUNCH].pszTitle = (LPCTSTR) LoadString(g_hInst, IDS_TAB_ONLAUNCH, NULL, 0);
+	psp[TAB_ONLAUNCH].pfnDlgProc = (DLGPROC) &OptionDialogOnLaunch;
+
+	psp[TAB_TRANSPARENCY].pszTemplate = MAKEINTRESOURCE(IDD_DIALOGPAGE_TRANSPARENCY);
+	psp[TAB_TRANSPARENCY].pszTitle = (LPCTSTR) LoadString(g_hInst, IDS_TAB_TRANSPARENCY, NULL, 0);
+	psp[TAB_TRANSPARENCY].pfnDlgProc = (DLGPROC) &OptionDialogTransparency;
+
+	psp[TAB_OUTOFSCREEN].pszTemplate = MAKEINTRESOURCE(IDD_DIALOGPAGE_OUTOFSCREEN);
+	psp[TAB_OUTOFSCREEN].pszTitle = (LPCTSTR) LoadString(g_hInst, IDS_TAB_OUTOFSCREEN, NULL, 0);
+	psp[TAB_OUTOFSCREEN].pfnDlgProc = (DLGPROC) &OptionDialogOutOfScreen;
+
+	psp[TAB_ABOUT].pszTemplate = MAKEINTRESOURCE(IDD_DIALOGPAGE_ABOUT);
+	psp[TAB_ABOUT].pszTitle = (LPCTSTR) LoadString(g_hInst, IDS_TAB_ABOUT, NULL, 0);
+	psp[TAB_ABOUT].pfnDlgProc = (DLGPROC) &OptionDialogAbout;
 
 
     //
@@ -288,7 +320,7 @@ BOOL CreatePropertySheet(HWND hwnd)
     psh.hwndParent = hwnd;
     psh.hInstance = g_hInst;
     psh.pszCaption = L"Options";
-    psh.nPages = NUM_CONFIG_SCREENS;
+    psh.nPages = NUM_TABS;
     psh.nStartPage = 0;
     psh.ppsp = &psp[0];
     psh.pfnCallback = PropSheetCallback;
@@ -305,30 +337,48 @@ BOOL SaveConfiguration()
 {
 	BOOL result = TRUE;
 
-	if (g_hDlg[0])
-		result &= SaveConfiguration0(g_hDlg[0]);
-	if (g_hDlg[1])
-		result &= SaveConfiguration1(g_hDlg[1]);
-	if (g_hDlg[2])
-		result &= SaveConfiguration2(g_hDlg[2]);
-	if (g_hDlg[3])
-		result &= SaveConfiguration3(g_hDlg[3]);
-	if (g_hDlg[4])
-		result &= SaveConfiguration4(g_hDlg[4]);
-	if (g_hDlg[5])
-		result &= SaveConfiguration5(g_hDlg[5]);
-	if (g_hDlg[6])
-		result &= SaveConfiguration6(g_hDlg[6]);
-	if (g_hDlg[7])
-		result &= SaveConfiguration7(g_hDlg[7]);
-	if (g_hDlg[8])
-		result &= SaveConfiguration8(g_hDlg[8]);
-	if (g_hDlg[9])
-		result &= SaveConfiguration9(g_hDlg[9]);
+	for (int i = 0; i < NUM_TABS; i++) {
+		HWND hDlg = g_hDlg[i];
+		if (hDlg) {
+			switch(i) {
+				case TAB_SCREEN:
+					result &= SaveConfigurationScreen(hDlg);
+					break;
+				case TAB_WALLPAPER:
+					result &= SaveConfigurationWallpaper(hDlg);
+					break;
+				case TAB_MOVEMENT:
+					result &= SaveConfigurationMovement(hDlg);
+					break;
+				case TAB_HEADER:
+					result &= SaveConfigurationHeader(hDlg);
+					break;
+				case TAB_BUBBLES:
+					result &= SaveConfigurationBubbles(hDlg);
+					break;
+				case TAB_SPECIALICONS:
+					result &= SaveConfigurationSpecialIcons(hDlg);
+					break;
+				case TAB_GENERAL:
+					result &= SaveConfigurationGeneral(hDlg);
+					break;
+				case TAB_ONLAUNCH:
+					result &= SaveConfigurationOnLaunch(hDlg);
+					break;
+				case TAB_TRANSPARENCY:
+					result &= SaveConfigurationTransparency(hDlg);
+					break;
+				case TAB_OUTOFSCREEN:
+					result &= SaveConfigurationOutOfScreen(hDlg);
+					break;
+			}
+		}
+	}
 
 	if (result) {
 		configuracion->saveXMLConfig();
 	}
+
 	return result;
 }
 

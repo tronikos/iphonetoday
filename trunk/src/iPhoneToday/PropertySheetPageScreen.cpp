@@ -70,13 +70,13 @@ void cs_save(HWND hDlg, ConfigurationScreen *cs)
 /*************************************************************************/
 /* General options dialog box procedure function                 */
 /*************************************************************************/
-LRESULT CALLBACK OptionDialog0(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK OptionDialogScreen(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg)
 	{
 	case WM_INITDIALOG:
 		{
-			InitOptionsDialog(hDlg, 0);
+			InitOptionsDialog(hDlg, TAB_SCREEN);
 
 			isStaticBar = FALSE;
 			cur_cs = NULL;
@@ -158,7 +158,7 @@ LRESULT CALLBACK OptionDialog0(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 		break;
 	}
 
-	return DefOptionWindowProc(hDlg, 0, uMsg, wParam, lParam);
+	return DefOptionWindowProc(hDlg, TAB_SCREEN, uMsg, wParam, lParam);
 }
 
 BOOL cs_check(HWND hDlg, ConfigurationScreen *cs)
@@ -210,7 +210,7 @@ BOOL cs_check(HWND hDlg, ConfigurationScreen *cs)
 	return TRUE;
 }
 
-BOOL IsValidConfiguration0(HWND hDlg)
+BOOL IsValidConfigurationScreen(HWND hDlg)
 {
 	cs_save(hDlg, cur_cs);
 
@@ -221,11 +221,11 @@ BOOL IsValidConfiguration0(HWND hDlg)
 	return TRUE;
 }
 
-BOOL SaveConfiguration0(HWND hDlg)
+BOOL SaveConfigurationScreen(HWND hDlg)
 {
 	cs_save(hDlg, cur_cs);
 
-	if (!IsValidConfiguration0(hDlg)) return FALSE;
+	if (!IsValidConfigurationScreen(hDlg)) return FALSE;
 
 	memcpy(&configuracion->mainScreenConfig->cs, &ms, sizeof(CConfigurationScreen));
 	memcpy(&configuracion->bottomBarConfig->cs,  &bb, sizeof(CConfigurationScreen));

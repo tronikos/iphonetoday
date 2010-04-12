@@ -9,13 +9,13 @@
 /*************************************************************************/
 /* General options dialog box procedure function                 */
 /*************************************************************************/
-LRESULT CALLBACK OptionDialog7(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK OptionDialogOnLaunch(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg)
 	{
 	case WM_INITDIALOG:
 		{
-			InitOptionsDialog(hDlg, 7);
+			InitOptionsDialog(hDlg, TAB_ONLAUNCH);
 
 			SendMessage(GetDlgItem(hDlg, IDC_CHECK_ONLAUNCH_CLOSE),		BM_SETCHECK, configuracion->closeOnLaunchIcon			? BST_CHECKED : BST_UNCHECKED, 0);
 			SendMessage(GetDlgItem(hDlg, IDC_CHECK_ONLAUNCH_ANIMATE),	BM_SETCHECK, configuracion->allowAnimationOnLaunchIcon	? BST_CHECKED : BST_UNCHECKED, 0);
@@ -87,10 +87,10 @@ LRESULT CALLBACK OptionDialog7(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 		break;
 	}
 
-	return DefOptionWindowProc(hDlg, 7, uMsg, wParam, lParam);
+	return DefOptionWindowProc(hDlg, TAB_ONLAUNCH, uMsg, wParam, lParam);
 }
 
-BOOL IsValidConfiguration7(HWND hDlg)
+BOOL IsValidConfigurationOnLaunch(HWND hDlg)
 {
 	int vibrateOnLaunchIcon;
 
@@ -104,9 +104,9 @@ BOOL IsValidConfiguration7(HWND hDlg)
 	return TRUE;
 }
 
-BOOL SaveConfiguration7(HWND hDlg)
+BOOL SaveConfigurationOnLaunch(HWND hDlg)
 {
-	if (!IsValidConfiguration7(hDlg)) return FALSE;
+	if (!IsValidConfigurationOnLaunch(hDlg)) return FALSE;
 
 	int vibrateOnLaunchIcon;
 

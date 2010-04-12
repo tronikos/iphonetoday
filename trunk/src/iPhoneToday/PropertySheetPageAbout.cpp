@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-// PropertySheetPage10.cpp : Defines the property sheet page procedures.
+// PropertySheetPageAbout.cpp : Defines the property sheet page procedures.
 //
 
 #include "stdafx.h"
@@ -10,13 +10,13 @@
 /*************************************************************************/
 /* General options dialog box procedure function                 */
 /*************************************************************************/
-LRESULT CALLBACK OptionDialog10(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK OptionDialogAbout(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg)
 	{
 	case WM_INITDIALOG:
 		{
-			InitOptionsDialog(hDlg, 10);
+			InitOptionsDialog(hDlg, TAB_ABOUT);
 
 			SendMessage(GetDlgItem(hDlg, IDC_STATICAPPVER), WM_SETTEXT, 0, (LPARAM)LSTRPRODUCTVER);
 		}
@@ -49,5 +49,5 @@ LRESULT CALLBACK OptionDialog10(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 		break;
 	}
 
-	return DefOptionWindowProc(hDlg, 10, uMsg, wParam, lParam);
+	return DefOptionWindowProc(hDlg, TAB_ABOUT, uMsg, wParam, lParam);
 }

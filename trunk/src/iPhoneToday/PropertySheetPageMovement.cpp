@@ -9,13 +9,13 @@
 /*************************************************************************/
 /* General options dialog box procedure function                 */
 /*************************************************************************/
-LRESULT CALLBACK OptionDialog2(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK OptionDialogMovement(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg)
 	{
 	case WM_INITDIALOG:
 		{
-			InitOptionsDialog(hDlg, 2);
+			InitOptionsDialog(hDlg, TAB_MOVEMENT);
 
 			SetDlgItemInt(hDlg, IDC_EDIT_MOVE_THRESHOLD,	configuracion->moveThreshold,		TRUE);
 			SetDlgItemInt(hDlg, IDC_EDIT_MOVE_FACTOR,		configuracion->factorMovimiento,	TRUE);
@@ -39,10 +39,10 @@ LRESULT CALLBACK OptionDialog2(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 		break;
 	}
 
-	return DefOptionWindowProc(hDlg, 2, uMsg, wParam, lParam);
+	return DefOptionWindowProc(hDlg, TAB_MOVEMENT, uMsg, wParam, lParam);
 }
 
-BOOL IsValidConfiguration2(HWND hDlg)
+BOOL IsValidConfigurationMovement(HWND hDlg)
 {
 	int moveThreshold, moveFactor, minVelocity, maxVelocity, refreshTime, animationTime;
 
@@ -81,9 +81,9 @@ BOOL IsValidConfiguration2(HWND hDlg)
 	return TRUE;
 }
 
-BOOL SaveConfiguration2(HWND hDlg)
+BOOL SaveConfigurationMovement(HWND hDlg)
 {
-	if (!IsValidConfiguration2(hDlg)) return FALSE;
+	if (!IsValidConfigurationMovement(hDlg)) return FALSE;
 
 	int moveThreshold, moveFactor, minVelocity, maxVelocity, refreshTime, animationTime;
 

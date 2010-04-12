@@ -4,12 +4,25 @@
 
 #pragma once
 
+#define NUM_TABS			11
+
+#define TAB_SCREEN			0
+#define TAB_WALLPAPER		1
+#define TAB_MOVEMENT		2
+#define TAB_HEADER			3
+#define TAB_BUBBLES			4
+#define TAB_SPECIALICONS	5
+#define TAB_GENERAL			6
+#define TAB_ONLAUNCH		7
+#define TAB_TRANSPARENCY	8
+#define TAB_OUTOFSCREEN		9
+#define TAB_ABOUT			10
 
 //////////////////////////////////////////////////////////////////////////////
 // GLOBALS
 //////////////////////////////////////////////////////////////////////////////
 
-extern HWND			g_hDlg[NUM_CONFIG_SCREENS];
+extern HWND			g_hDlg[NUM_TABS];
 
 extern BOOL doNotAskToSaveOptions;
 
@@ -29,41 +42,41 @@ INT					PropSheetCallback(HWND, UINT, LPARAM);  // PropertySheet callback functi
 BOOL				CreatePropertySheet(HWND);  // Function to initialize and create the property sheet for the option dialog
 
 BOOL				SaveConfiguration();
-BOOL				SaveConfiguration0(HWND);
-BOOL				SaveConfiguration1(HWND);
-BOOL				SaveConfiguration2(HWND);
-BOOL				SaveConfiguration3(HWND);
-BOOL				SaveConfiguration4(HWND);
-BOOL				SaveConfiguration5(HWND);
-BOOL				SaveConfiguration6(HWND);
-BOOL				SaveConfiguration7(HWND);
-BOOL				SaveConfiguration8(HWND);
-BOOL				SaveConfiguration9(HWND);
+BOOL				SaveConfigurationScreen(HWND);
+BOOL				SaveConfigurationWallpaper(HWND);
+BOOL				SaveConfigurationMovement(HWND);
+BOOL				SaveConfigurationHeader(HWND);
+BOOL				SaveConfigurationBubbles(HWND);
+BOOL				SaveConfigurationSpecialIcons(HWND);
+BOOL				SaveConfigurationGeneral(HWND);
+BOOL				SaveConfigurationOnLaunch(HWND);
+BOOL				SaveConfigurationTransparency(HWND);
+BOOL				SaveConfigurationOutOfScreen(HWND);
 
-BOOL IsValidConfiguration(HWND, INT);
-BOOL IsValidConfiguration0(HWND);
-BOOL IsValidConfiguration1(HWND);
-BOOL IsValidConfiguration2(HWND);
-BOOL IsValidConfiguration3(HWND);
-BOOL IsValidConfiguration4(HWND);
-BOOL IsValidConfiguration5(HWND);
-BOOL IsValidConfiguration6(HWND);
-BOOL IsValidConfiguration7(HWND);
-BOOL IsValidConfiguration8(HWND);
-BOOL IsValidConfiguration9(HWND);
+BOOL				IsValidConfiguration(HWND, INT);
+BOOL				IsValidConfigurationScreen(HWND);
+BOOL				IsValidConfigurationWallpaper(HWND);
+BOOL				IsValidConfigurationMovement(HWND);
+BOOL				IsValidConfigurationHeader(HWND);
+BOOL				IsValidConfigurationBubbles(HWND);
+BOOL				IsValidConfigurationSpecialIcons(HWND);
+BOOL				IsValidConfigurationGeneral(HWND);
+BOOL				IsValidConfigurationOnLaunch(HWND);
+BOOL				IsValidConfigurationTransparency(HWND);
+BOOL				IsValidConfigurationOutOfScreen(HWND);
 
 // Option dialog box procedure functions
-LRESULT	CALLBACK	OptionDialog0(HWND, UINT, WPARAM, LPARAM);
-LRESULT	CALLBACK	OptionDialog1(HWND, UINT, WPARAM, LPARAM);
-LRESULT	CALLBACK	OptionDialog2(HWND, UINT, WPARAM, LPARAM);
-LRESULT	CALLBACK	OptionDialog3(HWND, UINT, WPARAM, LPARAM);
-LRESULT	CALLBACK	OptionDialog4(HWND, UINT, WPARAM, LPARAM);
-LRESULT	CALLBACK	OptionDialog5(HWND, UINT, WPARAM, LPARAM);
-LRESULT	CALLBACK	OptionDialog6(HWND, UINT, WPARAM, LPARAM);
-LRESULT	CALLBACK	OptionDialog7(HWND, UINT, WPARAM, LPARAM);
-LRESULT	CALLBACK	OptionDialog8(HWND, UINT, WPARAM, LPARAM);
-LRESULT	CALLBACK	OptionDialog9(HWND, UINT, WPARAM, LPARAM);
-LRESULT	CALLBACK	OptionDialog10(HWND, UINT, WPARAM, LPARAM);
+LRESULT	CALLBACK	OptionDialogScreen(HWND, UINT, WPARAM, LPARAM);
+LRESULT	CALLBACK	OptionDialogWallpaper(HWND, UINT, WPARAM, LPARAM);
+LRESULT	CALLBACK	OptionDialogMovement(HWND, UINT, WPARAM, LPARAM);
+LRESULT	CALLBACK	OptionDialogHeader(HWND, UINT, WPARAM, LPARAM);
+LRESULT	CALLBACK	OptionDialogBubbles(HWND, UINT, WPARAM, LPARAM);
+LRESULT	CALLBACK	OptionDialogSpecialIcons(HWND, UINT, WPARAM, LPARAM);
+LRESULT	CALLBACK	OptionDialogGeneral(HWND, UINT, WPARAM, LPARAM);
+LRESULT	CALLBACK	OptionDialogOnLaunch(HWND, UINT, WPARAM, LPARAM);
+LRESULT	CALLBACK	OptionDialogTransparency(HWND, UINT, WPARAM, LPARAM);
+LRESULT	CALLBACK	OptionDialogOutOfScreen(HWND, UINT, WPARAM, LPARAM);
+LRESULT	CALLBACK	OptionDialogAbout(HWND, UINT, WPARAM, LPARAM);
 
 UINT GetDlgItemHex(HWND hDlg, int nIDDlgItem, BOOL* lpTranslated);
 BOOL SetDlgItemHex(HWND hDlg, int nIDDlgItem, UINT uValue);
