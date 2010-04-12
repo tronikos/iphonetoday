@@ -9,13 +9,13 @@
 /*************************************************************************/
 /* General options dialog box procedure function                 */
 /*************************************************************************/
-LRESULT CALLBACK OptionDialog6(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK OptionDialogGeneral(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg)
 	{
 	case WM_INITDIALOG:
 		{
-			InitOptionsDialog(hDlg, 6);
+			InitOptionsDialog(hDlg, TAB_GENERAL);
 
 			SendMessage(GetDlgItem(hDlg, IDC_CHECK_FULLSCREEN),				BM_SETCHECK, configuracion->fullscreen					? BST_CHECKED : BST_UNCHECKED, 0);
 			SendMessage(GetDlgItem(hDlg, IDC_CHECK_NEVER_SHOW_TASKBAR),		BM_SETCHECK, configuracion->neverShowTaskBar			? BST_CHECKED : BST_UNCHECKED, 0);
@@ -68,10 +68,10 @@ LRESULT CALLBACK OptionDialog6(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 		break;
 	}
 
-	return DefOptionWindowProc(hDlg, 6, uMsg, wParam, lParam);
+	return DefOptionWindowProc(hDlg, TAB_GENERAL, uMsg, wParam, lParam);
 }
 
-BOOL IsValidConfiguration6(HWND hDlg)
+BOOL IsValidConfigurationGeneral(HWND hDlg)
 {
 	int notifyTimer, heightP, heightL;
 
@@ -91,9 +91,9 @@ BOOL IsValidConfiguration6(HWND hDlg)
 	return TRUE;
 }
 
-BOOL SaveConfiguration6(HWND hDlg)
+BOOL SaveConfigurationGeneral(HWND hDlg)
 {
-	if (!IsValidConfiguration6(hDlg)) return FALSE;
+	if (!IsValidConfigurationGeneral(hDlg)) return FALSE;
 
 	int notifyTimer, heightP, heightL;
 

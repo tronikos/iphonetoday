@@ -60,13 +60,13 @@ void sis_save(HWND hDlg, SpecialIconSettings *sis)
 /*************************************************************************/
 /* General options dialog box procedure function                 */
 /*************************************************************************/
-LRESULT CALLBACK OptionDialog5(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK OptionDialogSpecialIcons(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg)
 	{
 	case WM_INITDIALOG:
 		{
-			InitOptionsDialog(hDlg, 5);
+			InitOptionsDialog(hDlg, TAB_SPECIALICONS);
 
 			EnumFontFamilies(GetDC(NULL), NULL, (FONTENUMPROC)EnumFontFamiliesProc, (LPARAM)GetDlgItem(hDlg, IDC_COMBO_SIS_FACENAME));
 
@@ -161,7 +161,7 @@ LRESULT CALLBACK OptionDialog5(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 		break;
 	}
 
-	return DefOptionWindowProc(hDlg, 5, uMsg, wParam, lParam);
+	return DefOptionWindowProc(hDlg, TAB_SPECIALICONS, uMsg, wParam, lParam);
 }
 
 BOOL sis_check(HWND hDlg, SpecialIconSettings *sis)
@@ -197,7 +197,7 @@ BOOL sis_check(HWND hDlg, SpecialIconSettings *sis)
 	return TRUE;
 }
 
-BOOL IsValidConfiguration5(HWND hDlg)
+BOOL IsValidConfigurationSpecialIcons(HWND hDlg)
 {
 	sis_save(hDlg, cur_sis);
 
@@ -214,11 +214,11 @@ BOOL IsValidConfiguration5(HWND hDlg)
 	return TRUE;
 }
 
-BOOL SaveConfiguration5(HWND hDlg)
+BOOL SaveConfigurationSpecialIcons(HWND hDlg)
 {
 	sis_save(hDlg, cur_sis);
 
-	if (!IsValidConfiguration5(hDlg)) return FALSE;
+	if (!IsValidConfigurationSpecialIcons(hDlg)) return FALSE;
 
 	memcpy(&configuracion->batt, &batt, sizeof(SpecialIconSettings));
 	memcpy(&configuracion->clck, &clck, sizeof(SpecialIconSettings));

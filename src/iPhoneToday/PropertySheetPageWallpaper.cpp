@@ -23,13 +23,13 @@ void EnableAllDlgItems1(HWND hDlg, BOOL bEnable)
 /*************************************************************************/
 /* General options dialog box procedure function                 */
 /*************************************************************************/
-LRESULT CALLBACK OptionDialog1(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK OptionDialogWallpaper(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg)
 	{
 	case WM_INITDIALOG:
 		{
-			InitOptionsDialog(hDlg, 1);
+			InitOptionsDialog(hDlg, TAB_WALLPAPER);
 
 			SetDlgItemText(hDlg, IDC_EDIT_BACK_WALLPAPER, configuracion->strFondoPantalla);
 			SendMessage(GetDlgItem(hDlg, IDC_CHECK_BACK_STATIC),		BM_SETCHECK, configuracion->fondoEstatico ? BST_CHECKED : BST_UNCHECKED, 0);
@@ -87,17 +87,17 @@ LRESULT CALLBACK OptionDialog1(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 		break;
 	}
 
-	return DefOptionWindowProc(hDlg, 1, uMsg, wParam, lParam);
+	return DefOptionWindowProc(hDlg, TAB_WALLPAPER, uMsg, wParam, lParam);
 }
 
-BOOL IsValidConfiguration1(HWND hDlg)
+BOOL IsValidConfigurationWallpaper(HWND hDlg)
 {
 	return TRUE;
 }
 
-BOOL SaveConfiguration1(HWND hDlg)
+BOOL SaveConfigurationWallpaper(HWND hDlg)
 {
-	if (!IsValidConfiguration1(hDlg)) return FALSE;
+	if (!IsValidConfigurationWallpaper(hDlg)) return FALSE;
 
 	GetDlgItemText(hDlg, IDC_EDIT_BACK_WALLPAPER, configuracion->strFondoPantalla, CountOf(configuracion->strFondoPantalla));
 	configuracion->fondoEstatico	= SendMessage(GetDlgItem(hDlg, IDC_CHECK_BACK_STATIC), BM_GETCHECK, 0, 0) == BST_CHECKED;

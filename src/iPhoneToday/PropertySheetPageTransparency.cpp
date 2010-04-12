@@ -25,13 +25,13 @@ void InitializeTextQualityDropList(HWND hWnd, int textQuality)
 /*************************************************************************/
 /* General options dialog box procedure function                 */
 /*************************************************************************/
-LRESULT CALLBACK OptionDialog8(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK OptionDialogTransparency(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg)
 	{
 	case WM_INITDIALOG:
 		{
-			InitOptionsDialog(hDlg, 8);
+			InitOptionsDialog(hDlg, TAB_TRANSPARENCY);
 
 			SendMessage(GetDlgItem(hDlg, IDC_CHECK_TRANS_ALPHABLEND),   BM_SETCHECK, configuracion->alphaBlend == 1? BST_CHECKED : BST_UNCHECKED, 0);
 			SendMessage(GetDlgItem(hDlg, IDC_CHECK_TRANS_ALPHABLEND2),  BM_SETCHECK, configuracion->alphaBlend == 2? BST_CHECKED : BST_UNCHECKED, 0);
@@ -101,10 +101,10 @@ LRESULT CALLBACK OptionDialog8(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 		break;
 	}
 
-	return DefOptionWindowProc(hDlg, 8, uMsg, wParam, lParam);
+	return DefOptionWindowProc(hDlg, TAB_TRANSPARENCY, uMsg, wParam, lParam);
 }
 
-BOOL IsValidConfiguration8(HWND hDlg)
+BOOL IsValidConfigurationTransparency(HWND hDlg)
 {
 	int alphaThreshold;
 
@@ -118,9 +118,9 @@ BOOL IsValidConfiguration8(HWND hDlg)
 	return TRUE;
 }
 
-BOOL SaveConfiguration8(HWND hDlg)
+BOOL SaveConfigurationTransparency(HWND hDlg)
 {
-	if (!IsValidConfiguration1(hDlg)) return FALSE;
+	if (!IsValidConfigurationTransparency(hDlg)) return FALSE;
 
 	int alphaThreshold;
 

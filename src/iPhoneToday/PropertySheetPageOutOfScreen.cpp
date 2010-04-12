@@ -50,13 +50,13 @@ void ooss_save(HWND hDlg, OutOfScreenSettings *ooss)
 /*************************************************************************/
 /* General options dialog box procedure function                 */
 /*************************************************************************/
-LRESULT CALLBACK OptionDialog9(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK OptionDialogOutOfScreen(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg)
 	{
 	case WM_INITDIALOG:
 		{
-			InitOptionsDialog(hDlg, 9);
+			InitOptionsDialog(hDlg, TAB_OUTOFSCREEN);
 
 			cur_ooss = NULL;
 			ooss_enable(hDlg, FALSE);
@@ -116,7 +116,7 @@ LRESULT CALLBACK OptionDialog9(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 		break;
 	}
 
-	return DefOptionWindowProc(hDlg, 9, uMsg, wParam, lParam);
+	return DefOptionWindowProc(hDlg, TAB_OUTOFSCREEN, uMsg, wParam, lParam);
 }
 
 BOOL ooss_check(HWND hDlg, OutOfScreenSettings *ooss)
@@ -128,7 +128,7 @@ BOOL ooss_check(HWND hDlg, OutOfScreenSettings *ooss)
 	return TRUE;
 }
 
-BOOL IsValidConfiguration9(HWND hDlg)
+BOOL IsValidConfigurationOutOfScreen(HWND hDlg)
 {
 	ooss_save(hDlg, cur_ooss);
 
@@ -140,11 +140,11 @@ BOOL IsValidConfiguration9(HWND hDlg)
 	return TRUE;
 }
 
-BOOL SaveConfiguration9(HWND hDlg)
+BOOL SaveConfigurationOutOfScreen(HWND hDlg)
 {
 	ooss_save(hDlg, cur_ooss);
 
-	if (!IsValidConfiguration9(hDlg)) return FALSE;
+	if (!IsValidConfigurationOutOfScreen(hDlg)) return FALSE;
 
 	memcpy(&configuracion->ooss_left,  &ooss_left,  sizeof(OutOfScreenSettings));
 	memcpy(&configuracion->ooss_right, &ooss_right, sizeof(OutOfScreenSettings));

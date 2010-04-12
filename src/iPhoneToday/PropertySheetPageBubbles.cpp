@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-// PropertySheetPage4.cpp : Defines the property sheet page procedures.
+// PropertySheetPageBubbles.cpp : Defines the property sheet page procedures.
 //
 
 #include "stdafx.h"
@@ -105,13 +105,13 @@ void bs_save(HWND hDlg, BubbleSettings *bs)
 /*************************************************************************/
 /* General options dialog box procedure function                 */
 /*************************************************************************/
-LRESULT CALLBACK OptionDialog4(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK OptionDialogBubbles(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg)
 	{
 	case WM_INITDIALOG:
 		{
-			InitOptionsDialog(hDlg, 4);
+			InitOptionsDialog(hDlg, TAB_BUBBLES);
 
 			EnumFontFamilies(GetDC(NULL), NULL, (FONTENUMPROC)EnumFontFamiliesProc, (LPARAM)GetDlgItem(hDlg, IDC_COMBO_BUBBLE_SIS_FACENAME));
 
@@ -182,7 +182,7 @@ LRESULT CALLBACK OptionDialog4(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 		break;
 	}
 
-	return DefOptionWindowProc(hDlg, 4, uMsg, wParam, lParam);
+	return DefOptionWindowProc(hDlg, TAB_BUBBLES, uMsg, wParam, lParam);
 }
 
 BOOL bs_check(HWND hDlg, BubbleSettings *bs)
@@ -218,7 +218,7 @@ BOOL bs_check(HWND hDlg, BubbleSettings *bs)
 	return TRUE;
 }
 
-BOOL IsValidConfiguration4(HWND hDlg)
+BOOL IsValidConfigurationBubbles(HWND hDlg)
 {
 	bs_save(hDlg, cur_bs);
 
@@ -229,13 +229,11 @@ BOOL IsValidConfiguration4(HWND hDlg)
 	return TRUE;
 }
 
-BOOL SaveConfiguration4(HWND hDlg)
+BOOL SaveConfigurationBubbles(HWND hDlg)
 {
-	if (!IsValidConfiguration4(hDlg)) return FALSE;
-
 	bs_save(hDlg, cur_bs);
 
-	if (!IsValidConfiguration5(hDlg)) return FALSE;
+	if (!IsValidConfigurationBubbles(hDlg)) return FALSE;
 
 	memcpy(&configuracion->bubble_alarm, &balarm, sizeof(BubbleSettings));
 	memcpy(&configuracion->bubble_notif, &bnotif, sizeof(BubbleSettings));

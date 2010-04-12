@@ -12,13 +12,13 @@ ChooseFontSettings hcfs;
 /*************************************************************************/
 /* General options dialog box procedure function                 */
 /*************************************************************************/
-LRESULT CALLBACK OptionDialog3(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK OptionDialogHeader(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg)
 	{
 	case WM_INITDIALOG:
 		{
-			InitOptionsDialog(hDlg, 3);
+			InitOptionsDialog(hDlg, TAB_HEADER);
 
 			wcscpy(hcfs.facename, configuracion->headerTextFacename);
 			hcfs.color = configuracion->headerTextColor;
@@ -49,10 +49,10 @@ LRESULT CALLBACK OptionDialog3(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 		break;
 	}
 
-	return DefOptionWindowProc(hDlg, 3, uMsg, wParam, lParam);
+	return DefOptionWindowProc(hDlg, TAB_HEADER, uMsg, wParam, lParam);
 }
 
-BOOL IsValidConfiguration3(HWND hDlg)
+BOOL IsValidConfigurationHeader(HWND hDlg)
 {
 	int headerOffset, circlesDiameter, circlesDistance, circlesOffset;
 
@@ -89,9 +89,9 @@ BOOL IsValidConfiguration3(HWND hDlg)
 	return TRUE;
 }
 
-BOOL SaveConfiguration3(HWND hDlg)
+BOOL SaveConfigurationHeader(HWND hDlg)
 {
-	if (!IsValidConfiguration3(hDlg)) return FALSE;
+	if (!IsValidConfigurationHeader(hDlg)) return FALSE;
 
 	int headerOffset, circlesDiameter, circlesDistance, circlesOffset;
 
