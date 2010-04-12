@@ -306,13 +306,13 @@ int DrawText2(HDC hDC, LPCTSTR lpString, int nCount, LPRECT lpRect, UINT uFormat
 		RECT rc = {0};
 		DrawText(hDC, lpString, nCount, &rc, uFormat | DT_CALCRECT);
 		int tmp = (lpRect->right - lpRect->left - rc.right) / 2;
-		HBRUSH hBrush = CreateSolidBrush(RGB(10,10,10));
+		HBRUSH hBrush = CreateSolidBrush(RGB(10, 10, 10));
 		HBRUSH hOldBrush = (HBRUSH) SelectObject(hDC, hBrush);
 		RoundRect(hDC, lpRect->left + tmp - rc.bottom / 2, lpRect->top - 1, lpRect->right - tmp + rc.bottom / 2, lpRect->bottom + 1, rc.bottom - 2, rc.bottom - 2);
 		SelectObject(hDC, hOldBrush);
 		DeleteObject(hBrush);
 	} else if (uTextShadow > 0) {
-		COLORREF colorOld = SetTextColor(hDC, RGB(10,10,10));
+		COLORREF colorOld = SetTextColor(hDC, RGB(10, 10, 10));
 		RECT posTexto2;
 		posTexto2.left = lpRect->left + uTextShadow;
 		posTexto2.top = lpRect->top + uTextShadow;
