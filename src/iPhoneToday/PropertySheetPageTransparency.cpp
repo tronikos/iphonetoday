@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-// PropertySheetPage8.cpp : Defines the property sheet page procedures.
+// PropertySheetPageTransparency.cpp : Defines the property sheet page procedures.
 //
 
 #include "stdafx.h"

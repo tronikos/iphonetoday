@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-// PropertySheetPage9.cpp : Defines the property sheet page procedures.
+// PropertySheetPageOutOfScreen.cpp : Defines the property sheet page procedures.
 //
 
 #include "stdafx.h"

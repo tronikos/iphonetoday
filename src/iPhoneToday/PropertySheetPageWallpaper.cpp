@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-// PropertySheetPage1.cpp : Defines the property sheet page procedures.
+// PropertySheetPageWallpaper.cpp : Defines the property sheet page procedures.
 //
 
 #include "stdafx.h"
