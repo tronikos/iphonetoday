@@ -38,6 +38,7 @@ void CIcono::defaultValues()
 	parametrosAlt[0] = 0;
 	tipo = NOTIF_NORMAL;
 	launchAnimation = 1;
+	AlphaFormat = 0;
 }
 
 void CIcono::loadImage(HDC *hDC, TCHAR *pathImage, int width, int height, int bitsPerPixel, float factor, BOOL alwaysPremultiply) {
@@ -209,12 +210,24 @@ void CIcono::loadImage(HDC *hDC, TCHAR *pathImage, int width, int height, int bi
 			alphaThreshold = 0;
 			premultiply = FALSE;
 			fixBlack = FALSE;
+			// except if the mainscreen pages have a background (image, gradient or solid color)
+			// Note: this requires that the background images (if any) are loaded before the icons!
+			// (loadIconsImages has to be after loadBackgrounds or loadImages)
+			BOOL mainScreenPagesHaveBackground = !(configuracion->fondoPantalla && configuracion->fondoPantalla->hDC) || configuracion->mainScreenConfig->cs.backGradient || (configuracion->backMainScreen && configuracion->backMainScreen->hDC);
+			if (mainScreenPagesHaveBackground) {
+				premultiply = TRUE;
+			}
 		}
 		// if it is a pressed icon then it has to be pre-multiplied now
 		if (alwaysPremultiply) {
 			alphaThreshold = 0;
 			premultiply = TRUE;
 			fixBlack = FALSE;
+		}
+		if (premultiply) {
+			AlphaFormat = AC_SRC_ALPHA;
+		} else {
+			AlphaFormat = AC_SRC_ALPHA_NONPREMULT;
 		}
 
 		BYTE *p = (BYTE *) pBits;
