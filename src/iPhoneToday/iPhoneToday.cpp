@@ -685,7 +685,7 @@ LRESULT doPaint (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 		bf.BlendOp = AC_SRC_OVER;
 		bf.BlendFlags = 0;
 		bf.SourceConstantAlpha = 255;
-		bf.AlphaFormat = AC_SRC_ALPHA;
+		bf.AlphaFormat = configuracion->pressedIcon->AlphaFormat;
 		AlphaBlend(hDC, ps.rcPaint.left, ps.rcPaint.top, ps.rcPaint.right - ps.rcPaint.left, ps.rcPaint.bottom - ps.rcPaint.top,
 				configuracion->pressedIcon->hDC, 0, 0, configuracion->pressedIcon->anchoImagen, configuracion->pressedIcon->altoImagen, bf);
 		EndPaint(hwnd, &ps);
@@ -1387,7 +1387,7 @@ void DrawBubbleText(HDC hDC, CIcono *bubble, int numNotif, CIcono *icon, int ico
 		bf.BlendOp = AC_SRC_OVER;
 		bf.BlendFlags = 0;
 		bf.SourceConstantAlpha = 255;
-		bf.AlphaFormat = AC_SRC_ALPHA;
+		bf.AlphaFormat = bubble->AlphaFormat;
 		AlphaBlend(hDC, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top,
 			bubble->hDC, 0, 0, bubble->anchoImagen, bubble->altoImagen, bf);
 		if (numNotif > 0) {
@@ -1420,7 +1420,7 @@ void DrawState(HDC hDC, CIcono *bubble, CIcono *icon, int iconWidth, BubbleSetti
 		bf.BlendOp = AC_SRC_OVER;
 		bf.BlendFlags = 0;
 		bf.SourceConstantAlpha = 255;
-		bf.AlphaFormat = AC_SRC_ALPHA;
+		bf.AlphaFormat = bubble->AlphaFormat;
 		AlphaBlend(hDC, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top,
 			bubble->hDC, 0, 0, bubble->anchoImagen, bubble->altoImagen, bf);
 	} else {
@@ -1500,16 +1500,12 @@ void pintaIcono(HDC *hDC, CIcono *icono, CPantalla *pantalla, SCREEN_TYPE screen
 			}
 		} else {
 			BOOL ab = FALSE;
-			if (configuracion->alphaBlend && icono->rutaImagen != NULL && _tcslen(icono->rutaImagen) > 0) {
+			if (configuracion->alphaBlend && icono->AlphaFormat > 0) {
 				BLENDFUNCTION bf;
 				bf.BlendOp = AC_SRC_OVER;
 				bf.BlendFlags = 0;
 				bf.SourceConstantAlpha = 255;
-				if (cs->cs.backWallpaperAlphaBlend && pantalla->pBits) {
-					bf.AlphaFormat = AC_SRC_ALPHA;
-				} else {
-					bf.AlphaFormat = AC_SRC_ALPHA_NONPREMULT;
-				}
+				bf.AlphaFormat = icono->AlphaFormat;
 				ab = AlphaBlend(*hDC, int(icono->x), int(icono->y), width, width,
 					icono->hDC, 0, 0, icono->anchoImagen, icono->altoImagen, bf);
 			}
@@ -3086,14 +3082,14 @@ BOOL inicializaApp(HWND hwnd)
 	HDC hdc = GetDC(hwnd);
 
 	// duration = -(long)GetTickCount();
-	configuracion->loadIconsImages(&hdc, listaPantallas);
-	// duration += GetTickCount();
-	// NKDbgPrintfW(L" *** %d \t to loadIconsImages.\n", duration);
-
-	// duration = -(long)GetTickCount();
 	configuracion->loadImages(&hdc);
 	// duration += GetTickCount();
 	// NKDbgPrintfW(L" *** %d \t to loadImages.\n", duration);
+
+	// duration = -(long)GetTickCount();
+	configuracion->loadIconsImages(&hdc, listaPantallas);
+	// duration += GetTickCount();
+	// NKDbgPrintfW(L" *** %d \t to loadIconsImages.\n", duration);
 
 	ReleaseDC(hwnd, hdc);
 

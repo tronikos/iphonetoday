@@ -45,6 +45,7 @@ public:
 
 	UINT anchoImagen;				// width
 	UINT altoImagen;				// height
+	BYTE AlphaFormat;
 
 	CIcono(void);
 	~CIcono(void);
