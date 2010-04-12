@@ -1807,25 +1807,29 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type)
 
 			pantalla->hFontOld = (HFONT)SelectObject(pantalla->hDC, hFont);
 
-			SetTextColor(pantalla->hDC, cs->cs.textColor);
+			if (!pantalla->hasBackground && GetRValue(cs->cs.textColor) < 10 && GetGValue(cs->cs.textColor) < 10 && GetBValue(cs->cs.textColor) < 10) {
+				SetTextColor(pantalla->hDC, RGB(10, 10, 10));
+			} else {
+				SetTextColor(pantalla->hDC, cs->cs.textColor);
+			}
 			FillRect(pantalla->hDC, &rc, hBrushTrans);
 		}
 		SetBkMode(pantalla->hDC, TRANSPARENT);
 
 		if (cs->cs.backGradient) {
-			pantalla->hasBackground = 2;
+			//pantalla->hasBackground = 2;
 			DrawGradientGDI(pantalla->hDC, rc, cs->cs.backColor1,  cs->cs.backColor2,  0xAAAA);
 		} else {
 			if (configuracion->fondoPantalla && configuracion->fondoPantalla->hDC) {
-				pantalla->hasBackground = 0;
+				//pantalla->hasBackground = 0;
 				FillRect(pantalla->hDC, &rc, hBrushTrans);
 			} else {
-				pantalla->hasBackground = 1;
+				//pantalla->hasBackground = 1;
 				FillRect(pantalla->hDC, &rc, hBrushFondo);
 			}
 		}
 		if (!(configuracion->alphaBlend && cs->cs.backWallpaperAlphaBlend && configuracion->fondoPantalla && configuracion->fondoPantalla->hDC) && back && back->hDC) {
-			pantalla->hasBackground = 3;
+			//pantalla->hasBackground = 3;
 			PrintBack(pantalla->hDC, 0, 0, pantalla->anchoPantalla, pantalla->altoPantalla,
 				back->hDC, 0, 0, back->anchoImagen, back->altoImagen,
 				cs->cs.backWallpaperAlphaBlend, cs->cs.backWallpaperCenter, cs->cs.backWallpaperTile);
