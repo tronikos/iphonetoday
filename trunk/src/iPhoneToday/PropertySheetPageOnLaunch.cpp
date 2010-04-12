@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-// PropertySheetPage7.cpp : Defines the property sheet page procedures.
+// PropertySheetPageOnLaunch.cpp : Defines the property sheet page procedures.
 //
 
 #include "stdafx.h"
