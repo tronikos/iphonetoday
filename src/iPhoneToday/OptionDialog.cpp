@@ -255,10 +255,8 @@ BOOL CreatePropertySheet(HWND hwnd)
     // Fill in default values in property page structures
     for (int i = 0; i < NUM_TABS; i++) {
 		psp[i].dwSize = sizeof(psp[i]);
-		psp[i].dwFlags = PSP_DEFAULT | PSP_USETITLE| PSP_USECALLBACK;
+		psp[i].dwFlags = PSP_DEFAULT | PSP_USECALLBACK;
 		psp[i].hInstance = g_hInst;
-		//psp[i].pszTemplate = MAKEINTRESOURCE(IDD_DIALOGPAGE0 + i);  // Make sure the Resource Value is in sequence for all the dialog boxes
-		//psp[i].pszTitle = (LPCTSTR)LoadString(g_hInst, (IDS_TAB0 + i), NULL, 0);  // Make sure the value of the tab titles in string table is in sequence too
 		psp[i].lParam = (LPARAM)i;
 		psp[i].pfnCallback = PropSheetPageProc;
 	}
@@ -267,51 +265,39 @@ BOOL CreatePropertySheet(HWND hwnd)
     // Set the dialog box procedures for each page
 
 	psp[TAB_SCREEN].pszTemplate = MAKEINTRESOURCE(IDD_DIALOGPAGE_SCREEN);
-	psp[TAB_SCREEN].pszTitle = (LPCTSTR) LoadString(g_hInst, IDS_TAB_SCREEN, NULL, 0);
 	psp[TAB_SCREEN].pfnDlgProc = (DLGPROC) &OptionDialogScreen;
 
 	psp[TAB_WALLPAPER].pszTemplate = MAKEINTRESOURCE(IDD_DIALOGPAGE_WALLPAPER);
-	psp[TAB_WALLPAPER].pszTitle = (LPCTSTR) LoadString(g_hInst, IDS_TAB_WALLPAPER, NULL, 0);
 	psp[TAB_WALLPAPER].pfnDlgProc = (DLGPROC) &OptionDialogWallpaper;
 
 	psp[TAB_MOVEMENT].pszTemplate = MAKEINTRESOURCE(IDD_DIALOGPAGE_MOVEMENT);
-	psp[TAB_MOVEMENT].pszTitle = (LPCTSTR) LoadString(g_hInst, IDS_TAB_MOVEMENT, NULL, 0);
 	psp[TAB_MOVEMENT].pfnDlgProc = (DLGPROC) &OptionDialogMovement;
 
 	psp[TAB_HEADER].pszTemplate = MAKEINTRESOURCE(IDD_DIALOGPAGE_HEADER);
-	psp[TAB_HEADER].pszTitle = (LPCTSTR) LoadString(g_hInst, IDS_TAB_HEADER, NULL, 0);
 	psp[TAB_HEADER].pfnDlgProc = (DLGPROC) &OptionDialogHeader;
 
 	psp[TAB_BUBBLES].pszTemplate = MAKEINTRESOURCE(IDD_DIALOGPAGE_BUBBLES);
-	psp[TAB_BUBBLES].pszTitle = (LPCTSTR) LoadString(g_hInst, IDS_TAB_BUBBLES, NULL, 0);
 	psp[TAB_BUBBLES].pfnDlgProc = (DLGPROC) &OptionDialogBubbles;
 
 	psp[TAB_SPECIALICONS].pszTemplate = MAKEINTRESOURCE(IDD_DIALOGPAGE_SPECIALICONS);
-	psp[TAB_SPECIALICONS].pszTitle = (LPCTSTR) LoadString(g_hInst, IDS_TAB_SPECIALICONS, NULL, 0);
 	psp[TAB_SPECIALICONS].pfnDlgProc = (DLGPROC) &OptionDialogSpecialIcons;
 
 	psp[TAB_GENERAL].pszTemplate = MAKEINTRESOURCE(IDD_DIALOGPAGE_GENERAL);
-	psp[TAB_GENERAL].pszTitle = (LPCTSTR) LoadString(g_hInst, IDS_TAB_GENERAL, NULL, 0);
 	psp[TAB_GENERAL].pfnDlgProc = (DLGPROC) &OptionDialogGeneral;
 
 	psp[TAB_ONLAUNCH].pszTemplate = MAKEINTRESOURCE(IDD_DIALOGPAGE_ONLAUNCH);
-	psp[TAB_ONLAUNCH].pszTitle = (LPCTSTR) LoadString(g_hInst, IDS_TAB_ONLAUNCH, NULL, 0);
 	psp[TAB_ONLAUNCH].pfnDlgProc = (DLGPROC) &OptionDialogOnLaunch;
 
 	psp[TAB_TRANSPARENCY].pszTemplate = MAKEINTRESOURCE(IDD_DIALOGPAGE_TRANSPARENCY);
-	psp[TAB_TRANSPARENCY].pszTitle = (LPCTSTR) LoadString(g_hInst, IDS_TAB_TRANSPARENCY, NULL, 0);
 	psp[TAB_TRANSPARENCY].pfnDlgProc = (DLGPROC) &OptionDialogTransparency;
 
 	psp[TAB_OUTOFSCREEN].pszTemplate = MAKEINTRESOURCE(IDD_DIALOGPAGE_OUTOFSCREEN);
-	psp[TAB_OUTOFSCREEN].pszTitle = (LPCTSTR) LoadString(g_hInst, IDS_TAB_OUTOFSCREEN, NULL, 0);
 	psp[TAB_OUTOFSCREEN].pfnDlgProc = (DLGPROC) &OptionDialogOutOfScreen;
 
 	psp[TAB_ABOUT].pszTemplate = MAKEINTRESOURCE(IDD_DIALOGPAGE_ABOUT);
-	psp[TAB_ABOUT].pszTitle = (LPCTSTR) LoadString(g_hInst, IDS_TAB_ABOUT, NULL, 0);
 	psp[TAB_ABOUT].pfnDlgProc = (DLGPROC) &OptionDialogAbout;
 
 	psp[TAB_ANIMATION].pszTemplate = MAKEINTRESOURCE(IDD_DIALOGPAGE_ANIMATION);
-	psp[TAB_ANIMATION].pszTitle = (LPCTSTR) LoadString(g_hInst, IDS_TAB_ANIMATION, NULL, 0);
 	psp[TAB_ANIMATION].pfnDlgProc = (DLGPROC) &OptionDialogAnimation;
 
 
