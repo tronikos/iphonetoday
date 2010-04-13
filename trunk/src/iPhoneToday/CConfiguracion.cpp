@@ -506,7 +506,6 @@ void CConfiguracion::defaultValues()
 	this->velMaxima = 140;
 	this->velMinima = 20;
 	this->refreshTime = 20;
-	this->animationTime = 200;
 	this->factorMovimiento = 4;
 	this->verticalScroll = 0;
 	this->freestyleScroll = 0;
@@ -614,12 +613,14 @@ void CConfiguracion::defaultValues()
 	this->sign.offset.right = 0;
 	this->sign.offset.bottom = 0;
 
+	this->animationType = 2;
+	this->animationColor = RGB(0,0,0);
+	this->animationDuration = 300;
+	this->launchAppAtBeginningOfAnimation = 0;
+
 	this->closeOnLaunchIcon = 0;
 	this->minimizeOnLaunchIcon = 0;
 	this->vibrateOnLaunchIcon = 0;
-	this->allowAnimationOnLaunchIcon = 1;
-	this->launchOnStartOfAnimation = 0;
-	this->colorOfAnimationOnLaunchIcon = RGB(255,255,255);
 	this->allowSoundOnLaunchIcon = 1;
 	this->soundOnLaunchIcon[0] = 0;
 
@@ -870,7 +871,6 @@ BOOL CConfiguracion::loadXMLConfig()
 			XMLUtils::GetAttr(pElem, "MaxVelocity",     &this->velMaxima);
 			XMLUtils::GetAttr(pElem, "MinVelocity",     &this->velMinima);
 			XMLUtils::GetAttr(pElem, "RefreshTime",     &this->refreshTime);
-			XMLUtils::GetAttr(pElem, "AnimationTime",   &this->animationTime);
 			XMLUtils::GetAttr(pElem, "FactorMov",       &this->factorMovimiento);
 			XMLUtils::GetAttr(pElem, "VerticalScroll",  &this->verticalScroll);
 			XMLUtils::GetAttr(pElem, "FreestyleScroll", &this->freestyleScroll);
@@ -908,13 +908,15 @@ BOOL CConfiguracion::loadXMLConfig()
 			BubbleSettingsLoad(pElem, &this->bubble_alarm);
 		} else if(_stricmp(nameNode, "BubbleState") == 0) {
 			BubbleSettingsLoad(pElem, &this->bubble_state);
+		} else if(_stricmp(nameNode, "Animation") == 0) {
+			XMLUtils::GetAttr(pElem, "type",     &this->animationType);
+			XMLUtils::GetAttr(pElem, "color",    &this->animationColor);
+			XMLUtils::GetAttr(pElem, "duration", &this->animationDuration);
+			XMLUtils::GetAttr(pElem, "LaunchAppAtBeginningOfAnimation", &this->launchAppAtBeginningOfAnimation);
 		} else if(_stricmp(nameNode, "OnLaunchIcon") == 0) {
 			XMLUtils::GetAttr(pElem, "close",    &this->closeOnLaunchIcon);
 			XMLUtils::GetAttr(pElem, "minimize", &this->minimizeOnLaunchIcon);
 			XMLUtils::GetAttr(pElem, "vibrate",  &this->vibrateOnLaunchIcon);
-			XMLUtils::GetAttr(pElem, "animate",  &this->allowAnimationOnLaunchIcon);
-			XMLUtils::GetAttr(pElem, "LaunchOnStartOfAnimation", &this->launchOnStartOfAnimation);
-			XMLUtils::GetAttr(pElem, "color",    &this->colorOfAnimationOnLaunchIcon);
 			XMLUtils::GetAttr(pElem, "sound",    &this->allowSoundOnLaunchIcon);
 			XMLUtils::GetAttr(pElem, "wav",      this->soundOnLaunchIcon, CountOf(this->soundOnLaunchIcon));
 		} else if(_stricmp(nameNode, "OnPressIcon") == 0) {
@@ -1127,7 +1129,6 @@ BOOL CConfiguracion::saveXMLConfig()
 	XMLUtils::SetAttr(pElem, "MaxVelocity",     this->velMaxima);
 	XMLUtils::SetAttr(pElem, "MinVelocity",     this->velMinima);
 	XMLUtils::SetAttr(pElem, "RefreshTime",     this->refreshTime);
-	XMLUtils::SetAttr(pElem, "AnimationTime",   this->animationTime);
 	XMLUtils::SetAttr(pElem, "FactorMov",       this->factorMovimiento);
 	XMLUtils::SetAttr(pElem, "VerticalScroll",  this->verticalScroll);
 	XMLUtils::SetAttr(pElem, "FreestyleScroll", this->freestyleScroll);
@@ -1191,13 +1192,17 @@ BOOL CConfiguracion::saveXMLConfig()
 	BubbleSettingsSave(pElem, &this->bubble_state, FALSE);
 	root->LinkEndChild(pElem);
 
+	pElem = new TiXmlElement("Animation");
+	XMLUtils::SetAttr(pElem, "type",     this->animationType);
+	XMLUtils::SetAttr(pElem, "color",    this->animationColor);
+	XMLUtils::SetAttr(pElem, "duration", this->animationDuration);
+	XMLUtils::SetAttr(pElem, "LaunchAppAtBeginningOfAnimation", this->launchAppAtBeginningOfAnimation);
+	root->LinkEndChild(pElem);
+
 	pElem = new TiXmlElement("OnLaunchIcon");
 	XMLUtils::SetAttr(pElem, "close",    this->closeOnLaunchIcon);
 	XMLUtils::SetAttr(pElem, "minimize", this->minimizeOnLaunchIcon);
 	XMLUtils::SetAttr(pElem, "vibrate",  this->vibrateOnLaunchIcon);
-	XMLUtils::SetAttr(pElem, "animate",  this->allowAnimationOnLaunchIcon);
-	XMLUtils::SetAttr(pElem, "LaunchOnStartOfAnimation", this->launchOnStartOfAnimation);
-	XMLUtils::SetAttr(pElem, "color",    this->colorOfAnimationOnLaunchIcon);
 	XMLUtils::SetAttr(pElem, "sound",    this->allowSoundOnLaunchIcon);
 	XMLUtils::SetAttr(pElem, "wav",      this->soundOnLaunchIcon, CountOf(this->soundOnLaunchIcon));
 	root->LinkEndChild(pElem);

@@ -101,6 +101,9 @@ BOOL IsValidConfiguration(HWND hDlg, INT iDlg)
 		case TAB_OUTOFSCREEN:
 			isValid = IsValidConfigurationOutOfScreen(hDlg);
 			break;
+		case TAB_ANIMATION:
+			isValid = IsValidConfigurationAnimation(hDlg);
+			break;
 	}
 	return isValid;
 }
@@ -307,6 +310,10 @@ BOOL CreatePropertySheet(HWND hwnd)
 	psp[TAB_ABOUT].pszTitle = (LPCTSTR) LoadString(g_hInst, IDS_TAB_ABOUT, NULL, 0);
 	psp[TAB_ABOUT].pfnDlgProc = (DLGPROC) &OptionDialogAbout;
 
+	psp[TAB_ANIMATION].pszTemplate = MAKEINTRESOURCE(IDD_DIALOGPAGE_ANIMATION);
+	psp[TAB_ANIMATION].pszTitle = (LPCTSTR) LoadString(g_hInst, IDS_TAB_ANIMATION, NULL, 0);
+	psp[TAB_ANIMATION].pfnDlgProc = (DLGPROC) &OptionDialogAnimation;
+
 
     //
     // See http://msdn.microsoft.com/library/default.asp?url=/library/en-us/win_ce/htm/pwc_propertysheets.asp
@@ -370,6 +377,9 @@ BOOL SaveConfiguration()
 					break;
 				case TAB_OUTOFSCREEN:
 					result &= SaveConfigurationOutOfScreen(hDlg);
+					break;
+				case TAB_ANIMATION:
+					result &= SaveConfigurationAnimation(hDlg);
 					break;
 			}
 		}

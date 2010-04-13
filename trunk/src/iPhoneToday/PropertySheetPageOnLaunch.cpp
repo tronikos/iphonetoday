@@ -18,17 +18,17 @@ LRESULT CALLBACK OptionDialogOnLaunch(HWND hDlg, UINT uMsg, WPARAM wParam, LPARA
 			InitOptionsDialog(hDlg, TAB_ONLAUNCH);
 
 			SendMessage(GetDlgItem(hDlg, IDC_CHECK_ONLAUNCH_CLOSE),		BM_SETCHECK, configuracion->closeOnLaunchIcon			? BST_CHECKED : BST_UNCHECKED, 0);
-			SendMessage(GetDlgItem(hDlg, IDC_CHECK_ONLAUNCH_ANIMATE),	BM_SETCHECK, configuracion->allowAnimationOnLaunchIcon	? BST_CHECKED : BST_UNCHECKED, 0);
+			SendMessage(GetDlgItem(hDlg, IDC_CHECK_ONLAUNCH_MINIMIZE),	BM_SETCHECK, configuracion->minimizeOnLaunchIcon		? BST_CHECKED : BST_UNCHECKED, 0);
 			SendMessage(GetDlgItem(hDlg, IDC_CHECK_ONLAUNCH_SOUND),		BM_SETCHECK, configuracion->allowSoundOnLaunchIcon		? BST_CHECKED : BST_UNCHECKED, 0);
 
 			SetDlgItemInt(hDlg, IDC_EDIT_ONLAUNCH_VIBRATE,	configuracion->vibrateOnLaunchIcon, TRUE);
-			SetDlgItemHex(hDlg, IDC_EDIT_ANIM_COLOR,		configuracion->colorOfAnimationOnLaunchIcon);
 			SetDlgItemText(hDlg, IDC_EDIT_WAV,				configuracion->soundOnLaunchIcon);
 			SetDlgItemText(hDlg, IDC_EDIT_PRESSED_ICON,		configuracion->pressed_icon);
 			SetDlgItemText(hDlg, IDC_EDIT_PRESSED_SOUND,	configuracion->pressed_sound);
 
 #ifndef EXEC_MODE
 			EnableWindow(GetDlgItem(hDlg, IDC_CHECK_ONLAUNCH_CLOSE), FALSE);
+			EnableWindow(GetDlgItem(hDlg, IDC_CHECK_ONLAUNCH_MINIMIZE), FALSE);
 #endif
 		}
 		return TRUE;
@@ -51,14 +51,6 @@ LRESULT CALLBACK OptionDialogOnLaunch(HWND hDlg, UINT uMsg, WPARAM wParam, LPARA
 				GetDlgItemText(hDlg, IDC_EDIT_WAV, str, MAX_PATH);
 				configuracion->getAbsolutePath(fullPath, MAX_PATH, str);
 				PlaySound(fullPath, 0, SND_ASYNC | SND_FILENAME | SND_NODEFAULT);
-				break;
-			case IDC_BUTTON_ANIM_COLOR:
-				int rgbCurrent;
-				COLORREF nextColor;
-				rgbCurrent = GetDlgItemHex(hDlg, IDC_EDIT_ANIM_COLOR, NULL);
-				if (ColorSelector(hDlg, rgbCurrent, &nextColor)) {
-					SetDlgItemHex(hDlg, IDC_EDIT_ANIM_COLOR, nextColor);
-				}
 				break;
 			case IDC_BUTTON_PRESSED_ICON:
 				GetDlgItemText(hDlg, IDC_EDIT_PRESSED_ICON, str, MAX_PATH);
@@ -115,9 +107,8 @@ BOOL SaveConfigurationOnLaunch(HWND hDlg)
 	configuracion->vibrateOnLaunchIcon = vibrateOnLaunchIcon;
 
 	configuracion->closeOnLaunchIcon			= SendMessage(GetDlgItem(hDlg, IDC_CHECK_ONLAUNCH_CLOSE),		BM_GETCHECK, 0, 0) == BST_CHECKED;
-	configuracion->allowAnimationOnLaunchIcon	= SendMessage(GetDlgItem(hDlg, IDC_CHECK_ONLAUNCH_ANIMATE),		BM_GETCHECK, 0, 0) == BST_CHECKED;
+	configuracion->minimizeOnLaunchIcon			= SendMessage(GetDlgItem(hDlg, IDC_CHECK_ONLAUNCH_MINIMIZE),	BM_GETCHECK, 0, 0) == BST_CHECKED;
 	configuracion->allowSoundOnLaunchIcon		= SendMessage(GetDlgItem(hDlg, IDC_CHECK_ONLAUNCH_SOUND),		BM_GETCHECK, 0, 0) == BST_CHECKED;
-	configuracion->colorOfAnimationOnLaunchIcon	= GetDlgItemHex(hDlg, IDC_EDIT_ANIM_COLOR, NULL);
 
 	GetDlgItemText(hDlg, IDC_EDIT_WAV,			configuracion->soundOnLaunchIcon,	CountOf(configuracion->soundOnLaunchIcon));
 	GetDlgItemText(hDlg, IDC_EDIT_PRESSED_ICON,	configuracion->pressed_icon,		CountOf(configuracion->pressed_icon));
