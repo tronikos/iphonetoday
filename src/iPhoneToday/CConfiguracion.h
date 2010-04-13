@@ -119,7 +119,6 @@ public:
 	UINT velMaxima;
 	UINT velMinima;
 	UINT refreshTime;
-	UINT animationTime;
 	UINT factorMovimiento;
 	UINT verticalScroll;
 	UINT freestyleScroll;
@@ -144,13 +143,16 @@ public:
 	BubbleSettings bubble_state;
 	BubbleSettings bubble_alarm;
 
+	// Animation
+	UINT animationType;
+	COLORREF animationColor;
+	UINT animationDuration;
+	BOOL launchAppAtBeginningOfAnimation;
+
 	// OnLaunchIcon
 	BOOL closeOnLaunchIcon;
 	BOOL minimizeOnLaunchIcon;
 	UINT vibrateOnLaunchIcon;
-	UINT allowAnimationOnLaunchIcon;
-	BOOL launchOnStartOfAnimation;
-	COLORREF colorOfAnimationOnLaunchIcon;
 	UINT allowSoundOnLaunchIcon;
 	TCHAR soundOnLaunchIcon[MAX_PATH];
 

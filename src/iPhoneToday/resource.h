@@ -15,9 +15,10 @@
 #define IDS_TAB_TRANSPARENCY            118
 #define IDS_TAB_OUTOFSCREEN             119
 #define IDS_TAB_ABOUT                   120
-#define IDD_DIALOGFONT                  121
-#define IDD_DIALOGBACK                  122
-#define IDD_KB_BUTTON                   123
+#define IDS_TAB_ANIMATION               121
+#define IDD_DIALOGFONT                  200
+#define IDD_DIALOGBACK                  201
+#define IDD_KB_BUTTON                   202
 #define IDD_DIALOGDUMMY                 500
 #define IDD_MENU_ICON                   501
 #define IDD_MENU_HEADER                 502
@@ -32,6 +33,7 @@
 #define IDD_DIALOGPAGE_TRANSPARENCY     518
 #define IDD_DIALOGPAGE_OUTOFSCREEN      519
 #define IDD_DIALOGPAGE_ABOUT            520
+#define IDD_DIALOGPAGE_ANIMATION        521
 #define IDC_MICON_SCREEN                1001
 #define IDC_MICON_NAME                  1002
 #define IDC_MICON_IMAGE                 1003
@@ -101,7 +103,7 @@
 #define IDC_CHECK_DISABLE_RIGHT_CLICK   1104
 #define IDC_CHECK_IGNORE_ROTATION       1105
 #define IDC_CHECK_ONLAUNCH_CLOSE        1106
-#define IDC_CHECK_ONLAUNCH_ANIMATE      1107
+#define IDC_CHECK_ONLAUNCH_MINIMIZE     1107
 #define IDC_EDIT_ONLAUNCH_VIBRATE       1108
 #define IDC_EDIT_NOTIFY_TIMER           1109
 #define IDC_BUTTON_HEADER_COLOR         1113
@@ -193,6 +195,8 @@
 #define IDC_STATIC_B                    1223
 #define IDC_KB_BUTTON                   1224
 #define IDC_CHECK_CS_BACK_TILE          1225
+#define IDC_COMBO_ANIMATION             1226
+#define IDC_CHECK_ANIMATION_LAUNCHAPP   1227
 
 // Next default values for new objects
 // 
@@ -200,7 +204,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        124
 #define _APS_NEXT_COMMAND_VALUE         40003
-#define _APS_NEXT_CONTROL_VALUE         1226
+#define _APS_NEXT_CONTROL_VALUE         1228
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

@@ -445,7 +445,7 @@ LRESULT doTimer (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 
 				estado->timeUltimoLanzamiento = GetTickCount();
 
-				if (estado->iconoActivo && !configuracion->launchOnStartOfAnimation) {
+				if (estado->iconoActivo && !configuracion->launchAppAtBeginningOfAnimation) {
 					BOOL bWorked = FALSE;
 					if (hayNotificacion(estado->iconoActivo->tipo) > 0 && _tcsclen(estado->iconoActivo->ejecutableAlt) > 0) {
 						bWorked = LaunchApplication(estado->iconoActivo->ejecutableAlt, estado->iconoActivo->parametrosAlt);
@@ -470,7 +470,7 @@ LRESULT doTimer (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 		long despY = configuracion->altoPantalla / 2;
 		long timeInicial = GetTickCount() - estado->timeUltimoLanzamiento;
 		float porcent = 1;
-		long timeLanzamiento = configuracion->animationTime;
+		long timeLanzamiento = configuracion->animationDuration;
 
 		long time = timeLanzamiento - max(0, timeLanzamiento - timeInicial);
 		if (time > 0) {
@@ -480,8 +480,8 @@ LRESULT doTimer (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 		despX = (long) (((float) despX) * porcent);
 		despY = (long) (((float) despY) * porcent);
 
-		if ((estado->estadoCuadro == 3 && configuracion->allowAnimationOnLaunchIcon == 2) ||
-			(estado->estadoCuadro != 3 && configuracion->allowAnimationOnLaunchIcon != 2))
+		if ((estado->estadoCuadro == 3 && configuracion->animationType == 2) ||
+			(estado->estadoCuadro != 3 && configuracion->animationType != 2))
 		{
 			estado->cuadroLanzando.left = configuracion->anchoPantalla / 2 - despX;
 			estado->cuadroLanzando.right = configuracion->anchoPantalla / 2 + despX;
@@ -704,13 +704,13 @@ LRESULT doPaint (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 		} else {
 			hDCMemSrc = &hDCMem;
 		}
-		if (configuracion->allowAnimationOnLaunchIcon == 2) {
+		if (configuracion->animationType == 2) {
 			FillRect(hDCMem3, &rcWindBounds, hBrushAnimation);
 		} else {
 			BitBlt(hDCMem3, rcWindBounds.left, rcWindBounds.top, rcWindBounds.right - rcWindBounds.left, rcWindBounds.bottom - rcWindBounds.top, *hDCMemSrc, rcWindBounds.left, rcWindBounds.top, SRCCOPY);
 		}
 		if (estado->estadoCuadro == 1 || estado->estadoCuadro == 3) {
-			if (configuracion->allowAnimationOnLaunchIcon == 2) {
+			if (configuracion->animationType == 2) {
 				StretchBlt(hDCMem3, estado->cuadroLanzando.left, estado->cuadroLanzando.top, estado->cuadroLanzando.right - estado->cuadroLanzando.left, estado->cuadroLanzando.bottom - estado->cuadroLanzando.top,
 					*hDCMemSrc, rcWindBounds.left, rcWindBounds.top, rcWindBounds.right - rcWindBounds.left, rcWindBounds.bottom - rcWindBounds.top, SRCCOPY);
 			} else {
@@ -770,7 +770,7 @@ LRESULT doPaint (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 
 		hBrushFondo = CreateSolidBrush(configuracion->fondoColor);
 		hBrushTrans = CreateSolidBrush(RGB(0, 0, 0));
-		hBrushAnimation = CreateSolidBrush(configuracion->colorOfAnimationOnLaunchIcon);
+		hBrushAnimation = CreateSolidBrush(configuracion->animationColor);
 	}
 
 #ifdef EXEC_MODE
@@ -2309,13 +2309,13 @@ void procesaPulsacion(HWND hwnd, POINTS posCursor, BOOL doubleClick, BOOL noLanz
 			}
 		}
 
-		BOOL hasAnimation = configuracion->allowAnimationOnLaunchIcon && icono->launchAnimation > 0;
+		BOOL hasAnimation = configuracion->animationType > 0 && icono->launchAnimation > 0;
 		if (hasAnimation) {
 			SetTimer(hwnd, TIMER_LANZANDO_APP, configuracion->refreshTime, NULL);
 			estado->timeUltimoLanzamiento = GetTickCount();
 			estado->iconoActivo = icono;
 		}
-		if (!hasAnimation || configuracion->launchOnStartOfAnimation) {
+		if (!hasAnimation || configuracion->launchAppAtBeginningOfAnimation) {
 			BOOL bWorked = FALSE;
 			if (hayNotificacion(icono->tipo) > 0 && _tcsclen(icono->ejecutableAlt) > 0) {
 				bWorked = LaunchApplication(icono->ejecutableAlt, icono->parametrosAlt);

@@ -469,23 +469,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\iPhoneToday\PropertySheetPageScreen.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\iPhoneToday\PropertySheetPageWallpaper.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\iPhoneToday\PropertySheetPageAbout.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\iPhoneToday\PropertySheetPageMovement.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\iPhoneToday\PropertySheetPageHeader.cpp"
+				RelativePath="..\iPhoneToday\PropertySheetPageAnimation.cpp"
 				>
 			</File>
 			<File
@@ -493,11 +481,15 @@
 				>
 			</File>
 			<File
-				RelativePath="..\iPhoneToday\PropertySheetPageSpecialIcons.cpp"
+				RelativePath="..\iPhoneToday\PropertySheetPageGeneral.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\iPhoneToday\PropertySheetPageGeneral.cpp"
+				RelativePath="..\iPhoneToday\PropertySheetPageHeader.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\iPhoneToday\PropertySheetPageMovement.cpp"
 				>
 			</File>
 			<File
@@ -505,11 +497,23 @@
 				>
 			</File>
 			<File
+				RelativePath="..\iPhoneToday\PropertySheetPageOutOfScreen.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\iPhoneToday\PropertySheetPageScreen.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\iPhoneToday\PropertySheetPageSpecialIcons.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\iPhoneToday\PropertySheetPageTransparency.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\iPhoneToday\PropertySheetPageOutOfScreen.cpp"
+				RelativePath="..\iPhoneToday\PropertySheetPageWallpaper.cpp"
 				>
 			</File>
 			<File

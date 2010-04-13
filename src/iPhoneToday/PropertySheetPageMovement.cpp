@@ -22,7 +22,6 @@ LRESULT CALLBACK OptionDialogMovement(HWND hDlg, UINT uMsg, WPARAM wParam, LPARA
 			SetDlgItemInt(hDlg, IDC_EDIT_MIN_VELOCITY,		configuracion->velMinima,			TRUE);
 			SetDlgItemInt(hDlg, IDC_EDIT_MAX_VELOCITY,		configuracion->velMaxima,			TRUE);
 			SetDlgItemInt(hDlg, IDC_EDIT_REFRESH_TIME,		configuracion->refreshTime,			TRUE);
-			SetDlgItemInt(hDlg, IDC_EDIT_ANIMATION_TIME,	configuracion->animationTime,		TRUE);
 			SendMessage(GetDlgItem(hDlg, IDC_CHECK_VERTICAL_SCROLL), BM_SETCHECK, configuracion->verticalScroll ? BST_CHECKED : BST_UNCHECKED, 0);
 			SendMessage(GetDlgItem(hDlg, IDC_CHECK_FREESTYLE_SCROLL), BM_SETCHECK, configuracion->freestyleScroll ? BST_CHECKED : BST_UNCHECKED, 0);
 
@@ -44,14 +43,13 @@ LRESULT CALLBACK OptionDialogMovement(HWND hDlg, UINT uMsg, WPARAM wParam, LPARA
 
 BOOL IsValidConfigurationMovement(HWND hDlg)
 {
-	int moveThreshold, moveFactor, minVelocity, maxVelocity, refreshTime, animationTime;
+	int moveThreshold, moveFactor, minVelocity, maxVelocity, refreshTime;
 
 	moveThreshold	= GetDlgItemInt(hDlg, IDC_EDIT_MOVE_THRESHOLD,	NULL, TRUE);
 	moveFactor		= GetDlgItemInt(hDlg, IDC_EDIT_MOVE_FACTOR,		NULL, TRUE);
 	minVelocity		= GetDlgItemInt(hDlg, IDC_EDIT_MIN_VELOCITY,	NULL, TRUE);
 	maxVelocity		= GetDlgItemInt(hDlg, IDC_EDIT_MAX_VELOCITY,	NULL, TRUE);
 	refreshTime		= GetDlgItemInt(hDlg, IDC_EDIT_REFRESH_TIME,	NULL, TRUE);
-	animationTime	= GetDlgItemInt(hDlg, IDC_EDIT_ANIMATION_TIME,	NULL, TRUE);
 
 	if (moveThreshold < 0 || moveThreshold > 256) {
 		MessageBox(hDlg, TEXT("Movement threshold value is not valid!"), TEXT("Error"), MB_OK);
@@ -73,10 +71,6 @@ BOOL IsValidConfigurationMovement(HWND hDlg)
 		MessageBox(hDlg, TEXT("Refresh time value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
-	if (animationTime < 0 || animationTime > 10000) {
-		MessageBox(hDlg, TEXT("Animation time value is not valid!"), TEXT("Error"), MB_OK);
-		return FALSE;
-	}
 
 	return TRUE;
 }
@@ -85,21 +79,19 @@ BOOL SaveConfigurationMovement(HWND hDlg)
 {
 	if (!IsValidConfigurationMovement(hDlg)) return FALSE;
 
-	int moveThreshold, moveFactor, minVelocity, maxVelocity, refreshTime, animationTime;
+	int moveThreshold, moveFactor, minVelocity, maxVelocity, refreshTime;
 
 	moveThreshold	= GetDlgItemInt(hDlg, IDC_EDIT_MOVE_THRESHOLD,	NULL, TRUE);
 	moveFactor		= GetDlgItemInt(hDlg, IDC_EDIT_MOVE_FACTOR,		NULL, TRUE);
 	minVelocity		= GetDlgItemInt(hDlg, IDC_EDIT_MIN_VELOCITY,	NULL, TRUE);
 	maxVelocity		= GetDlgItemInt(hDlg, IDC_EDIT_MAX_VELOCITY,	NULL, TRUE);
 	refreshTime		= GetDlgItemInt(hDlg, IDC_EDIT_REFRESH_TIME,	NULL, TRUE);
-	animationTime	= GetDlgItemInt(hDlg, IDC_EDIT_ANIMATION_TIME,	NULL, TRUE);
 
 	configuracion->moveThreshold	= moveThreshold;
 	configuracion->factorMovimiento	= moveFactor;
 	configuracion->velMinima		= minVelocity;
 	configuracion->velMaxima		= maxVelocity;
 	configuracion->refreshTime		= refreshTime;
-	configuracion->animationTime	= animationTime;
 
 	configuracion->verticalScroll	= SendMessage(GetDlgItem(hDlg, IDC_CHECK_VERTICAL_SCROLL), BM_GETCHECK, 0, 0) == BST_CHECKED;
 	configuracion->freestyleScroll	= SendMessage(GetDlgItem(hDlg, IDC_CHECK_FREESTYLE_SCROLL), BM_GETCHECK, 0, 0) == BST_CHECKED;
