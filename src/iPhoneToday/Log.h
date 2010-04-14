@@ -3,6 +3,5 @@
 /*
 #include "stdafx.h"
 
-void WriteToLog(LPTSTR tszLine);
-BOOL InitLog();
+void WriteToLog(const TCHAR* message, ...);
 */
