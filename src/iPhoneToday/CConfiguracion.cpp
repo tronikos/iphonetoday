@@ -613,7 +613,7 @@ void CConfiguracion::defaultValues()
 	this->sign.offset.right = 0;
 	this->sign.offset.bottom = 0;
 
-	this->animationType = 2;
+	this->animationEffect = 6;
 	this->animationColor = RGB(0,0,0);
 	this->animationDuration = 300;
 	this->launchAppAtBeginningOfAnimation = 0;
@@ -909,7 +909,7 @@ BOOL CConfiguracion::loadXMLConfig()
 		} else if(_stricmp(nameNode, "BubbleState") == 0) {
 			BubbleSettingsLoad(pElem, &this->bubble_state);
 		} else if(_stricmp(nameNode, "Animation") == 0) {
-			XMLUtils::GetAttr(pElem, "type",     &this->animationType);
+			XMLUtils::GetAttr(pElem, "effect",   &this->animationEffect);
 			XMLUtils::GetAttr(pElem, "color",    &this->animationColor);
 			XMLUtils::GetAttr(pElem, "duration", &this->animationDuration);
 			XMLUtils::GetAttr(pElem, "LaunchAppAtBeginningOfAnimation", &this->launchAppAtBeginningOfAnimation);
@@ -1193,7 +1193,7 @@ BOOL CConfiguracion::saveXMLConfig()
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("Animation");
-	XMLUtils::SetAttr(pElem, "type",     this->animationType);
+	XMLUtils::SetAttr(pElem, "effect",   this->animationEffect);
 	XMLUtils::SetAttr(pElem, "color",    this->animationColor);
 	XMLUtils::SetAttr(pElem, "duration", this->animationDuration);
 	XMLUtils::SetAttr(pElem, "LaunchAppAtBeginningOfAnimation", this->launchAppAtBeginningOfAnimation);

@@ -18,9 +18,13 @@ LRESULT CALLBACK OptionDialogAnimation(HWND hDlg, UINT uMsg, WPARAM wParam, LPAR
 			InitOptionsDialog(hDlg, TAB_ANIMATION);
 
 			SendMessage(GetDlgItem(hDlg, IDC_COMBO_ANIMATION), CB_ADDSTRING, 0, (LPARAM)L"None");
-			SendMessage(GetDlgItem(hDlg, IDC_COMBO_ANIMATION), CB_ADDSTRING, 0, (LPARAM)L"Expanding rectangular");
-			SendMessage(GetDlgItem(hDlg, IDC_COMBO_ANIMATION), CB_ADDSTRING, 0, (LPARAM)L"Shrinking screen");
-			SendMessage(GetDlgItem(hDlg, IDC_COMBO_ANIMATION), CB_SETCURSEL, configuracion->animationType, 0);
+			SendMessage(GetDlgItem(hDlg, IDC_COMBO_ANIMATION), CB_ADDSTRING, 0, (LPARAM)L"Expand rectangular from center");
+			SendMessage(GetDlgItem(hDlg, IDC_COMBO_ANIMATION), CB_ADDSTRING, 0, (LPARAM)L"Zoom out from center");
+			SendMessage(GetDlgItem(hDlg, IDC_COMBO_ANIMATION), CB_ADDSTRING, 0, (LPARAM)L"Zoom in to center");
+			SendMessage(GetDlgItem(hDlg, IDC_COMBO_ANIMATION), CB_ADDSTRING, 0, (LPARAM)L"Expand rectangular from clicked area");
+			SendMessage(GetDlgItem(hDlg, IDC_COMBO_ANIMATION), CB_ADDSTRING, 0, (LPARAM)L"Zoom out from clicked area");
+			SendMessage(GetDlgItem(hDlg, IDC_COMBO_ANIMATION), CB_ADDSTRING, 0, (LPARAM)L"Zoom in to clicked area");
+			SendMessage(GetDlgItem(hDlg, IDC_COMBO_ANIMATION), CB_SETCURSEL, configuracion->animationEffect, 0);
 
 			SetDlgItemHex(hDlg, IDC_EDIT_ANIM_COLOR,		configuracion->animationColor);
 			SetDlgItemInt(hDlg, IDC_EDIT_ANIMATION_TIME,	configuracion->animationDuration, TRUE);
@@ -61,7 +65,7 @@ BOOL SaveConfigurationAnimation(HWND hDlg)
 {
 	if (!IsValidConfigurationAnimation(hDlg)) return FALSE;
 
-	configuracion->animationType	= SendMessage(GetDlgItem(hDlg, IDC_COMBO_ANIMATION), CB_GETCURSEL, 0, 0);
+	configuracion->animationEffect	= SendMessage(GetDlgItem(hDlg, IDC_COMBO_ANIMATION), CB_GETCURSEL, 0, 0);
 	configuracion->animationColor	= GetDlgItemHex(hDlg, IDC_EDIT_ANIM_COLOR, NULL);
 	configuracion->animationDuration= GetDlgItemInt(hDlg, IDC_EDIT_ANIMATION_TIME, NULL, TRUE);
 	configuracion->launchAppAtBeginningOfAnimation = SendMessage(GetDlgItem(hDlg, IDC_CHECK_ANIMATION_LAUNCHAPP), BM_GETCHECK, 0, 0) == BST_CHECKED;
