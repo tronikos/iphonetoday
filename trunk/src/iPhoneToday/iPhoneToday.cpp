@@ -430,8 +430,6 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lPara
 LRESULT doTimer (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 {
 	BOOL shouldInvalidateRect = FALSE;
-	double movx;
-	double movy;
 	if (wParam == TIMER_LANZANDO_APP) {
 
 		if (estado->debeCortarTimeOut == TRUE) {
@@ -465,34 +463,70 @@ LRESULT doTimer (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 			return 0;
 		}
 
-		// estado->estadoCuadro = 1;
-		long despX = configuracion->anchoPantalla / 2;
-		long despY = configuracion->altoPantalla / 2;
 		long timeInicial = GetTickCount() - estado->timeUltimoLanzamiento;
-		float porcent = 1;
+		float percent = 1;
 		long timeLanzamiento = configuracion->animationDuration;
-
 		long time = timeLanzamiento - max(0, timeLanzamiento - timeInicial);
 		if (time > 0) {
-			porcent = (((float) time) / timeLanzamiento);
+			percent = (float) time / timeLanzamiento;
+		}
+		if ((configuracion->animationEffect == 1 || configuracion->animationEffect == 4) && estado->estadoCuadro == 3) {
+			percent = 1 - percent;
+		}
+		if (!(configuracion->animationEffect == 1 || configuracion->animationEffect == 4) && !(estado->estadoCuadro == 3)) {
+			percent = 1 - percent;
 		}
 
-		despX = (long) (((float) despX) * porcent);
-		despY = (long) (((float) despY) * porcent);
-
-		if ((estado->estadoCuadro == 3 && configuracion->animationType == 2) ||
-			(estado->estadoCuadro != 3 && configuracion->animationType != 2))
-		{
-			estado->cuadroLanzando.left = configuracion->anchoPantalla / 2 - despX;
-			estado->cuadroLanzando.right = configuracion->anchoPantalla / 2 + despX;
-			estado->cuadroLanzando.top = configuracion->altoPantalla / 2 - despY;
-			estado->cuadroLanzando.bottom = configuracion->altoPantalla / 2 + despY;
+		int centerX, centerY;
+		if (estado->iconoActivo && configuracion->animationEffect >= 4) {
+			centerX = posCursor.x;
+			centerY = posCursor.y;
 		} else {
-			estado->cuadroLanzando.left = despX;
-			estado->cuadroLanzando.right = configuracion->anchoPantalla - despX;
-			estado->cuadroLanzando.top = despY;
-			estado->cuadroLanzando.bottom = configuracion->altoPantalla - despY;
+			centerX = configuracion->anchoPantalla / 2;
+			centerY = configuracion->altoPantalla / 2;
 		}
+		int startingW, startingH;
+		if (configuracion->animationEffect == 3 || configuracion->animationEffect == 6) {
+			if (configuracion->altoPantalla > configuracion->anchoPantalla) {
+				startingW = configuracion->mainScreenConfig->iconWidth;
+				startingH = configuracion->mainScreenConfig->iconWidth * configuracion->altoPantalla / configuracion->anchoPantalla;
+			} else {
+				startingW = configuracion->mainScreenConfig->iconWidth * configuracion->anchoPantalla / configuracion->altoPantalla;
+				startingH = configuracion->mainScreenConfig->iconWidth;
+			}
+		} else {
+			startingW = 0;
+			startingH = 0;
+		}
+
+		int W = (int) (((int) configuracion->anchoPantalla - startingW) * percent) + startingW;
+		int H = (int) (((int) configuracion->altoPantalla - startingH) * percent) + startingH;
+
+		centerX = (int) (((int) configuracion->anchoPantalla / 2 - centerX) * percent) + centerX;
+		centerY = (int) (((int) configuracion->altoPantalla / 2 - centerY) * percent) + centerY;
+
+		estado->cuadroLanzando.left = centerX - W /2 ;
+		estado->cuadroLanzando.right = centerX + W / 2;
+		estado->cuadroLanzando.top = centerY - H / 2;
+		estado->cuadroLanzando.bottom = centerY + H / 2;
+
+		if (estado->cuadroLanzando.left < 0) {
+			estado->cuadroLanzando.right += -estado->cuadroLanzando.left;
+			estado->cuadroLanzando.left = 0;
+		}
+		if (estado->cuadroLanzando.top < 0) {
+			estado->cuadroLanzando.bottom += -estado->cuadroLanzando.top;
+			estado->cuadroLanzando.top = 0;
+		}
+		if (estado->cuadroLanzando.right > (int) configuracion->anchoPantalla) {
+			estado->cuadroLanzando.left -= estado->cuadroLanzando.right - configuracion->anchoPantalla;
+			estado->cuadroLanzando.right = configuracion->anchoPantalla;
+		}
+		if (estado->cuadroLanzando.bottom > (int) configuracion->altoPantalla) {
+			estado->cuadroLanzando.top -= estado->cuadroLanzando.bottom - configuracion->altoPantalla;
+			estado->cuadroLanzando.bottom = configuracion->altoPantalla;
+		}
+
 		if (estado->estadoCuadro != 3) {
 			estado->estadoCuadro = 1;
 		}
@@ -520,6 +554,8 @@ LRESULT doTimer (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 			setPosiciones(true, 0, 0);
 			estado->hayMovimiento = false;
 		} else {
+			int movx;
+			int movy;
 			// movx = abs(posImage.x - estado->posObjetivo.x)*0.30;
 			// movy = (posImage.y - estado->posObjetivo.y)*0.30;
 			movx = configuracion->velMinima + (configuracion->velMaxima - configuracion->velMinima) * abs(posImage.x - estado->posObjetivo.x) / configuracion->anchoPantalla;
@@ -549,14 +585,14 @@ LRESULT doTimer (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 				movy = -movy;
 			}
 
-			if (abs(posImage.x - estado->posObjetivo.x) < abs(int(movx))) {
+			if (abs(posImage.x - estado->posObjetivo.x) < abs(movx)) {
 				posImage.x = estado->posObjetivo.x;
 				movx = 0;
 			} else {
 				posImage.x += short(movx);
 			}
 
-			if (abs(posImage.y - estado->posObjetivo.y) < abs(int(movy))) {
+			if (abs(posImage.y - estado->posObjetivo.y) < abs(movy)) {
 				posImage.y = estado->posObjetivo.y;
 				movy = 0;
 			} else {
@@ -568,7 +604,7 @@ LRESULT doTimer (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 				setPosiciones(true, 0, 0);
 				estado->hayMovimiento = false;
 			} else {
-				setPosiciones(false, int(movx), int(movy));
+				setPosiciones(false, movx, movy);
 			}
 		}
 		shouldInvalidateRect = TRUE;
@@ -693,6 +729,7 @@ LRESULT doPaint (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 	}
 
 	if (estado->estadoCuadro) {
+		//NKDbgPrintfW(L"estadoCuadro: %d\tcuadroLanzando: %d %d %d %d\n", estado->estadoCuadro, estado->cuadroLanzando.left, estado->cuadroLanzando.top, estado->cuadroLanzando.right, estado->cuadroLanzando.bottom);
 		if (hDCMem3 == NULL) {
 			hDCMem3 = CreateCompatibleDC(hDC);
 			hbmMem3 = CreateCompatibleBitmap(hDC, rcWindBounds.right - rcWindBounds.left, rcWindBounds.bottom - rcWindBounds.top);
@@ -704,20 +741,28 @@ LRESULT doPaint (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 		} else {
 			hDCMemSrc = &hDCMem;
 		}
-		if (configuracion->animationType == 2) {
+		if (configuracion->animationEffect != 1 && configuracion->animationEffect != 4) {
 			FillRect(hDCMem3, &rcWindBounds, hBrushAnimation);
 		} else {
 			BitBlt(hDCMem3, rcWindBounds.left, rcWindBounds.top, rcWindBounds.right - rcWindBounds.left, rcWindBounds.bottom - rcWindBounds.top, *hDCMemSrc, rcWindBounds.left, rcWindBounds.top, SRCCOPY);
 		}
 		if (estado->estadoCuadro == 1 || estado->estadoCuadro == 3) {
-			if (configuracion->animationType == 2) {
+			if (configuracion->animationEffect == 2 || configuracion->animationEffect == 5) {
 				StretchBlt(hDCMem3, estado->cuadroLanzando.left, estado->cuadroLanzando.top, estado->cuadroLanzando.right - estado->cuadroLanzando.left, estado->cuadroLanzando.bottom - estado->cuadroLanzando.top,
 					*hDCMemSrc, rcWindBounds.left, rcWindBounds.top, rcWindBounds.right - rcWindBounds.left, rcWindBounds.bottom - rcWindBounds.top, SRCCOPY);
+			} else if (configuracion->animationEffect == 3 || configuracion->animationEffect == 6) {
+				StretchBlt(hDCMem3, rcWindBounds.left, rcWindBounds.top, rcWindBounds.right - rcWindBounds.left, rcWindBounds.bottom - rcWindBounds.top,
+					*hDCMemSrc, estado->cuadroLanzando.left, estado->cuadroLanzando.top, estado->cuadroLanzando.right - estado->cuadroLanzando.left, estado->cuadroLanzando.bottom - estado->cuadroLanzando.top, SRCCOPY);
 			} else {
 				FillRect(hDCMem3, &estado->cuadroLanzando, hBrushAnimation);
 			}
 		} else if (estado->estadoCuadro == 2) {
-			FillRect(hDCMem3, &estado->cuadroLanzando, hBrushAnimation);
+			if (configuracion->animationEffect == 3 || configuracion->animationEffect == 6) {
+				StretchBlt(hDCMem3, rcWindBounds.left, rcWindBounds.top, rcWindBounds.right - rcWindBounds.left, rcWindBounds.bottom - rcWindBounds.top,
+					*hDCMemSrc, estado->cuadroLanzando.left, estado->cuadroLanzando.top, estado->cuadroLanzando.right - estado->cuadroLanzando.left, estado->cuadroLanzando.bottom - estado->cuadroLanzando.top, SRCCOPY);
+			} else {
+				FillRect(hDCMem3, &estado->cuadroLanzando, hBrushAnimation);
+			}
 			if (GetTickCount() - estado->timeUltimoLanzamiento >= 2000) {
 				SetTimer(hwnd, TIMER_LANZANDO_APP, configuracion->refreshTime, NULL);
 				estado->timeUltimoLanzamiento = GetTickCount();
@@ -2309,7 +2354,7 @@ void procesaPulsacion(HWND hwnd, POINTS posCursor, BOOL doubleClick, BOOL noLanz
 			}
 		}
 
-		BOOL hasAnimation = configuracion->animationType > 0 && icono->launchAnimation > 0;
+		BOOL hasAnimation = configuracion->animationEffect > 0 && icono->launchAnimation > 0;
 		if (hasAnimation) {
 			SetTimer(hwnd, TIMER_LANZANDO_APP, configuracion->refreshTime, NULL);
 			estado->timeUltimoLanzamiento = GetTickCount();

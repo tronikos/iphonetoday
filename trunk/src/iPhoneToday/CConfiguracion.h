@@ -144,7 +144,7 @@ public:
 	BubbleSettings bubble_alarm;
 
 	// Animation
-	UINT animationType;
+	UINT animationEffect;
 	COLORREF animationColor;
 	UINT animationDuration;
 	BOOL launchAppAtBeginningOfAnimation;
