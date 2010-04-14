@@ -23,6 +23,7 @@ void InitOptionsDialog(HWND hDlg, INT iDlg)
 	// Initialize handle to property sheet
 	g_hDlg[iDlg] = hDlg;
 	initializedDialogs++;
+	//WriteToLog(L"Initializing dialog #%d\n", iDlg);
 
 	if (iDlg == 0) {
 		if (FindWindow(L"MS_SIPBUTTON", NULL) != NULL) {
@@ -162,25 +163,33 @@ LRESULT DefOptionWindowProc(HWND hDlg, INT iDlg, UINT uMsg, WPARAM wParam, LPARA
 					return FALSE;
 				case PSN_APPLY:
 					appliedDialogs++;
+					//WriteToLog(L"Applying dialog #%d\n", iDlg);
 					if (saveOptionsAnswer == -1) {
 						int resp = MessageBox(hDlg, TEXT("Save Changes?"), TEXT("Exit"), MB_YESNOCANCEL);
+						//WriteToLog(L"User response to \"Save Changes?\": %d\n", resp);
 						if (resp == IDCANCEL) {
 							SetWindowLong(hDlg, DWL_MSGRESULT, PSNRET_INVALID_NOCHANGEPAGE);
 							appliedDialogs = 0;
 							return TRUE;
 						}
-						saveOptionsAnswer = (resp == IDYES) ? 1 : 0;
+						saveOptionsAnswer = (resp == IDNO) ? 0 : 1;
 					}
 					if (saveOptionsAnswer == 1) {
+						//WriteToLog(L"Calling IsValidConfiguration(%d)\n", iDlg);
 						if (!IsValidConfiguration(hDlg, iDlg)) {
+							//WriteToLog(L"IsValidConfiguration(%d) returned FALSE\n", iDlg);
 							SetWindowLong(hDlg, DWL_MSGRESULT, PSNRET_INVALID);
 							saveOptionsAnswer = -1;
 							appliedDialogs = 0;
 							return TRUE;
 						}
 						if (appliedDialogs == initializedDialogs) {
+							//WriteToLog(L"Calling SaveConfiguration()\n");
 							if (SaveConfiguration()) {
+								//WriteToLog(L"Options saved. Restarting iPT.\n");
 								PostMessage(g_hWnd, WM_CREATE, 0, 0);
+							//} else {
+							//	WriteToLog(L"SaveConfiguration() returned FALSE\n");
 							}
 						}
 					}
@@ -320,6 +329,7 @@ BOOL CreatePropertySheet(HWND hwnd)
 
 
 	// Create and display property sheet
+	//WriteToLog(L"Calling PropertySheet()\n");
     PropertySheet(&psh);
 
 
