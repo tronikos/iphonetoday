@@ -613,7 +613,7 @@ void CConfiguracion::defaultValues()
 	this->sign.offset.right = 0;
 	this->sign.offset.bottom = 0;
 
-	this->animationEffect = 6;
+	this->animationEffect = 5;
 	this->animationColor = RGB(0,0,0);
 	this->animationDuration = 300;
 	this->launchAppAtBeginningOfAnimation = 0;
