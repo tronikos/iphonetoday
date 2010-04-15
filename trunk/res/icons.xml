@@ -24,7 +24,7 @@
         <icon name="Google Maps" image="Google Maps.png" sound="" exec="http://maps.google.com/" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
         <icon name="Solitaire" image="Solitaire.png" sound="" exec=":MSSOLITAIRE" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
         <icon name="Bubbles" image="Bubble Breaker.png" sound="" exec="BubbleBreaker.exe" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
-        <icon name="ActiveSync" image="ActiveSync.png" sound="" exec=":MSSYNCAPP" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
+        <icon name="ActiveSync" image="ActiveSync.png" sound="" exec=":MSSYNCAPP" parameters="" execAlt="" parametersAlt="" type="27" animation="1" />
         <icon name="TaskMgr" image="Task Manager.png" sound="" exec=":MSTASKMGR" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
         <icon name="Camera" image="Camera.png" sound="" exec="\Windows\camera.exe" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
     </screen>
