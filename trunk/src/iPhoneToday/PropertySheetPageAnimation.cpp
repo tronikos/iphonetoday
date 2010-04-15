@@ -18,10 +18,10 @@ LRESULT CALLBACK OptionDialogAnimation(HWND hDlg, UINT uMsg, WPARAM wParam, LPAR
 			InitOptionsDialog(hDlg, TAB_ANIMATION);
 
 			SendMessage(GetDlgItem(hDlg, IDC_COMBO_ANIMATION), CB_ADDSTRING, 0, (LPARAM)L"None");
-			SendMessage(GetDlgItem(hDlg, IDC_COMBO_ANIMATION), CB_ADDSTRING, 0, (LPARAM)L"Expand rectangular from center");
+			SendMessage(GetDlgItem(hDlg, IDC_COMBO_ANIMATION), CB_ADDSTRING, 0, (LPARAM)L"Expand rectangle from center");
 			SendMessage(GetDlgItem(hDlg, IDC_COMBO_ANIMATION), CB_ADDSTRING, 0, (LPARAM)L"Zoom out from center");
 			SendMessage(GetDlgItem(hDlg, IDC_COMBO_ANIMATION), CB_ADDSTRING, 0, (LPARAM)L"Zoom in to center");
-			SendMessage(GetDlgItem(hDlg, IDC_COMBO_ANIMATION), CB_ADDSTRING, 0, (LPARAM)L"Expand rectangular from clicked area");
+			SendMessage(GetDlgItem(hDlg, IDC_COMBO_ANIMATION), CB_ADDSTRING, 0, (LPARAM)L"Expand rectangle from clicked area");
 			SendMessage(GetDlgItem(hDlg, IDC_COMBO_ANIMATION), CB_ADDSTRING, 0, (LPARAM)L"Zoom out from clicked area");
 			SendMessage(GetDlgItem(hDlg, IDC_COMBO_ANIMATION), CB_ADDSTRING, 0, (LPARAM)L"Zoom in to clicked area");
 			SendMessage(GetDlgItem(hDlg, IDC_COMBO_ANIMATION), CB_SETCURSEL, configuracion->animationEffect, 0);
