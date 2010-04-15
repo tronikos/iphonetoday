@@ -351,11 +351,13 @@ BOOL CConfiguracion::loadBackground(HDC *hDC)
 		}
 #ifndef EXEC_MODE
 	} else {
-		fondoPantalla->hDC = CreateCompatibleDC(*hDC);
-		fondoPantalla->imagen = CreateCompatibleBitmap(*hDC, anchoPantalla, altoPantalla);
+		HDC hdc = GetDC(NULL);
+		fondoPantalla->hDC = CreateCompatibleDC(hdc);
+		fondoPantalla->imagen = CreateCompatibleBitmap(hdc, anchoPantalla, altoPantalla);
 		fondoPantalla->imagenOld = (HBITMAP)SelectObject(fondoPantalla->hDC, fondoPantalla->imagen);
 		fondoPantalla->anchoImagen = anchoPantalla;
 		fondoPantalla->altoImagen = altoPantalla;
+		ReleaseDC(NULL, hdc);
 	}
 #endif
 
