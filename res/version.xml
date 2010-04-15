@@ -1,7 +1,7 @@
 <application>
 <name>iPhoneToday</name>
-<version>1.5.1</version>
+<version>1.5.2</version>
 <description>iPhoneToday - An iPhone like interface for Windows Mobile</description>
 <versionurl>http://iphonetoday.googlecode.com/files/version.xml</versionurl>
-<caburl>http://iphonetoday.googlecode.com/files/iPhoneToday-1.5.1-wm.cab</caburl>
+<caburl>http://iphonetoday.googlecode.com/files/iPhoneToday-1.5.2-wm.cab</caburl>
 </application>
