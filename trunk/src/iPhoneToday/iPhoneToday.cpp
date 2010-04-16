@@ -3754,7 +3754,7 @@ void InvalidateScreenIfNotificationsChanged(CPantalla *pantalla)
 				}
 				break;
 			case NOTIF_MC_SIG_OPER:
-				if (notifications->dwNotificationsChanged[NOTIF_MISSEDCALLS] || notifications->dwNotificationsChanged[SN_PHONESIGNALSTRENGTH] || notifications->szNotificationsChanged[SN_PHONEOPERATORNAME]) {
+				if (notifications->dwNotificationsChanged[SN_PHONEMISSEDCALLS] || notifications->dwNotificationsChanged[SN_PHONESIGNALSTRENGTH] || notifications->szNotificationsChanged[SN_PHONEOPERATORNAME]) {
 					pantalla->debeActualizar = TRUE;
 					return;
 				}
