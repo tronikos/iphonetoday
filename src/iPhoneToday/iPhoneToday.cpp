@@ -1363,7 +1363,7 @@ void pintaIconos(HDC *hDC, RECT *rcWindBounds)
 	int nCirculos = listaPantallas->numPantallas;
 	int xReferencia;
 
-	if (nCirculos > 1) {
+	if (nCirculos > 1 && anchoCirculo > 0) {
 		xReferencia = int((configuracion->anchoPantalla / 2) - ((nCirculos - 1) * (anchoCirculo + distanciaCirculo) + anchoCirculo) / 2);
 
 		posCirculos.top = int(configuracion->altoPantalla) - anchoCirculo - configuracion->circlesOffset;
