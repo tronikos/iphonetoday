@@ -1396,7 +1396,7 @@ void pintaIconos(HDC *hDC, RECT *rcWindBounds)
 
 }
 
-void DrawBubbleText(HDC hDC, CIcono *bubble, int numNotif, CIcono *icon, int iconWidth, BubbleSettings *bs)
+void DrawBubbleText(HDC hDC, CIcono *bubble, DWORD numNotif, CIcono *icon, int iconWidth, BubbleSettings *bs)
 {
 	TCHAR str[4];
 	if (numNotif >= 100) {
@@ -1563,7 +1563,7 @@ void pintaIcono(HDC *hDC, CIcono *icono, CPantalla *pantalla, SCREEN_TYPE screen
 
 	// Notifications
 	if (icono->tipo != NOTIF_NORMAL) {
-		int numNotif = 0;
+		DWORD numNotif = 0;
 		switch(icono->tipo) {
 			case NOTIF_MISSEDCALLS:
 				numNotif = notifications->dwNotifications[SN_PHONEMISSEDCALLS];
@@ -2428,7 +2428,7 @@ void procesaPulsacion(HWND hwnd, POINTS posCursor, BOOL doubleClick, BOOL noLanz
 
 int hayNotificacion(int tipo)
 {
-	int numNotif = 0;
+	DWORD numNotif = 0;
 	switch(tipo) {
 		case NOTIF_MISSEDCALLS:
 		case NOTIF_MC_SIG_OPER:
