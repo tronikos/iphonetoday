@@ -99,7 +99,7 @@ LRESULT doMouseUp (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam);
 BOOL LaunchApplication(LPCTSTR pCmdLine, LPCTSTR pParameters);
 void pintaIconos(HDC *hDC, RECT *rcWindBounds);
 void pintaIcono(HDC *hDC, CIcono *icono, CPantalla *pantalla, SCREEN_TYPE screen_type);
-void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type = MAINSCREEN);
+void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type = MAINSCREEN, BOOL isFirst = FALSE, BOOL isLast = FALSE);
 void setPosicionesIconos(CPantalla *pantalla, SCREEN_TYPE screen_type);
 void setPosiciones(BOOL inicializa, int offsetX, int offsetY);
 void calculaPosicionObjetivo();
@@ -1342,7 +1342,7 @@ void pintaIconos(HDC *hDC, RECT *rcWindBounds)
 {
 	for (UINT i = 0; i < listaPantallas->numPantallas; i++) {
 		CPantalla *pantalla = listaPantallas->listaPantalla[i];
-		pintaPantalla(hDC, pantalla, MAINSCREEN);
+		pintaPantalla(hDC, pantalla, MAINSCREEN, (i == 0), (i == listaPantallas->numPantallas - 1));
 	}
 
 	// Pintamos la barra inferior de botones
@@ -1782,7 +1782,7 @@ BOOL PrintBack(HDC hdcDest, int nXDest, int nYDest, int nWidthDest, int nHeightD
 	return TRUE;
 }
 
-void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type)
+void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type, BOOL isFirst, BOOL isLast)
 {
 	CConfigurationScreen *cs;
 	CIcono *back = NULL;
@@ -1953,13 +1953,33 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type)
 		if (screen_type != MAINSCREEN) {
 			cy = pantalla->altoPantalla;
 		} else {
-			if (hasTopBar()) {
-				yDestOrg = max(posY, int(listaPantallas->topBar->altoPantalla));
-				ySrcOrg = abs(min(posY - int(listaPantallas->topBar->altoPantalla), 0));
-			}
+			BOOL bHasTopBar = hasTopBar();
+			BOOL bHasBottomBar = hasBottomBar();
+			int hTopBar = bHasTopBar ? listaPantallas->topBar->altoPantalla : 0;
+			yDestOrg = max(posY, hTopBar);
+			ySrcOrg = abs(min(posY - hTopBar, 0));
 			cy = configuracion->altoPantalla - yDestOrg;
-			if (hasBottomBar()) {
+
+			if (bHasBottomBar) {
 				cy -= listaPantallas->barraInferior->altoPantalla;
+			}
+
+			if (back && back->hDC && cs->cs.backWallpaperTile) {
+				if (pantalla->y > hTopBar) {
+					int h = (int) pantalla->altoPantalla + back->altoImagen - (int) pantalla->altoPantalla % back->altoImagen;
+					PrintBack(*hDC, (int) pantalla->x, (int) pantalla->y - h, pantalla->anchoPantalla, h,
+						back->hDC, 0, 0, back->anchoImagen, back->altoImagen,
+						cs->cs.backWallpaperAlphaBlend, cs->cs.backWallpaperCenter, cs->cs.backWallpaperTile);
+				}
+				if (pantalla->y + pantalla->altoPantalla < configuracion->altoPantalla) {
+					int h = (int) pantalla->altoPantalla + back->altoImagen - (int) pantalla->altoPantalla % back->altoImagen;
+					PrintBack(*hDC, (int) pantalla->x, (int) pantalla->y, pantalla->anchoPantalla, h,
+						back->hDC, 0, 0, back->anchoImagen, back->altoImagen,
+						cs->cs.backWallpaperAlphaBlend, cs->cs.backWallpaperCenter, cs->cs.backWallpaperTile);
+					PrintBack(*hDC, (int) pantalla->x, (int) pantalla->y + h, pantalla->anchoPantalla, h,
+						back->hDC, 0, 0, back->anchoImagen, back->altoImagen,
+						cs->cs.backWallpaperAlphaBlend, cs->cs.backWallpaperCenter, cs->cs.backWallpaperTile);
+				}
 			}
 		}
 
@@ -1999,6 +2019,30 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type)
 				} else {
 					TransparentBlt(*hDC, xDestOrg, yDestOrg, cx, cy, pantalla->hDC, xSrcOrg, ySrcOrg, cx, cy, RGB(0, 0, 0));
 				}
+			}
+		}
+	}
+	if (isFirst && back && back->hDC && cs->cs.backWallpaperTile) {
+		if (pantalla->x > 0) {
+			PrintBack(*hDC, (int) pantalla->x % (int) configuracion->anchoPantalla - (int) configuracion->anchoPantalla, (int) pantalla->y, pantalla->anchoPantalla, pantalla->altoPantalla,
+				back->hDC, 0, 0, back->anchoImagen, back->altoImagen,
+				cs->cs.backWallpaperAlphaBlend, cs->cs.backWallpaperCenter, cs->cs.backWallpaperTile);
+			if (pantalla->x >= configuracion->anchoPantalla) {
+				PrintBack(*hDC, (int) pantalla->x % (int) configuracion->anchoPantalla, (int) pantalla->y, pantalla->anchoPantalla, pantalla->altoPantalla,
+					back->hDC, 0, 0, back->anchoImagen, back->altoImagen,
+					cs->cs.backWallpaperAlphaBlend, cs->cs.backWallpaperCenter, cs->cs.backWallpaperTile);
+			}
+		}
+	}
+	if (isLast && back && back->hDC && cs->cs.backWallpaperTile) {
+		if (pantalla->x < 0) {
+			PrintBack(*hDC, (int) pantalla->x % (int) configuracion->anchoPantalla + (int) configuracion->anchoPantalla, (int) pantalla->y, pantalla->anchoPantalla, pantalla->altoPantalla,
+				back->hDC, 0, 0, back->anchoImagen, back->altoImagen,
+				cs->cs.backWallpaperAlphaBlend, cs->cs.backWallpaperCenter, cs->cs.backWallpaperTile);
+			if (pantalla->x <= -(int) configuracion->anchoPantalla) {
+				PrintBack(*hDC, (int) pantalla->x % (int) configuracion->anchoPantalla, (int) pantalla->y, pantalla->anchoPantalla, pantalla->altoPantalla,
+					back->hDC, 0, 0, back->anchoImagen, back->altoImagen,
+					cs->cs.backWallpaperAlphaBlend, cs->cs.backWallpaperCenter, cs->cs.backWallpaperTile);
 			}
 		}
 	}
