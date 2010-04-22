@@ -632,6 +632,7 @@ void CConfiguracion::defaultValues()
 	this->notifyTimer = 2000;
 	this->updateWhenInactive = 0;
 	this->ignoreRotation = 0;
+	this->ignoreMinimize = 0;
 	this->disableRightClick = 0;
 	this->disableRightClickDots = 0;
 	this->fullscreen = 0;
@@ -939,6 +940,8 @@ BOOL CConfiguracion::loadXMLConfig()
 			XMLUtils::GetTextElem(pElem, &this->notifyTimer);
 		} else if(_stricmp(nameNode, "IgnoreRotation") == 0) {
 			XMLUtils::GetTextElem(pElem, &this->ignoreRotation);
+		} else if(_stricmp(nameNode, "IgnoreMinimize") == 0) {
+			XMLUtils::GetTextElem(pElem, &this->ignoreMinimize);
 		} else if(_stricmp(nameNode, "DisableRightClick") == 0) {
 			XMLUtils::GetTextElem(pElem, &this->disableRightClick);
 		} else if(_stricmp(nameNode, "DisableRightClickDots") == 0) {
@@ -1221,6 +1224,10 @@ BOOL CConfiguracion::saveXMLConfig()
 
 	pElem = new TiXmlElement("IgnoreRotation");
 	XMLUtils::SetTextElem(pElem, this->ignoreRotation);
+	root->LinkEndChild(pElem);
+
+	pElem = new TiXmlElement("IgnoreMinimize");
+	XMLUtils::SetTextElem(pElem, this->ignoreMinimize);
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("DisableRightClick");

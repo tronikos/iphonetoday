@@ -164,6 +164,7 @@ public:
 	UINT notifyTimer;
 	BOOL updateWhenInactive;
 	UINT ignoreRotation;
+	UINT ignoreMinimize;
 	UINT disableRightClick;
 	UINT disableRightClickDots;
 	UINT fullscreen;
