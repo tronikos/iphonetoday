@@ -624,6 +624,9 @@ LRESULT doSize (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 {
 	if (wParam == SIZE_MINIMIZED) {
 #ifdef EXEC_MODE
+		if (configuracion != NULL && configuracion->ignoreMinimize) {
+			SetForegroundWindow(hwnd);
+		}
 		// PostQuitMessage(0);
 		// ShowWindow(hwnd, SW_SHOWNORMAL);
 		// resizeWindow(hwnd, TRUE);
