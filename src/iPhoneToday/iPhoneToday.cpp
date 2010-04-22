@@ -3199,6 +3199,8 @@ BOOL inicializaApp(HWND hwnd)
 
 	setPosiciones(true, 0, 0);
 
+	ProcessNotifications();
+
 #ifdef EXEC_MODE
 	if (configuracion->notifyTimer > 0) {
 		SetTimer(hwnd, TIMER_ACTUALIZA_NOTIF, configuracion->notifyTimer, NULL);
