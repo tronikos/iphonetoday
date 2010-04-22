@@ -618,6 +618,7 @@ void CConfiguracion::defaultValues()
 	this->animationEffect = 5;
 	this->animationColor = RGB(0,0,0);
 	this->animationDuration = 300;
+	this->animationDelay = 2000;
 	this->launchAppAtBeginningOfAnimation = 0;
 
 	this->closeOnLaunchIcon = 0;
@@ -915,6 +916,7 @@ BOOL CConfiguracion::loadXMLConfig()
 			XMLUtils::GetAttr(pElem, "effect",   &this->animationEffect);
 			XMLUtils::GetAttr(pElem, "color",    &this->animationColor);
 			XMLUtils::GetAttr(pElem, "duration", &this->animationDuration);
+			XMLUtils::GetAttr(pElem, "delay",    &this->animationDelay);
 			XMLUtils::GetAttr(pElem, "LaunchAppAtBeginningOfAnimation", &this->launchAppAtBeginningOfAnimation);
 		} else if(_stricmp(nameNode, "OnLaunchIcon") == 0) {
 			XMLUtils::GetAttr(pElem, "close",    &this->closeOnLaunchIcon);
@@ -1201,6 +1203,7 @@ BOOL CConfiguracion::saveXMLConfig()
 	XMLUtils::SetAttr(pElem, "effect",   this->animationEffect);
 	XMLUtils::SetAttr(pElem, "color",    this->animationColor);
 	XMLUtils::SetAttr(pElem, "duration", this->animationDuration);
+	XMLUtils::SetAttr(pElem, "delay",    this->animationDelay);
 	XMLUtils::SetAttr(pElem, "LaunchAppAtBeginningOfAnimation", this->launchAppAtBeginningOfAnimation);
 	root->LinkEndChild(pElem);
 

@@ -766,7 +766,7 @@ LRESULT doPaint (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 			} else {
 				FillRect(hDCMem3, &estado->cuadroLanzando, hBrushAnimation);
 			}
-			if (GetTickCount() - estado->timeUltimoLanzamiento >= 2000) {
+			if (GetTickCount() - estado->timeUltimoLanzamiento >= configuracion->animationDelay) {
 				SetTimer(hwnd, TIMER_LANZANDO_APP, configuracion->refreshTime, NULL);
 				estado->timeUltimoLanzamiento = GetTickCount();
 				estado->estadoCuadro = 3;

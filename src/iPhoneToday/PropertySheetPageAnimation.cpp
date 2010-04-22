@@ -28,6 +28,7 @@ LRESULT CALLBACK OptionDialogAnimation(HWND hDlg, UINT uMsg, WPARAM wParam, LPAR
 
 			SetDlgItemHex(hDlg, IDC_EDIT_ANIM_COLOR,		configuracion->animationColor);
 			SetDlgItemInt(hDlg, IDC_EDIT_ANIMATION_TIME,	configuracion->animationDuration, TRUE);
+			SetDlgItemInt(hDlg, IDC_EDIT_ANIMATION_DELAY,	configuracion->animationDelay, TRUE);
 			SendMessage(GetDlgItem(hDlg, IDC_CHECK_ANIMATION_LAUNCHAPP), BM_SETCHECK, configuracion->launchAppAtBeginningOfAnimation ? BST_CHECKED : BST_UNCHECKED, 0);
 		}
 		return TRUE;
@@ -52,9 +53,14 @@ LRESULT CALLBACK OptionDialogAnimation(HWND hDlg, UINT uMsg, WPARAM wParam, LPAR
 BOOL IsValidConfigurationAnimation(HWND hDlg)
 {
 	int animationDuration = GetDlgItemInt(hDlg, IDC_EDIT_ANIMATION_TIME, NULL, TRUE);
+	int animationDelay = GetDlgItemInt(hDlg, IDC_EDIT_ANIMATION_DELAY, NULL, TRUE);
 
 	if (animationDuration < 0 || animationDuration > 10000) {
 		MessageBox(hDlg, TEXT("Animation time value is not valid!"), TEXT("Error"), MB_OK);
+		return FALSE;
+	}
+	if (animationDelay < 0 || animationDelay > 10000) {
+		MessageBox(hDlg, TEXT("Animation delay value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
 
@@ -68,6 +74,7 @@ BOOL SaveConfigurationAnimation(HWND hDlg)
 	configuracion->animationEffect	= SendMessage(GetDlgItem(hDlg, IDC_COMBO_ANIMATION), CB_GETCURSEL, 0, 0);
 	configuracion->animationColor	= GetDlgItemHex(hDlg, IDC_EDIT_ANIM_COLOR, NULL);
 	configuracion->animationDuration= GetDlgItemInt(hDlg, IDC_EDIT_ANIMATION_TIME, NULL, TRUE);
+	configuracion->animationDelay	= GetDlgItemInt(hDlg, IDC_EDIT_ANIMATION_DELAY, NULL, TRUE);
 	configuracion->launchAppAtBeginningOfAnimation = SendMessage(GetDlgItem(hDlg, IDC_CHECK_ANIMATION_LAUNCHAPP), BM_GETCHECK, 0, 0) == BST_CHECKED;
 
 	return TRUE;

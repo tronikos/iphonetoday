@@ -147,6 +147,7 @@ public:
 	UINT animationEffect;
 	COLORREF animationColor;
 	UINT animationDuration;
+	UINT animationDelay;
 	BOOL launchAppAtBeginningOfAnimation;
 
 	// OnLaunchIcon
