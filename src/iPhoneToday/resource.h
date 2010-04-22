@@ -34,6 +34,7 @@
 #define IDD_DIALOGPAGE_OUTOFSCREEN      519
 #define IDD_DIALOGPAGE_ABOUT            520
 #define IDD_DIALOGPAGE_ANIMATION        521
+#define IDC_CHECK_DUMMY                 1000
 #define IDC_MICON_SCREEN                1001
 #define IDC_MICON_NAME                  1002
 #define IDC_MICON_IMAGE                 1003
