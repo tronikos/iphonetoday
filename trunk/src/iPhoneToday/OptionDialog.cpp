@@ -16,6 +16,7 @@ BOOL doNotAskToSaveOptions = FALSE;
 int saveOptionsAnswer = -1;
 int initializedDialogs = 0;
 int appliedDialogs = 0;
+int appliedDialogsMask = 0;
 
 
 void InitOptionsDialog(HWND hDlg, INT iDlg)
@@ -162,6 +163,10 @@ LRESULT DefOptionWindowProc(HWND hDlg, INT iDlg, UINT uMsg, WPARAM wParam, LPARA
 					}
 					return FALSE;
 				case PSN_APPLY:
+					if ((appliedDialogsMask & (1 << iDlg)) > 0) {
+						return FALSE;
+					}
+					appliedDialogsMask |= (1 << iDlg);
 					appliedDialogs++;
 					//WriteToLog(L"Applying dialog #%d\n", iDlg);
 					if (saveOptionsAnswer == -1) {
@@ -170,6 +175,7 @@ LRESULT DefOptionWindowProc(HWND hDlg, INT iDlg, UINT uMsg, WPARAM wParam, LPARA
 						if (resp == IDCANCEL) {
 							SetWindowLong(hDlg, DWL_MSGRESULT, PSNRET_INVALID_NOCHANGEPAGE);
 							appliedDialogs = 0;
+							appliedDialogsMask = 0;
 							return TRUE;
 						}
 						saveOptionsAnswer = (resp == IDNO) ? 0 : 1;
@@ -181,6 +187,7 @@ LRESULT DefOptionWindowProc(HWND hDlg, INT iDlg, UINT uMsg, WPARAM wParam, LPARA
 							SetWindowLong(hDlg, DWL_MSGRESULT, PSNRET_INVALID);
 							saveOptionsAnswer = -1;
 							appliedDialogs = 0;
+							appliedDialogsMask = 0;
 							return TRUE;
 						}
 						if (appliedDialogs == initializedDialogs) {
@@ -255,6 +262,7 @@ BOOL CreatePropertySheet(HWND hwnd)
 	saveOptionsAnswer = -1;
 	initializedDialogs = 0;
 	appliedDialogs = 0;
+	appliedDialogsMask = 0;
 
 
 
