@@ -9,7 +9,7 @@ struct SN_RPV {
 };
 
 // Order should match order of dw_notifications_enum
-const SN_RPV SN_DW[] = {
+SN_RPV SN_DW[] = {
 	{
 		SN_PHONEMISSEDCALLS_ROOT,
 		SN_PHONEMISSEDCALLS_PATH,
@@ -152,6 +152,17 @@ CNotifications::CNotifications(HWND hWnd)
 		dwHrNotify[i] = NULL;
 		dwNotifications[i] = 0;
 		dwNotificationsChanged[i] = FALSE;
+		if (!RegValueExists(SN_DW[i].hKey, SN_DW[i].pszSubKey, SN_DW[i].pszValueName)) {
+			HKEY h = SN_DW[i].hKey;
+			if (h == HKEY_LOCAL_MACHINE) {
+				h = HKEY_CURRENT_USER;
+			} else if (h == HKEY_CURRENT_USER) {
+				h = HKEY_LOCAL_MACHINE;
+			}
+			if (RegValueExists(h, SN_DW[i].pszSubKey, SN_DW[i].pszValueName)) {
+				SN_DW[i].hKey = h;
+			}
+		}
 	}
 	for (int i = 0; i < MAXSTRINGNOTIFICATION; i++) {
 		szHrNotify[i] = NULL;
