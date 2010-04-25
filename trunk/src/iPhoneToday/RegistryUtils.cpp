@@ -27,7 +27,6 @@ BOOL LoadDwordSetting(HKEY hKEY, DWORD * szValue, const TCHAR * lpSubKey,
 					const TCHAR * szKeyName, const DWORD dwDefault) {
 
 	HKEY  hkey = 0;
-	DWORD dwDisposition = 0;
 	DWORD dwType = REG_DWORD;
 	DWORD dwSize = sizeof(DWORD);
 	
@@ -117,7 +116,6 @@ BOOL LoadTextSetting(HKEY hKEY, TCHAR * szValue, const TCHAR * lpSubKey,
 					const TCHAR * szKeyName, const TCHAR * szDefault) {
 
 	HKEY  hkey = 0;
-	DWORD dwDisposition = 0;
 	DWORD dwType;
 	DWORD dwSize = MAX_PATH;
 
@@ -160,4 +158,21 @@ BOOL DeleteKey(HKEY hKey, const TCHAR * lpSubKey)
 	} else {
 		return TRUE;
 	}
+}
+
+BOOL RegValueExists(const HKEY root, const LPCTSTR path, const LPCTSTR value)
+{
+	HKEY hkey = 0;	
+	LONG result = RegOpenKeyEx(root, path, 0, 0, &hkey);
+
+	if (result != ERROR_SUCCESS) {
+		return FALSE;
+	}
+
+	DWORD dwType = REG_DWORD;
+	DWORD dwSize = sizeof(DWORD);
+	result = RegQueryValueEx(hkey, value, NULL, &dwType, NULL, &dwSize);
+	RegCloseKey(hkey);
+
+	return (result == ERROR_SUCCESS || result == ERROR_MORE_DATA);
 }

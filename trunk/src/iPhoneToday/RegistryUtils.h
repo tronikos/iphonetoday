@@ -16,3 +16,5 @@ BOOL LoadDwordSetting(HKEY hKey, DWORD * szValue, const TCHAR * lpSubKey,
 BOOL LoadTextSetting(HKEY hKEY, TCHAR * szValue, const TCHAR * lpSubKey,
                  const TCHAR * szKeyName, const TCHAR * szDefault);
 BOOL DeleteKey(HKEY hKey, const TCHAR * lpSubKey);
+
+BOOL RegValueExists(const HKEY root, const LPCTSTR path, const LPCTSTR value);
