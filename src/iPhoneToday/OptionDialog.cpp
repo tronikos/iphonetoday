@@ -18,6 +18,7 @@ int initializedDialogs = 0;
 int appliedDialogs = 0;
 int appliedDialogsMask = 0;
 
+int lasttab = 0;
 
 void InitOptionsDialog(HWND hDlg, INT iDlg)
 {
@@ -26,7 +27,7 @@ void InitOptionsDialog(HWND hDlg, INT iDlg)
 	initializedDialogs++;
 	//WriteToLog(L"Initializing dialog #%d\n", iDlg);
 
-	if (iDlg == 0) {
+	if (iDlg == lasttab) {
 		if (FindWindow(L"MS_SIPBUTTON", NULL) != NULL) {
 			// Property sheet will destroy part of the soft key bar,
 			// therefore we create an empty menu bar here
@@ -156,6 +157,9 @@ LRESULT DefOptionWindowProc(HWND hDlg, INT iDlg, UINT uMsg, WPARAM wParam, LPARA
 //				case PSN_HELP:
 //					ToggleKeyboard();
 //					return 0;
+				case PSN_SETACTIVE:
+					lasttab = iDlg;
+					return 0;
 				case PSN_QUERYCANCEL:
 					if (!doNotAskToSaveOptions && MessageBox(hDlg, TEXT("Close without saving?"), TEXT("Exit"), MB_YESNO) == IDNO) {
 						SetWindowLong(hDlg, DWL_MSGRESULT, PSNRET_INVALID_NOCHANGEPAGE);
@@ -205,7 +209,7 @@ LRESULT DefOptionWindowProc(HWND hDlg, INT iDlg, UINT uMsg, WPARAM wParam, LPARA
 			break;
 	}
 
-	return DefWindowProc(hDlg, uMsg, wParam, lParam);
+	return 0;
 }
 
 /*************************************************************************/
@@ -331,7 +335,7 @@ BOOL CreatePropertySheet(HWND hwnd)
     psh.hInstance = g_hInst;
     psh.pszCaption = L"Options";
     psh.nPages = NUM_TABS;
-    psh.nStartPage = 0;
+    psh.nStartPage = lasttab;
     psh.ppsp = &psp[0];
     psh.pfnCallback = PropSheetCallback;
 
