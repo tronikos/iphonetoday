@@ -2334,8 +2334,10 @@ void procesaPulsacion(HWND hwnd, POINTS posCursor, BOOL doubleClick, BOOL noLanz
 	//yBottom += anchoCirculo;
 	if (posCursor.x >= xLeft && posCursor.x <= xRight && posCursor.y >= yTop && posCursor.y <= yBottom) {
 		if (doubleClick) {
+			if (!configuracion->circlesDoubleTap) return;
 			estado->pantallaActiva = 0;
 		} else {
+			if (!configuracion->circlesSingleTap) return;
 			estado->pantallaActiva = (posCursor.x - xLeft) / (anchoCirculo + distanciaCirculo);
 		}
 		estado->posObjetivo.x = - (short) (configuracion->anchoPantalla * estado->pantallaActiva);
