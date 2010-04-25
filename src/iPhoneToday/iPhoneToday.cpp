@@ -3861,7 +3861,9 @@ BOOL ProcessNotifications()
 				} else if (pantalla == listaPantallas->topBar) {
 					st = TOPBAR;
 				}
-				configuracion->loadIconImage(&hDCMem, icono, st);
+				HDC hdc = GetDC(g_hWnd);
+				configuracion->loadIconImage(&hdc, icono, st);
+				ReleaseDC(g_hWnd, hdc);
 				pantalla->debeActualizar = TRUE;
 				shouldInvalidateRect = TRUE;
 			}
@@ -3884,7 +3886,9 @@ BOOL ProcessNotifications()
 	if (notifications->dwNotificationsChanged[SN_RELOADICONS] && notifications->dwNotifications[SN_RELOADICONS]) {
 		// Cargamos la configuracion de iconos
 		configuracion->loadXMLIcons2(listaPantallas);
-		configuracion->loadIconsImages(&hDCMem, listaPantallas);
+		HDC hdc = GetDC(g_hWnd);
+		configuracion->loadIconsImages(&hdc, listaPantallas);
+		ReleaseDC(g_hWnd, hdc);
 
 		// Marcamos aquellas pantallas que haya que actualizar
 		CPantalla *pantalla;
