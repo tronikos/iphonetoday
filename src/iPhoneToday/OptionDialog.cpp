@@ -114,6 +114,7 @@ BOOL IsValidConfiguration(HWND hDlg, INT iDlg)
 LRESULT DefOptionWindowProc(HWND hDlg, INT iDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	static BOOL focus = FALSE;
+	static BOOL allowfocus = TRUE;
 
 	switch (uMsg)
 	{
@@ -131,7 +132,7 @@ LRESULT DefOptionWindowProc(HWND hDlg, INT iDlg, UINT uMsg, WPARAM wParam, LPARA
 			}
 			return 0;
 		case WM_COMMAND:
-			if (HIWORD(wParam) == EN_SETFOCUS) {
+			if (HIWORD(wParam) == EN_SETFOCUS && allowfocus) {
 				ToggleKeyboard(TRUE);
 				focus = TRUE;
 				PostMessage((HWND) lParam, EM_SETSEL, 0, -1);
@@ -159,24 +160,30 @@ LRESULT DefOptionWindowProc(HWND hDlg, INT iDlg, UINT uMsg, WPARAM wParam, LPARA
 //					return 0;
 				case PSN_SETACTIVE:
 					lasttab = iDlg;
+					allowfocus = TRUE;
 					return 0;
 				case PSN_QUERYCANCEL:
+					allowfocus = FALSE;
 					if (!doNotAskToSaveOptions && MessageBox(hDlg, TEXT("Close without saving?"), TEXT("Exit"), MB_YESNO) == IDNO) {
+						allowfocus = TRUE;
 						SetWindowLong(hDlg, DWL_MSGRESULT, PSNRET_INVALID_NOCHANGEPAGE);
 						return TRUE;
 					}
 					return FALSE;
 				case PSN_APPLY:
+					//WriteToLog(L"Applying dialog #%d\n", iDlg);
 					if ((appliedDialogsMask & (1 << iDlg)) > 0) {
+						//WriteToLog(L"Skipped applying dialog #%d\n", iDlg);
 						return FALSE;
 					}
 					appliedDialogsMask |= (1 << iDlg);
 					appliedDialogs++;
-					//WriteToLog(L"Applying dialog #%d\n", iDlg);
 					if (saveOptionsAnswer == -1) {
+						allowfocus = FALSE;
 						int resp = MessageBox(hDlg, TEXT("Save Changes?"), TEXT("Exit"), MB_YESNOCANCEL);
 						//WriteToLog(L"User response to \"Save Changes?\": %d\n", resp);
 						if (resp == IDCANCEL) {
+							allowfocus = TRUE;
 							SetWindowLong(hDlg, DWL_MSGRESULT, PSNRET_INVALID_NOCHANGEPAGE);
 							appliedDialogs = 0;
 							appliedDialogsMask = 0;
@@ -199,8 +206,8 @@ LRESULT DefOptionWindowProc(HWND hDlg, INT iDlg, UINT uMsg, WPARAM wParam, LPARA
 							if (SaveConfiguration()) {
 								//WriteToLog(L"Options saved. Restarting iPT.\n");
 								PostMessage(g_hWnd, WM_CREATE, 0, 0);
-							//} else {
-							//	WriteToLog(L"SaveConfiguration() returned FALSE\n");
+							} else {
+								//WriteToLog(L"SaveConfiguration() returned FALSE\n");
 							}
 						}
 					}
