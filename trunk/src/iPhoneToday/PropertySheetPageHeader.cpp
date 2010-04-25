@@ -31,6 +31,9 @@ LRESULT CALLBACK OptionDialogHeader(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM 
 			SetDlgItemInt(hDlg, IDC_EDIT_CIRCLES_DIAMETER,	configuracion->circlesDiameter,		TRUE);
 			SetDlgItemInt(hDlg, IDC_EDIT_CIRCLES_DISTANCE,	configuracion->circlesDistance,		TRUE);
 			SetDlgItemInt(hDlg, IDC_EDIT_CIRCLES_OFFSET,	configuracion->circlesOffset,		TRUE);
+
+			SendMessage(GetDlgItem(hDlg, IDC_CHECK_CIRCLES_SINGLE_TAP), BM_SETCHECK, configuracion->circlesSingleTap ? BST_CHECKED : BST_UNCHECKED, 0);
+			SendMessage(GetDlgItem(hDlg, IDC_CHECK_CIRCLES_DOUBLE_TAP), BM_SETCHECK, configuracion->circlesDoubleTap ? BST_CHECKED : BST_UNCHECKED, 0);
 		}
 		return TRUE;
 	case WM_COMMAND:
@@ -111,6 +114,9 @@ BOOL SaveConfigurationHeader(HWND hDlg)
 	configuracion->circlesDiameter = circlesDiameter;
 	configuracion->circlesDistance = circlesDistance;
 	configuracion->circlesOffset = circlesOffset;
+
+	configuracion->circlesSingleTap = SendMessage(GetDlgItem(hDlg, IDC_CHECK_CIRCLES_SINGLE_TAP), BM_GETCHECK, 0, 0) == BST_CHECKED;
+	configuracion->circlesDoubleTap = SendMessage(GetDlgItem(hDlg, IDC_CHECK_CIRCLES_DOUBLE_TAP), BM_GETCHECK, 0, 0) == BST_CHECKED;
 
 	return TRUE;
 }

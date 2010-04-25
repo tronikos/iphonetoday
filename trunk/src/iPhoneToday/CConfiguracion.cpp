@@ -485,6 +485,8 @@ void CConfiguracion::defaultValues()
 	this->circlesDiameter = 7;
 	this->circlesDistance = 3;
 	this->circlesOffset = 3;
+	this->circlesSingleTap = 1;
+	this->circlesDoubleTap = 1;
 
 	this->headerTextFacename[0] = 0;
 	this->headerTextSize = 0;
@@ -859,9 +861,11 @@ BOOL CConfiguracion::loadXMLConfig()
 		const char *nameNode = pElem->Value();
 
 		if(_stricmp(nameNode, "Circles") == 0) {
-			XMLUtils::GetAttr(pElem, "diameter", &this->circlesDiameter);
-			XMLUtils::GetAttr(pElem, "distance", &this->circlesDistance);
-			XMLUtils::GetAttr(pElem, "offset", &this->circlesOffset);
+			XMLUtils::GetAttr(pElem, "diameter",  &this->circlesDiameter);
+			XMLUtils::GetAttr(pElem, "distance",  &this->circlesDistance);
+			XMLUtils::GetAttr(pElem, "offset",    &this->circlesOffset);
+			XMLUtils::GetAttr(pElem, "singletap", &this->circlesSingleTap);
+			XMLUtils::GetAttr(pElem, "doubletap", &this->circlesDoubleTap);
 		} else if(_stricmp(nameNode, "Header") == 0) {
 			XMLUtils::GetAttr(pElem, "facename",  this->headerTextFacename, CountOf(this->headerTextFacename));
 			XMLUtils::GetAttr(pElem, "size",      &this->headerTextSize);
@@ -1104,9 +1108,11 @@ BOOL CConfiguracion::saveXMLConfig()
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("Circles");
-	XMLUtils::SetAttr(pElem, "diameter", this->circlesDiameter);
-	XMLUtils::SetAttr(pElem, "distance", this->circlesDistance);
-	XMLUtils::SetAttr(pElem, "offset",   this->circlesOffset);
+	XMLUtils::SetAttr(pElem, "diameter",  this->circlesDiameter);
+	XMLUtils::SetAttr(pElem, "distance",  this->circlesDistance);
+	XMLUtils::SetAttr(pElem, "offset",    this->circlesOffset);
+	XMLUtils::SetAttr(pElem, "singletap", this->circlesSingleTap);
+	XMLUtils::SetAttr(pElem, "doubletap", this->circlesDoubleTap);
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("Header");

@@ -93,6 +93,8 @@ public:
 	UINT circlesDiameter;
 	UINT circlesDistance;
 	INT circlesOffset;
+	BOOL circlesSingleTap;
+	BOOL circlesDoubleTap;
 
 	// Header
 	TCHAR headerTextFacename[LF_FACESIZE];

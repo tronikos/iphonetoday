@@ -199,6 +199,8 @@
 #define IDC_CHECK_CS_BACK_TILE          1225
 #define IDC_COMBO_ANIMATION             1226
 #define IDC_CHECK_ANIMATION_LAUNCHAPP   1227
+#define IDC_CHECK_CIRCLES_SINGLE_TAP    1228
+#define IDC_CHECK_CIRCLES_DOUBLE_TAP    1229
 
 // Next default values for new objects
 // 
@@ -206,7 +208,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        124
 #define _APS_NEXT_COMMAND_VALUE         40003
-#define _APS_NEXT_CONTROL_VALUE         1228
+#define _APS_NEXT_CONTROL_VALUE         1229
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
