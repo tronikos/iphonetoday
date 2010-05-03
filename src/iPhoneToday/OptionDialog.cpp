@@ -179,10 +179,12 @@ LRESULT DefOptionWindowProc(HWND hDlg, INT iDlg, UINT uMsg, WPARAM wParam, LPARA
 					appliedDialogsMask |= (1 << iDlg);
 					appliedDialogs++;
 					if (saveOptionsAnswer == -1) {
+						saveOptionsAnswer = -2;
 						allowfocus = FALSE;
 						int resp = MessageBox(hDlg, TEXT("Save Changes?"), TEXT("Exit"), MB_YESNOCANCEL);
-						//WriteToLog(L"User response to \"Save Changes?\": %d\n", resp);
+						//WriteToLog(L"#%d: User response to \"Save Changes?\": %d\n", iDlg, resp);
 						if (resp == IDCANCEL) {
+							saveOptionsAnswer = -1;
 							allowfocus = TRUE;
 							SetWindowLong(hDlg, DWL_MSGRESULT, PSNRET_INVALID_NOCHANGEPAGE);
 							appliedDialogs = 0;
@@ -202,9 +204,9 @@ LRESULT DefOptionWindowProc(HWND hDlg, INT iDlg, UINT uMsg, WPARAM wParam, LPARA
 							return TRUE;
 						}
 						if (appliedDialogs == initializedDialogs) {
-							//WriteToLog(L"Calling SaveConfiguration()\n");
+							//WriteToLog(L"#%d: Calling SaveConfiguration()\n", iDlg);
 							if (SaveConfiguration()) {
-								//WriteToLog(L"Options saved. Restarting iPT.\n");
+								//WriteToLog(L"#%d: Options saved. Restarting iPT.\n", iDlg);
 								PostMessage(g_hWnd, WM_CREATE, 0, 0);
 							} else {
 								//WriteToLog(L"SaveConfiguration() returned FALSE\n");
