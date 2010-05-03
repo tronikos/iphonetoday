@@ -107,12 +107,12 @@ SN_RPV SN_DW[] = {
 	},
 	{
 		HKEY_LOCAL_MACHINE,
-		TEXT("Software\\iPhoneToday"),
+		0,//TEXT("Software\\iPhoneToday"),
 		TEXT("reloadIcon")
 	},
 	{
 		HKEY_LOCAL_MACHINE,
-		TEXT("Software\\iPhoneToday"),
+		0,//TEXT("Software\\iPhoneToday"),
 		TEXT("reloadIcons")
 	}
 };
@@ -148,6 +148,13 @@ const SN_RPV SN_FT[] = {
 
 CNotifications::CNotifications(HWND hWnd)
 {
+	TCHAR szWindowClass[100];
+	GetClassName(hWnd, szWindowClass, CountOf(szWindowClass));
+	StringCchPrintf(szSoftwareSubKey, CountOf(szSoftwareSubKey), L"Software\\%s", szWindowClass);
+
+	SN_DW[SN_RELOADICON].pszSubKey = szSoftwareSubKey;
+	SN_DW[SN_RELOADICONS].pszSubKey = szSoftwareSubKey;
+
 	for (int i = 0; i < MAXDWORDNOTIFICATION; i++) {
 		dwHrNotify[i] = NULL;
 		dwNotifications[i] = 0;
@@ -345,7 +352,7 @@ BOOL CNotifications::PollingUpdate()
 	} else {
 		memory_changed = FALSE;
 	}
-	memcpy(&memoryStatus, &mems, sizeof(SYSTEMTIME));
+	memcpy(&memoryStatus, &mems, sizeof(MEMORYSTATUS));
 
 	return changed;
 }
