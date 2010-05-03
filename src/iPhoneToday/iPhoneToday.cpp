@@ -1375,25 +1375,24 @@ void pintaIconos(HDC *hDC, RECT *rcWindBounds)
 		}
 		posCirculos.bottom = posCirculos.top + anchoCirculo;
 
-		int colorCircle; // Un valor de 0 a 255
-		int distanciaMaxima = (int)(((float)listaPantallas->listaPantalla[0]->anchoPantalla) * 1.4f);
-
 		for (int i = 0; i < nCirculos; i++) {
 			CPantalla *pantalla = listaPantallas->listaPantalla[i];
-			colorCircle = min(distanciaMaxima, abs((int) (pantalla->x)));
-			colorCircle = (int) (220.0f - (220.0f / distanciaMaxima) * colorCircle);
+			float perc = min(configuracion->anchoPantalla, fabsf(pantalla->x)) / (float) configuracion->anchoPantalla;
+			int R = (int) (GetRValue(configuracion->circlesColorInactive) * perc + GetRValue(configuracion->circlesColorActive) * (1 - perc));
+			int G = (int) (GetGValue(configuracion->circlesColorInactive) * perc + GetGValue(configuracion->circlesColorActive) * (1 - perc));
+			int B = (int) (GetBValue(configuracion->circlesColorInactive) * perc + GetBValue(configuracion->circlesColorActive) * (1 - perc));
+			color = RGB(R, G, B);
 
-			color = RGB(colorCircle,colorCircle,colorCircle);
 			/*if (i == estado->pantallaActiva) {
-				color = RGB(220,220,220);
+				color = configuracion->circlesColorActive;
 			} else {
-				color = RGB(0,0,0);
+				color = configuracion->circlesColorInactive;
 			}*/
 
 			posCirculos.left = xReferencia + i * (anchoCirculo + distanciaCirculo);
 			posCirculos.right = posCirculos.left + anchoCirculo;
 
-			drawEllipse(*hDC, posCirculos.left, posCirculos.top, posCirculos.right, posCirculos.bottom, color, NULL);
+			drawEllipse(*hDC, posCirculos.left, posCirculos.top, posCirculos.right, posCirculos.bottom, color, NULL, configuracion->circlesColorOuter);
 		}
 	}
 

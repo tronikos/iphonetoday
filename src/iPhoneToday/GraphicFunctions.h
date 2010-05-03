@@ -6,7 +6,7 @@
 //void BltAlpha(HDC, int, int, int, int, HDC, int, int, int, int, BYTE alpha);
 
 //HBITMAP CreateBitmapMask(HBITMAP hbmColour, COLORREF crTransparent);
-void drawEllipse(HDC hDC, int x, int y, int x2, int y2, COLORREF color, TCHAR *texto);
+void drawEllipse(HDC hDC, int x, int y, int x2, int y2, COLORREF color, TCHAR *texto, COLORREF colorOuter = RGB(255, 255, 255));
 
 //HBITMAP HBITMAPFromImage (IImage *pImage);
 void DrawGradientGDI(HDC, const RECT&, COLORREF, COLORREF, COLOR16 alpha = 0x0000);
