@@ -113,9 +113,9 @@ HBITMAP CreateBitmapMask(HBITMAP hbmColour, COLORREF crTransparent)
 */
 
 // Draw an ellipse
-void drawEllipse(HDC hDC, int x, int y, int x2, int y2, COLORREF color, TCHAR *texto) {
+void drawEllipse(HDC hDC, int x, int y, int x2, int y2, COLORREF color, TCHAR *texto, COLORREF colorOuter) {
 	HPEN hEllipsePen;
-	hEllipsePen = CreatePen(PS_SOLID, 1, RGB(255,255,255));
+	hEllipsePen = CreatePen(PS_SOLID, 1, colorOuter);
 	// hEllipsePen = CreatePen(PS_SOLID, 1, color);
 	HBRUSH hBrush = CreateSolidBrush(color);
 	HPEN hPenOld = (HPEN)SelectObject(hDC, hEllipsePen);

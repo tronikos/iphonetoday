@@ -32,22 +32,44 @@ LRESULT CALLBACK OptionDialogHeader(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM 
 			SetDlgItemInt(hDlg, IDC_EDIT_CIRCLES_DISTANCE,	configuracion->circlesDistance,		TRUE);
 			SetDlgItemInt(hDlg, IDC_EDIT_CIRCLES_OFFSET,	configuracion->circlesOffset,		TRUE);
 
+			SetDlgItemHex(hDlg, IDC_EDIT_CIRCLES_COLOR_ACTIVE,	configuracion->circlesColorActive);
+			SetDlgItemHex(hDlg, IDC_EDIT_CIRCLES_COLOR_INACTIVE,configuracion->circlesColorInactive);
+			SetDlgItemHex(hDlg, IDC_EDIT_CIRCLES_COLOR_OUTER,	configuracion->circlesColorOuter);
+
 			SendMessage(GetDlgItem(hDlg, IDC_CHECK_CIRCLES_SINGLE_TAP), BM_SETCHECK, configuracion->circlesSingleTap ? BST_CHECKED : BST_UNCHECKED, 0);
 			SendMessage(GetDlgItem(hDlg, IDC_CHECK_CIRCLES_DOUBLE_TAP), BM_SETCHECK, configuracion->circlesDoubleTap ? BST_CHECKED : BST_UNCHECKED, 0);
 		}
 		return TRUE;
 	case WM_COMMAND:
+		int rgbCurrent;
+		COLORREF nextColor;
+		switch (LOWORD(wParam))
 		{
-			switch (LOWORD(wParam))
-			{
-			case IDC_BUTTON_HEADER_TEXT:
-				memcpy(&cfs, &hcfs, sizeof(ChooseFontSettings));
-				DialogBox(g_hInst, MAKEINTRESOURCE(IDD_DIALOGFONT), hDlg, (DLGPROC)ChooseFontProc);
-				if (bChooseFontOK) {
-					memcpy(&hcfs, &cfs, sizeof(ChooseFontSettings));
-				}
-				break;
+		case IDC_BUTTON_HEADER_TEXT:
+			memcpy(&cfs, &hcfs, sizeof(ChooseFontSettings));
+			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_DIALOGFONT), hDlg, (DLGPROC)ChooseFontProc);
+			if (bChooseFontOK) {
+				memcpy(&hcfs, &cfs, sizeof(ChooseFontSettings));
 			}
+			break;
+		case IDC_BUTTON_CIRCLES_COLOR_ACTIVE:
+			rgbCurrent = GetDlgItemHex(hDlg, IDC_EDIT_CIRCLES_COLOR_ACTIVE, NULL);
+			if (ColorSelector(hDlg, rgbCurrent, &nextColor)) {
+				SetDlgItemHex(hDlg, IDC_EDIT_CIRCLES_COLOR_ACTIVE, nextColor);
+			}
+			break;
+		case IDC_BUTTON_CIRCLES_COLOR_INACTIVE:
+			rgbCurrent = GetDlgItemHex(hDlg, IDC_EDIT_CIRCLES_COLOR_INACTIVE, NULL);
+			if (ColorSelector(hDlg, rgbCurrent, &nextColor)) {
+				SetDlgItemHex(hDlg, IDC_EDIT_CIRCLES_COLOR_INACTIVE, nextColor);
+			}
+			break;
+		case IDC_BUTTON_CIRCLES_COLOR_OUTER:
+			rgbCurrent = GetDlgItemHex(hDlg, IDC_EDIT_CIRCLES_COLOR_OUTER, NULL);
+			if (ColorSelector(hDlg, rgbCurrent, &nextColor)) {
+				SetDlgItemHex(hDlg, IDC_EDIT_CIRCLES_COLOR_OUTER, nextColor);
+			}
+			break;
 		}
 		break;
 	}
@@ -114,6 +136,10 @@ BOOL SaveConfigurationHeader(HWND hDlg)
 	configuracion->circlesDiameter = circlesDiameter;
 	configuracion->circlesDistance = circlesDistance;
 	configuracion->circlesOffset = circlesOffset;
+
+	configuracion->circlesColorActive	= GetDlgItemHex(hDlg, IDC_EDIT_CIRCLES_COLOR_ACTIVE, NULL);
+	configuracion->circlesColorInactive	= GetDlgItemHex(hDlg, IDC_EDIT_CIRCLES_COLOR_INACTIVE, NULL);
+	configuracion->circlesColorOuter	= GetDlgItemHex(hDlg, IDC_EDIT_CIRCLES_COLOR_OUTER, NULL);
 
 	configuracion->circlesSingleTap = SendMessage(GetDlgItem(hDlg, IDC_CHECK_CIRCLES_SINGLE_TAP), BM_GETCHECK, 0, 0) == BST_CHECKED;
 	configuracion->circlesDoubleTap = SendMessage(GetDlgItem(hDlg, IDC_CHECK_CIRCLES_DOUBLE_TAP), BM_GETCHECK, 0, 0) == BST_CHECKED;

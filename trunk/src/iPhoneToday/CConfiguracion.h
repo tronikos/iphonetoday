@@ -93,6 +93,9 @@ public:
 	UINT circlesDiameter;
 	UINT circlesDistance;
 	INT circlesOffset;
+	COLORREF circlesColorActive;
+	COLORREF circlesColorInactive;
+	COLORREF circlesColorOuter;
 	BOOL circlesSingleTap;
 	BOOL circlesDoubleTap;
 
