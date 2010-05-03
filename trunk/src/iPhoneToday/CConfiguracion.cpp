@@ -560,15 +560,17 @@ void CConfiguracion::defaultValues()
 
 	this->batt.facename[0] = 0;
 	this->batt.color = RGB(230,230,230);
-	this->batt.width = 25;
-	this->batt.height = 70;
-	this->batt.weight = 900;
+	this->batt.width = 0;
+	this->batt.height = 35;
+	this->batt.weight = 400;
 	this->batt.offset.left = 0;
-	this->batt.offset.top = 0;
+	this->batt.offset.top = 7;
 	this->batt.offset.right = 0;
-	this->batt.offset.bottom = 0;
+	this->batt.offset.bottom = 70;
 
 	this->battShowAC = 0;
+	wcscpy(this->battChargingSymbol, L".");
+	wcscpy(this->battPercentageSymbol, L"");
 
 	this->vol.facename[0] = 0;
 	this->vol.color = RGB(0,64,128);
@@ -906,6 +908,8 @@ BOOL CConfiguracion::loadXMLConfig()
 		} else if(_stricmp(nameNode, "Battery") == 0) {
 			SpecialIconSettingsLoad(pElem, &this->batt);
 			XMLUtils::GetAttr(pElem, "AC", &this->battShowAC);
+			XMLUtils::GetAttr(pElem, "ChargingSymbol",   this->battChargingSymbol,   CountOf(this->battChargingSymbol));
+			XMLUtils::GetAttr(pElem, "PercentageSymbol", this->battPercentageSymbol, CountOf(this->battPercentageSymbol));
 		} else if(_stricmp(nameNode, "Volume") == 0) {
 			SpecialIconSettingsLoad(pElem, &this->vol);
 		} else if(_stricmp(nameNode, "MemoryLoad") == 0) {
@@ -1180,6 +1184,8 @@ BOOL CConfiguracion::saveXMLConfig()
 	pElem = new TiXmlElement("Battery");
 	SpecialIconSettingsSave(pElem, &this->batt);
 	XMLUtils::SetAttr(pElem, "AC", this->battShowAC);
+	XMLUtils::SetAttr(pElem, "ChargingSymbol",   this->battChargingSymbol,   CountOf(this->battChargingSymbol));
+	XMLUtils::SetAttr(pElem, "PercentageSymbol", this->battPercentageSymbol, CountOf(this->battPercentageSymbol));
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("Volume");

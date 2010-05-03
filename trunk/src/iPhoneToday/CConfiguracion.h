@@ -137,6 +137,8 @@ public:
 	BOOL clock12Format;
 	SpecialIconSettings batt;	// Battery
 	BOOL battShowAC;
+	TCHAR battChargingSymbol[2];
+	TCHAR battPercentageSymbol[2];
 	SpecialIconSettings vol;	// Volume
 	SpecialIconSettings meml;	// Memory load
 	SpecialIconSettings memf;	// Memory free
