@@ -16,6 +16,6 @@ public:
 	~CReloadIcon(void);
 
 	void ClearObject();
-	BOOL LoadRegistryIcon(int i);
-	void DeleteRegistryIcons();
+	BOOL LoadRegistryIcon(LPCTSTR szSoftwareSubKey, int i);
+	void DeleteRegistryIcons(LPCTSTR szSoftwareSubKey);
 };

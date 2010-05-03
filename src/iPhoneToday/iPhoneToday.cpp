@@ -3829,7 +3829,7 @@ BOOL ProcessNotifications()
 		CReloadIcon *reloadIcon = new CReloadIcon();
 		CPantalla *pantalla = NULL;
 		CIcono *icono = NULL;
-		for (int nIcon = 0; reloadIcon->LoadRegistryIcon(nIcon); nIcon++) {
+		for (int nIcon = 0; reloadIcon->LoadRegistryIcon(notifications->szSoftwareSubKey, nIcon); nIcon++) {
 			if (reloadIcon->nScreen >= 0 && reloadIcon->nScreen < listaPantallas->numPantallas) {
 				pantalla = listaPantallas->listaPantalla[reloadIcon->nScreen];
 			} else if (reloadIcon->nScreen == -1) {
@@ -3873,11 +3873,11 @@ BOOL ProcessNotifications()
 			configuracion->saveXMLIcons(listaPantallas);
 		}
 
-		reloadIcon->DeleteRegistryIcons();
+		reloadIcon->DeleteRegistryIcons(notifications->szSoftwareSubKey);
 		delete reloadIcon;
 
 		DWORD value = 0;
-		SaveDwordSetting(HKEY_LOCAL_MACHINE, TEXT("Software\\iPhoneToday"),
+		SaveDwordSetting(HKEY_LOCAL_MACHINE, notifications->szSoftwareSubKey,
 			&value, TEXT("reloadIcon"));
 
 		notifications->dwNotifications[SN_RELOADICON] = 0;
@@ -3911,7 +3911,7 @@ BOOL ProcessNotifications()
 
 		// Comprobamos si hay que actualizar los iconos
 		DWORD value = 0;
-		SaveDwordSetting(HKEY_LOCAL_MACHINE, TEXT("Software\\iPhoneToday"),
+		SaveDwordSetting(HKEY_LOCAL_MACHINE, notifications->szSoftwareSubKey,
 			&value, TEXT("reloadIcons"));
 
 		notifications->dwNotifications[SN_RELOADICONS] = 0;

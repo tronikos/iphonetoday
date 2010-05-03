@@ -71,4 +71,6 @@ public:
 
 	MEMORYSTATUS memoryStatus;
 	BOOL memory_changed;
+
+	TCHAR szSoftwareSubKey[MAX_PATH];
 };

@@ -20,13 +20,13 @@ void CReloadIcon::ClearObject(void)
 	this->strParameters[0] = 0;
 }
 
-BOOL CReloadIcon::LoadRegistryIcon(int i)
+BOOL CReloadIcon::LoadRegistryIcon(LPCTSTR szSoftwareSubKey, int i)
 {
 	TCHAR subKey[MAX_PATH];
 
 	this->ClearObject();
 
-	swprintf(subKey, L"Software\\iPhoneToday\\Icon%d", i);
+	swprintf(subKey, L"%s\\Icon%d", szSoftwareSubKey, i);
 
 	if (!LoadDwordSetting(HKEY_LOCAL_MACHINE, &this->nScreen, subKey, TEXT("nScreen"), 0))
 		return FALSE;
@@ -41,13 +41,13 @@ BOOL CReloadIcon::LoadRegistryIcon(int i)
 	return TRUE;
 }
 
-void CReloadIcon::DeleteRegistryIcons()
+void CReloadIcon::DeleteRegistryIcons(LPCTSTR szSoftwareSubKey)
 {
 	TCHAR subKey[MAX_PATH];
 	int nIcon = 0;
 	BOOL next = TRUE;
 	while (next) {
-		swprintf(subKey, L"Software\\iPhoneToday\\Icon%d", nIcon);
+		swprintf(subKey, L"%s\\Icon%d", szSoftwareSubKey, nIcon);
 		next = DeleteKey(HKEY_LOCAL_MACHINE, subKey);
 		nIcon++;
 	}
