@@ -26,6 +26,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_0671CCE1DC9343B48E2B97B1257A5E65"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_067FDFF0EE994BA38BF864B6B988CB1F"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -33,6 +39,12 @@
         "Entry"
         {
         "MsmKey" = "8:_06C43EB8C35E42A5B07458178A663D1F"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_0A18A5FF4AB444049D4F88F00B75E0C2"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -51,6 +63,18 @@
         "Entry"
         {
         "MsmKey" = "8:_0E5E36352A0942F1B518AF9CB081EB2B"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_175548D217B74415ADD3C79D7363FC5C"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_1BD0D1688EBB4046B8F36A8FE7A563C6"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -110,6 +134,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_337B770CAD9443B6B0A27D9D8A967C80"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_3418214F6410470283BD41B77E8A09D3"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -128,12 +158,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_4A1821B51CF9415FA518D77C837CB1CB"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_4B9DC9E1EF904AEE81EC431930DE4EC8"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -147,6 +171,12 @@
         "Entry"
         {
         "MsmKey" = "8:_4EC4EA68D16B449D96D29021F458365E"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_5117E551BBDA4526AEEEDCB0151AEC54"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -182,6 +212,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_5D3CB5DFA5C54C0F88758742357F4C47"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_5EDB577FCEE344E5B56DD5ED0547CA47"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -195,6 +231,12 @@
         "Entry"
         {
         "MsmKey" = "8:_6AF552D5CF9A417FAD22836B9B4BD46F"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_6B4B50A7AD5D40F7814D9CD4434F0A5B"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -237,6 +279,12 @@
         "Entry"
         {
         "MsmKey" = "8:_7C07987B556E47F392CB2DD1A373A446"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_830EEFE746F24CC1A11D894FD6D40E80"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -296,6 +344,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_A2C5E3FC996B4A7390434530F3A24620"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_AC2A7CBAC830470CB08532EE9F66F875"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -303,6 +357,12 @@
         "Entry"
         {
         "MsmKey" = "8:_AD838B688A7746F69E6026679BEB6CCC"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_B15D9F4A35E449D6B644849BEEB15D43"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -320,6 +380,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_B684333167374D9E8E97E541CFB45032"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_BB4DA50CAAB14EDFB7D5F7D34BFE920C"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -327,6 +393,12 @@
         "Entry"
         {
         "MsmKey" = "8:_BE3CDA0296CE4AB48AAF8EB905B676B0"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_BE7B339F0D1949D4BD36545041E2D558"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -374,6 +446,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_D2C1B0C9B5EB45E0A86196E6473A327C"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_D64B6FA2A2A042AD81657FF8CEA9D46B"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -410,6 +488,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_E423B2BE72084A489D9106F864948A80"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_E83443A47B8A47A0A7FD2CD27B2225CC"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -434,13 +518,13 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_F158258B16634F4389C8E77F46A31771"
+        "MsmKey" = "8:_F5985DFF7FCD4CB3818D983F97F4196A"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_F5985DFF7FCD4CB3818D983F97F4196A"
+        "MsmKey" = "8:_F6DEB05814A24E01B255BA95820B46C9"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -459,12 +543,6 @@
         "Entry"
         {
         "MsmKey" = "8:_FC4705CB3BF4460BB721575B4B8D5149"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_FCCA19A2F67244E88A5440804A031734"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -536,6 +614,24 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{BA458234-9B71-4F46-8107-E91156377184}:_0671CCE1DC9343B48E2B97B1257A5E65"
+            {
+            "SourcePath" = "8:..\\..\\res\\icons\\Battery Levels With Background #1\\BatteryC60.png"
+            "TargetName" = "8:BatteryC60.png"
+            "Tag" = "8:"
+            "Folder" = "8:_5FA641C88FBC40E7ADD614634AE7DCBD"
+            "Condition" = "8:"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "Register" = "3:0"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{BA458234-9B71-4F46-8107-E91156377184}:_067FDFF0EE994BA38BF864B6B988CB1F"
             {
             "SourcePath" = "8:..\\..\\res\\icons\\Blank.png"
@@ -572,6 +668,24 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{BA458234-9B71-4F46-8107-E91156377184}:_0A18A5FF4AB444049D4F88F00B75E0C2"
+            {
+            "SourcePath" = "8:..\\..\\res\\icons\\Battery Levels With Background #1\\BatteryC90.png"
+            "TargetName" = "8:BatteryC90.png"
+            "Tag" = "8:"
+            "Folder" = "8:_5FA641C88FBC40E7ADD614634AE7DCBD"
+            "Condition" = "8:"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "Register" = "3:0"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{BA458234-9B71-4F46-8107-E91156377184}:_0C19F682BF99476D98C1FB11FA39E444"
             {
             "SourcePath" = "8:..\\..\\res\\icons\\Google Maps.png"
@@ -596,6 +710,42 @@
             "TargetName" = "8:SMS.png"
             "Tag" = "8:"
             "Folder" = "8:_CB770C7AC2BA431FAE2CC7F1E1214841"
+            "Condition" = "8:"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "Register" = "3:0"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{BA458234-9B71-4F46-8107-E91156377184}:_175548D217B74415ADD3C79D7363FC5C"
+            {
+            "SourcePath" = "8:..\\..\\res\\icons\\Volume\\Volume0.png"
+            "TargetName" = "8:Volume0.png"
+            "Tag" = "8:"
+            "Folder" = "8:_64D3DD890A5D430E9EF3D0E3235B776D"
+            "Condition" = "8:"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "Register" = "3:0"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{BA458234-9B71-4F46-8107-E91156377184}:_1BD0D1688EBB4046B8F36A8FE7A563C6"
+            {
+            "SourcePath" = "8:..\\..\\res\\icons\\Volume\\Volume75.png"
+            "TargetName" = "8:Volume75.png"
+            "Tag" = "8:"
+            "Folder" = "8:_64D3DD890A5D430E9EF3D0E3235B776D"
             "Condition" = "8:"
             "Vital" = "11:TRUE"
             "ReadOnly" = "11:FALSE"
@@ -770,6 +920,24 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{BA458234-9B71-4F46-8107-E91156377184}:_337B770CAD9443B6B0A27D9D8A967C80"
+            {
+            "SourcePath" = "8:..\\..\\res\\icons\\Battery Levels With Background #1\\BatteryC80.png"
+            "TargetName" = "8:BatteryC80.png"
+            "Tag" = "8:"
+            "Folder" = "8:_5FA641C88FBC40E7ADD614634AE7DCBD"
+            "Condition" = "8:"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "Register" = "3:0"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{BA458234-9B71-4F46-8107-E91156377184}:_3418214F6410470283BD41B77E8A09D3"
             {
             "SourcePath" = "8:..\\..\\res\\icons\\iPT.png"
@@ -810,24 +978,6 @@
             {
             "SourcePath" = "8:..\\..\\res\\icons\\Excel.png"
             "TargetName" = "8:Excel.png"
-            "Tag" = "8:"
-            "Folder" = "8:_CB770C7AC2BA431FAE2CC7F1E1214841"
-            "Condition" = "8:"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "Register" = "3:0"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{BA458234-9B71-4F46-8107-E91156377184}:_4A1821B51CF9415FA518D77C837CB1CB"
-            {
-            "SourcePath" = "8:..\\..\\res\\icons\\Speaker.png"
-            "TargetName" = "8:Speaker.png"
             "Tag" = "8:"
             "Folder" = "8:_CB770C7AC2BA431FAE2CC7F1E1214841"
             "Condition" = "8:"
@@ -884,6 +1034,24 @@
             "TargetName" = "8:Camera.png"
             "Tag" = "8:"
             "Folder" = "8:_CB770C7AC2BA431FAE2CC7F1E1214841"
+            "Condition" = "8:"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "Register" = "3:0"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{BA458234-9B71-4F46-8107-E91156377184}:_5117E551BBDA4526AEEEDCB0151AEC54"
+            {
+            "SourcePath" = "8:..\\..\\res\\icons\\Battery Levels With Background #1\\BatteryC30.png"
+            "TargetName" = "8:BatteryC30.png"
+            "Tag" = "8:"
+            "Folder" = "8:_5FA641C88FBC40E7ADD614634AE7DCBD"
             "Condition" = "8:"
             "Vital" = "11:TRUE"
             "ReadOnly" = "11:FALSE"
@@ -968,6 +1136,24 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{BA458234-9B71-4F46-8107-E91156377184}:_5D3CB5DFA5C54C0F88758742357F4C47"
+            {
+            "SourcePath" = "8:..\\..\\res\\icons\\Battery Levels With Background #1\\BatteryC100.png"
+            "TargetName" = "8:BatteryC100.png"
+            "Tag" = "8:"
+            "Folder" = "8:_5FA641C88FBC40E7ADD614634AE7DCBD"
+            "Condition" = "8:"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "Register" = "3:0"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{BA458234-9B71-4F46-8107-E91156377184}:_5EDB577FCEE344E5B56DD5ED0547CA47"
             {
             "SourcePath" = "8:..\\..\\res\\icons\\OneNote.png"
@@ -1010,6 +1196,24 @@
             "TargetName" = "8:Tasks.png"
             "Tag" = "8:"
             "Folder" = "8:_CB770C7AC2BA431FAE2CC7F1E1214841"
+            "Condition" = "8:"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "Register" = "3:0"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{BA458234-9B71-4F46-8107-E91156377184}:_6B4B50A7AD5D40F7814D9CD4434F0A5B"
+            {
+            "SourcePath" = "8:..\\..\\res\\icons\\Volume\\Volume100.png"
+            "TargetName" = "8:Volume100.png"
+            "Tag" = "8:"
+            "Folder" = "8:_64D3DD890A5D430E9EF3D0E3235B776D"
             "Condition" = "8:"
             "Vital" = "11:TRUE"
             "ReadOnly" = "11:FALSE"
@@ -1136,6 +1340,24 @@
             "TargetName" = "8:GPRS.png"
             "Tag" = "8:"
             "Folder" = "8:_CB770C7AC2BA431FAE2CC7F1E1214841"
+            "Condition" = "8:"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "Register" = "3:0"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{BA458234-9B71-4F46-8107-E91156377184}:_830EEFE746F24CC1A11D894FD6D40E80"
+            {
+            "SourcePath" = "8:..\\..\\res\\icons\\Battery Levels With Background #1\\BatteryC70.png"
+            "TargetName" = "8:BatteryC70.png"
+            "Tag" = "8:"
+            "Folder" = "8:_5FA641C88FBC40E7ADD614634AE7DCBD"
             "Condition" = "8:"
             "Vital" = "11:TRUE"
             "ReadOnly" = "11:FALSE"
@@ -1310,6 +1532,24 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{BA458234-9B71-4F46-8107-E91156377184}:_A2C5E3FC996B4A7390434530F3A24620"
+            {
+            "SourcePath" = "8:..\\..\\res\\icons\\Battery Levels With Background #1\\BatteryC40.png"
+            "TargetName" = "8:BatteryC40.png"
+            "Tag" = "8:"
+            "Folder" = "8:_5FA641C88FBC40E7ADD614634AE7DCBD"
+            "Condition" = "8:"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "Register" = "3:0"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{BA458234-9B71-4F46-8107-E91156377184}:_AC2A7CBAC830470CB08532EE9F66F875"
             {
             "SourcePath" = "8:..\\..\\res\\icons\\Options.png"
@@ -1346,12 +1586,48 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{BA458234-9B71-4F46-8107-E91156377184}:_B15D9F4A35E449D6B644849BEEB15D43"
+            {
+            "SourcePath" = "8:..\\..\\res\\icons\\Battery Levels With Background #1\\BatteryC10.png"
+            "TargetName" = "8:BatteryC10.png"
+            "Tag" = "8:"
+            "Folder" = "8:_5FA641C88FBC40E7ADD614634AE7DCBD"
+            "Condition" = "8:"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "Register" = "3:0"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{BA458234-9B71-4F46-8107-E91156377184}:_B2137CDBE73F469D99F1470F8817DCA3"
             {
             "SourcePath" = "8:..\\..\\res\\sounds\\Click.wav"
             "TargetName" = "8:Click.wav"
             "Tag" = "8:"
             "Folder" = "8:_5C6A849F3499471B9AEAAB47CD5D1DDA"
+            "Condition" = "8:"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "Register" = "3:0"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{BA458234-9B71-4F46-8107-E91156377184}:_B684333167374D9E8E97E541CFB45032"
+            {
+            "SourcePath" = "8:..\\..\\res\\icons\\Battery Levels With Background #1\\BatteryC50.png"
+            "TargetName" = "8:BatteryC50.png"
+            "Tag" = "8:"
+            "Folder" = "8:_5FA641C88FBC40E7ADD614634AE7DCBD"
             "Condition" = "8:"
             "Vital" = "11:TRUE"
             "ReadOnly" = "11:FALSE"
@@ -1386,6 +1662,24 @@
             {
             "SourcePath" = "8:..\\..\\res\\icons\\Battery Levels With Background #1\\Battery20.png"
             "TargetName" = "8:Battery20.png"
+            "Tag" = "8:"
+            "Folder" = "8:_5FA641C88FBC40E7ADD614634AE7DCBD"
+            "Condition" = "8:"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "Register" = "3:0"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{BA458234-9B71-4F46-8107-E91156377184}:_BE7B339F0D1949D4BD36545041E2D558"
+            {
+            "SourcePath" = "8:..\\..\\res\\icons\\Battery Levels With Background #1\\BatteryC0.png"
+            "TargetName" = "8:BatteryC0.png"
             "Tag" = "8:"
             "Folder" = "8:_5FA641C88FBC40E7ADD614634AE7DCBD"
             "Condition" = "8:"
@@ -1526,6 +1820,24 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{BA458234-9B71-4F46-8107-E91156377184}:_D2C1B0C9B5EB45E0A86196E6473A327C"
+            {
+            "SourcePath" = "8:..\\..\\res\\icons\\Battery Levels With Background #1\\BatteryC20.png"
+            "TargetName" = "8:BatteryC20.png"
+            "Tag" = "8:"
+            "Folder" = "8:_5FA641C88FBC40E7ADD614634AE7DCBD"
+            "Condition" = "8:"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "Register" = "3:0"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{BA458234-9B71-4F46-8107-E91156377184}:_D64B6FA2A2A042AD81657FF8CEA9D46B"
             {
             "SourcePath" = "8:..\\..\\res\\icons\\Email.png"
@@ -1616,6 +1928,24 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{BA458234-9B71-4F46-8107-E91156377184}:_E423B2BE72084A489D9106F864948A80"
+            {
+            "SourcePath" = "8:..\\..\\res\\icons\\Volume\\Volume25.png"
+            "TargetName" = "8:Volume25.png"
+            "Tag" = "8:"
+            "Folder" = "8:_64D3DD890A5D430E9EF3D0E3235B776D"
+            "Condition" = "8:"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "Register" = "3:0"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{BA458234-9B71-4F46-8107-E91156377184}:_E83443A47B8A47A0A7FD2CD27B2225CC"
             {
             "SourcePath" = "8:..\\..\\res\\backgrounds\\Tiles\\Brick.png"
@@ -1688,10 +2018,10 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{BA458234-9B71-4F46-8107-E91156377184}:_F158258B16634F4389C8E77F46A31771"
+            "{BA458234-9B71-4F46-8107-E91156377184}:_F5985DFF7FCD4CB3818D983F97F4196A"
             {
-            "SourcePath" = "8:..\\..\\res\\icons\\Battery Levels With Background #1\\BatteryAC.png"
-            "TargetName" = "8:BatteryAC.png"
+            "SourcePath" = "8:..\\..\\res\\icons\\Battery Levels With Background #1\\Battery40.png"
+            "TargetName" = "8:Battery40.png"
             "Tag" = "8:"
             "Folder" = "8:_5FA641C88FBC40E7ADD614634AE7DCBD"
             "Condition" = "8:"
@@ -1706,12 +2036,12 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{BA458234-9B71-4F46-8107-E91156377184}:_F5985DFF7FCD4CB3818D983F97F4196A"
+            "{BA458234-9B71-4F46-8107-E91156377184}:_F6DEB05814A24E01B255BA95820B46C9"
             {
-            "SourcePath" = "8:..\\..\\res\\icons\\Battery Levels With Background #1\\Battery40.png"
-            "TargetName" = "8:Battery40.png"
+            "SourcePath" = "8:..\\..\\res\\icons\\Volume\\Volume50.png"
+            "TargetName" = "8:Volume50.png"
             "Tag" = "8:"
-            "Folder" = "8:_5FA641C88FBC40E7ADD614634AE7DCBD"
+            "Folder" = "8:_64D3DD890A5D430E9EF3D0E3235B776D"
             "Condition" = "8:"
             "Vital" = "11:TRUE"
             "ReadOnly" = "11:FALSE"
@@ -1764,24 +2094,6 @@
             {
             "SourcePath" = "8:..\\..\\res\\icons\\Battery Levels With Background #1\\Battery30.png"
             "TargetName" = "8:Battery30.png"
-            "Tag" = "8:"
-            "Folder" = "8:_5FA641C88FBC40E7ADD614634AE7DCBD"
-            "Condition" = "8:"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "Register" = "3:0"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{BA458234-9B71-4F46-8107-E91156377184}:_FCCA19A2F67244E88A5440804A031734"
-            {
-            "SourcePath" = "8:..\\..\\res\\icons\\Battery Levels With Background #1\\BatteryCharging.png"
-            "TargetName" = "8:BatteryCharging.png"
             "Tag" = "8:"
             "Folder" = "8:_5FA641C88FBC40E7ADD614634AE7DCBD"
             "Condition" = "8:"
@@ -1873,6 +2185,15 @@
                             "Name" = "8:Battery"
                             "Condition" = "8:"
                             "Property" = "8:_CAED680D3C53489E919F88DABBD0CAC6"
+                                "Folders"
+                                {
+                                }
+                            }
+                            "{5943FCFD-5B64-4EE4-96C9-4618EC95352A}:_64D3DD890A5D430E9EF3D0E3235B776D"
+                            {
+                            "Name" = "8:Volume"
+                            "Condition" = "8:"
+                            "Property" = "8:_ADABCCC32A564E24B8A941C9C0293608"
                                 "Folders"
                                 {
                                 }

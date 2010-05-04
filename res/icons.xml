@@ -37,7 +37,7 @@
         <icon name="Options" image="Options.png" sound="" exec="--options" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
         <icon name="RAM Free" image="RAM.png" sound="" exec="ctlpnl" parameters="cplmain.cpl,4" execAlt="" parametersAlt="" type="17" animation="1" />
         <icon name="Battery" image="Battery\Battery80.png" sound="" exec="ctlpnl" parameters="cplmain.cpl,3" execAlt="" parametersAlt="" type="14" animation="1" />
-        <icon name="Volume" image="Speaker.png" sound="" exec="--volume:++10" parameters="" execAlt="" parametersAlt="" type="15" animation="0" />
+        <icon name="Volume" image="Volume\Volume100.png" sound="" exec="--volume:++10" parameters="" execAlt="" parametersAlt="" type="15" animation="0" />
         <icon name="Operator" image="Blank.png" sound="" exec="ctlpnl" parameters="cplmain.cpl,20" execAlt="" parametersAlt="" type="22" animation="1" />
         <icon name="Rotate" image="Rotate.png" sound="" exec="--rotate" parameters="" execAlt="" parametersAlt="" type="0" animation="0" />
         <icon name="Off" image="Off.png" sound="" exec="--off" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
