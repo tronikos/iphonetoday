@@ -140,6 +140,7 @@ public:
 	TCHAR battChargingSymbol[2];
 	TCHAR battPercentageSymbol[2];
 	SpecialIconSettings vol;	// Volume
+	TCHAR volPercentageSymbol[2];
 	SpecialIconSettings meml;	// Memory load
 	SpecialIconSettings memf;	// Memory free
 	SpecialIconSettings memu;	// Memory used

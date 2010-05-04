@@ -573,14 +573,16 @@ void CConfiguracion::defaultValues()
 	wcscpy(this->battPercentageSymbol, L"");
 
 	this->vol.facename[0] = 0;
-	this->vol.color = RGB(0,64,128);
-	this->vol.width = 25;
-	this->vol.height = 70;
-	this->vol.weight = 900;
+	this->vol.color = RGB(230,230,230);
+	this->vol.width = 0;
+	this->vol.height = 35;
+	this->vol.weight = 400;
 	this->vol.offset.left = 0;
-	this->vol.offset.top = 0;
+	this->vol.offset.top = 7;
 	this->vol.offset.right = 0;
-	this->vol.offset.bottom = 0;
+	this->vol.offset.bottom = 70;
+
+	wcscpy(this->volPercentageSymbol, L"");
 
 	this->meml.facename[0] = 0;
 	this->meml.color = RGB(230,230,230);
@@ -625,7 +627,7 @@ void CConfiguracion::defaultValues()
 	this->animationEffect = 5;
 	this->animationColor = RGB(0,0,0);
 	this->animationDuration = 300;
-	this->animationDelay = 2000;
+	this->animationDelay = 500;
 	this->launchAppAtBeginningOfAnimation = 0;
 
 	this->closeOnLaunchIcon = 0;
@@ -912,6 +914,7 @@ BOOL CConfiguracion::loadXMLConfig()
 			XMLUtils::GetAttr(pElem, "PercentageSymbol", this->battPercentageSymbol, CountOf(this->battPercentageSymbol));
 		} else if(_stricmp(nameNode, "Volume") == 0) {
 			SpecialIconSettingsLoad(pElem, &this->vol);
+			XMLUtils::GetAttr(pElem, "PercentageSymbol", this->volPercentageSymbol, CountOf(this->volPercentageSymbol));
 		} else if(_stricmp(nameNode, "MemoryLoad") == 0) {
 			SpecialIconSettingsLoad(pElem, &this->meml);
 		} else if(_stricmp(nameNode, "MemoryFree") == 0) {
@@ -1190,6 +1193,7 @@ BOOL CConfiguracion::saveXMLConfig()
 
 	pElem = new TiXmlElement("Volume");
 	SpecialIconSettingsSave(pElem, &this->vol);
+	XMLUtils::SetAttr(pElem, "PercentageSymbol", this->volPercentageSymbol, CountOf(this->volPercentageSymbol));
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("MemoryLoad");
