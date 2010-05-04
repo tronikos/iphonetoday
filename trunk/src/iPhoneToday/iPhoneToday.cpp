@@ -1536,33 +1536,53 @@ void pintaIcono(HDC *hDC, CIcono *icono, CPantalla *pantalla, SCREEN_TYPE screen
 	UINT width = cs->iconWidth;
 	TCHAR str[16];
 
-	if (icono->tipo == NOTIF_BATTERY) {
-		int batteryLifePercent = HIWORD(notifications->dwNotifications[SN_POWERBATTERYSTATE]);
-		WORD batteryFlag = LOWORD(notifications->dwNotifications[SN_POWERBATTERYSTATE]);
-		BOOL charging = batteryFlag & BATTERY_FLAG_CHARGING;
-		TCHAR image_old[MAX_PATH];
-		TCHAR image_new[MAX_PATH];
-		TCHAR image_dir[MAX_PATH];
-		configuracion->getAbsolutePath(image_old, CountOf(image_old), icono->rutaImagen);
-		if (getPathFromFile(image_old, image_dir)) {
-			if (charging) {
-				StringCchPrintf(image_new, CountOf(image_new), L"%s\\BatteryC%d.png", image_dir, ((batteryLifePercent + 5) / 10) * 10);
-				if (!FileExists(image_new)) {
-					if (batteryLifePercent > 90) {
-						StringCchPrintf(image_new, CountOf(image_new), L"%s\\BatteryAC.png", image_dir);
-					} else {
-						StringCchPrintf(image_new, CountOf(image_new), L"%s\\BatteryCharging.png", image_dir);
+	switch(icono->tipo) {
+		case NOTIF_BATTERY:
+			{
+				int batteryLifePercent = HIWORD(notifications->dwNotifications[SN_POWERBATTERYSTATE]);
+				WORD batteryFlag = LOWORD(notifications->dwNotifications[SN_POWERBATTERYSTATE]);
+				BOOL charging = batteryFlag & BATTERY_FLAG_CHARGING;
+				TCHAR image_old[MAX_PATH];
+				TCHAR image_new[MAX_PATH];
+				TCHAR image_dir[MAX_PATH];
+				configuracion->getAbsolutePath(image_old, CountOf(image_old), icono->rutaImagen);
+				if (getPathFromFile(image_old, image_dir)) {
+					if (charging) {
+						StringCchPrintf(image_new, CountOf(image_new), L"%s\\BatteryC%d.png", image_dir, ((batteryLifePercent + 5) / 10) * 10);
+						if (!FileExists(image_new)) {
+							if (batteryLifePercent > 90) {
+								StringCchPrintf(image_new, CountOf(image_new), L"%s\\BatteryAC.png", image_dir);
+							} else {
+								StringCchPrintf(image_new, CountOf(image_new), L"%s\\BatteryCharging.png", image_dir);
+							}
+						}
+					}
+					if (!charging || !FileExists(image_new)) {
+						StringCchPrintf(image_new, CountOf(image_new), L"%s\\Battery%d.png", image_dir, ((batteryLifePercent + 5) / 10) * 10);
+					}
+					if (_wcsicmp(image_old, image_new) != 0 && FileExists(image_new)) {
+						configuracion->getRelativePath(icono->rutaImagen, CountOf(icono->rutaImagen), image_new);
+						configuracion->loadIconImage(hDC, icono, screen_type);
 					}
 				}
 			}
-			if (!charging || !FileExists(image_new)) {
-				StringCchPrintf(image_new, CountOf(image_new), L"%s\\Battery%d.png", image_dir, ((batteryLifePercent + 5) / 10) * 10);
+			break;
+		case NOTIF_VOLUME:
+			{
+				int volumePercent = ConvertVolumeToPercentage(notifications->dwNotifications[SN_VOLUME]);
+				TCHAR image_old[MAX_PATH];
+				TCHAR image_new[MAX_PATH];
+				TCHAR image_dir[MAX_PATH];
+				configuracion->getAbsolutePath(image_old, CountOf(image_old), icono->rutaImagen);
+				if (getPathFromFile(image_old, image_dir)) {
+					StringCchPrintf(image_new, CountOf(image_new), L"%s\\Volume%d.png", image_dir, volumePercent ? ((volumePercent - 1) / 25 + 1) * 25 : 0);
+					if (_wcsicmp(image_old, image_new) != 0 && FileExists(image_new)) {
+						configuracion->getRelativePath(icono->rutaImagen, CountOf(icono->rutaImagen), image_new);
+						configuracion->loadIconImage(hDC, icono, screen_type);
+					}
+				}
 			}
-			if (_wcsicmp(image_old, image_new) != 0 && FileExists(image_new)) {
-				configuracion->getRelativePath(icono->rutaImagen, CountOf(icono->rutaImagen), image_new);
-				configuracion->loadIconImage(hDC, icono, screen_type);
-			}
-		}
+			break;
 	}
 
 	if (icono->hDC && icono->imagen) {
@@ -1667,7 +1687,7 @@ void pintaIcono(HDC *hDC, CIcono *icono, CPantalla *pantalla, SCREEN_TYPE screen
 				}
 				break;
 			case NOTIF_VOLUME:
-				StringCchPrintf(str, CountOf(str), L"%d", ConvertVolumeToPercentage(notifications->dwNotifications[SN_VOLUME]));
+				StringCchPrintf(str, CountOf(str), L"%d%s", ConvertVolumeToPercentage(notifications->dwNotifications[SN_VOLUME]), configuracion->volPercentageSymbol);
 				DrawSpecialIconText(*hDC, str, icono, width, &configuracion->vol);
 				break;
 			case NOTIF_MEMORYLOAD:
