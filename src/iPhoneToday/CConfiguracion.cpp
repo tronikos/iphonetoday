@@ -569,8 +569,8 @@ void CConfiguracion::defaultValues()
 	this->batt.offset.bottom = 70;
 
 	this->battShowAC = 0;
+	this->battShowPercentage = 1;
 	wcscpy(this->battChargingSymbol, L".");
-	wcscpy(this->battPercentageSymbol, L"");
 
 	this->vol.facename[0] = 0;
 	this->vol.color = RGB(230,230,230);
@@ -582,37 +582,44 @@ void CConfiguracion::defaultValues()
 	this->vol.offset.right = 0;
 	this->vol.offset.bottom = 70;
 
-	wcscpy(this->volPercentageSymbol, L"");
+	this->volShowPercentage = 1;
 
 	this->meml.facename[0] = 0;
 	this->meml.color = RGB(230,230,230);
-	this->meml.width = 25;
-	this->meml.height = 70;
-	this->meml.weight = 900;
+	this->meml.width = 0;
+	this->meml.height = 35;
+	this->meml.weight = 400;
 	this->meml.offset.left = 0;
-	this->meml.offset.top = 0;
+	this->meml.offset.top = 7;
 	this->meml.offset.right = 0;
-	this->meml.offset.bottom = 0;
+	this->meml.offset.bottom = 70;
+
+	this->memlShowPercentage = 1;
 
 	this->memf.facename[0] = 0;
 	this->memf.color = RGB(230,230,230);
-	this->memf.width = 20;
-	this->memf.height = 70;
-	this->memf.weight = 600;
+	this->memf.width = 0;
+	this->memf.height = 35;
+	this->memf.weight = 400;
 	this->memf.offset.left = 0;
-	this->memf.offset.top = 0;
+	this->memf.offset.top = 7;
 	this->memf.offset.right = 0;
-	this->memf.offset.bottom = 0;
+	this->memf.offset.bottom = 70;
+
+	this->memfShowMB = 0;
+	this->memOSUsedKB = 0;
 
 	this->memu.facename[0] = 0;
 	this->memu.color = RGB(230,230,230);
-	this->memu.width = 20;
-	this->memu.height = 70;
-	this->memu.weight = 600;
+	this->memu.width = 0;
+	this->memu.height = 35;
+	this->memu.weight = 400;
 	this->memu.offset.left = 0;
-	this->memu.offset.top = 0;
+	this->memu.offset.top = 7;
 	this->memu.offset.right = 0;
-	this->memu.offset.bottom = 0;
+	this->memu.offset.bottom = 70;
+
+	this->memuShowMB = 0;
 
 	this->sign.facename[0] = 0;
 	this->sign.color = RGB(230,230,230);
@@ -910,17 +917,21 @@ BOOL CConfiguracion::loadXMLConfig()
 		} else if(_stricmp(nameNode, "Battery") == 0) {
 			SpecialIconSettingsLoad(pElem, &this->batt);
 			XMLUtils::GetAttr(pElem, "AC", &this->battShowAC);
-			XMLUtils::GetAttr(pElem, "ChargingSymbol",   this->battChargingSymbol,   CountOf(this->battChargingSymbol));
-			XMLUtils::GetAttr(pElem, "PercentageSymbol", this->battPercentageSymbol, CountOf(this->battPercentageSymbol));
+			XMLUtils::GetAttr(pElem, "ShowPercentage", &this->battShowPercentage);
+			XMLUtils::GetAttr(pElem, "ChargingSymbol", this->battChargingSymbol, CountOf(this->battChargingSymbol));
 		} else if(_stricmp(nameNode, "Volume") == 0) {
 			SpecialIconSettingsLoad(pElem, &this->vol);
-			XMLUtils::GetAttr(pElem, "PercentageSymbol", this->volPercentageSymbol, CountOf(this->volPercentageSymbol));
+			XMLUtils::GetAttr(pElem, "ShowPercentage", &this->volShowPercentage);
 		} else if(_stricmp(nameNode, "MemoryLoad") == 0) {
 			SpecialIconSettingsLoad(pElem, &this->meml);
+			XMLUtils::GetAttr(pElem, "ShowPercentage", &this->memlShowPercentage);
 		} else if(_stricmp(nameNode, "MemoryFree") == 0) {
 			SpecialIconSettingsLoad(pElem, &this->memf);
+			XMLUtils::GetAttr(pElem, "ShowMB", &this->memfShowMB);
+			XMLUtils::GetAttr(pElem, "OSUsedKB", &this->memOSUsedKB);
 		} else if(_stricmp(nameNode, "MemoryUsed") == 0) {
 			SpecialIconSettingsLoad(pElem, &this->memu);
+			XMLUtils::GetAttr(pElem, "ShowMB", &this->memuShowMB);
 		} else if(_stricmp(nameNode, "SignalStrength") == 0) {
 			SpecialIconSettingsLoad(pElem, &this->sign);
 		} else if(_stricmp(nameNode, "BubbleNotif") == 0) {
@@ -1187,25 +1198,29 @@ BOOL CConfiguracion::saveXMLConfig()
 	pElem = new TiXmlElement("Battery");
 	SpecialIconSettingsSave(pElem, &this->batt);
 	XMLUtils::SetAttr(pElem, "AC", this->battShowAC);
-	XMLUtils::SetAttr(pElem, "ChargingSymbol",   this->battChargingSymbol,   CountOf(this->battChargingSymbol));
-	XMLUtils::SetAttr(pElem, "PercentageSymbol", this->battPercentageSymbol, CountOf(this->battPercentageSymbol));
+	XMLUtils::SetAttr(pElem, "ShowPercentage", this->battShowPercentage);
+	XMLUtils::SetAttr(pElem, "ChargingSymbol", this->battChargingSymbol, CountOf(this->battChargingSymbol));
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("Volume");
 	SpecialIconSettingsSave(pElem, &this->vol);
-	XMLUtils::SetAttr(pElem, "PercentageSymbol", this->volPercentageSymbol, CountOf(this->volPercentageSymbol));
+	XMLUtils::SetAttr(pElem, "ShowPercentage", this->volShowPercentage);
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("MemoryLoad");
 	SpecialIconSettingsSave(pElem, &this->meml);
+	XMLUtils::SetAttr(pElem, "ShowPercentage", this->memlShowPercentage);
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("MemoryFree");
 	SpecialIconSettingsSave(pElem, &this->memf);
+	XMLUtils::SetAttr(pElem, "ShowMB", this->memfShowMB);
+	XMLUtils::SetAttr(pElem, "OSUsedKB", this->memOSUsedKB);
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("MemoryUsed");
 	SpecialIconSettingsSave(pElem, &this->memu);
+	XMLUtils::SetAttr(pElem, "ShowMB", this->memuShowMB);
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("SignalStrength");
