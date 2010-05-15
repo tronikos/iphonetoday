@@ -137,13 +137,17 @@ public:
 	BOOL clock12Format;
 	SpecialIconSettings batt;	// Battery
 	BOOL battShowAC;
+	BOOL battShowPercentage;
 	TCHAR battChargingSymbol[2];
-	TCHAR battPercentageSymbol[2];
 	SpecialIconSettings vol;	// Volume
-	TCHAR volPercentageSymbol[2];
+	BOOL volShowPercentage;
 	SpecialIconSettings meml;	// Memory load
+	BOOL memlShowPercentage;
 	SpecialIconSettings memf;	// Memory free
+	BOOL memfShowMB;
+	UINT memOSUsedKB;
 	SpecialIconSettings memu;	// Memory used
+	BOOL memuShowMB;
 	SpecialIconSettings sign;	// Signal strength
 
 	// Bubbles

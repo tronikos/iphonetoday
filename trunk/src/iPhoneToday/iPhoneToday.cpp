@@ -1536,53 +1536,85 @@ void pintaIcono(HDC *hDC, CIcono *icono, CPantalla *pantalla, SCREEN_TYPE screen
 	UINT width = cs->iconWidth;
 	TCHAR str[16];
 
-	switch(icono->tipo) {
-		case NOTIF_BATTERY:
-			{
-				int batteryLifePercent = HIWORD(notifications->dwNotifications[SN_POWERBATTERYSTATE]);
-				WORD batteryFlag = LOWORD(notifications->dwNotifications[SN_POWERBATTERYSTATE]);
-				BOOL charging = batteryFlag & BATTERY_FLAG_CHARGING;
-				TCHAR image_old[MAX_PATH];
-				TCHAR image_new[MAX_PATH];
-				TCHAR image_dir[MAX_PATH];
-				configuracion->getAbsolutePath(image_old, CountOf(image_old), icono->rutaImagen);
-				if (getPathFromFile(image_old, image_dir)) {
-					if (charging) {
-						StringCchPrintf(image_new, CountOf(image_new), L"%s\\BatteryC%d.png", image_dir, ((batteryLifePercent + 5) / 10) * 10);
-						if (!FileExists(image_new)) {
-							if (batteryLifePercent > 90) {
-								StringCchPrintf(image_new, CountOf(image_new), L"%s\\BatteryAC.png", image_dir);
-							} else {
-								StringCchPrintf(image_new, CountOf(image_new), L"%s\\BatteryCharging.png", image_dir);
-							}
-						}
-					}
-					if (!charging || !FileExists(image_new)) {
-						StringCchPrintf(image_new, CountOf(image_new), L"%s\\Battery%d.png", image_dir, ((batteryLifePercent + 5) / 10) * 10);
-					}
-					if (_wcsicmp(image_old, image_new) != 0 && FileExists(image_new)) {
-						configuracion->getRelativePath(icono->rutaImagen, CountOf(icono->rutaImagen), image_new);
-						configuracion->loadIconImage(hDC, icono, screen_type);
+	TCHAR image_old[MAX_PATH];
+	TCHAR image_new[MAX_PATH];
+	TCHAR image_dir[MAX_PATH];
+	BOOL shouldDrawBubble = TRUE;
+
+	if (icono->tipo == NOTIF_BATTERY) {
+		int batteryLifePercent = HIWORD(notifications->dwNotifications[SN_POWERBATTERYSTATE]);
+		WORD batteryFlag = LOWORD(notifications->dwNotifications[SN_POWERBATTERYSTATE]);
+		BOOL charging = batteryFlag & BATTERY_FLAG_CHARGING;
+		configuracion->getAbsolutePath(image_old, CountOf(image_old), icono->rutaImagen);
+		if (getPathFromFile(image_old, image_dir)) {
+			if (charging) {
+				StringCchPrintf(image_new, CountOf(image_new), L"%s\\BatteryC%d.png", image_dir, ((batteryLifePercent + 5) / 10) * 10);
+				if (!FileExists(image_new)) {
+					if (batteryLifePercent > 90) {
+						StringCchPrintf(image_new, CountOf(image_new), L"%s\\BatteryAC.png", image_dir);
+					} else {
+						StringCchPrintf(image_new, CountOf(image_new), L"%s\\BatteryCharging.png", image_dir);
 					}
 				}
 			}
-			break;
-		case NOTIF_VOLUME:
-			{
-				int volumePercent = ConvertVolumeToPercentage(notifications->dwNotifications[SN_VOLUME]);
-				TCHAR image_old[MAX_PATH];
-				TCHAR image_new[MAX_PATH];
-				TCHAR image_dir[MAX_PATH];
-				configuracion->getAbsolutePath(image_old, CountOf(image_old), icono->rutaImagen);
-				if (getPathFromFile(image_old, image_dir)) {
-					StringCchPrintf(image_new, CountOf(image_new), L"%s\\Volume%d.png", image_dir, volumePercent ? ((volumePercent - 1) / 25 + 1) * 25 : 0);
-					if (_wcsicmp(image_old, image_new) != 0 && FileExists(image_new)) {
-						configuracion->getRelativePath(icono->rutaImagen, CountOf(icono->rutaImagen), image_new);
-						configuracion->loadIconImage(hDC, icono, screen_type);
-					}
+			if (!charging || !FileExists(image_new)) {
+				StringCchPrintf(image_new, CountOf(image_new), L"%s\\Battery%d.png", image_dir, ((batteryLifePercent + 5) / 10) * 10);
+			}
+			if (wcsicmp(image_old, image_new) != 0 && FileExists(image_new)) {
+				configuracion->getRelativePath(icono->rutaImagen, CountOf(icono->rutaImagen), image_new);
+				configuracion->loadIconImage(hDC, icono, screen_type);
+			}
+		}
+	} else if (icono->tipo == NOTIF_VOLUME) {
+		int volumePercent = ConvertVolumeToPercentage(notifications->dwNotifications[SN_VOLUME]);
+		configuracion->getAbsolutePath(image_old, CountOf(image_old), icono->rutaImagen);
+		if (getPathFromFile(image_old, image_dir)) {
+			StringCchPrintf(image_new, CountOf(image_new), L"%s\\Volume%d.png", image_dir, volumePercent ? ((volumePercent - 1) / 25 + 1) * 25 : 0);
+			if (wcsicmp(image_old, image_new) != 0 && FileExists(image_new)) {
+				configuracion->getRelativePath(icono->rutaImagen, CountOf(icono->rutaImagen), image_new);
+				configuracion->loadIconImage(hDC, icono, screen_type);
+			}
+		}
+	} else if (icono->tipo == NOTIF_MEMORYFREE || icono->tipo == NOTIF_MEMORYLOAD || icono->tipo == NOTIF_MEMORYUSED) {
+		int memoryPercent = (notifications->memoryStatus.dwAvailPhys > (notifications->memoryStatus.dwTotalPhys - (DWORD) configuracion->memOSUsedKB * 1024)) ? 100 : notifications->memoryStatus.dwAvailPhys * 100 / (notifications->memoryStatus.dwTotalPhys - (DWORD) configuracion->memOSUsedKB * 1024);
+		configuracion->getAbsolutePath(image_old, CountOf(image_old), icono->rutaImagen);
+		if (getPathFromFile(image_old, image_dir)) {
+			StringCchPrintf(image_new, CountOf(image_new), L"%s\\RAM%d.png", image_dir, ((memoryPercent + 5) / 10) * 10);
+			if (wcsicmp(image_old, image_new) != 0 && FileExists(image_new)) {
+				configuracion->getRelativePath(icono->rutaImagen, CountOf(icono->rutaImagen), image_new);
+				configuracion->loadIconImage(hDC, icono, screen_type);
+			}
+		}
+	} else if (icono->tipo != NOTIF_NORMAL) {
+		BOOL stateOn = hayNotificacion(icono->tipo);
+		TCHAR *p = wcsrchr(icono->rutaImagen, '.');
+		if (p - 2 > icono->rutaImagen && wcsnicmp(p - 2, L"on", 2) == 0) {
+			configuracion->getAbsolutePath(image_new, CountOf(image_new), icono->rutaImagen);
+			TCHAR *pn = wcsrchr(image_new, '.');
+			*(pn - 2) = '\0';
+			wcscat(image_new, L"off");
+			wcscat(image_new, p);
+			if (FileExists(image_new)) {
+				shouldDrawBubble = FALSE;
+				if (!stateOn) {
+					configuracion->getRelativePath(icono->rutaImagen, CountOf(icono->rutaImagen), image_new);
+					configuracion->loadIconImage(hDC, icono, screen_type);
 				}
 			}
-			break;
+		} else if (p - 3 > icono->rutaImagen && wcsnicmp(p - 3, L"off", 3) == 0) {
+			configuracion->getAbsolutePath(image_new, CountOf(image_new), icono->rutaImagen);
+			TCHAR *pn = wcsrchr(image_new, '.');
+			*(pn - 3) = '\0';
+			wcscat(image_new, L"on");
+			wcscat(image_new, p);
+			if (FileExists(image_new)) {
+				shouldDrawBubble = FALSE;
+				if (stateOn) {
+					configuracion->getRelativePath(icono->rutaImagen, CountOf(icono->rutaImagen), image_new);
+					configuracion->loadIconImage(hDC, icono, screen_type);
+				}
+			}
+		}
 	}
 
 	if (icono->hDC && icono->imagen) {
@@ -1648,12 +1680,12 @@ void pintaIcono(HDC *hDC, CIcono *icono, CPantalla *pantalla, SCREEN_TYPE screen
 				DrawSpecialIconText(*hDC, str, icono, width, &configuracion->dom);
 				break;
 			case NOTIF_ALARM:
-				if ((notifications->dwNotifications[SN_CLOCKALARMFLAGS0] + notifications->dwNotifications[SN_CLOCKALARMFLAGS1] + notifications->dwNotifications[SN_CLOCKALARMFLAGS2]) > 0) {
+				if (shouldDrawBubble && (notifications->dwNotifications[SN_CLOCKALARMFLAGS0] + notifications->dwNotifications[SN_CLOCKALARMFLAGS1] + notifications->dwNotifications[SN_CLOCKALARMFLAGS2]) > 0) {
 					DrawBubbleText(*hDC, configuracion->bubbleAlarm, -1, icono, width, &configuracion->bubble_alarm);
 				}
 				break;
 			case NOTIF_CLOCK_ALARM:
-				if ((notifications->dwNotifications[SN_CLOCKALARMFLAGS0] + notifications->dwNotifications[SN_CLOCKALARMFLAGS1] + notifications->dwNotifications[SN_CLOCKALARMFLAGS2]) > 0) {
+				if (shouldDrawBubble && (notifications->dwNotifications[SN_CLOCKALARMFLAGS0] + notifications->dwNotifications[SN_CLOCKALARMFLAGS1] + notifications->dwNotifications[SN_CLOCKALARMFLAGS2]) > 0) {
 					DrawBubbleText(*hDC, configuracion->bubbleAlarm, -1, icono, width, &configuracion->bubble_alarm);
 				}
 			case NOTIF_CLOCK:
@@ -1677,29 +1709,29 @@ void pintaIcono(HDC *hDC, CIcono *icono, CPantalla *pantalla, SCREEN_TYPE screen
 							if (charging) {
 								StringCchCopy(str, CountOf(str), L"AC");
 							} else {
-								StringCchPrintf(str, CountOf(str), L"%d%s", batteryLifePercent, configuracion->battPercentageSymbol);
+								StringCchPrintf(str, CountOf(str), L"%d%s", batteryLifePercent, configuracion->battShowPercentage ? L"%" : L"");
 							}
 						} else {
-							StringCchPrintf(str, CountOf(str), L"%s%d%s", charging ? configuracion->battChargingSymbol : L"", batteryLifePercent, configuracion->battPercentageSymbol);
+							StringCchPrintf(str, CountOf(str), L"%s%d%s", charging ? configuracion->battChargingSymbol : L"", batteryLifePercent, configuracion->battShowPercentage ? L"%" : L"");
 						}
 					}
 					DrawSpecialIconText(*hDC, str, icono, width, &configuracion->batt);
 				}
 				break;
 			case NOTIF_VOLUME:
-				StringCchPrintf(str, CountOf(str), L"%d%s", ConvertVolumeToPercentage(notifications->dwNotifications[SN_VOLUME]), configuracion->volPercentageSymbol);
+				StringCchPrintf(str, CountOf(str), L"%d%s", ConvertVolumeToPercentage(notifications->dwNotifications[SN_VOLUME]), configuracion->volShowPercentage ? L"%" : L"");
 				DrawSpecialIconText(*hDC, str, icono, width, &configuracion->vol);
 				break;
 			case NOTIF_MEMORYLOAD:
-				StringCchPrintf(str, CountOf(str), L"%d", notifications->memoryStatus.dwMemoryLoad);
+				StringCchPrintf(str, CountOf(str), L"%d%s", notifications->memoryStatus.dwMemoryLoad, configuracion->memlShowPercentage ? L"%" : L"");
 				DrawSpecialIconText(*hDC, str, icono, width, &configuracion->meml);
 				break;
 			case NOTIF_MEMORYFREE:
-				StringCchPrintf(str, CountOf(str), L"%.1f", notifications->memoryStatus.dwAvailPhys / 1024.0 / 1024.0);
+				StringCchPrintf(str, CountOf(str), L"%.1f%s", notifications->memoryStatus.dwAvailPhys / 1024.0 / 1024.0, configuracion->memfShowMB ? L"MB" : L"");
 				DrawSpecialIconText(*hDC, str, icono, width, &configuracion->memf);
 				break;
 			case NOTIF_MEMORYUSED:
-				StringCchPrintf(str, CountOf(str), L"%.1f", (notifications->memoryStatus.dwTotalPhys - notifications->memoryStatus.dwAvailPhys) / 1024.0 / 1024.0);
+				StringCchPrintf(str, CountOf(str), L"%.1f%s", (notifications->memoryStatus.dwTotalPhys - notifications->memoryStatus.dwAvailPhys) / 1024.0 / 1024.0, configuracion->memfShowMB ? L" MBs" : L"");
 				DrawSpecialIconText(*hDC, str, icono, width, &configuracion->memu);
 				break;
 			case NOTIF_MC_SIG_OPER:
@@ -1720,27 +1752,27 @@ void pintaIcono(HDC *hDC, CIcono *icono, CPantalla *pantalla, SCREEN_TYPE screen
 				numNotif = notifications->dwNotifications[SN_MESSAGINGSMSUNREAD] + notifications->dwNotifications[SN_MESSAGINGMMSUNREAD];
 				break;
 			case NOTIF_WIFI:
-				if (notifications->dwNotifications[SN_WIFISTATEPOWERON] & SN_WIFISTATEPOWERON_BITMASK) {
+				if (shouldDrawBubble && notifications->dwNotifications[SN_WIFISTATEPOWERON] & SN_WIFISTATEPOWERON_BITMASK) {
 					DrawState(*hDC, configuracion->bubbleState, icono, width, &configuracion->bubble_state);
 				}
 				break;
 			case NOTIF_BLUETOOTH:
-				if (notifications->dwNotifications[SN_BLUETOOTHSTATEPOWERON] & SN_BLUETOOTHSTATEPOWERON_BITMASK) {
+				if (shouldDrawBubble && notifications->dwNotifications[SN_BLUETOOTHSTATEPOWERON] & SN_BLUETOOTHSTATEPOWERON_BITMASK) {
 					DrawState(*hDC, configuracion->bubbleState, icono, width, &configuracion->bubble_state);
 				}
 				break;
 			case NOTIF_CRADLE:
-				if (notifications->dwNotifications[SN_CRADLEPRESENT]) {
+				if (shouldDrawBubble && notifications->dwNotifications[SN_CRADLEPRESENT]) {
 					DrawState(*hDC, configuracion->bubbleState, icono, width, &configuracion->bubble_state);
 				}
 				break;
 			case NOTIF_IRDA:
-				if (notifications->dwNotifications[SN_IRDA] > 0) {
+				if (shouldDrawBubble && notifications->dwNotifications[SN_IRDA] > 0) {
 					DrawState(*hDC, configuracion->bubbleState, icono, width, &configuracion->bubble_state);
 				}
 				break;
 			case NOTIF_CELLNETWORK:
-				if (notifications->dwNotifications[SN_CELLSYSTEMCONNECTED] > 0) {
+				if (shouldDrawBubble && notifications->dwNotifications[SN_CELLSYSTEMCONNECTED] > 0) {
 					DrawState(*hDC, configuracion->bubbleState, icono, width, &configuracion->bubble_state);
 				}
 				break;
