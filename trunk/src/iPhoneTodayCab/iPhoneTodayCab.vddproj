@@ -616,7 +616,7 @@
             }
             "{BA458234-9B71-4F46-8107-E91156377184}:_0671CCE1DC9343B48E2B97B1257A5E65"
             {
-            "SourcePath" = "8:..\\..\\res\\icons\\Battery Levels With Background #1\\BatteryC60.png"
+            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\Battery Levels With Background #1\\BatteryC60.png"
             "TargetName" = "8:BatteryC60.png"
             "Tag" = "8:"
             "Folder" = "8:_5FA641C88FBC40E7ADD614634AE7DCBD"
@@ -670,7 +670,7 @@
             }
             "{BA458234-9B71-4F46-8107-E91156377184}:_0A18A5FF4AB444049D4F88F00B75E0C2"
             {
-            "SourcePath" = "8:..\\..\\res\\icons\\Battery Levels With Background #1\\BatteryC90.png"
+            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\Battery Levels With Background #1\\BatteryC90.png"
             "TargetName" = "8:BatteryC90.png"
             "Tag" = "8:"
             "Folder" = "8:_5FA641C88FBC40E7ADD614634AE7DCBD"
@@ -724,7 +724,7 @@
             }
             "{BA458234-9B71-4F46-8107-E91156377184}:_175548D217B74415ADD3C79D7363FC5C"
             {
-            "SourcePath" = "8:..\\..\\res\\icons\\Volume\\Volume0.png"
+            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\Volume Levels With Background #1\\Volume0.png"
             "TargetName" = "8:Volume0.png"
             "Tag" = "8:"
             "Folder" = "8:_64D3DD890A5D430E9EF3D0E3235B776D"
@@ -742,7 +742,7 @@
             }
             "{BA458234-9B71-4F46-8107-E91156377184}:_1BD0D1688EBB4046B8F36A8FE7A563C6"
             {
-            "SourcePath" = "8:..\\..\\res\\icons\\Volume\\Volume75.png"
+            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\Volume Levels With Background #1\\Volume75.png"
             "TargetName" = "8:Volume75.png"
             "Tag" = "8:"
             "Folder" = "8:_64D3DD890A5D430E9EF3D0E3235B776D"
@@ -832,7 +832,7 @@
             }
             "{BA458234-9B71-4F46-8107-E91156377184}:_231D754F8C58468E9DABC691069FAF9C"
             {
-            "SourcePath" = "8:..\\..\\res\\icons\\Battery Levels With Background #1\\Battery0.png"
+            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\Battery Levels With Background #1\\Battery0.png"
             "TargetName" = "8:Battery0.png"
             "Tag" = "8:"
             "Folder" = "8:_5FA641C88FBC40E7ADD614634AE7DCBD"
@@ -922,7 +922,7 @@
             }
             "{BA458234-9B71-4F46-8107-E91156377184}:_337B770CAD9443B6B0A27D9D8A967C80"
             {
-            "SourcePath" = "8:..\\..\\res\\icons\\Battery Levels With Background #1\\BatteryC80.png"
+            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\Battery Levels With Background #1\\BatteryC80.png"
             "TargetName" = "8:BatteryC80.png"
             "Tag" = "8:"
             "Folder" = "8:_5FA641C88FBC40E7ADD614634AE7DCBD"
@@ -1048,7 +1048,7 @@
             }
             "{BA458234-9B71-4F46-8107-E91156377184}:_5117E551BBDA4526AEEEDCB0151AEC54"
             {
-            "SourcePath" = "8:..\\..\\res\\icons\\Battery Levels With Background #1\\BatteryC30.png"
+            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\Battery Levels With Background #1\\BatteryC30.png"
             "TargetName" = "8:BatteryC30.png"
             "Tag" = "8:"
             "Folder" = "8:_5FA641C88FBC40E7ADD614634AE7DCBD"
@@ -1138,7 +1138,7 @@
             }
             "{BA458234-9B71-4F46-8107-E91156377184}:_5D3CB5DFA5C54C0F88758742357F4C47"
             {
-            "SourcePath" = "8:..\\..\\res\\icons\\Battery Levels With Background #1\\BatteryC100.png"
+            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\Battery Levels With Background #1\\BatteryC100.png"
             "TargetName" = "8:BatteryC100.png"
             "Tag" = "8:"
             "Folder" = "8:_5FA641C88FBC40E7ADD614634AE7DCBD"
@@ -1210,7 +1210,7 @@
             }
             "{BA458234-9B71-4F46-8107-E91156377184}:_6B4B50A7AD5D40F7814D9CD4434F0A5B"
             {
-            "SourcePath" = "8:..\\..\\res\\icons\\Volume\\Volume100.png"
+            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\Volume Levels With Background #1\\Volume100.png"
             "TargetName" = "8:Volume100.png"
             "Tag" = "8:"
             "Folder" = "8:_64D3DD890A5D430E9EF3D0E3235B776D"
@@ -1282,7 +1282,7 @@
             }
             "{BA458234-9B71-4F46-8107-E91156377184}:_746A164A96014B0FA1EE3B71BEE36226"
             {
-            "SourcePath" = "8:..\\..\\res\\icons\\Battery Levels With Background #1\\Battery80.png"
+            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\Battery Levels With Background #1\\Battery80.png"
             "TargetName" = "8:Battery80.png"
             "Tag" = "8:"
             "Folder" = "8:_5FA641C88FBC40E7ADD614634AE7DCBD"
@@ -1300,7 +1300,7 @@
             }
             "{BA458234-9B71-4F46-8107-E91156377184}:_76C29E0CADC44940AF3D583B666DFC5B"
             {
-            "SourcePath" = "8:..\\..\\res\\icons\\Battery Levels With Background #1\\Battery90.png"
+            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\Battery Levels With Background #1\\Battery90.png"
             "TargetName" = "8:Battery90.png"
             "Tag" = "8:"
             "Folder" = "8:_5FA641C88FBC40E7ADD614634AE7DCBD"
@@ -1354,7 +1354,7 @@
             }
             "{BA458234-9B71-4F46-8107-E91156377184}:_830EEFE746F24CC1A11D894FD6D40E80"
             {
-            "SourcePath" = "8:..\\..\\res\\icons\\Battery Levels With Background #1\\BatteryC70.png"
+            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\Battery Levels With Background #1\\BatteryC70.png"
             "TargetName" = "8:BatteryC70.png"
             "Tag" = "8:"
             "Folder" = "8:_5FA641C88FBC40E7ADD614634AE7DCBD"
@@ -1426,7 +1426,7 @@
             }
             "{BA458234-9B71-4F46-8107-E91156377184}:_90BEF595545E4E08A4009B89C8A523D4"
             {
-            "SourcePath" = "8:..\\..\\res\\icons\\Battery Levels With Background #1\\Battery100.png"
+            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\Battery Levels With Background #1\\Battery100.png"
             "TargetName" = "8:Battery100.png"
             "Tag" = "8:"
             "Folder" = "8:_5FA641C88FBC40E7ADD614634AE7DCBD"
@@ -1534,7 +1534,7 @@
             }
             "{BA458234-9B71-4F46-8107-E91156377184}:_A2C5E3FC996B4A7390434530F3A24620"
             {
-            "SourcePath" = "8:..\\..\\res\\icons\\Battery Levels With Background #1\\BatteryC40.png"
+            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\Battery Levels With Background #1\\BatteryC40.png"
             "TargetName" = "8:BatteryC40.png"
             "Tag" = "8:"
             "Folder" = "8:_5FA641C88FBC40E7ADD614634AE7DCBD"
@@ -1588,7 +1588,7 @@
             }
             "{BA458234-9B71-4F46-8107-E91156377184}:_B15D9F4A35E449D6B644849BEEB15D43"
             {
-            "SourcePath" = "8:..\\..\\res\\icons\\Battery Levels With Background #1\\BatteryC10.png"
+            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\Battery Levels With Background #1\\BatteryC10.png"
             "TargetName" = "8:BatteryC10.png"
             "Tag" = "8:"
             "Folder" = "8:_5FA641C88FBC40E7ADD614634AE7DCBD"
@@ -1624,7 +1624,7 @@
             }
             "{BA458234-9B71-4F46-8107-E91156377184}:_B684333167374D9E8E97E541CFB45032"
             {
-            "SourcePath" = "8:..\\..\\res\\icons\\Battery Levels With Background #1\\BatteryC50.png"
+            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\Battery Levels With Background #1\\BatteryC50.png"
             "TargetName" = "8:BatteryC50.png"
             "Tag" = "8:"
             "Folder" = "8:_5FA641C88FBC40E7ADD614634AE7DCBD"
@@ -1642,7 +1642,7 @@
             }
             "{BA458234-9B71-4F46-8107-E91156377184}:_BB4DA50CAAB14EDFB7D5F7D34BFE920C"
             {
-            "SourcePath" = "8:..\\..\\res\\icons\\Battery Levels With Background #1\\Battery70.png"
+            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\Battery Levels With Background #1\\Battery70.png"
             "TargetName" = "8:Battery70.png"
             "Tag" = "8:"
             "Folder" = "8:_5FA641C88FBC40E7ADD614634AE7DCBD"
@@ -1660,7 +1660,7 @@
             }
             "{BA458234-9B71-4F46-8107-E91156377184}:_BE3CDA0296CE4AB48AAF8EB905B676B0"
             {
-            "SourcePath" = "8:..\\..\\res\\icons\\Battery Levels With Background #1\\Battery20.png"
+            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\Battery Levels With Background #1\\Battery20.png"
             "TargetName" = "8:Battery20.png"
             "Tag" = "8:"
             "Folder" = "8:_5FA641C88FBC40E7ADD614634AE7DCBD"
@@ -1678,7 +1678,7 @@
             }
             "{BA458234-9B71-4F46-8107-E91156377184}:_BE7B339F0D1949D4BD36545041E2D558"
             {
-            "SourcePath" = "8:..\\..\\res\\icons\\Battery Levels With Background #1\\BatteryC0.png"
+            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\Battery Levels With Background #1\\BatteryC0.png"
             "TargetName" = "8:BatteryC0.png"
             "Tag" = "8:"
             "Folder" = "8:_5FA641C88FBC40E7ADD614634AE7DCBD"
@@ -1768,7 +1768,7 @@
             }
             "{BA458234-9B71-4F46-8107-E91156377184}:_CB1862F9E67A423EAAFE4623E9B97D60"
             {
-            "SourcePath" = "8:..\\..\\res\\icons\\Battery Levels With Background #1\\Battery50.png"
+            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\Battery Levels With Background #1\\Battery50.png"
             "TargetName" = "8:Battery50.png"
             "Tag" = "8:"
             "Folder" = "8:_5FA641C88FBC40E7ADD614634AE7DCBD"
@@ -1786,7 +1786,7 @@
             }
             "{BA458234-9B71-4F46-8107-E91156377184}:_CC6E3C86670E49EE8E1E3A8DACF6DF30"
             {
-            "SourcePath" = "8:..\\..\\res\\icons\\Battery Levels With Background #1\\Battery60.png"
+            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\Battery Levels With Background #1\\Battery60.png"
             "TargetName" = "8:Battery60.png"
             "Tag" = "8:"
             "Folder" = "8:_5FA641C88FBC40E7ADD614634AE7DCBD"
@@ -1804,7 +1804,7 @@
             }
             "{BA458234-9B71-4F46-8107-E91156377184}:_CDF55812CF0F4D8CB4C10C171393EE8F"
             {
-            "SourcePath" = "8:..\\..\\res\\icons\\Battery Levels With Background #1\\Battery10.png"
+            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\Battery Levels With Background #1\\Battery10.png"
             "TargetName" = "8:Battery10.png"
             "Tag" = "8:"
             "Folder" = "8:_5FA641C88FBC40E7ADD614634AE7DCBD"
@@ -1822,7 +1822,7 @@
             }
             "{BA458234-9B71-4F46-8107-E91156377184}:_D2C1B0C9B5EB45E0A86196E6473A327C"
             {
-            "SourcePath" = "8:..\\..\\res\\icons\\Battery Levels With Background #1\\BatteryC20.png"
+            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\Battery Levels With Background #1\\BatteryC20.png"
             "TargetName" = "8:BatteryC20.png"
             "Tag" = "8:"
             "Folder" = "8:_5FA641C88FBC40E7ADD614634AE7DCBD"
@@ -1930,7 +1930,7 @@
             }
             "{BA458234-9B71-4F46-8107-E91156377184}:_E423B2BE72084A489D9106F864948A80"
             {
-            "SourcePath" = "8:..\\..\\res\\icons\\Volume\\Volume25.png"
+            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\Volume Levels With Background #1\\Volume25.png"
             "TargetName" = "8:Volume25.png"
             "Tag" = "8:"
             "Folder" = "8:_64D3DD890A5D430E9EF3D0E3235B776D"
@@ -2020,7 +2020,7 @@
             }
             "{BA458234-9B71-4F46-8107-E91156377184}:_F5985DFF7FCD4CB3818D983F97F4196A"
             {
-            "SourcePath" = "8:..\\..\\res\\icons\\Battery Levels With Background #1\\Battery40.png"
+            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\Battery Levels With Background #1\\Battery40.png"
             "TargetName" = "8:Battery40.png"
             "Tag" = "8:"
             "Folder" = "8:_5FA641C88FBC40E7ADD614634AE7DCBD"
@@ -2038,7 +2038,7 @@
             }
             "{BA458234-9B71-4F46-8107-E91156377184}:_F6DEB05814A24E01B255BA95820B46C9"
             {
-            "SourcePath" = "8:..\\..\\res\\icons\\Volume\\Volume50.png"
+            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\Volume Levels With Background #1\\Volume50.png"
             "TargetName" = "8:Volume50.png"
             "Tag" = "8:"
             "Folder" = "8:_64D3DD890A5D430E9EF3D0E3235B776D"
@@ -2092,7 +2092,7 @@
             }
             "{BA458234-9B71-4F46-8107-E91156377184}:_FC4705CB3BF4460BB721575B4B8D5149"
             {
-            "SourcePath" = "8:..\\..\\res\\icons\\Battery Levels With Background #1\\Battery30.png"
+            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\Battery Levels With Background #1\\Battery30.png"
             "TargetName" = "8:Battery30.png"
             "Tag" = "8:"
             "Folder" = "8:_5FA641C88FBC40E7ADD614634AE7DCBD"
