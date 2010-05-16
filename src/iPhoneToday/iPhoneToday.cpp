@@ -2430,7 +2430,7 @@ void procesaPulsacion(HWND hwnd, POINTS posCursor, BOOL doubleClick, BOOL noLanz
 
 	CPantalla *pantalla;
 	CIcono *icono = NULL;
-	int iconWidth;
+	int iconWidth, iconHeight;
 
 	BOOL isClickOnBottomBar = bHasBottomBar
 		&& posCursor.x >= listaPantallas->barraInferior->x && posCursor.x <= (listaPantallas->barraInferior->x + listaPantallas->barraInferior->anchoPantalla)
@@ -2442,14 +2442,17 @@ void procesaPulsacion(HWND hwnd, POINTS posCursor, BOOL doubleClick, BOOL noLanz
 	if (isClickOnBottomBar) {
 		pantalla = listaPantallas->barraInferior;
 		iconWidth = configuracion->bottomBarConfig->iconWidth;
+		iconHeight = configuracion->bottomBarConfig->distanceIconsV;
 		iconoActual.nPantallaActual = -1;
 	} else if (isClickOnTopBar) {
 		pantalla = listaPantallas->topBar;
 		iconWidth = configuracion->topBarConfig->iconWidth;
+		iconHeight = configuracion->topBarConfig->distanceIconsV;
 		iconoActual.nPantallaActual = -2;
 	} else {
 		pantalla = listaPantallas->listaPantalla[estado->pantallaActiva];
 		iconWidth = configuracion->mainScreenConfig->iconWidth;
+		iconHeight = configuracion->mainScreenConfig->distanceIconsV;
 		iconoActual.nPantallaActual = estado->pantallaActiva;
 	}
 	iconoActual.nIconoActual = -1;
@@ -2457,7 +2460,7 @@ void procesaPulsacion(HWND hwnd, POINTS posCursor, BOOL doubleClick, BOOL noLanz
 	for (UINT i = 0; i < pantalla->numIconos; i++) {
 		icono = pantalla->listaIconos[i];
 		if (posCursor.x >= pantalla->x + icono->x && posCursor.x <= pantalla->x + icono->x + iconWidth &&
-			posCursor.y >= pantalla->y + icono->y && posCursor.y <= pantalla->y + icono->y + iconWidth) {
+			posCursor.y >= pantalla->y + icono->y && posCursor.y <= pantalla->y + icono->y + iconHeight) {
 				iconoActual.nIconoActual = i;
 				break;
 		}
