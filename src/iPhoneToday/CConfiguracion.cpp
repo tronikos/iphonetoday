@@ -623,13 +623,15 @@ void CConfiguracion::defaultValues()
 
 	this->sign.facename[0] = 0;
 	this->sign.color = RGB(230,230,230);
-	this->sign.width = 25;
-	this->sign.height = 70;
-	this->sign.weight = 900;
+	this->sign.width = 0;
+	this->sign.height = 35;
+	this->sign.weight = 400;
 	this->sign.offset.left = 0;
-	this->sign.offset.top = 0;
+	this->sign.offset.top = 7;
 	this->sign.offset.right = 0;
-	this->sign.offset.bottom = 0;
+	this->sign.offset.bottom = 70;
+
+	this->signShowPercentage = 1;
 
 	this->animationEffect = 5;
 	this->animationColor = RGB(0,0,0);
@@ -934,6 +936,7 @@ BOOL CConfiguracion::loadXMLConfig()
 			XMLUtils::GetAttr(pElem, "ShowMB", &this->memuShowMB);
 		} else if(_stricmp(nameNode, "SignalStrength") == 0) {
 			SpecialIconSettingsLoad(pElem, &this->sign);
+			XMLUtils::GetAttr(pElem, "ShowPercentage", &this->signShowPercentage);
 		} else if(_stricmp(nameNode, "BubbleNotif") == 0) {
 			BubbleSettingsLoad(pElem, &this->bubble_notif);
 		} else if(_stricmp(nameNode, "BubbleAlarm") == 0) {
@@ -1225,6 +1228,7 @@ BOOL CConfiguracion::saveXMLConfig()
 
 	pElem = new TiXmlElement("SignalStrength");
 	SpecialIconSettingsSave(pElem, &this->sign);
+	XMLUtils::SetAttr(pElem, "ShowPercentage", this->signShowPercentage);
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("BubbleNotif");
