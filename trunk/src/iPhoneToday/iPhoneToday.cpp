@@ -1585,6 +1585,20 @@ void pintaIcono(HDC *hDC, CIcono *icono, CPantalla *pantalla, SCREEN_TYPE screen
 				configuracion->loadIconImage(hDC, icono, screen_type);
 			}
 		}
+	} else if (icono->tipo == NOTIF_MC_SIG_OPER || icono->tipo == NOTIF_SIGNAL || icono->tipo == NOTIF_SIGNAL_OPER) {
+		int signalPercent = notifications->dwNotifications[SN_PHONESIGNALSTRENGTH];
+		configuracion->getAbsolutePath(image_old, CountOf(image_old), icono->rutaImagen);
+		if (getPathFromFile(image_old, image_dir)) {
+			if (wcslen(notifications->szNotifications[SN_PHONEOPERATORNAME]) == 0) {
+				StringCchPrintf(image_new, CountOf(image_new), L"%s\\SignalNA.png", image_dir);
+			} else {
+				StringCchPrintf(image_new, CountOf(image_new), L"%s\\Signal%d.png", image_dir, ((signalPercent + 10) / 20) * 20);
+			}
+			if (wcsicmp(image_old, image_new) != 0 && FileExists(image_new)) {
+				configuracion->getRelativePath(icono->rutaImagen, CountOf(icono->rutaImagen), image_new);
+				configuracion->loadIconImage(hDC, icono, screen_type);
+			}
+		}
 	} else if (icono->tipo != NOTIF_NORMAL) {
 		BOOL stateOn = hayNotificacion(icono->tipo);
 		TCHAR *p = wcsrchr(icono->rutaImagen, '.');
@@ -1741,7 +1755,7 @@ void pintaIcono(HDC *hDC, CIcono *icono, CPantalla *pantalla, SCREEN_TYPE screen
 				if (wcslen(notifications->szNotifications[SN_PHONEOPERATORNAME]) == 0) {
 					StringCchCopy(str, CountOf(str), L"NA");
 				} else {
-					StringCchPrintf(str, CountOf(str), L"%d", notifications->dwNotifications[SN_PHONESIGNALSTRENGTH]);
+					StringCchPrintf(str, CountOf(str), L"%d%s", notifications->dwNotifications[SN_PHONESIGNALSTRENGTH], configuracion->signShowPercentage ? L"%" : L"");
 				}
 				DrawSpecialIconText(*hDC, str, icono, width, &configuracion->sign);
 				break;

@@ -149,6 +149,7 @@ public:
 	SpecialIconSettings memu;	// Memory used
 	BOOL memuShowMB;
 	SpecialIconSettings sign;	// Signal strength
+	BOOL signShowPercentage;
 
 	// Bubbles
 	BubbleSettings bubble_notif;
