@@ -94,7 +94,7 @@ BOOL IsValidConfigurationHeader(HWND hDlg)
 		MessageBox(hDlg, TEXT("Header weight value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
-	if (headerOffset < 0 || headerOffset > 128) {
+	if (headerOffset < -128 || headerOffset > 128) {
 		MessageBox(hDlg, TEXT("Header offset value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
