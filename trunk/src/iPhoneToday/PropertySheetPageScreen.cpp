@@ -191,19 +191,19 @@ BOOL cs_check(HWND hDlg, ConfigurationScreen *cs)
 		MessageBox(hDlg, TEXT("Additional vertical space value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
-	if (cs->offset.left < 0 || cs->offset.left > 256) {
+	if (cs->offset.left < -256 || cs->offset.left > 256) {
 		MessageBox(hDlg, TEXT("Offset left value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
-	if (cs->offset.top < 0 || cs->offset.top > 256) {
+	if (cs->offset.top < -256 || cs->offset.top > 256) {
 		MessageBox(hDlg, TEXT("Offset top value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
-	if (cs->offset.right < 0 || cs->offset.right > 256) {
+	if (cs->offset.right < -256 || cs->offset.right > 256) {
 		MessageBox(hDlg, TEXT("Offset right value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
-	if (cs->offset.bottom < 0 || cs->offset.bottom > 256) {
+	if (cs->offset.bottom < -256 || cs->offset.bottom > 256) {
 		MessageBox(hDlg, TEXT("Offset bottom value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}

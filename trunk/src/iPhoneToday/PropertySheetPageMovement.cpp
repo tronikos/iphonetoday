@@ -51,7 +51,7 @@ BOOL IsValidConfigurationMovement(HWND hDlg)
 	maxVelocity		= GetDlgItemInt(hDlg, IDC_EDIT_MAX_VELOCITY,	NULL, TRUE);
 	refreshTime		= GetDlgItemInt(hDlg, IDC_EDIT_REFRESH_TIME,	NULL, TRUE);
 
-	if (moveThreshold < 0 || moveThreshold > 256) {
+	if (moveThreshold < 0 || moveThreshold > 1024) {
 		MessageBox(hDlg, TEXT("Movement threshold value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
@@ -59,11 +59,11 @@ BOOL IsValidConfigurationMovement(HWND hDlg)
 		MessageBox(hDlg, TEXT("Movement factor value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
-	if (minVelocity < 0 || minVelocity > 256) {
+	if (minVelocity < 0 || minVelocity > 1024) {
 		MessageBox(hDlg, TEXT("Minimum velocity value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
-	if (maxVelocity < 0 || maxVelocity > 256) {
+	if (maxVelocity < 0 || maxVelocity > 1024) {
 		MessageBox(hDlg, TEXT("Maximum velocity value is not valid!"), TEXT("Error"), MB_OK);
 		return FALSE;
 	}
