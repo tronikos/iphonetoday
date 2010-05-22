@@ -621,17 +621,27 @@ void CConfiguracion::defaultValues()
 
 	this->memuShowMB = 0;
 
-	this->sign.facename[0] = 0;
-	this->sign.color = RGB(230,230,230);
-	this->sign.width = 0;
-	this->sign.height = 35;
-	this->sign.weight = 400;
-	this->sign.offset.left = 0;
-	this->sign.offset.top = 7;
-	this->sign.offset.right = 0;
-	this->sign.offset.bottom = 70;
+	this->psig.facename[0] = 0;
+	this->psig.color = RGB(230,230,230);
+	this->psig.width = 0;
+	this->psig.height = 35;
+	this->psig.weight = 400;
+	this->psig.offset.left = 0;
+	this->psig.offset.top = 7;
+	this->psig.offset.right = 0;
+	this->psig.offset.bottom = 70;
 
-	this->signShowPercentage = 1;
+	this->psigShowPercentage = 1;
+
+	this->wsig.facename[0] = 0;
+	this->wsig.color = RGB(230,230,230);
+	this->wsig.width = 0;
+	this->wsig.height = 35;
+	this->wsig.weight = 400;
+	this->wsig.offset.left = 0;
+	this->wsig.offset.top = 7;
+	this->wsig.offset.right = 0;
+	this->wsig.offset.bottom = 70;
 
 	this->animationEffect = 5;
 	this->animationColor = RGB(0,0,0);
@@ -934,9 +944,11 @@ BOOL CConfiguracion::loadXMLConfig()
 		} else if(_stricmp(nameNode, "MemoryUsed") == 0) {
 			SpecialIconSettingsLoad(pElem, &this->memu);
 			XMLUtils::GetAttr(pElem, "ShowMB", &this->memuShowMB);
-		} else if(_stricmp(nameNode, "SignalStrength") == 0) {
-			SpecialIconSettingsLoad(pElem, &this->sign);
-			XMLUtils::GetAttr(pElem, "ShowPercentage", &this->signShowPercentage);
+		} else if(_stricmp(nameNode, "PhoneSignalStrength") == 0) {
+			SpecialIconSettingsLoad(pElem, &this->psig);
+			XMLUtils::GetAttr(pElem, "ShowPercentage", &this->psigShowPercentage);
+		} else if(_stricmp(nameNode, "WifiSignalStrength") == 0) {
+			SpecialIconSettingsLoad(pElem, &this->wsig);
 		} else if(_stricmp(nameNode, "BubbleNotif") == 0) {
 			BubbleSettingsLoad(pElem, &this->bubble_notif);
 		} else if(_stricmp(nameNode, "BubbleAlarm") == 0) {
@@ -1226,9 +1238,13 @@ BOOL CConfiguracion::saveXMLConfig()
 	XMLUtils::SetAttr(pElem, "ShowMB", this->memuShowMB);
 	root->LinkEndChild(pElem);
 
-	pElem = new TiXmlElement("SignalStrength");
-	SpecialIconSettingsSave(pElem, &this->sign);
-	XMLUtils::SetAttr(pElem, "ShowPercentage", this->signShowPercentage);
+	pElem = new TiXmlElement("PhoneSignalStrength");
+	SpecialIconSettingsSave(pElem, &this->psig);
+	XMLUtils::SetAttr(pElem, "ShowPercentage", this->psigShowPercentage);
+	root->LinkEndChild(pElem);
+
+	pElem = new TiXmlElement("WifiSignalStrength");
+	SpecialIconSettingsSave(pElem, &this->wsig);
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("BubbleNotif");

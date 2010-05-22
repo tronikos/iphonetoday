@@ -145,6 +145,7 @@ typedef enum
 #define NOTIF_VMAIL			25
 #define NOTIF_IRDA			26
 #define NOTIF_CRADLE		27
+#define NOTIF_SIGNAL_WIFI	28
 
 #define NOTIF_NORMAL_TXT		TEXT("Normal")
 #define NOTIF_MISSEDCALLS_TXT	TEXT("Missed Calls")
@@ -176,3 +177,4 @@ typedef enum
 #define NOTIF_VMAIL_TXT			TEXT("Unplayed Voice Mails")
 #define NOTIF_IRDA_TXT			TEXT("Irda State")
 #define NOTIF_CRADLE_TXT		TEXT("Cradle State")
+#define NOTIF_SIGNAL_WIFI_TXT	TEXT("Wifi Signal Strength")

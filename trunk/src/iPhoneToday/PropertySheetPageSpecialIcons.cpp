@@ -7,7 +7,7 @@
 #include "OptionDialog.h"
 #include "ChooseFont.h"
 
-SpecialIconSettings batt, dow, dom, clck, vol, meml, memf, memu, sign;
+SpecialIconSettings batt, dow, dom, clck, vol, meml, memf, memu, psig, wsig;
 SpecialIconSettings *cur_sis;
 
 void sis_enable(HWND hDlg, BOOL bEnable)
@@ -81,7 +81,8 @@ LRESULT CALLBACK OptionDialogSpecialIcons(HWND hDlg, UINT uMsg, WPARAM wParam, L
 			memcpy(&meml, &configuracion->meml, sizeof(SpecialIconSettings));
 			memcpy(&memf, &configuracion->memf, sizeof(SpecialIconSettings));
 			memcpy(&memu, &configuracion->memu, sizeof(SpecialIconSettings));
-			memcpy(&sign, &configuracion->sign, sizeof(SpecialIconSettings));
+			memcpy(&psig, &configuracion->psig, sizeof(SpecialIconSettings));
+			memcpy(&wsig, &configuracion->wsig, sizeof(SpecialIconSettings));
 
 			SendMessage(GetDlgItem(hDlg, IDC_COMBO_SIS), CB_ADDSTRING, 0, (LPARAM)L"Battery");
 			SendMessage(GetDlgItem(hDlg, IDC_COMBO_SIS), CB_ADDSTRING, 0, (LPARAM)L"Clock");
@@ -91,7 +92,8 @@ LRESULT CALLBACK OptionDialogSpecialIcons(HWND hDlg, UINT uMsg, WPARAM wParam, L
 			SendMessage(GetDlgItem(hDlg, IDC_COMBO_SIS), CB_ADDSTRING, 0, (LPARAM)L"Memory load");
 			SendMessage(GetDlgItem(hDlg, IDC_COMBO_SIS), CB_ADDSTRING, 0, (LPARAM)L"Memory free");
 			SendMessage(GetDlgItem(hDlg, IDC_COMBO_SIS), CB_ADDSTRING, 0, (LPARAM)L"Memory used");
-			SendMessage(GetDlgItem(hDlg, IDC_COMBO_SIS), CB_ADDSTRING, 0, (LPARAM)L"Signal strength");
+			SendMessage(GetDlgItem(hDlg, IDC_COMBO_SIS), CB_ADDSTRING, 0, (LPARAM)L"Phone signal strength");
+			SendMessage(GetDlgItem(hDlg, IDC_COMBO_SIS), CB_ADDSTRING, 0, (LPARAM)L"Wifi signal strength");
 
 			SendMessage(GetDlgItem(hDlg, IDC_CHECK_CLOCK_FORMAT12), BM_SETCHECK, configuracion->clock12Format ? BST_CHECKED : BST_UNCHECKED, 0);
 			SendMessage(GetDlgItem(hDlg, IDC_CHECK_DOW_USE_LOCALE), BM_SETCHECK, configuracion->dowUseLocale ? BST_CHECKED : BST_UNCHECKED, 0);
@@ -141,8 +143,11 @@ LRESULT CALLBACK OptionDialogSpecialIcons(HWND hDlg, UINT uMsg, WPARAM wParam, L
 					} else if (lstrcmpi(str, L"Memory used") == 0) {
 						cur_sis = &memu;
 						sis_load(hDlg, cur_sis);
-					} else if (lstrcmpi(str, L"Signal strength") == 0) {
-						cur_sis = &sign;
+					} else if (lstrcmpi(str, L"Phone signal strength") == 0) {
+						cur_sis = &psig;
+						sis_load(hDlg, cur_sis);
+					} else if (lstrcmpi(str, L"Wifi signal strength") == 0) {
+						cur_sis = &wsig;
 						sis_load(hDlg, cur_sis);
 					} else {
 						sis_enable(hDlg, FALSE);
@@ -209,7 +214,8 @@ BOOL IsValidConfigurationSpecialIcons(HWND hDlg)
 	if (!sis_check(hDlg, &meml)) return FALSE;
 	if (!sis_check(hDlg, &memf)) return FALSE;
 	if (!sis_check(hDlg, &memu)) return FALSE;
-	if (!sis_check(hDlg, &sign)) return FALSE;
+	if (!sis_check(hDlg, &psig)) return FALSE;
+	if (!sis_check(hDlg, &wsig)) return FALSE;
 
 	return TRUE;
 }
@@ -228,7 +234,8 @@ BOOL SaveConfigurationSpecialIcons(HWND hDlg)
 	memcpy(&configuracion->meml, &meml, sizeof(SpecialIconSettings));
 	memcpy(&configuracion->memf, &memf, sizeof(SpecialIconSettings));
 	memcpy(&configuracion->memu, &memu, sizeof(SpecialIconSettings));
-	memcpy(&configuracion->sign, &sign, sizeof(SpecialIconSettings));
+	memcpy(&configuracion->psig, &psig, sizeof(SpecialIconSettings));
+	memcpy(&configuracion->wsig, &wsig, sizeof(SpecialIconSettings));
 
 	configuracion->clock12Format = SendMessage(GetDlgItem(hDlg, IDC_CHECK_CLOCK_FORMAT12), BM_GETCHECK, 0, 0) == BST_CHECKED;
 	configuracion->dowUseLocale  = SendMessage(GetDlgItem(hDlg, IDC_CHECK_DOW_USE_LOCALE), BM_GETCHECK, 0, 0) == BST_CHECKED;

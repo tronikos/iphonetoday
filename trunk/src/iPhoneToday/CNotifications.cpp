@@ -1,6 +1,7 @@
 #include "CNotifications.h"
 
 #include "RegistryUtils.h"
+#include "Wifi.h"
 
 struct SN_RPV {
 	HKEY hKey;
@@ -341,6 +342,14 @@ BOOL CNotifications::PollingUpdate()
 			ftNotificationsChanged[SN_DATE] = FALSE;
 		}
 		memcpy(&st, &st_new, sizeof(SYSTEMTIME));
+	}
+
+	int wss = GetWifiSignalStrength();
+	if (wss != wifiSignalStrength) {
+		wifiSignalStrength = wss;
+		wifiSignalStrength_changed = TRUE;
+	} else {
+		wifiSignalStrength_changed = FALSE;
 	}
 
 	MEMORYSTATUS mems;

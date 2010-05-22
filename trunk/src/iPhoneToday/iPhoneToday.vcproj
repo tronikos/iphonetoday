@@ -537,6 +537,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\iPhoneToday\Wifi.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\iPhoneToday\xmlWrapper.cpp"
 				>
 			</File>
@@ -648,6 +652,10 @@
 			</File>
 			<File
 				RelativePath="..\iPhoneToday\vibrate.h"
+				>
+			</File>
+			<File
+				RelativePath="..\iPhoneToday\Wifi.h"
 				>
 			</File>
 			<File

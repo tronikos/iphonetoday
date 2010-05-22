@@ -11,6 +11,7 @@
 #include "CmdLine.h"
 #include "OptionDialog.h"  // CreatePropertySheet includes
 #include "RegistryUtils.h"
+#include "Wifi.h"
 
 #define MAX_LOADSTRING 100
 
@@ -1477,6 +1478,9 @@ void DrawState(HDC hDC, CIcono *bubble, CIcono *icon, int iconWidth, BubbleSetti
 
 void DrawSpecialIconText(HDC hDC, TCHAR *str, CIcono *icon, int iconWidth, SpecialIconSettings *sis)
 {
+	if (sis->height == 0 && sis->width == 0) {
+		return;
+	}
 	RECT posText;
 	LOGFONT lf;
 	HFONT hFont;
@@ -1590,9 +1594,23 @@ void pintaIcono(HDC *hDC, CIcono *icono, CPantalla *pantalla, SCREEN_TYPE screen
 		configuracion->getAbsolutePath(image_old, CountOf(image_old), icono->rutaImagen);
 		if (getPathFromFile(image_old, image_dir)) {
 			if (wcslen(notifications->szNotifications[SN_PHONEOPERATORNAME]) == 0) {
-				StringCchPrintf(image_new, CountOf(image_new), L"%s\\SignalNA.png", image_dir);
+				StringCchPrintf(image_new, CountOf(image_new), L"%s\\PhoneSignalNA.png", image_dir);
 			} else {
-				StringCchPrintf(image_new, CountOf(image_new), L"%s\\Signal%d.png", image_dir, ((signalPercent + 10) / 20) * 20);
+				StringCchPrintf(image_new, CountOf(image_new), L"%s\\PhoneSignal%d.png", image_dir, ((signalPercent + 10) / 20) * 20);
+			}
+			if (wcsicmp(image_old, image_new) != 0 && FileExists(image_new)) {
+				configuracion->getRelativePath(icono->rutaImagen, CountOf(icono->rutaImagen), image_new);
+				configuracion->loadIconImage(hDC, icono, screen_type);
+			}
+		}
+	} else if (icono->tipo == NOTIF_SIGNAL_WIFI) {
+		int signal = notifications->wifiSignalStrength;
+		configuracion->getAbsolutePath(image_old, CountOf(image_old), icono->rutaImagen);
+		if (getPathFromFile(image_old, image_dir)) {
+			if (signal == 0) {
+				StringCchPrintf(image_new, CountOf(image_new), L"%s\\WifiSignalNA.png", image_dir);
+			} else {
+				StringCchPrintf(image_new, CountOf(image_new), L"%s\\WifiSignal%d.png", image_dir, GetWifiSignalStrengthLevel(signal) * 20);
 			}
 			if (wcsicmp(image_old, image_new) != 0 && FileExists(image_new)) {
 				configuracion->getRelativePath(icono->rutaImagen, CountOf(icono->rutaImagen), image_new);
@@ -1748,6 +1766,14 @@ void pintaIcono(HDC *hDC, CIcono *icono, CPantalla *pantalla, SCREEN_TYPE screen
 				StringCchPrintf(str, CountOf(str), L"%.1f%s", (notifications->memoryStatus.dwTotalPhys - notifications->memoryStatus.dwAvailPhys) / 1024.0 / 1024.0, configuracion->memfShowMB ? L" MBs" : L"");
 				DrawSpecialIconText(*hDC, str, icono, width, &configuracion->memu);
 				break;
+			case NOTIF_SIGNAL_WIFI:
+				if (notifications->wifiSignalStrength == 0) {
+					StringCchCopy(str, CountOf(str), L"NA");
+				} else {
+					StringCchPrintf(str, CountOf(str), L"%d", notifications->wifiSignalStrength);
+				}
+				DrawSpecialIconText(*hDC, str, icono, width, &configuracion->wsig);
+				break;
 			case NOTIF_MC_SIG_OPER:
 				numNotif = notifications->dwNotifications[SN_PHONEMISSEDCALLS];
 			case NOTIF_SIGNAL:
@@ -1755,9 +1781,9 @@ void pintaIcono(HDC *hDC, CIcono *icono, CPantalla *pantalla, SCREEN_TYPE screen
 				if (wcslen(notifications->szNotifications[SN_PHONEOPERATORNAME]) == 0) {
 					StringCchCopy(str, CountOf(str), L"NA");
 				} else {
-					StringCchPrintf(str, CountOf(str), L"%d%s", notifications->dwNotifications[SN_PHONESIGNALSTRENGTH], configuracion->signShowPercentage ? L"%" : L"");
+					StringCchPrintf(str, CountOf(str), L"%d%s", notifications->dwNotifications[SN_PHONESIGNALSTRENGTH], configuracion->psigShowPercentage ? L"%" : L"");
 				}
-				DrawSpecialIconText(*hDC, str, icono, width, &configuracion->sign);
+				DrawSpecialIconText(*hDC, str, icono, width, &configuracion->psig);
 				break;
 			case NOTIF_TASKS:
 				numNotif = notifications->dwNotifications[SN_TASKSACTIVE];
@@ -2690,6 +2716,7 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 		SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_VMAIL_TXT);
 		SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_IRDA_TXT);
 		SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_CRADLE_TXT);
+		SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_ADDSTRING, 0, (LPARAM)NOTIF_SIGNAL_WIFI_TXT);
 
 		// Configuramos los checks
 		SendMessage(GetDlgItem(hDlg, IDC_MICON_LAUNCHANIMATION), BM_SETCHECK, BST_CHECKED, 0);
@@ -2775,6 +2802,8 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 28, 0);
 			} else if (icono->tipo == NOTIF_CRADLE) {
 				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 29, 0);
+			} else if (icono->tipo == NOTIF_SIGNAL_WIFI) {
+				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 30, 0);
 			} else {
 				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 0, 0);
 			}
@@ -2949,6 +2978,8 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 				nType = NOTIF_IRDA;
 			} else if (lstrcmpi(strType, NOTIF_CRADLE_TXT) == 0) {
 				nType = NOTIF_CRADLE;
+			} else if (lstrcmpi(strType, NOTIF_SIGNAL_WIFI_TXT) == 0) {
+				nType = NOTIF_SIGNAL_WIFI;
 			} else {
 				MessageBox(hDlg, TEXT("Type not valid!"), TEXT("Error"), MB_OK);
 				return FALSE;
@@ -3879,6 +3910,12 @@ void InvalidateScreenIfNotificationsChanged(CPantalla *pantalla)
 			case NOTIF_MEMORYFREE:
 			case NOTIF_MEMORYUSED:
 				if (notifications->memory_changed) {
+					pantalla->debeActualizar = TRUE;
+					return;
+				}
+				break;
+			case NOTIF_SIGNAL_WIFI:
+				if (notifications->wifiSignalStrength_changed) {
 					pantalla->debeActualizar = TRUE;
 					return;
 				}
