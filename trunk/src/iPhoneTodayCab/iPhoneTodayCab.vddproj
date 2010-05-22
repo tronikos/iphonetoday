@@ -14,6 +14,12 @@
     {
         "Entry"
         {
+        "MsmKey" = "8:_01140E09B8D844CA891047D641464B1B"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_019CA72138BD4163B77217E932A4333C"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -74,6 +80,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_1AFE0B5D779544209CDABFD706D2D2CF"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_1BD0D1688EBB4046B8F36A8FE7A563C6"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -122,7 +134,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_28C37A10C2984F1F9103DC34C2BE5B96"
+        "MsmKey" = "8:_294E03E40059442D96620F7546FC5518"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -146,6 +158,24 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_35259F55DBD14CBFB841D06C2FF6A37E"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_390EA53D9F6C420A852D33114EBBC5EA"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_3AEC4D7B4F314CB78F6EEBC8DED7B90D"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_3EB26EC08A35441E9C5BA7658E96E83A"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -158,25 +188,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_4793ECE227AC40418BA8F56C7AF487D0"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_49A46FECC54E492B8B12D55E4B10CB3C"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_4B9DC9E1EF904AEE81EC431930DE4EC8"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_4BC5F010A4024C03B6A39016C81D7006"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -236,6 +248,18 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_62BE617FA979401BAC44718DD8025D80"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_64EF375948544D2AB82A6199AD7D098A"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_66CB1226587D4E2784F28FB95DC80400"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -249,12 +273,6 @@
         "Entry"
         {
         "MsmKey" = "8:_6B4B50A7AD5D40F7814D9CD4434F0A5B"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_6ED31D450CE74BB99A8C65E64FDAD155"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -284,6 +302,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_7743F7ED7BEB45B393E99938FEB65DBA"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_7BCE7D33EA7B415FA37BF273595A6099"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -296,6 +320,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_820976E698FB4B8DB191651F1938F7F9"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_830EEFE746F24CC1A11D894FD6D40E80"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -303,12 +333,6 @@
         "Entry"
         {
         "MsmKey" = "8:_853EE0DD94404E709D2DB0700C70FA5B"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_8669FF2DD14B4477922BFBCDDE0EC0AB"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -327,6 +351,12 @@
         "Entry"
         {
         "MsmKey" = "8:_90BEF595545E4E08A4009B89C8A523D4"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_91F36594C8ED42A29A22296CB6470905"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -380,6 +410,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_AF9F22E704BF47379B917438E84D4641"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_B15D9F4A35E449D6B644849BEEB15D43"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -399,12 +435,6 @@
         "Entry"
         {
         "MsmKey" = "8:_B684333167374D9E8E97E541CFB45032"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_BA968FA285C241C694703D1273BE3A31"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -476,6 +506,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_D62867EB0EB44D5E9C8987F88D4BA5E7"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_D64B6FA2A2A042AD81657FF8CEA9D46B"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -500,12 +536,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_DDD54291335540B09BEBF60AF376E828"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_DF6FD39917294468B3321C5844780D91"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -524,6 +554,18 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_E587CF21CFAF47B0BDFF41561926B0C7"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E8109CDBCE22423790317625033E8598"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_E83443A47B8A47A0A7FD2CD27B2225CC"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -537,6 +579,12 @@
         "Entry"
         {
         "MsmKey" = "8:_E962492DDB43418ABE98DC5C55B036F7"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_ED976F92E5D3410EBAED030C95274C10"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -566,19 +614,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_F937DFA7664B4EB2B32A5B3698608FCD"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_F9E0856E9CD443D7932E01B53FB8A824"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_FA77FE62FDEE4C2F8C56CD0CACD633F0"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -620,6 +656,24 @@
     {
         "File"
         {
+            "{BA458234-9B71-4F46-8107-E91156377184}:_01140E09B8D844CA891047D641464B1B"
+            {
+            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\PhoneSignalStrength Levels With Background #1\\PhoneSignal100.png"
+            "TargetName" = "8:PhoneSignal100.png"
+            "Tag" = "8:"
+            "Folder" = "8:_503C15660D274B619AF976BF1B2E7816"
+            "Condition" = "8:"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "Register" = "3:0"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{BA458234-9B71-4F46-8107-E91156377184}:_019CA72138BD4163B77217E932A4333C"
             {
             "SourcePath" = "8:..\\..\\res\\icons\\Connections.png"
@@ -782,6 +836,24 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{BA458234-9B71-4F46-8107-E91156377184}:_1AFE0B5D779544209CDABFD706D2D2CF"
+            {
+            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\PhoneSignalStrength Levels With Background #1\\PhoneSignal20.png"
+            "TargetName" = "8:PhoneSignal20.png"
+            "Tag" = "8:"
+            "Folder" = "8:_503C15660D274B619AF976BF1B2E7816"
+            "Condition" = "8:"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "Register" = "3:0"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{BA458234-9B71-4F46-8107-E91156377184}:_1BD0D1688EBB4046B8F36A8FE7A563C6"
             {
             "SourcePath" = "8:..\\..\\res\\icons\\Levels\\Volume Levels With Background #1\\Volume75.png"
@@ -926,12 +998,12 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{BA458234-9B71-4F46-8107-E91156377184}:_28C37A10C2984F1F9103DC34C2BE5B96"
+            "{BA458234-9B71-4F46-8107-E91156377184}:_294E03E40059442D96620F7546FC5518"
             {
-            "SourcePath" = "8:..\\..\\res\\backgrounds\\Tiles\\Blue Slabs.png"
-            "TargetName" = "8:Blue Slabs.png"
+            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\PhoneSignalStrength Levels With Background #1\\PhoneSignalNA.png"
+            "TargetName" = "8:PhoneSignalNA.png"
             "Tag" = "8:"
-            "Folder" = "8:_EE935AC3F86648DD8F646D2C8D491840"
+            "Folder" = "8:_503C15660D274B619AF976BF1B2E7816"
             "Condition" = "8:"
             "Vital" = "11:TRUE"
             "ReadOnly" = "11:FALSE"
@@ -998,6 +1070,60 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{BA458234-9B71-4F46-8107-E91156377184}:_35259F55DBD14CBFB841D06C2FF6A37E"
+            {
+            "SourcePath" = "8:..\\..\\res\\backgrounds\\Tiles\\Metal Patchwork.png"
+            "TargetName" = "8:Metal Patchwork.png"
+            "Tag" = "8:"
+            "Folder" = "8:_EE935AC3F86648DD8F646D2C8D491840"
+            "Condition" = "8:"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "Register" = "3:0"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{BA458234-9B71-4F46-8107-E91156377184}:_390EA53D9F6C420A852D33114EBBC5EA"
+            {
+            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\PhoneSignalStrength Levels With Background #1\\PhoneSignal60.png"
+            "TargetName" = "8:PhoneSignal60.png"
+            "Tag" = "8:"
+            "Folder" = "8:_503C15660D274B619AF976BF1B2E7816"
+            "Condition" = "8:"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "Register" = "3:0"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{BA458234-9B71-4F46-8107-E91156377184}:_3AEC4D7B4F314CB78F6EEBC8DED7B90D"
+            {
+            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\WiFiSignalStrength Levels With Background #1\\WiFiSignal100.png"
+            "TargetName" = "8:WiFiSignal100.png"
+            "Tag" = "8:"
+            "Folder" = "8:_79AD547D6E0242A6BE1731F1C8E753DD"
+            "Condition" = "8:"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "Register" = "3:0"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{BA458234-9B71-4F46-8107-E91156377184}:_3EB26EC08A35441E9C5BA7658E96E83A"
             {
             "SourcePath" = "8:..\\..\\res\\icons\\Messenger.png"
@@ -1034,66 +1160,12 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{BA458234-9B71-4F46-8107-E91156377184}:_4793ECE227AC40418BA8F56C7AF487D0"
-            {
-            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\SignalStrength Levels With Background #1\\Signal100.png"
-            "TargetName" = "8:Signal100.png"
-            "Tag" = "8:"
-            "Folder" = "8:_503C15660D274B619AF976BF1B2E7816"
-            "Condition" = "8:"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "Register" = "3:0"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{BA458234-9B71-4F46-8107-E91156377184}:_49A46FECC54E492B8B12D55E4B10CB3C"
-            {
-            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\SignalStrength Levels With Background #1\\Signal40.png"
-            "TargetName" = "8:Signal40.png"
-            "Tag" = "8:"
-            "Folder" = "8:_503C15660D274B619AF976BF1B2E7816"
-            "Condition" = "8:"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "Register" = "3:0"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{BA458234-9B71-4F46-8107-E91156377184}:_4B9DC9E1EF904AEE81EC431930DE4EC8"
             {
             "SourcePath" = "8:..\\..\\res\\icons\\Notes.png"
             "TargetName" = "8:Notes.png"
             "Tag" = "8:"
             "Folder" = "8:_CB770C7AC2BA431FAE2CC7F1E1214841"
-            "Condition" = "8:"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "Register" = "3:0"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{BA458234-9B71-4F46-8107-E91156377184}:_4BC5F010A4024C03B6A39016C81D7006"
-            {
-            "SourcePath" = "8:..\\..\\res\\backgrounds\\Tiles\\Diamond Plate Metal Large.png"
-            "TargetName" = "8:Diamond Plate Metal Large.png"
-            "Tag" = "8:"
-            "Folder" = "8:_EE935AC3F86648DD8F646D2C8D491840"
             "Condition" = "8:"
             "Vital" = "11:TRUE"
             "ReadOnly" = "11:FALSE"
@@ -1250,6 +1322,42 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{BA458234-9B71-4F46-8107-E91156377184}:_62BE617FA979401BAC44718DD8025D80"
+            {
+            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\WiFiSignalStrength Levels With Background #1\\WiFiSignal80.png"
+            "TargetName" = "8:WiFiSignal80.png"
+            "Tag" = "8:"
+            "Folder" = "8:_79AD547D6E0242A6BE1731F1C8E753DD"
+            "Condition" = "8:"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "Register" = "3:0"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{BA458234-9B71-4F46-8107-E91156377184}:_64EF375948544D2AB82A6199AD7D098A"
+            {
+            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\WiFiSignalStrength Levels With Background #1\\WiFiSignalNA.png"
+            "TargetName" = "8:WiFiSignalNA.png"
+            "Tag" = "8:"
+            "Folder" = "8:_79AD547D6E0242A6BE1731F1C8E753DD"
+            "Condition" = "8:"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "Register" = "3:0"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{BA458234-9B71-4F46-8107-E91156377184}:_66CB1226587D4E2784F28FB95DC80400"
             {
             "SourcePath" = "8:..\\..\\res\\icons\\Bubbles\\Alarm Transparent.png"
@@ -1292,24 +1400,6 @@
             "TargetName" = "8:Volume100.png"
             "Tag" = "8:"
             "Folder" = "8:_64D3DD890A5D430E9EF3D0E3235B776D"
-            "Condition" = "8:"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "Register" = "3:0"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{BA458234-9B71-4F46-8107-E91156377184}:_6ED31D450CE74BB99A8C65E64FDAD155"
-            {
-            "SourcePath" = "8:..\\..\\res\\backgrounds\\Tiles\\Diamond Plate Metal Small.png"
-            "TargetName" = "8:Diamond Plate Metal Small.png"
-            "Tag" = "8:"
-            "Folder" = "8:_EE935AC3F86648DD8F646D2C8D491840"
             "Condition" = "8:"
             "Vital" = "11:TRUE"
             "ReadOnly" = "11:FALSE"
@@ -1394,6 +1484,24 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{BA458234-9B71-4F46-8107-E91156377184}:_7743F7ED7BEB45B393E99938FEB65DBA"
+            {
+            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\WiFiSignalStrength Levels With Background #1\\WiFiSignal60.png"
+            "TargetName" = "8:WiFiSignal60.png"
+            "Tag" = "8:"
+            "Folder" = "8:_79AD547D6E0242A6BE1731F1C8E753DD"
+            "Condition" = "8:"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "Register" = "3:0"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{BA458234-9B71-4F46-8107-E91156377184}:_7BCE7D33EA7B415FA37BF273595A6099"
             {
             "SourcePath" = "8:..\\..\\res\\backgrounds\\Tiles\\Wood Diagonal.png"
@@ -1430,6 +1538,24 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{BA458234-9B71-4F46-8107-E91156377184}:_820976E698FB4B8DB191651F1938F7F9"
+            {
+            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\WiFiSignalStrength Levels With Background #1\\WiFiSignal0.png"
+            "TargetName" = "8:WiFiSignal0.png"
+            "Tag" = "8:"
+            "Folder" = "8:_79AD547D6E0242A6BE1731F1C8E753DD"
+            "Condition" = "8:"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "Register" = "3:0"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{BA458234-9B71-4F46-8107-E91156377184}:_830EEFE746F24CC1A11D894FD6D40E80"
             {
             "SourcePath" = "8:..\\..\\res\\icons\\Levels\\Battery Levels With Background #1\\BatteryC70.png"
@@ -1454,24 +1580,6 @@
             "TargetName" = "8:Contacts.png"
             "Tag" = "8:"
             "Folder" = "8:_CB770C7AC2BA431FAE2CC7F1E1214841"
-            "Condition" = "8:"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "Register" = "3:0"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{BA458234-9B71-4F46-8107-E91156377184}:_8669FF2DD14B4477922BFBCDDE0EC0AB"
-            {
-            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\SignalStrength Levels With Background #1\\Signal60.png"
-            "TargetName" = "8:Signal60.png"
-            "Tag" = "8:"
-            "Folder" = "8:_503C15660D274B619AF976BF1B2E7816"
             "Condition" = "8:"
             "Vital" = "11:TRUE"
             "ReadOnly" = "11:FALSE"
@@ -1526,6 +1634,24 @@
             "TargetName" = "8:Battery100.png"
             "Tag" = "8:"
             "Folder" = "8:_5FA641C88FBC40E7ADD614634AE7DCBD"
+            "Condition" = "8:"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "Register" = "3:0"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{BA458234-9B71-4F46-8107-E91156377184}:_91F36594C8ED42A29A22296CB6470905"
+            {
+            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\WiFiSignalStrength Levels With Background #1\\WiFiSignal20.png"
+            "TargetName" = "8:WiFiSignal20.png"
+            "Tag" = "8:"
+            "Folder" = "8:_79AD547D6E0242A6BE1731F1C8E753DD"
             "Condition" = "8:"
             "Vital" = "11:TRUE"
             "ReadOnly" = "11:FALSE"
@@ -1682,6 +1808,24 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{BA458234-9B71-4F46-8107-E91156377184}:_AF9F22E704BF47379B917438E84D4641"
+            {
+            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\PhoneSignalStrength Levels With Background #1\\PhoneSignal40.png"
+            "TargetName" = "8:PhoneSignal40.png"
+            "Tag" = "8:"
+            "Folder" = "8:_503C15660D274B619AF976BF1B2E7816"
+            "Condition" = "8:"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "Register" = "3:0"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{BA458234-9B71-4F46-8107-E91156377184}:_B15D9F4A35E449D6B644849BEEB15D43"
             {
             "SourcePath" = "8:..\\..\\res\\icons\\Levels\\Battery Levels With Background #1\\BatteryC10.png"
@@ -1724,24 +1868,6 @@
             "TargetName" = "8:BatteryC50.png"
             "Tag" = "8:"
             "Folder" = "8:_5FA641C88FBC40E7ADD614634AE7DCBD"
-            "Condition" = "8:"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "Register" = "3:0"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{BA458234-9B71-4F46-8107-E91156377184}:_BA968FA285C241C694703D1273BE3A31"
-            {
-            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\SignalStrength Levels With Background #1\\SignalNA.png"
-            "TargetName" = "8:SignalNA.png"
-            "Tag" = "8:"
-            "Folder" = "8:_503C15660D274B619AF976BF1B2E7816"
             "Condition" = "8:"
             "Vital" = "11:TRUE"
             "ReadOnly" = "11:FALSE"
@@ -1952,6 +2078,24 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{BA458234-9B71-4F46-8107-E91156377184}:_D62867EB0EB44D5E9C8987F88D4BA5E7"
+            {
+            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\WiFiSignalStrength Levels With Background #1\\WiFiSignal40.png"
+            "TargetName" = "8:WiFiSignal40.png"
+            "Tag" = "8:"
+            "Folder" = "8:_79AD547D6E0242A6BE1731F1C8E753DD"
+            "Condition" = "8:"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "Register" = "3:0"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{BA458234-9B71-4F46-8107-E91156377184}:_D64B6FA2A2A042AD81657FF8CEA9D46B"
             {
             "SourcePath" = "8:..\\..\\res\\icons\\Email.png"
@@ -1994,24 +2138,6 @@
             "TargetName" = "8:Rotate.png"
             "Tag" = "8:"
             "Folder" = "8:_CB770C7AC2BA431FAE2CC7F1E1214841"
-            "Condition" = "8:"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "Register" = "3:0"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{BA458234-9B71-4F46-8107-E91156377184}:_DDD54291335540B09BEBF60AF376E828"
-            {
-            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\SignalStrength Levels With Background #1\\Signal80.png"
-            "TargetName" = "8:Signal80.png"
-            "Tag" = "8:"
-            "Folder" = "8:_503C15660D274B619AF976BF1B2E7816"
             "Condition" = "8:"
             "Vital" = "11:TRUE"
             "ReadOnly" = "11:FALSE"
@@ -2078,6 +2204,42 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{BA458234-9B71-4F46-8107-E91156377184}:_E587CF21CFAF47B0BDFF41561926B0C7"
+            {
+            "SourcePath" = "8:..\\..\\res\\backgrounds\\Tiles\\Space.png"
+            "TargetName" = "8:Space.png"
+            "Tag" = "8:"
+            "Folder" = "8:_EE935AC3F86648DD8F646D2C8D491840"
+            "Condition" = "8:"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "Register" = "3:0"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{BA458234-9B71-4F46-8107-E91156377184}:_E8109CDBCE22423790317625033E8598"
+            {
+            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\PhoneSignalStrength Levels With Background #1\\PhoneSignal80.png"
+            "TargetName" = "8:PhoneSignal80.png"
+            "Tag" = "8:"
+            "Folder" = "8:_503C15660D274B619AF976BF1B2E7816"
+            "Condition" = "8:"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "Register" = "3:0"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{BA458234-9B71-4F46-8107-E91156377184}:_E83443A47B8A47A0A7FD2CD27B2225CC"
             {
             "SourcePath" = "8:..\\..\\res\\backgrounds\\Tiles\\Brick.png"
@@ -2120,6 +2282,24 @@
             "TargetName" = "8:iexplorer.png"
             "Tag" = "8:"
             "Folder" = "8:_CB770C7AC2BA431FAE2CC7F1E1214841"
+            "Condition" = "8:"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "Register" = "3:0"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{BA458234-9B71-4F46-8107-E91156377184}:_ED976F92E5D3410EBAED030C95274C10"
+            {
+            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\PhoneSignalStrength Levels With Background #1\\PhoneSignal0.png"
+            "TargetName" = "8:PhoneSignal0.png"
+            "Tag" = "8:"
+            "Folder" = "8:_503C15660D274B619AF976BF1B2E7816"
             "Condition" = "8:"
             "Vital" = "11:TRUE"
             "ReadOnly" = "11:FALSE"
@@ -2204,48 +2384,12 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{BA458234-9B71-4F46-8107-E91156377184}:_F937DFA7664B4EB2B32A5B3698608FCD"
-            {
-            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\SignalStrength Levels With Background #1\\Signal20.png"
-            "TargetName" = "8:Signal20.png"
-            "Tag" = "8:"
-            "Folder" = "8:_503C15660D274B619AF976BF1B2E7816"
-            "Condition" = "8:"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "Register" = "3:0"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{BA458234-9B71-4F46-8107-E91156377184}:_F9E0856E9CD443D7932E01B53FB8A824"
             {
             "SourcePath" = "8:..\\..\\res\\settings.xml"
             "TargetName" = "8:settings.xml"
             "Tag" = "8:"
             "Folder" = "8:_592C2201663946748A2FBA31B8D92C75"
-            "Condition" = "8:"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "Register" = "3:0"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{BA458234-9B71-4F46-8107-E91156377184}:_FA77FE62FDEE4C2F8C56CD0CACD633F0"
-            {
-            "SourcePath" = "8:..\\..\\res\\icons\\Levels\\SignalStrength Levels With Background #1\\Signal0.png"
-            "TargetName" = "8:Signal0.png"
-            "Tag" = "8:"
-            "Folder" = "8:_503C15660D274B619AF976BF1B2E7816"
             "Condition" = "8:"
             "Vital" = "11:TRUE"
             "ReadOnly" = "11:FALSE"
@@ -2350,7 +2494,7 @@
                             }
                             "{5943FCFD-5B64-4EE4-96C9-4618EC95352A}:_503C15660D274B619AF976BF1B2E7816"
                             {
-                            "Name" = "8:SignalStrength"
+                            "Name" = "8:PhoneSignalStrength"
                             "Condition" = "8:"
                             "Property" = "8:_CB70589710D14C89BF2559C41743D290"
                                 "Folders"
@@ -2371,6 +2515,15 @@
                             "Name" = "8:Volume"
                             "Condition" = "8:"
                             "Property" = "8:_ADABCCC32A564E24B8A941C9C0293608"
+                                "Folders"
+                                {
+                                }
+                            }
+                            "{5943FCFD-5B64-4EE4-96C9-4618EC95352A}:_79AD547D6E0242A6BE1731F1C8E753DD"
+                            {
+                            "Name" = "8:WifiSignalStrength"
+                            "Condition" = "8:"
+                            "Property" = "8:_CD2A12D3E5AF4A93959B446C4BE6335D"
                                 "Folders"
                                 {
                                 }
