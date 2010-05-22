@@ -69,6 +69,9 @@ public:
 
 	SYSTEMTIME st;
 
+	int wifiSignalStrength;
+	BOOL wifiSignalStrength_changed;
+
 	MEMORYSTATUS memoryStatus;
 	BOOL memory_changed;
 

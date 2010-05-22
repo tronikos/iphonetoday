@@ -148,8 +148,9 @@ public:
 	UINT memOSUsedKB;
 	SpecialIconSettings memu;	// Memory used
 	BOOL memuShowMB;
-	SpecialIconSettings sign;	// Signal strength
-	BOOL signShowPercentage;
+	SpecialIconSettings psig;	// Signal strength
+	BOOL psigShowPercentage;
+	SpecialIconSettings wsig;	// Wifi signal strength
 
 	// Bubbles
 	BubbleSettings bubble_notif;
