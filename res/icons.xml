@@ -29,16 +29,16 @@
         <icon name="Camera" image="Camera.png" sound="" exec="\Windows\camera.exe" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
     </screen>
     <screen header="Screen3">
-        <icon name="Wifi" image="wifi.png" sound="" exec="ctlpnl" parameters="cplmain.cpl,17" execAlt="" parametersAlt="" type="9" animation="1" />
+        <icon name="Wifi" image="WiFiSignalStrength\WiFiSignalNA.png" sound="" exec="ctlpnl" parameters="cplmain.cpl,17" execAlt="" parametersAlt="" type="28" animation="1" />
         <icon name="Bluetooth" image="Bluetooth.png" sound="" exec="ctlpnl" parameters="cplmain.cpl,23" execAlt="" parametersAlt="" type="10" animation="1" />
         <icon name="GPS" image="GPS.png" sound="" exec="ctlpnl" parameters="cplmain.cpl,25" execAlt="" parametersAlt="" type="0" animation="1" />
         <icon name="GPRS" image="GPRS.png" sound="" exec="" parameters="" execAlt="" parametersAlt="" type="19" animation="1" />
         <icon name="Connections" image="Connections.png" sound="" exec="ctlpnl" parameters="cplmain.cpl,19" execAlt="" parametersAlt="" type="0" animation="1" />
         <icon name="Options" image="Options.png" sound="" exec="--options" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
         <icon name="RAM Free" image="RAM.png" sound="" exec="ctlpnl" parameters="cplmain.cpl,4" execAlt="" parametersAlt="" type="17" animation="1" />
-        <icon name="Battery" image="Battery\Battery80.png" sound="" exec="ctlpnl" parameters="cplmain.cpl,3" execAlt="" parametersAlt="" type="14" animation="1" />
+        <icon name="Battery" image="Battery\Battery100.png" sound="" exec="ctlpnl" parameters="cplmain.cpl,3" execAlt="" parametersAlt="" type="14" animation="1" />
         <icon name="Volume" image="Volume\Volume100.png" sound="" exec="--volume:++10" parameters="" execAlt="" parametersAlt="" type="15" animation="0" />
-        <icon name="Operator" image="SignalStrength\SignalNA.png" sound="" exec="ctlpnl" parameters="cplmain.cpl,20" execAlt="" parametersAlt="" type="22" animation="1" />
+        <icon name="Operator" image="PhoneSignalStrength\PhoneSignalNA.png" sound="" exec="ctlpnl" parameters="cplmain.cpl,20" execAlt="" parametersAlt="" type="22" animation="1" />
         <icon name="Rotate" image="Rotate.png" sound="" exec="--rotate" parameters="" execAlt="" parametersAlt="" type="0" animation="0" />
         <icon name="Off" image="Off.png" sound="" exec="--off" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
     </screen>
