@@ -151,6 +151,7 @@ public:
 	SpecialIconSettings psig;	// Signal strength
 	BOOL psigShowPercentage;
 	SpecialIconSettings wsig;	// Wifi signal strength
+	BOOL wsigShowdBm;
 
 	// Bubbles
 	BubbleSettings bubble_notif;
