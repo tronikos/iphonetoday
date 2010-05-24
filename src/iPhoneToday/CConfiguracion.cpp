@@ -636,12 +636,14 @@ void CConfiguracion::defaultValues()
 	this->wsig.facename[0] = 0;
 	this->wsig.color = RGB(230,230,230);
 	this->wsig.width = 0;
-	this->wsig.height = 35;
+	this->wsig.height = 28;
 	this->wsig.weight = 400;
 	this->wsig.offset.left = 0;
 	this->wsig.offset.top = 7;
 	this->wsig.offset.right = 0;
 	this->wsig.offset.bottom = 70;
+
+	this->wsigShowdBm = 1;
 
 	this->animationEffect = 5;
 	this->animationColor = RGB(0,0,0);
@@ -949,6 +951,7 @@ BOOL CConfiguracion::loadXMLConfig()
 			XMLUtils::GetAttr(pElem, "ShowPercentage", &this->psigShowPercentage);
 		} else if(_stricmp(nameNode, "WifiSignalStrength") == 0) {
 			SpecialIconSettingsLoad(pElem, &this->wsig);
+			XMLUtils::GetAttr(pElem, "ShowdBm", &this->wsigShowdBm);
 		} else if(_stricmp(nameNode, "BubbleNotif") == 0) {
 			BubbleSettingsLoad(pElem, &this->bubble_notif);
 		} else if(_stricmp(nameNode, "BubbleAlarm") == 0) {
@@ -1245,6 +1248,7 @@ BOOL CConfiguracion::saveXMLConfig()
 
 	pElem = new TiXmlElement("WifiSignalStrength");
 	SpecialIconSettingsSave(pElem, &this->wsig);
+	XMLUtils::SetAttr(pElem, "ShowdBm", this->wsigShowdBm);
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("BubbleNotif");

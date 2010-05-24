@@ -1768,9 +1768,9 @@ void pintaIcono(HDC *hDC, CIcono *icono, CPantalla *pantalla, SCREEN_TYPE screen
 				break;
 			case NOTIF_SIGNAL_WIFI:
 				if (notifications->wifiSignalStrength == 0) {
-					StringCchCopy(str, CountOf(str), L"NA");
+					StringCchCopy(str, CountOf(str), L"OFF");
 				} else {
-					StringCchPrintf(str, CountOf(str), L"%d", notifications->wifiSignalStrength);
+					StringCchPrintf(str, CountOf(str), L"%d%s", notifications->wifiSignalStrength, configuracion->wsigShowdBm ? L" dBm" : L"");
 				}
 				DrawSpecialIconText(*hDC, str, icono, width, &configuracion->wsig);
 				break;
@@ -1779,7 +1779,7 @@ void pintaIcono(HDC *hDC, CIcono *icono, CPantalla *pantalla, SCREEN_TYPE screen
 			case NOTIF_SIGNAL:
 			case NOTIF_SIGNAL_OPER:
 				if (wcslen(notifications->szNotifications[SN_PHONEOPERATORNAME]) == 0) {
-					StringCchCopy(str, CountOf(str), L"NA");
+					StringCchCopy(str, CountOf(str), L"OFF");
 				} else {
 					StringCchPrintf(str, CountOf(str), L"%d%s", notifications->dwNotifications[SN_PHONESIGNALSTRENGTH], configuracion->psigShowPercentage ? L"%" : L"");
 				}
