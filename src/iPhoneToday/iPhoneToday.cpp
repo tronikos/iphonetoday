@@ -1607,7 +1607,7 @@ void pintaIcono(HDC *hDC, CIcono *icono, CPantalla *pantalla, SCREEN_TYPE screen
 		int signal = notifications->wifiSignalStrength;
 		configuracion->getAbsolutePath(image_old, CountOf(image_old), icono->rutaImagen);
 		if (getPathFromFile(image_old, image_dir)) {
-			if (signal == 0) {
+			if (signal == 0 && !(notifications->dwNotifications[SN_WIFISTATEPOWERON] & SN_WIFISTATEPOWERON_BITMASK)) {
 				StringCchPrintf(image_new, CountOf(image_new), L"%s\\WifiSignalNA.png", image_dir);
 			} else {
 				StringCchPrintf(image_new, CountOf(image_new), L"%s\\WifiSignal%d.png", image_dir, GetWifiSignalStrengthLevel(signal) * 20);
@@ -1768,7 +1768,11 @@ void pintaIcono(HDC *hDC, CIcono *icono, CPantalla *pantalla, SCREEN_TYPE screen
 				break;
 			case NOTIF_SIGNAL_WIFI:
 				if (notifications->wifiSignalStrength == 0) {
-					StringCchCopy(str, CountOf(str), L"OFF");
+					if (notifications->dwNotifications[SN_WIFISTATEPOWERON] & SN_WIFISTATEPOWERON_BITMASK) {
+						StringCchCopy(str, CountOf(str), L"NA");
+					} else {
+						StringCchCopy(str, CountOf(str), L"OFF");
+					}
 				} else {
 					StringCchPrintf(str, CountOf(str), L"%d%s", notifications->wifiSignalStrength, configuracion->wsigShowdBm ? L" dBm" : L"");
 				}
@@ -1779,7 +1783,7 @@ void pintaIcono(HDC *hDC, CIcono *icono, CPantalla *pantalla, SCREEN_TYPE screen
 			case NOTIF_SIGNAL:
 			case NOTIF_SIGNAL_OPER:
 				if (wcslen(notifications->szNotifications[SN_PHONEOPERATORNAME]) == 0) {
-					StringCchCopy(str, CountOf(str), L"OFF");
+					StringCchCopy(str, CountOf(str), L"NA");
 				} else {
 					StringCchPrintf(str, CountOf(str), L"%d%s", notifications->dwNotifications[SN_PHONESIGNALSTRENGTH], configuracion->psigShowPercentage ? L"%" : L"");
 				}
