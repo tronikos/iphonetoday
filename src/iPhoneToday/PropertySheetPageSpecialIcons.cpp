@@ -7,7 +7,7 @@
 #include "OptionDialog.h"
 #include "ChooseFont.h"
 
-SpecialIconSettings batt, dow, dom, clck, vol, meml, memf, memu, psig, wsig;
+SpecialIconSettings batt, dow, dom, clck, alrm, vol, meml, memf, memu, psig, wsig;
 SpecialIconSettings *cur_sis;
 
 void sis_enable(HWND hDlg, BOOL bEnable)
@@ -75,6 +75,7 @@ LRESULT CALLBACK OptionDialogSpecialIcons(HWND hDlg, UINT uMsg, WPARAM wParam, L
 
 			memcpy(&batt, &configuracion->batt, sizeof(SpecialIconSettings));
 			memcpy(&clck, &configuracion->clck, sizeof(SpecialIconSettings));
+			memcpy(&alrm, &configuracion->alrm, sizeof(SpecialIconSettings));
 			memcpy(&dom,  &configuracion->dom,  sizeof(SpecialIconSettings));
 			memcpy(&dow,  &configuracion->dow,  sizeof(SpecialIconSettings));
 			memcpy(&vol,  &configuracion->vol,  sizeof(SpecialIconSettings));
@@ -86,6 +87,7 @@ LRESULT CALLBACK OptionDialogSpecialIcons(HWND hDlg, UINT uMsg, WPARAM wParam, L
 
 			SendMessage(GetDlgItem(hDlg, IDC_COMBO_SIS), CB_ADDSTRING, 0, (LPARAM)L"Battery");
 			SendMessage(GetDlgItem(hDlg, IDC_COMBO_SIS), CB_ADDSTRING, 0, (LPARAM)L"Clock");
+			SendMessage(GetDlgItem(hDlg, IDC_COMBO_SIS), CB_ADDSTRING, 0, (LPARAM)L"Alarm");
 			SendMessage(GetDlgItem(hDlg, IDC_COMBO_SIS), CB_ADDSTRING, 0, (LPARAM)L"Day of month");
 			SendMessage(GetDlgItem(hDlg, IDC_COMBO_SIS), CB_ADDSTRING, 0, (LPARAM)L"Day of week");
 			SendMessage(GetDlgItem(hDlg, IDC_COMBO_SIS), CB_ADDSTRING, 0, (LPARAM)L"Volume");
@@ -124,6 +126,9 @@ LRESULT CALLBACK OptionDialogSpecialIcons(HWND hDlg, UINT uMsg, WPARAM wParam, L
 						cur_sis = &clck;
 						sis_load(hDlg, cur_sis);
 						ShowWindow(GetDlgItem(hDlg, IDC_CHECK_CLOCK_FORMAT12), SW_SHOW);
+					} else if (lstrcmpi(str, L"Alarm") == 0) {
+						cur_sis = &alrm;
+						sis_load(hDlg, cur_sis);
 					} else if (lstrcmpi(str, L"Day of month") == 0) {
 						cur_sis = &dom;
 						sis_load(hDlg, cur_sis);
@@ -208,9 +213,10 @@ BOOL IsValidConfigurationSpecialIcons(HWND hDlg)
 
 	if (!sis_check(hDlg, &batt)) return FALSE;
 	if (!sis_check(hDlg, &clck)) return FALSE;
-	if (!sis_check(hDlg, &dom)) return FALSE;
-	if (!sis_check(hDlg, &dow)) return FALSE;
-	if (!sis_check(hDlg, &vol)) return FALSE;
+	if (!sis_check(hDlg, &alrm)) return FALSE;
+	if (!sis_check(hDlg, &dom))  return FALSE;
+	if (!sis_check(hDlg, &dow))  return FALSE;
+	if (!sis_check(hDlg, &vol))  return FALSE;
 	if (!sis_check(hDlg, &meml)) return FALSE;
 	if (!sis_check(hDlg, &memf)) return FALSE;
 	if (!sis_check(hDlg, &memu)) return FALSE;
@@ -228,6 +234,7 @@ BOOL SaveConfigurationSpecialIcons(HWND hDlg)
 
 	memcpy(&configuracion->batt, &batt, sizeof(SpecialIconSettings));
 	memcpy(&configuracion->clck, &clck, sizeof(SpecialIconSettings));
+	memcpy(&configuracion->alrm, &alrm, sizeof(SpecialIconSettings));
 	memcpy(&configuracion->dom,  &dom,  sizeof(SpecialIconSettings));
 	memcpy(&configuracion->dow,  &dow,  sizeof(SpecialIconSettings));
 	memcpy(&configuracion->vol,  &vol,  sizeof(SpecialIconSettings));

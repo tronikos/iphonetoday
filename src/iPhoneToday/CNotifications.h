@@ -42,6 +42,7 @@ enum sz_notifications_enum {
 enum ft_notifications_enum {
 	SN_TIME,							// HKLM\System\State\DateTime\Time
 	SN_DATE,							// HKLM\System\State\DateTime\Date
+	SN_ALARMS_NEXT,						// HKCU\System\State\Shell\Alarms\Next
 	MAXFILETIMENOTIFICATION
 };
 
@@ -68,6 +69,7 @@ public:
 	BOOL ftNotificationsChanged[MAXDWORDNOTIFICATION];
 
 	SYSTEMTIME st;
+	FILETIME ftAlarmsNext;
 
 	int wifiSignalStrength;
 	BOOL wifiSignalStrength_changed;
