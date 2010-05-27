@@ -77,7 +77,7 @@ LRESULT CALLBACK OptionDialogHeader(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM 
 	return DefOptionWindowProc(hDlg, TAB_HEADER, uMsg, wParam, lParam);
 }
 
-BOOL IsValidConfigurationHeader(HWND hDlg)
+/*BOOL IsValidConfigurationHeader(HWND hDlg)
 {
 	int headerOffset, circlesDiameter, circlesDistance, circlesOffset;
 
@@ -112,11 +112,11 @@ BOOL IsValidConfigurationHeader(HWND hDlg)
 	}
 
 	return TRUE;
-}
+}*/
 
 BOOL SaveConfigurationHeader(HWND hDlg)
 {
-	if (!IsValidConfigurationHeader(hDlg)) return FALSE;
+//	if (!IsValidConfigurationHeader(hDlg)) return FALSE;
 
 	int headerOffset, circlesDiameter, circlesDistance, circlesOffset;
 

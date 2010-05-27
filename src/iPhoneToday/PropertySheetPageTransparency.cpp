@@ -104,7 +104,7 @@ LRESULT CALLBACK OptionDialogTransparency(HWND hDlg, UINT uMsg, WPARAM wParam, L
 	return DefOptionWindowProc(hDlg, TAB_TRANSPARENCY, uMsg, wParam, lParam);
 }
 
-BOOL IsValidConfigurationTransparency(HWND hDlg)
+/*BOOL IsValidConfigurationTransparency(HWND hDlg)
 {
 	int alphaThreshold;
 
@@ -116,11 +116,11 @@ BOOL IsValidConfigurationTransparency(HWND hDlg)
 	}
 
 	return TRUE;
-}
+}*/
 
 BOOL SaveConfigurationTransparency(HWND hDlg)
 {
-	if (!IsValidConfigurationTransparency(hDlg)) return FALSE;
+//	if (!IsValidConfigurationTransparency(hDlg)) return FALSE;
 
 	int alphaThreshold;
 

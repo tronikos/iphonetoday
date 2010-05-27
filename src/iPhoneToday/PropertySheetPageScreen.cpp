@@ -161,7 +161,7 @@ LRESULT CALLBACK OptionDialogScreen(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM 
 	return DefOptionWindowProc(hDlg, TAB_SCREEN, uMsg, wParam, lParam);
 }
 
-BOOL cs_check(HWND hDlg, ConfigurationScreen *cs)
+/*BOOL cs_check(HWND hDlg, ConfigurationScreen *cs)
 {
 	if (cs->iconWidthXML < 0 || cs->iconWidthXML > 256) {
 		MessageBox(hDlg, TEXT("Icon width value is not valid!"), TEXT("Error"), MB_OK);
@@ -219,13 +219,13 @@ BOOL IsValidConfigurationScreen(HWND hDlg)
 	if (!cs_check(hDlg, &tb)) return FALSE;
 
 	return TRUE;
-}
+}*/
 
 BOOL SaveConfigurationScreen(HWND hDlg)
 {
 	cs_save(hDlg, cur_cs);
 
-	if (!IsValidConfigurationScreen(hDlg)) return FALSE;
+//	if (!IsValidConfigurationScreen(hDlg)) return FALSE;
 
 	memcpy(&configuracion->mainScreenConfig->cs, &ms, sizeof(CConfigurationScreen));
 	memcpy(&configuracion->bottomBarConfig->cs,  &bb, sizeof(CConfigurationScreen));

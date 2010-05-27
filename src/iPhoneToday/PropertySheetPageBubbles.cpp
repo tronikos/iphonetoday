@@ -185,7 +185,7 @@ LRESULT CALLBACK OptionDialogBubbles(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM
 	return DefOptionWindowProc(hDlg, TAB_BUBBLES, uMsg, wParam, lParam);
 }
 
-BOOL bs_check(HWND hDlg, BubbleSettings *bs)
+/*BOOL bs_check(HWND hDlg, BubbleSettings *bs)
 {
 	if (bs->sis.height < 0 || bs->sis.height > 100) {
 		MessageBox(hDlg, TEXT("Bubble's text height value is not valid!"), TEXT("Error"), MB_OK);
@@ -227,13 +227,13 @@ BOOL IsValidConfigurationBubbles(HWND hDlg)
 	if (!bs_check(hDlg, &bstate)) return FALSE;
 
 	return TRUE;
-}
+}*/
 
 BOOL SaveConfigurationBubbles(HWND hDlg)
 {
 	bs_save(hDlg, cur_bs);
 
-	if (!IsValidConfigurationBubbles(hDlg)) return FALSE;
+//	if (!IsValidConfigurationBubbles(hDlg)) return FALSE;
 
 	memcpy(&configuracion->bubble_alarm, &balarm, sizeof(BubbleSettings));
 	memcpy(&configuracion->bubble_notif, &bnotif, sizeof(BubbleSettings));

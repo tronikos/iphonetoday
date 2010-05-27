@@ -90,14 +90,14 @@ LRESULT CALLBACK OptionDialogWallpaper(HWND hDlg, UINT uMsg, WPARAM wParam, LPAR
 	return DefOptionWindowProc(hDlg, TAB_WALLPAPER, uMsg, wParam, lParam);
 }
 
-BOOL IsValidConfigurationWallpaper(HWND hDlg)
+/*BOOL IsValidConfigurationWallpaper(HWND hDlg)
 {
 	return TRUE;
-}
+}*/
 
 BOOL SaveConfigurationWallpaper(HWND hDlg)
 {
-	if (!IsValidConfigurationWallpaper(hDlg)) return FALSE;
+//	if (!IsValidConfigurationWallpaper(hDlg)) return FALSE;
 
 	GetDlgItemText(hDlg, IDC_EDIT_BACK_WALLPAPER, configuracion->strFondoPantalla, CountOf(configuracion->strFondoPantalla));
 	configuracion->fondoEstatico	= SendMessage(GetDlgItem(hDlg, IDC_CHECK_BACK_STATIC), BM_GETCHECK, 0, 0) == BST_CHECKED;

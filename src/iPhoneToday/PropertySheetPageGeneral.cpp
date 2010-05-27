@@ -71,7 +71,7 @@ LRESULT CALLBACK OptionDialogGeneral(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM
 	return DefOptionWindowProc(hDlg, TAB_GENERAL, uMsg, wParam, lParam);
 }
 
-BOOL IsValidConfigurationGeneral(HWND hDlg)
+/*BOOL IsValidConfigurationGeneral(HWND hDlg)
 {
 	int notifyTimer, heightP, heightL;
 
@@ -89,11 +89,11 @@ BOOL IsValidConfigurationGeneral(HWND hDlg)
 	}
 
 	return TRUE;
-}
+}*/
 
 BOOL SaveConfigurationGeneral(HWND hDlg)
 {
-	if (!IsValidConfigurationGeneral(hDlg)) return FALSE;
+//	if (!IsValidConfigurationGeneral(hDlg)) return FALSE;
 
 	int notifyTimer, heightP, heightL;
 

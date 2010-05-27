@@ -70,7 +70,7 @@ void PaintOptionsDialog(HWND hDlg, INT iDlg)
 	EndPaint(hDlg, &ps);
 }
 
-BOOL IsValidConfiguration(HWND hDlg, INT iDlg)
+/*BOOL IsValidConfiguration(HWND hDlg, INT iDlg)
 {
 	BOOL isValid = TRUE;
 	switch (iDlg) {
@@ -109,7 +109,7 @@ BOOL IsValidConfiguration(HWND hDlg, INT iDlg)
 			break;
 	}
 	return isValid;
-}
+}*/
 
 LRESULT DefOptionWindowProc(HWND hDlg, INT iDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -194,7 +194,7 @@ LRESULT DefOptionWindowProc(HWND hDlg, INT iDlg, UINT uMsg, WPARAM wParam, LPARA
 						saveOptionsAnswer = (resp == IDNO) ? 0 : 1;
 					}
 					if (saveOptionsAnswer == 1) {
-						//WriteToLog(L"Calling IsValidConfiguration(%d)\n", iDlg);
+						/*//WriteToLog(L"Calling IsValidConfiguration(%d)\n", iDlg);
 						if (!IsValidConfiguration(hDlg, iDlg)) {
 							//WriteToLog(L"IsValidConfiguration(%d) returned FALSE\n", iDlg);
 							SetWindowLong(hDlg, DWL_MSGRESULT, PSNRET_INVALID);
@@ -202,7 +202,7 @@ LRESULT DefOptionWindowProc(HWND hDlg, INT iDlg, UINT uMsg, WPARAM wParam, LPARA
 							appliedDialogs = 0;
 							appliedDialogsMask = 0;
 							return TRUE;
-						}
+						}*/
 						if (appliedDialogs == initializedDialogs) {
 							//WriteToLog(L"#%d: Calling SaveConfiguration()\n", iDlg);
 							if (SaveConfiguration()) {

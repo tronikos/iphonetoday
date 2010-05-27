@@ -82,7 +82,7 @@ LRESULT CALLBACK OptionDialogOnLaunch(HWND hDlg, UINT uMsg, WPARAM wParam, LPARA
 	return DefOptionWindowProc(hDlg, TAB_ONLAUNCH, uMsg, wParam, lParam);
 }
 
-BOOL IsValidConfigurationOnLaunch(HWND hDlg)
+/*BOOL IsValidConfigurationOnLaunch(HWND hDlg)
 {
 	int vibrateOnLaunchIcon;
 
@@ -94,11 +94,11 @@ BOOL IsValidConfigurationOnLaunch(HWND hDlg)
 	}
 
 	return TRUE;
-}
+}*/
 
 BOOL SaveConfigurationOnLaunch(HWND hDlg)
 {
-	if (!IsValidConfigurationOnLaunch(hDlg)) return FALSE;
+//	if (!IsValidConfigurationOnLaunch(hDlg)) return FALSE;
 
 	int vibrateOnLaunchIcon;
 
