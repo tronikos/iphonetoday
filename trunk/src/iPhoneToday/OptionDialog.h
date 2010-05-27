@@ -55,7 +55,7 @@ BOOL				SaveConfigurationTransparency(HWND);
 BOOL				SaveConfigurationOutOfScreen(HWND);
 BOOL				SaveConfigurationAnimation(HWND);
 
-BOOL				IsValidConfiguration(HWND, INT);
+/*BOOL				IsValidConfiguration(HWND, INT);
 BOOL				IsValidConfigurationScreen(HWND);
 BOOL				IsValidConfigurationWallpaper(HWND);
 BOOL				IsValidConfigurationMovement(HWND);
@@ -66,7 +66,7 @@ BOOL				IsValidConfigurationGeneral(HWND);
 BOOL				IsValidConfigurationOnLaunch(HWND);
 BOOL				IsValidConfigurationTransparency(HWND);
 BOOL				IsValidConfigurationOutOfScreen(HWND);
-BOOL				IsValidConfigurationAnimation(HWND);
+BOOL				IsValidConfigurationAnimation(HWND);*/
 
 // Option dialog box procedure functions
 LRESULT	CALLBACK	OptionDialogScreen(HWND, UINT, WPARAM, LPARAM);

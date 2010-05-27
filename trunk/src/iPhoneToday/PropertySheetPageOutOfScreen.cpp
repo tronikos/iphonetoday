@@ -119,7 +119,7 @@ LRESULT CALLBACK OptionDialogOutOfScreen(HWND hDlg, UINT uMsg, WPARAM wParam, LP
 	return DefOptionWindowProc(hDlg, TAB_OUTOFSCREEN, uMsg, wParam, lParam);
 }
 
-BOOL ooss_check(HWND hDlg, OutOfScreenSettings *ooss)
+/*BOOL ooss_check(HWND hDlg, OutOfScreenSettings *ooss)
 {
 	if (ooss->stopAt < 0 || ooss->stopAt > 100) {
 		MessageBox(hDlg, TEXT("Out of screen stop at value is not valid!"), TEXT("Error"), MB_OK);
@@ -138,13 +138,13 @@ BOOL IsValidConfigurationOutOfScreen(HWND hDlg)
 	if (!ooss_check(hDlg, &ooss_down))  return FALSE;
 
 	return TRUE;
-}
+}*/
 
 BOOL SaveConfigurationOutOfScreen(HWND hDlg)
 {
 	ooss_save(hDlg, cur_ooss);
 
-	if (!IsValidConfigurationOutOfScreen(hDlg)) return FALSE;
+//	if (!IsValidConfigurationOutOfScreen(hDlg)) return FALSE;
 
 	memcpy(&configuracion->ooss_left,  &ooss_left,  sizeof(OutOfScreenSettings));
 	memcpy(&configuracion->ooss_right, &ooss_right, sizeof(OutOfScreenSettings));

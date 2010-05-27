@@ -41,7 +41,7 @@ LRESULT CALLBACK OptionDialogMovement(HWND hDlg, UINT uMsg, WPARAM wParam, LPARA
 	return DefOptionWindowProc(hDlg, TAB_MOVEMENT, uMsg, wParam, lParam);
 }
 
-BOOL IsValidConfigurationMovement(HWND hDlg)
+/*BOOL IsValidConfigurationMovement(HWND hDlg)
 {
 	int moveThreshold, moveFactor, minVelocity, maxVelocity, refreshTime;
 
@@ -73,11 +73,11 @@ BOOL IsValidConfigurationMovement(HWND hDlg)
 	}
 
 	return TRUE;
-}
+}*/
 
 BOOL SaveConfigurationMovement(HWND hDlg)
 {
-	if (!IsValidConfigurationMovement(hDlg)) return FALSE;
+//	if (!IsValidConfigurationMovement(hDlg)) return FALSE;
 
 	int moveThreshold, moveFactor, minVelocity, maxVelocity, refreshTime;
 

@@ -174,7 +174,7 @@ LRESULT CALLBACK OptionDialogSpecialIcons(HWND hDlg, UINT uMsg, WPARAM wParam, L
 	return DefOptionWindowProc(hDlg, TAB_SPECIALICONS, uMsg, wParam, lParam);
 }
 
-BOOL sis_check(HWND hDlg, SpecialIconSettings *sis)
+/*BOOL sis_check(HWND hDlg, SpecialIconSettings *sis)
 {
 	if (sis->height < 0 || sis->height > 100) {
 		MessageBox(hDlg, TEXT("Special icon's height value is not valid!"), TEXT("Error"), MB_OK);
@@ -224,13 +224,13 @@ BOOL IsValidConfigurationSpecialIcons(HWND hDlg)
 	if (!sis_check(hDlg, &wsig)) return FALSE;
 
 	return TRUE;
-}
+}*/
 
 BOOL SaveConfigurationSpecialIcons(HWND hDlg)
 {
 	sis_save(hDlg, cur_sis);
 
-	if (!IsValidConfigurationSpecialIcons(hDlg)) return FALSE;
+//	if (!IsValidConfigurationSpecialIcons(hDlg)) return FALSE;
 
 	memcpy(&configuracion->batt, &batt, sizeof(SpecialIconSettings));
 	memcpy(&configuracion->clck, &clck, sizeof(SpecialIconSettings));

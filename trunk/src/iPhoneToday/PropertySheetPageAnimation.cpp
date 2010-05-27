@@ -50,7 +50,7 @@ LRESULT CALLBACK OptionDialogAnimation(HWND hDlg, UINT uMsg, WPARAM wParam, LPAR
 	return DefOptionWindowProc(hDlg, TAB_ANIMATION, uMsg, wParam, lParam);
 }
 
-BOOL IsValidConfigurationAnimation(HWND hDlg)
+/*BOOL IsValidConfigurationAnimation(HWND hDlg)
 {
 	int animationDuration = GetDlgItemInt(hDlg, IDC_EDIT_ANIMATION_TIME, NULL, TRUE);
 	int animationDelay = GetDlgItemInt(hDlg, IDC_EDIT_ANIMATION_DELAY, NULL, TRUE);
@@ -65,11 +65,11 @@ BOOL IsValidConfigurationAnimation(HWND hDlg)
 	}
 
 	return TRUE;
-}
+}*/
 
 BOOL SaveConfigurationAnimation(HWND hDlg)
 {
-	if (!IsValidConfigurationAnimation(hDlg)) return FALSE;
+//	if (!IsValidConfigurationAnimation(hDlg)) return FALSE;
 
 	configuracion->animationEffect	= SendMessage(GetDlgItem(hDlg, IDC_COMBO_ANIMATION), CB_GETCURSEL, 0, 0);
 	configuracion->animationColor	= GetDlgItemHex(hDlg, IDC_EDIT_ANIM_COLOR, NULL);
