@@ -70,7 +70,7 @@ LPWSTR GetWirelessDeviceName()
 								NULL)) {
 				int count_unknown = 0;
 				for (LPWSTR pszStr = (LPWSTR) Buffer; *pszStr; pszStr += wcslen(pszStr) + 1) {
-					NKDbgPrintfW(L"Adapter: %s\n", pszStr);
+					//NKDbgPrintfW(L"Adapter: %s\n", pszStr);
 					// skip adapter names that are known not to be wireless (skip infrared, gprs, ActiveSync etc.)
 					if (wcsicmp(pszStr, L"ASYNCMAC1") == 0 ||
 						wcsicmp(pszStr, L"IRSIR1") == 0 ||
