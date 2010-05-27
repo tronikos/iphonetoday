@@ -134,8 +134,10 @@ public:
 	TCHAR diasSemana[7][16];
 	SpecialIconSettings dom;	// DayOfMonth
 	SpecialIconSettings clck;	// Clock
+	BOOL clckShowAMPM;
 	BOOL clock12Format;
 	SpecialIconSettings alrm;	// Alarm
+	BOOL alrmShowAMPM;
 	SpecialIconSettings batt;	// Battery
 	BOOL battShowAC;
 	BOOL battShowPercentage;
