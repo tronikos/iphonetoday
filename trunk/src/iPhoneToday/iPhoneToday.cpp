@@ -1712,8 +1712,18 @@ void pintaIcono(HDC *hDC, CIcono *icono, CPantalla *pantalla, SCREEN_TYPE screen
 				DrawSpecialIconText(*hDC, str, icono, width, &configuracion->dom);
 				break;
 			case NOTIF_ALARM:
-				if (shouldDrawBubble && (notifications->dwNotifications[SN_CLOCKALARMFLAGS0] + notifications->dwNotifications[SN_CLOCKALARMFLAGS1] + notifications->dwNotifications[SN_CLOCKALARMFLAGS2]) > 0) {
-					DrawBubbleText(*hDC, configuracion->bubbleAlarm, -1, icono, width, &configuracion->bubble_alarm);
+				if ((notifications->dwNotifications[SN_CLOCKALARMFLAGS0] + notifications->dwNotifications[SN_CLOCKALARMFLAGS1] + notifications->dwNotifications[SN_CLOCKALARMFLAGS2]) > 0) {
+					if (shouldDrawBubble) {
+						DrawBubbleText(*hDC, configuracion->bubbleAlarm, -1, icono, width, &configuracion->bubble_alarm);
+					}
+					SYSTEMTIME stAlarmsNext;
+					FileTimeToSystemTime(&notifications->ftAlarmsNext, &stAlarmsNext);
+					if (configuracion->clock12Format) {
+						StringCchPrintf(str, CountOf(str), TEXT("%d:%02d"), (stAlarmsNext.wHour == 0 ? 12 : (stAlarmsNext.wHour > 12 ? (stAlarmsNext.wHour - 12) : stAlarmsNext.wHour)), stAlarmsNext.wMinute);
+					} else {
+						StringCchPrintf(str, CountOf(str), TEXT("%02d:%02d"), stAlarmsNext.wHour, stAlarmsNext.wMinute);
+					}
+					DrawSpecialIconText(*hDC, str, icono, width, &configuracion->alrm);
 				}
 				break;
 			case NOTIF_CLOCK_ALARM:
@@ -3874,7 +3884,7 @@ void InvalidateScreenIfNotificationsChanged(CPantalla *pantalla)
 				}
 				break;
 			case NOTIF_ALARM:
-				if (notifications->dwNotificationsChanged[SN_CLOCKALARMFLAGS0] || notifications->dwNotificationsChanged[SN_CLOCKALARMFLAGS1] || notifications->dwNotificationsChanged[SN_CLOCKALARMFLAGS2]) {
+				if (notifications->dwNotificationsChanged[SN_CLOCKALARMFLAGS0] || notifications->dwNotificationsChanged[SN_CLOCKALARMFLAGS1] || notifications->dwNotificationsChanged[SN_CLOCKALARMFLAGS2] || notifications->ftNotificationsChanged[SN_ALARMS_NEXT]) {
 					pantalla->debeActualizar = TRUE;
 					return;
 				}

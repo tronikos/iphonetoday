@@ -135,6 +135,7 @@ public:
 	SpecialIconSettings dom;	// DayOfMonth
 	SpecialIconSettings clck;	// Clock
 	BOOL clock12Format;
+	SpecialIconSettings alrm;	// Alarm
 	SpecialIconSettings batt;	// Battery
 	BOOL battShowAC;
 	BOOL battShowPercentage;

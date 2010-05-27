@@ -15,6 +15,8 @@ BOOL LoadDwordSetting(HKEY hKey, DWORD * szValue, const TCHAR * lpSubKey,
                  const TCHAR * szKeyName, const DWORD dwDefault);
 BOOL LoadTextSetting(HKEY hKEY, TCHAR * szValue, const TCHAR * lpSubKey,
                  const TCHAR * szKeyName, const TCHAR * szDefault);
+BOOL LoadDateTimeSetting(HKEY hKEY, FILETIME * ftValue, const TCHAR * lpSubKey,
+                 const TCHAR * szKeyName);
 BOOL DeleteKey(HKEY hKey, const TCHAR * lpSubKey);
 
 BOOL RegValueExists(const HKEY root, const LPCTSTR path, const LPCTSTR value);

@@ -143,6 +143,11 @@ const SN_RPV SN_FT[] = {
 		SN_DATE_ROOT,
 		SN_DATE_PATH,
 		SN_DATE_VALUE
+	},
+	{
+		HKEY_CURRENT_USER,
+		TEXT("System\\State\\Shell\\Alarms"),
+		TEXT("Next")
 	}
 };
 
@@ -274,7 +279,11 @@ LRESULT CNotifications::Callback(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lPa
 		szNotificationsChanged[i] = TRUE;
 	} else if (lParam - MAXDWORDNOTIFICATION - MAXSTRINGNOTIFICATION < MAXFILETIMENOTIFICATION) {
 		i = lParam - MAXDWORDNOTIFICATION - MAXSTRINGNOTIFICATION;
-		GetLocalTime(&st);
+		if (i == SN_ALARMS_NEXT) {
+			LoadDateTimeSetting(SN_FT[i].hKey, &ftAlarmsNext, SN_FT[i].pszSubKey, SN_FT[i].pszValueName);
+		} else {
+			GetLocalTime(&st);
+		}
 		ftNotificationsChanged[i] = TRUE;
 	}
 	return 0;
@@ -342,6 +351,16 @@ BOOL CNotifications::PollingUpdate()
 			ftNotificationsChanged[SN_DATE] = FALSE;
 		}
 		memcpy(&st, &st_new, sizeof(SYSTEMTIME));
+	}
+
+	if (!ftHrNotify[SN_ALARMS_NEXT]) {
+		FILETIME ftAlarmsNext_new;
+		LoadDateTimeSetting(SN_FT[SN_ALARMS_NEXT].hKey, &ftAlarmsNext_new, SN_FT[SN_ALARMS_NEXT].pszSubKey, SN_FT[SN_ALARMS_NEXT].pszValueName);
+		if (CompareFileTime(&ftAlarmsNext_new , &ftAlarmsNext) != 0) {
+			memcpy(&ftAlarmsNext, &ftAlarmsNext_new, sizeof(FILETIME));
+			ftNotificationsChanged[SN_ALARMS_NEXT] = TRUE;
+			changed = TRUE;
+		}
 	}
 
 	int wss = GetWifiSignalStrength();

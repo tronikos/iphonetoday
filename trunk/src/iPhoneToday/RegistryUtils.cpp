@@ -149,6 +149,30 @@ BOOL LoadTextSetting(HKEY hKEY, TCHAR * szValue, const TCHAR * lpSubKey,
 	return (result == ERROR_SUCCESS);
 }
 
+BOOL LoadDateTimeSetting(HKEY hKEY, FILETIME * ftValue, const TCHAR * lpSubKey,
+					const TCHAR * szKeyName) {
+
+	HKEY  hkey = 0;
+	DWORD dwType;
+	DWORD dwSize = sizeof(FILETIME);
+
+	LONG result = RegOpenKeyEx(hKEY, lpSubKey, 0, 0, &hkey);
+
+	// could not open key
+	if (result != ERROR_SUCCESS) {
+		return FALSE;
+	}
+
+	// load the value
+	ZeroMemory(ftValue, dwSize);
+	result = RegQueryValueEx(hkey, szKeyName, NULL, &dwType,
+		(LPBYTE)ftValue, &dwSize);
+
+	RegCloseKey(hkey);
+
+	return (result == ERROR_SUCCESS);
+}
+
 BOOL DeleteKey(HKEY hKey, const TCHAR * lpSubKey)
 {
 	LONG result = RegDeleteKey(hKey, lpSubKey);
