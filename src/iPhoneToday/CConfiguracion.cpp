@@ -556,17 +556,20 @@ void CConfiguracion::defaultValues()
 	this->clck.offset.right = 0;
 	this->clck.offset.bottom = 0;
 
+	this->clckShowAMPM = 0;
 	this->clock12Format = 0;
 
 	this->alrm.facename[0] = 0;
 	this->alrm.color = RGB(230,230,230);
-	this->alrm.width = 0;
+	this->alrm.width = 10;
 	this->alrm.height = 28;
 	this->alrm.weight = 400;
 	this->alrm.offset.left = 0;
 	this->alrm.offset.top = 70;
 	this->alrm.offset.right = 0;
 	this->alrm.offset.bottom = 0;
+
+	this->alrmShowAMPM = 1;
 
 	this->batt.facename[0] = 0;
 	this->batt.color = RGB(230,230,230);
@@ -937,9 +940,11 @@ BOOL CConfiguracion::loadXMLConfig()
 			SpecialIconSettingsLoad(pElem, &this->dom);
 		} else if(_stricmp(nameNode, "Clock") == 0) {
 			SpecialIconSettingsLoad(pElem, &this->clck);
+			XMLUtils::GetAttr(pElem, "ShowAMPM", &this->clckShowAMPM);
 			XMLUtils::GetAttr(pElem, "format12", &this->clock12Format);
 		} else if(_stricmp(nameNode, "Alarm") == 0) {
 			SpecialIconSettingsLoad(pElem, &this->alrm);
+			XMLUtils::GetAttr(pElem, "ShowAMPM", &this->alrmShowAMPM);
 		} else if(_stricmp(nameNode, "Battery") == 0) {
 			SpecialIconSettingsLoad(pElem, &this->batt);
 			XMLUtils::GetAttr(pElem, "AC", &this->battShowAC);
@@ -1222,11 +1227,13 @@ BOOL CConfiguracion::saveXMLConfig()
 
 	pElem = new TiXmlElement("Clock");
 	SpecialIconSettingsSave(pElem, &this->clck);
+	XMLUtils::SetAttr(pElem, "ShowAMPM", this->clckShowAMPM);
 	XMLUtils::SetAttr(pElem, "format12", this->clock12Format);
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("Alarm");
 	SpecialIconSettingsSave(pElem, &this->alrm);
+	XMLUtils::SetAttr(pElem, "ShowAMPM", this->alrmShowAMPM);
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("Battery");

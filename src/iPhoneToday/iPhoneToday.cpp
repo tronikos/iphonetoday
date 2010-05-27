@@ -1719,7 +1719,11 @@ void pintaIcono(HDC *hDC, CIcono *icono, CPantalla *pantalla, SCREEN_TYPE screen
 					SYSTEMTIME stAlarmsNext;
 					FileTimeToSystemTime(&notifications->ftAlarmsNext, &stAlarmsNext);
 					if (configuracion->clock12Format) {
-						StringCchPrintf(str, CountOf(str), TEXT("%d:%02d"), (stAlarmsNext.wHour == 0 ? 12 : (stAlarmsNext.wHour > 12 ? (stAlarmsNext.wHour - 12) : stAlarmsNext.wHour)), stAlarmsNext.wMinute);
+						if (configuracion->alrmShowAMPM) {
+							GetTimeFormat(LOCALE_USER_DEFAULT, 0, &stAlarmsNext, L"h':'mm' 'tt", str, CountOf(str));
+						} else {
+							StringCchPrintf(str, CountOf(str), TEXT("%d:%02d"), (stAlarmsNext.wHour == 0 ? 12 : (stAlarmsNext.wHour > 12 ? (stAlarmsNext.wHour - 12) : stAlarmsNext.wHour)), stAlarmsNext.wMinute);
+						}
 					} else {
 						StringCchPrintf(str, CountOf(str), TEXT("%02d:%02d"), stAlarmsNext.wHour, stAlarmsNext.wMinute);
 					}
@@ -1732,7 +1736,11 @@ void pintaIcono(HDC *hDC, CIcono *icono, CPantalla *pantalla, SCREEN_TYPE screen
 				}
 			case NOTIF_CLOCK:
 				if (configuracion->clock12Format) {
-					StringCchPrintf(str, CountOf(str), TEXT("%d:%02d"), (notifications->st.wHour == 0 ? 12 : (notifications->st.wHour > 12 ? (notifications->st.wHour - 12) : notifications->st.wHour)), notifications->st.wMinute);
+					if (configuracion->clckShowAMPM) {
+						GetTimeFormat(LOCALE_USER_DEFAULT, 0, &notifications->st, L"h':'mm' 'tt", str, CountOf(str));
+					} else {
+						StringCchPrintf(str, CountOf(str), TEXT("%d:%02d"), (notifications->st.wHour == 0 ? 12 : (notifications->st.wHour > 12 ? (notifications->st.wHour - 12) : notifications->st.wHour)), notifications->st.wMinute);
+					}
 				} else {
 					StringCchPrintf(str, CountOf(str), TEXT("%02d:%02d"), notifications->st.wHour, notifications->st.wMinute);
 				}
