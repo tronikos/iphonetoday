@@ -1,5 +1,6 @@
 // iPhoneToday.cpp : Defines the entry point for the application.
 //
+#define DEBUG1
 
 #include "stdafx.h"
 #include <initguid.h>
@@ -3254,7 +3255,7 @@ BOOL doEraseBackground(HWND hwnd)
 #else
 	BOOL isTransparent = configuracion->fondoTransparente;
 #endif
-	if (!isTransparent) {
+	if (!isTransparent || configuracion->fondoPantalla == NULL) {
 		return FALSE;
 	}
 
