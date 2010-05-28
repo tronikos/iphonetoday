@@ -1,6 +1,5 @@
 // iPhoneToday.cpp : Defines the entry point for the application.
 //
-#define DEBUG1
 
 #include "stdafx.h"
 #include <initguid.h>
@@ -2005,7 +2004,7 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type, BOOL 
 
 		if (cs->cs.backGradient) {
 			//pantalla->hasBackground = 2;
-			DrawGradientGDI(pantalla->hDC, rc, cs->cs.backColor1,  cs->cs.backColor2,  0xAAAA);
+			DrawGradientGDI(pantalla->hDC, rc, cs->cs.backColor1, cs->cs.backColor2, 0xAAAA);
 		} else {
 			if (configuracion->fondoPantalla && configuracion->fondoPantalla->hDC) {
 				//pantalla->hasBackground = 0;
@@ -2110,6 +2109,25 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type, BOOL 
 				cy -= listaPantallas->barraInferior->altoPantalla;
 			}
 
+			if (pantalla->hasBackground == 2) {
+				if (pantalla->y > hTopBar) {
+					RECT rc;
+					rc.left = (int) pantalla->x;
+					rc.right = rc.left + pantalla->anchoPantalla;
+					rc.top = 0;
+					rc.bottom = (int) pantalla->y;
+					DrawGradientGDI(*hDC, rc, cs->cs.backColor1, cs->cs.backColor1, 0xAAAA);
+				}
+				if (pantalla->y + pantalla->altoPantalla < configuracion->altoPantalla) {
+					RECT rc;
+					rc.left = (int) pantalla->x;
+					rc.right = rc.left + pantalla->anchoPantalla;
+					rc.top = (int) pantalla->y;
+					rc.bottom = configuracion->altoPantalla;
+					DrawGradientGDI(*hDC, rc, cs->cs.backColor2, cs->cs.backColor2, 0xAAAA);
+				}
+			}
+
 			if (back && back->hDC && cs->cs.backWallpaperTile) {
 				if (pantalla->y > hTopBar) {
 					int h = (int) pantalla->altoPantalla + back->altoImagen - (int) pantalla->altoPantalla % back->altoImagen;
@@ -2168,6 +2186,16 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type, BOOL 
 			}
 		}
 	}
+	if (isFirst && pantalla->hasBackground == 2) {
+		if (pantalla->x > 0) {
+			RECT rc;
+			rc.left = 0;
+			rc.right = (int) pantalla->x;
+			rc.top = (int) pantalla->y;
+			rc.bottom = rc.top + pantalla->altoPantalla;
+			DrawGradientGDI(*hDC, rc, cs->cs.backColor1, cs->cs.backColor2, 0xAAAA);
+		}
+	}
 	if (isFirst && back && back->hDC && cs->cs.backWallpaperTile) {
 		if (pantalla->x > 0) {
 			PrintBack(*hDC, (int) pantalla->x % (int) configuracion->anchoPantalla - (int) configuracion->anchoPantalla, (int) pantalla->y, pantalla->anchoPantalla, pantalla->altoPantalla,
@@ -2178,6 +2206,16 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type, BOOL 
 					back->hDC, 0, 0, back->anchoImagen, back->altoImagen,
 					cs->cs.backWallpaperAlphaBlend, cs->cs.backWallpaperCenter, cs->cs.backWallpaperTile);
 			}
+		}
+	}
+	if (isLast && pantalla->hasBackground == 2) {
+		if (pantalla->x < 0) {
+			RECT rc;
+			rc.left = (int) pantalla->x + configuracion->anchoPantalla;
+			rc.right = (int) configuracion->anchoPantalla;
+			rc.top = (int) pantalla->y;
+			rc.bottom = rc.top + pantalla->altoPantalla;
+			DrawGradientGDI(*hDC, rc, cs->cs.backColor1, cs->cs.backColor2, 0xAAAA);
 		}
 	}
 	if (isLast && back && back->hDC && cs->cs.backWallpaperTile) {
