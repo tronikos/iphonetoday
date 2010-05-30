@@ -1620,7 +1620,7 @@ void pintaIcono(HDC *hDC, CIcono *icono, CPantalla *pantalla, SCREEN_TYPE screen
 	} else if (icono->tipo != NOTIF_NORMAL) {
 		BOOL stateOn = hayNotificacion(icono->tipo);
 		TCHAR *p = wcsrchr(icono->rutaImagen, '.');
-		if (p - 2 > icono->rutaImagen && wcsnicmp(p - 2, L"on", 2) == 0) {
+		if (p && p - 2 > icono->rutaImagen && wcsnicmp(p - 2, L"on", 2) == 0) {
 			configuracion->getAbsolutePath(image_new, CountOf(image_new), icono->rutaImagen);
 			TCHAR *pn = wcsrchr(image_new, '.');
 			*(pn - 2) = '\0';
@@ -1633,7 +1633,7 @@ void pintaIcono(HDC *hDC, CIcono *icono, CPantalla *pantalla, SCREEN_TYPE screen
 					configuracion->loadIconImage(hDC, icono, screen_type);
 				}
 			}
-		} else if (p - 3 > icono->rutaImagen && wcsnicmp(p - 3, L"off", 3) == 0) {
+		} else if (p && p - 3 > icono->rutaImagen && wcsnicmp(p - 3, L"off", 3) == 0) {
 			configuracion->getAbsolutePath(image_new, CountOf(image_new), icono->rutaImagen);
 			TCHAR *pn = wcsrchr(image_new, '.');
 			*(pn - 3) = '\0';
@@ -3144,14 +3144,28 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 				getPathFromFile(pathFile, lastPathExec);
 
 				// Extract Name from path
-				int resp = MessageBox(hDlg, TEXT("Set Icon Name?"), TEXT("Exit"), MB_YESNO);
-				if (resp == IDYES) {
-					SHFILEINFO cbFileInfo;
-					SHGetFileInfo(pathFile, 0, &cbFileInfo, sizeof(cbFileInfo), SHGFI_DISPLAYNAME);
-					SetDlgItemText(hDlg, IDC_MICON_NAME, cbFileInfo.szDisplayName);
-				}
+				//int resp = MessageBox(hDlg, TEXT("Set Icon Name?"), TEXT("Exit"), MB_YESNO);
+				//if (resp == IDYES) {
+				//	SHFILEINFO cbFileInfo;
+				//	SHGetFileInfo(pathFile, 0, &cbFileInfo, sizeof(cbFileInfo), SHGFI_DISPLAYNAME);
+				//	SetDlgItemText(hDlg, IDC_MICON_NAME, cbFileInfo.szDisplayName);
+				//}
 
 				TCHAR str[MAX_PATH];
+				TCHAR *p = wcsrchr(pathFile, '\\');
+				if (p == NULL) {
+					p = pathFile;
+				} else {
+					++p;
+				}
+				wcscpy(str, p);
+				p = wcsrchr(str, '.');
+				if (p != NULL) {
+					*p = 0;
+				}
+				str[0] = toupper(str[0]);
+				SetDlgItemText(hDlg, IDC_MICON_NAME, str);
+
 				configuracion->getRelativePath(str, MAX_PATH, pathFile);
 				SetDlgItemText(hDlg, IDC_MICON_EXEC, str);
 			}
