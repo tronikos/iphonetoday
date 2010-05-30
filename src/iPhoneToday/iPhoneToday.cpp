@@ -2803,73 +2803,110 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_LAUNCHANIMATION), BM_SETCHECK, icono->launchAnimation ? BST_CHECKED : BST_UNCHECKED, 0);
 
-			if (icono->tipo == NOTIF_NORMAL) {
-				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 0, 0);
-			} else if (icono->tipo == NOTIF_MISSEDCALLS) {
-				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 1, 0);
-			} else if (icono->tipo == NOTIF_SMS) {
-				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 2, 0);
-			} else if (icono->tipo == NOTIF_MMS) {
-				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 3, 0);
-			} else if (icono->tipo == NOTIF_OTHER_EMAIL) {
-				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 4, 0);
-			} else if (icono->tipo == NOTIF_SYNC_EMAIL) {
-				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 5, 0);
-			} else if (icono->tipo == NOTIF_TOTAL_EMAIL) {
-				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 6, 0);
-			} else if (icono->tipo == NOTIF_APPOINTS) {
-				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 7, 0);
-			} else if (icono->tipo == NOTIF_CALENDAR) {
-				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 8, 0);
-			} else if (icono->tipo == NOTIF_TASKS) {
-				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 9, 0);
-			} else if (icono->tipo == NOTIF_SMS_MMS) {
-				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 10, 0);
-			} else if (icono->tipo == NOTIF_WIFI) {
-				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 11, 0);
-			} else if (icono->tipo == NOTIF_BLUETOOTH) {
-				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 12, 0);
-			} else if (icono->tipo == NOTIF_ALARM) {
-				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 13, 0);
-			} else if (icono->tipo == NOTIF_CLOCK) {
-				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 14, 0);
-			} else if (icono->tipo == NOTIF_CLOCK_ALARM) {
-				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 15, 0);
-			} else if (icono->tipo == NOTIF_BATTERY) {
-				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 16, 0);
-			} else if (icono->tipo == NOTIF_VOLUME) {
-				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 17, 0);
-			} else if (icono->tipo == NOTIF_MEMORYLOAD) {
-				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 18, 0);
-			} else if (icono->tipo == NOTIF_MEMORYFREE) {
-				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 19, 0);
-			} else if (icono->tipo == NOTIF_MEMORYUSED) {
-				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 20, 0);
-			} else if (icono->tipo == NOTIF_CELLNETWORK) {
-				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 21, 0);
-			} else if (icono->tipo == NOTIF_SIGNAL) {
-				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 22, 0);
-			} else if (icono->tipo == NOTIF_OPERATOR) {
-				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 23, 0);
-			} else if (icono->tipo == NOTIF_SIGNAL_OPER) {
-				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 24, 0);
-			} else if (icono->tipo == NOTIF_MC_SIG_OPER) {
-				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 25, 0);
-			} else if (icono->tipo == NOTIF_PROFILE) {
-				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 26, 0);
-			} else if (icono->tipo == NOTIF_VMAIL) {
-				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 27, 0);
-			} else if (icono->tipo == NOTIF_IRDA) {
-				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 28, 0);
-			} else if (icono->tipo == NOTIF_CRADLE) {
-				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 29, 0);
-			} else if (icono->tipo == NOTIF_SIGNAL_WIFI) {
-				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 30, 0);
-			} else {
-				SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 0, 0);
+			TCHAR *lpszFind = NULL;
+			switch (icono->tipo) {
+				case NOTIF_NORMAL:
+					lpszFind = NOTIF_NORMAL_TXT;
+					break;
+				case NOTIF_MISSEDCALLS:
+					lpszFind = NOTIF_MISSEDCALLS_TXT;
+					break;
+				case NOTIF_SMS:
+					lpszFind = NOTIF_SMS_TXT;
+					break;
+				case NOTIF_MMS:
+					lpszFind = NOTIF_MMS_TXT;
+					break;
+				case NOTIF_OTHER_EMAIL:
+					lpszFind = NOTIF_OTHER_EMAIL_TXT;
+					break;
+				case NOTIF_SYNC_EMAIL:
+					lpszFind = NOTIF_SYNC_EMAIL_TXT;
+					break;
+				case NOTIF_TOTAL_EMAIL:
+					lpszFind = NOTIF_TOTAL_EMAIL_TXT;
+					break;
+				case NOTIF_APPOINTS:
+					lpszFind = NOTIF_APPOINTS_TXT;
+					break;
+				case NOTIF_TASKS:
+					lpszFind = NOTIF_TASKS_TXT;
+					break;
+				case NOTIF_CALENDAR:
+					lpszFind = NOTIF_CALENDAR_TXT;
+					break;
+				case NOTIF_SMS_MMS:
+					lpszFind = NOTIF_SMS_MMS_TXT;
+					break;
+				case NOTIF_WIFI:
+					lpszFind = NOTIF_WIFI_TXT;
+					break;
+				case NOTIF_BLUETOOTH:
+					lpszFind = NOTIF_BLUETOOTH_TXT;
+					break;
+				case NOTIF_ALARM:
+					lpszFind = NOTIF_ALARM_TXT;
+					break;
+				case NOTIF_CLOCK:
+					lpszFind = NOTIF_CLOCK_TXT;
+					break;
+				case NOTIF_CLOCK_ALARM:
+					lpszFind = NOTIF_CLOCK_ALARM_TXT;
+					break;
+				case NOTIF_BATTERY:
+					lpszFind = NOTIF_BATTERY_TXT;
+					break;
+				case NOTIF_VOLUME:
+					lpszFind = NOTIF_VOLUME_TXT;
+					break;
+				case NOTIF_MEMORYLOAD:
+					lpszFind = NOTIF_MEMORYLOAD_TXT;
+					break;
+				case NOTIF_MEMORYFREE:
+					lpszFind = NOTIF_MEMORYFREE_TXT;
+					break;
+				case NOTIF_MEMORYUSED:
+					lpszFind = NOTIF_MEMORYUSED_TXT;
+					break;
+				case NOTIF_CELLNETWORK:
+					lpszFind = NOTIF_CELLNETWORK_TXT;
+					break;
+				case NOTIF_SIGNAL:
+					lpszFind = NOTIF_SIGNAL_TXT;
+					break;
+				case NOTIF_OPERATOR:
+					lpszFind = NOTIF_OPERATOR_TXT;
+					break;
+				case NOTIF_SIGNAL_OPER:
+					lpszFind = NOTIF_SIGNAL_OPER_TXT;
+					break;
+				case NOTIF_MC_SIG_OPER:
+					lpszFind = NOTIF_MC_SIG_OPER_TXT;
+					break;
+				case NOTIF_PROFILE:
+					lpszFind = NOTIF_PROFILE_TXT;
+					break;
+				case NOTIF_VMAIL:
+					lpszFind = NOTIF_VMAIL_TXT;
+					break;
+				case NOTIF_IRDA:
+					lpszFind = NOTIF_IRDA_TXT;
+					break;
+				case NOTIF_CRADLE:
+					lpszFind = NOTIF_CRADLE_TXT;
+					break;
+				case NOTIF_SIGNAL_WIFI:
+					lpszFind = NOTIF_SIGNAL_WIFI_TXT;
+					break;
+				default:
+					lpszFind = NOTIF_NORMAL_TXT;
+					break;
 			}
+			int c = SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_FINDSTRINGEXACT, -1, (LPARAM) lpszFind);
+			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, c, 0);
 		} else {
-			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, 0, 0);
+			int c = SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_FINDSTRINGEXACT, -1, (LPARAM) NOTIF_NORMAL_TXT);
+			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, c, 0);
 		}
 		return TRUE;
 	case WM_MOVE:
