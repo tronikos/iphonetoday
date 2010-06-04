@@ -129,22 +129,67 @@ void CConfiguracion::getRelativePath(LPTSTR pszDest, size_t cchDest, LPCTSTR psz
 	StringCchCopy(pszDest, cchDest, pszSrc + offset);
 }
 
-// maxIconos = Maximo de iconos que hay en una pantalla
-void CConfiguracion::calculaConfiguracion(int maxIconos, int numIconsInBottomBar, int numIconsInTopBar, int width, int height)
+void CConfiguracion::calculaConfiguracion(CListaPantalla *listaPantallas, int width, int height)
 {
+	// maxIconos = Maximo de iconos que hay en una pantalla
+	int maxIconos = 0;
+	for (int i = 0; i < (int)listaPantallas->numPantallas; i++) {
+		maxIconos = max(maxIconos, (int)listaPantallas->listaPantalla[i]->numIconos);
+	}
+
+	int numIconsInBottomBar	= listaPantallas->barraInferior == NULL ? 0 : listaPantallas->barraInferior->numIconos;
+	int numIconsInTopBar = listaPantallas->topBar == NULL ? 0 : listaPantallas->topBar->numIconos;
+
 	if (width > 0) {
-		anchoPantalla = width;
+		this->anchoPantalla = width;
 	}
 
 	if (height > 0) {
-		altoPantalla = height;
+		this->altoPantalla = height;
 	}
 
 	bottomBarConfig->calculate(TRUE, numIconsInBottomBar, anchoPantalla, altoPantalla);
 	topBarConfig->calculate(TRUE, numIconsInTopBar, anchoPantalla, altoPantalla);
 	mainScreenConfig->calculate(FALSE, maxIconos, anchoPantalla, altoPantalla);
 
-	altoPantallaMax = max(((maxIconos + mainScreenConfig->iconsPerRow - 1) / mainScreenConfig->iconsPerRow) * mainScreenConfig->distanceIconsV + mainScreenConfig->posReference.y * 2, altoPantalla);
+	this->altoPantallaMax = max(((maxIconos + mainScreenConfig->iconsPerRow - 1) / mainScreenConfig->iconsPerRow) * mainScreenConfig->distanceIconsV + mainScreenConfig->posReference.y * 2, altoPantalla);
+
+	// calculate circles' configuration
+	if (listaPantallas->numPantallas > 1 && this->circlesDiameter > 0) {
+		this->circlesDistAdjusted = this->circlesDistance;
+		if (this->circlesDistAdjusted < 0) {
+			CConfigurationScreen *cs_tmp = this->mainScreenConfig;
+			if (this->circlesAlignTop) {
+				if (numIconsInTopBar > 0 && this->topBarConfig->iconWidth > 0) {
+					cs_tmp = this->topBarConfig;
+				}
+			} else {
+				if (numIconsInBottomBar > 0 && this->bottomBarConfig->iconWidth > 0) {
+					cs_tmp = this->bottomBarConfig;
+				}
+			}
+			this->circlesBarRect.left = cs_tmp->posReference.x + (cs_tmp->iconWidth - this->circlesDiameter) / 2;
+			this->circlesBarRect.left += (-(int) this->circlesDistAdjusted - 1) * cs_tmp->distanceIconsH;
+			this->circlesDistAdjusted = cs_tmp->distanceIconsH - this->circlesDiameter;
+		} else {
+			this->circlesBarRect.left = int((this->anchoPantalla / 2) - ((listaPantallas->numPantallas - 1) * (this->circlesDiameter + this->circlesDistAdjusted) + this->circlesDiameter) / 2);
+		}
+		this->circlesBarRect.right = this->circlesBarRect.left + (listaPantallas->numPantallas - 1) * (this->circlesDiameter + this->circlesDistAdjusted) + this->circlesDiameter;
+		if (this->circlesAlignTop) {
+			this->circlesBarRect.top = this->circlesOffset;
+			if (numIconsInTopBar > 0 && this->topBarConfig->iconWidth > 0) {
+				//this->circlesBarRect.top += listaPantallas->topBar->altoPantalla;
+				this->circlesBarRect.top += this->topBarConfig->distanceIconsV + this->topBarConfig->cs.offset.top + this->topBarConfig->cs.offset.bottom;
+			}
+		} else {
+			this->circlesBarRect.top = int(this->altoPantalla) - this->circlesDiameter - this->circlesOffset;
+			if (numIconsInBottomBar > 0 && this->bottomBarConfig->iconWidth > 0) {
+				//this->circlesBarRect.top -= listaPantallas->barraInferior->altoPantalla;
+				this->circlesBarRect.top -= this->bottomBarConfig->distanceIconsV + this->bottomBarConfig->cs.offset.top + this->bottomBarConfig->cs.offset.bottom;
+			}
+		}
+		this->circlesBarRect.bottom = this->circlesBarRect.top + this->circlesDiameter;
+	}
 }
 
 BOOL CConfiguracion::loadXMLIcons(CListaPantalla *listaPantallas)
@@ -485,6 +530,7 @@ void CConfiguracion::defaultValues()
 	this->circlesDiameter = 7;
 	this->circlesDistance = 3;
 	this->circlesOffset = 3;
+	this->circlesAlignTop = 0;
 	this->circlesColorActive = RGB(220, 220, 220);
 	this->circlesColorInactive = RGB(0, 0, 0);
 	this->circlesColorOuter = RGB(255, 255, 255);
@@ -905,6 +951,7 @@ BOOL CConfiguracion::loadXMLConfig()
 			XMLUtils::GetAttr(pElem, "diameter",      &this->circlesDiameter);
 			XMLUtils::GetAttr(pElem, "distance",      &this->circlesDistance);
 			XMLUtils::GetAttr(pElem, "offset",        &this->circlesOffset);
+			XMLUtils::GetAttr(pElem, "alignTop",      &this->circlesAlignTop);
 			XMLUtils::GetAttr(pElem, "colorActive",   &this->circlesColorActive);
 			XMLUtils::GetAttr(pElem, "colorInactive", &this->circlesColorInactive);
 			XMLUtils::GetAttr(pElem, "colorOuter",    &this->circlesColorOuter);
@@ -1170,6 +1217,7 @@ BOOL CConfiguracion::saveXMLConfig()
 	XMLUtils::SetAttr(pElem, "diameter",      this->circlesDiameter);
 	XMLUtils::SetAttr(pElem, "distance",      this->circlesDistance);
 	XMLUtils::SetAttr(pElem, "offset",        this->circlesOffset);
+	XMLUtils::SetAttr(pElem, "alignTop",      this->circlesAlignTop);
 	XMLUtils::SetAttr(pElem, "colorActive",   this->circlesColorActive);
 	XMLUtils::SetAttr(pElem, "colorInactive", this->circlesColorInactive);
 	XMLUtils::SetAttr(pElem, "colorOuter",    this->circlesColorOuter);

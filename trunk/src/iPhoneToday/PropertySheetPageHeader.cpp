@@ -32,6 +32,8 @@ LRESULT CALLBACK OptionDialogHeader(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM 
 			SetDlgItemInt(hDlg, IDC_EDIT_CIRCLES_DISTANCE,	configuracion->circlesDistance,		TRUE);
 			SetDlgItemInt(hDlg, IDC_EDIT_CIRCLES_OFFSET,	configuracion->circlesOffset,		TRUE);
 
+			SendMessage(GetDlgItem(hDlg, IDC_CHECK_CIRCLES_ALIGN_TOP), BM_SETCHECK, configuracion->circlesAlignTop? BST_CHECKED : BST_UNCHECKED, 0);
+
 			SetDlgItemHex(hDlg, IDC_EDIT_CIRCLES_COLOR_ACTIVE,	configuracion->circlesColorActive);
 			SetDlgItemHex(hDlg, IDC_EDIT_CIRCLES_COLOR_INACTIVE,configuracion->circlesColorInactive);
 			SetDlgItemHex(hDlg, IDC_EDIT_CIRCLES_COLOR_OUTER,	configuracion->circlesColorOuter);
@@ -136,6 +138,8 @@ BOOL SaveConfigurationHeader(HWND hDlg)
 	configuracion->circlesDiameter = circlesDiameter;
 	configuracion->circlesDistance = circlesDistance;
 	configuracion->circlesOffset = circlesOffset;
+
+	configuracion->circlesAlignTop = SendMessage(GetDlgItem(hDlg, IDC_CHECK_CIRCLES_ALIGN_TOP), BM_GETCHECK, 0, 0) == BST_CHECKED;
 
 	configuracion->circlesColorActive	= GetDlgItemHex(hDlg, IDC_EDIT_CIRCLES_COLOR_ACTIVE, NULL);
 	configuracion->circlesColorInactive	= GetDlgItemHex(hDlg, IDC_EDIT_CIRCLES_COLOR_INACTIVE, NULL);

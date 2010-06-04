@@ -36,7 +36,7 @@ public:
 	CConfiguracion(void);
 	~CConfiguracion(void);
 
-	void calculaConfiguracion(int maxIconos, int numIconsInBottomBar, int numIconsInTopBar, int width, int height);
+	void calculaConfiguracion(CListaPantalla *listaPantallas, int width, int height);
 	BOOL loadXMLIcons2(CListaPantalla *listaPantallas);
 	BOOL loadIconsImages(HDC *hDC, CListaPantalla *listaPantallas);
 	BOOL loadIconImage(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type);
@@ -81,6 +81,8 @@ public:
 	CIcono *backBottomBar;
 	CIcono *backTopBar;
 
+	RECT circlesBarRect;
+	int circlesDistAdjusted;
 
 	// Variables from XML
 
@@ -93,6 +95,7 @@ public:
 	UINT circlesDiameter;
 	UINT circlesDistance;
 	INT circlesOffset;
+	BOOL circlesAlignTop;
 	COLORREF circlesColorActive;
 	COLORREF circlesColorInactive;
 	COLORREF circlesColorOuter;
