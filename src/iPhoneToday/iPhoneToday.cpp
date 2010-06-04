@@ -1351,32 +1351,20 @@ void pintaIconos(HDC *hDC, RECT *rcWindBounds)
 
 	// Pintamos la barra inferior de botones
 	BOOL bHasBottomBar = hasBottomBar();
+	BOOL bHasTopBar = hasTopBar();
 	if (bHasBottomBar) {
 		pintaPantalla(hDC, listaPantallas->barraInferior, BOTTOMBAR);
 	}
 
-	if (hasTopBar()) {
+	if (bHasTopBar) {
 		pintaPantalla(hDC, listaPantallas->topBar, TOPBAR);
 	}
 
 	// Pintamos los circulos para indicar pantalla activa
-	RECT posCirculos;
 	COLORREF color;
-	int anchoCirculo = configuracion->circlesDiameter;
-	int distanciaCirculo = configuracion->circlesDistance;
-	int nCirculos = listaPantallas->numPantallas;
-	int xReferencia;
 
-	if (nCirculos > 1 && anchoCirculo > 0) {
-		xReferencia = int((configuracion->anchoPantalla / 2) - ((nCirculos - 1) * (anchoCirculo + distanciaCirculo) + anchoCirculo) / 2);
-
-		posCirculos.top = int(configuracion->altoPantalla) - anchoCirculo - configuracion->circlesOffset;
-		if (bHasBottomBar) {
-			posCirculos.top -= listaPantallas->barraInferior->altoPantalla;
-		}
-		posCirculos.bottom = posCirculos.top + anchoCirculo;
-
-		for (int i = 0; i < nCirculos; i++) {
+	if (listaPantallas->numPantallas > 1 && configuracion->circlesDiameter > 0) {
+		for (int i = 0; i < (int) listaPantallas->numPantallas; i++) {
 			CPantalla *pantalla = listaPantallas->listaPantalla[i];
 			float perc = min(configuracion->anchoPantalla, fabsf(pantalla->x)) / (float) configuracion->anchoPantalla;
 			int R = (int) (GetRValue(configuracion->circlesColorInactive) * perc + GetRValue(configuracion->circlesColorActive) * (1 - perc));
@@ -1384,16 +1372,9 @@ void pintaIconos(HDC *hDC, RECT *rcWindBounds)
 			int B = (int) (GetBValue(configuracion->circlesColorInactive) * perc + GetBValue(configuracion->circlesColorActive) * (1 - perc));
 			color = RGB(R, G, B);
 
-			/*if (i == estado->pantallaActiva) {
-				color = configuracion->circlesColorActive;
-			} else {
-				color = configuracion->circlesColorInactive;
-			}*/
+			int tmp = configuracion->circlesBarRect.left + i * (configuracion->circlesDiameter + configuracion->circlesDistAdjusted);
 
-			posCirculos.left = xReferencia + i * (anchoCirculo + distanciaCirculo);
-			posCirculos.right = posCirculos.left + anchoCirculo;
-
-			drawEllipse(*hDC, posCirculos.left, posCirculos.top, posCirculos.right, posCirculos.bottom, color, NULL, configuracion->circlesColorOuter);
+			drawEllipse(*hDC, tmp, configuracion->circlesBarRect.top, tmp + configuracion->circlesDiameter, configuracion->circlesBarRect.bottom, color, NULL, configuracion->circlesColorOuter);
 		}
 	}
 
@@ -2491,35 +2472,13 @@ void procesaPulsacion(HWND hwnd, POINTS posCursor, BOOL doubleClick, BOOL noLanz
 	BOOL bHasBottomBar = hasBottomBar();
 	BOOL bHasTopBar = hasTopBar();
 
-	int nCirculos = listaPantallas->numPantallas;
-	int anchoCirculo = configuracion->circlesDiameter;
-	int distanciaCirculo = configuracion->circlesDistance;
-	int xLeft, xRight, yTop, yBottom;
-
-	// Calculamos el cuadrado recubridor de la barra de circulos activos
-	xLeft = int((configuracion->anchoPantalla / 2) - ((nCirculos - 1) * (anchoCirculo + distanciaCirculo) + anchoCirculo) / 2);
-	xRight = xLeft + (nCirculos - 1) * (anchoCirculo + distanciaCirculo) + anchoCirculo;
-
-	yTop = int(configuracion->altoPantalla) - anchoCirculo - configuracion->circlesOffset;
-	if (bHasBottomBar) {
-		yTop -= listaPantallas->barraInferior->altoPantalla;
-	}
-	yBottom = yTop + anchoCirculo;
-
-	// Expandimos ligerammente dicho cuadro para facilitar el doble click
-	// xLeft -= int(anchoCirculo * 1.80);
-	// xRight += int(anchoCirculo * 1.50);
-	// yTop -= int(anchoCirculo * 1.40);
-	// yBottom += int(anchoCirculo);
-	//yTop    -= anchoCirculo;
-	//yBottom += anchoCirculo;
-	if (posCursor.x >= xLeft && posCursor.x <= xRight && posCursor.y >= yTop && posCursor.y <= yBottom) {
+	if (posCursor.x >= configuracion->circlesBarRect.left && posCursor.x <= configuracion->circlesBarRect.right && posCursor.y >= configuracion->circlesBarRect.top && posCursor.y <= configuracion->circlesBarRect.bottom) {
 		if (doubleClick) {
 			if (!configuracion->circlesDoubleTap) return;
 			estado->pantallaActiva = 0;
 		} else {
 			if (!configuracion->circlesSingleTap) return;
-			estado->pantallaActiva = (posCursor.x - xLeft) / (anchoCirculo + distanciaCirculo);
+			estado->pantallaActiva = (posCursor.x - configuracion->circlesBarRect.left + configuracion->circlesDistAdjusted / 2) / (configuracion->circlesDiameter + configuracion->circlesDistAdjusted);
 		}
 		estado->posObjetivo.x = - (short) (configuracion->anchoPantalla * estado->pantallaActiva);
 		estado->posObjetivo.y = 0;
@@ -3787,15 +3746,9 @@ void calculateConfiguration(int width, int height)
 {
 	// NKDbgPrintfW(L"calculateConfiguration(%d, %d)\n", width, height);
 	// Cargamos la configuracion calculada en funcion de los iconos
-	int maxIconos = 0;
-	for (int i = 0; i < (int)listaPantallas->numPantallas; i++) {
-		maxIconos = max(maxIconos, (int)listaPantallas->listaPantalla[i]->numIconos);
-	}
 	UINT altoPantallaMax_old = configuracion->altoPantallaMax;
 	configuracion->calculaConfiguracion(
-		maxIconos,
-		listaPantallas->barraInferior == NULL ? 0 : listaPantallas->barraInferior->numIconos,
-		listaPantallas->topBar == NULL ? 0 : listaPantallas->topBar->numIconos,
+		listaPantallas,
 		width,
 		height);
 	if (altoPantallaMax_old != 0 && configuracion->altoPantallaMax > altoPantallaMax_old) {
