@@ -4051,8 +4051,8 @@ BOOL ProcessNotifications()
 					StringCchCopy(icono->rutaImagen, CountOf(icono->rutaImagen), reloadIcon->strImage);
 				}
 				if (_tcslen(reloadIcon->strExec) > 0) {
-					StringCchCopy(icono->nombre, CountOf(icono->ejecutable), reloadIcon->strExec);
-					StringCchCopy(icono->nombre, CountOf(icono->parametros), reloadIcon->strParameters);
+					StringCchCopy(icono->ejecutable, CountOf(icono->ejecutable), reloadIcon->strExec);
+					StringCchCopy(icono->parametros, CountOf(icono->parametros), reloadIcon->strParameters);
 				}
 				SCREEN_TYPE st = MAINSCREEN;
 				if (pantalla == listaPantallas->barraInferior) {
