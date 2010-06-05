@@ -335,7 +335,7 @@ BOOL CNotifications::PollingUpdate()
 		}
 	}
 
-	if (!ftHrNotify[SN_TIME] || !ftHrNotify[SN_DATE]) {
+	//if (!ftHrNotify[SN_TIME] || !ftHrNotify[SN_DATE]) {
 		SYSTEMTIME st_new;
 		GetLocalTime(&st_new);
 		if (st.wMinute != st_new.wMinute || st.wHour != st_new.wHour) {
@@ -351,7 +351,7 @@ BOOL CNotifications::PollingUpdate()
 			ftNotificationsChanged[SN_DATE] = FALSE;
 		}
 		memcpy(&st, &st_new, sizeof(SYSTEMTIME));
-	}
+	//}
 
 	if (!ftHrNotify[SN_ALARMS_NEXT]) {
 		FILETIME ftAlarmsNext_new;
