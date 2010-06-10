@@ -98,6 +98,7 @@ LRESULT doMove (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam);
 LRESULT doMouseDown (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam);
 LRESULT doMouseUp (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam);
 BOOL LaunchApplication(LPCTSTR pCmdLine, LPCTSTR pParameters);
+BOOL LaunchIcon(CIcono *icono);
 void pintaIconos(HDC *hDC, RECT *rcWindBounds);
 void pintaIcono(HDC *hDC, CIcono *icono, CPantalla *pantalla, SCREEN_TYPE screen_type);
 void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type = MAINSCREEN, BOOL isFirst = FALSE, BOOL isLast = FALSE);
@@ -445,13 +446,7 @@ LRESULT doTimer (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 				estado->timeUltimoLanzamiento = GetTickCount();
 
 				if (estado->iconoActivo && !configuracion->launchAppAtBeginningOfAnimation) {
-					BOOL bWorked = FALSE;
-					if (hayNotificacion(estado->iconoActivo->tipo) > 0 && _tcsclen(estado->iconoActivo->ejecutableAlt) > 0) {
-						bWorked = LaunchApplication(estado->iconoActivo->ejecutableAlt, estado->iconoActivo->parametrosAlt);
-					} else if (_tcsclen(estado->iconoActivo->ejecutable) > 0) {
-						bWorked = LaunchApplication(estado->iconoActivo->ejecutable, estado->iconoActivo->parametros);
-					}
-					if (!bWorked) {
+					if (!LaunchIcon(estado->iconoActivo)) {
 						estado->timeUltimoLanzamiento = 0;
 					}
 				}
@@ -2467,6 +2462,17 @@ BOOL LaunchApplication(LPCTSTR pCmdLine, LPCTSTR pParametros)
 	return bWorked;
 }
 
+BOOL LaunchIcon(CIcono *icono)
+{
+	BOOL bWorked = FALSE;
+	if (hayNotificacion(icono->tipo) > 0 && _tcsclen(icono->ejecutableAlt) > 0) {
+		bWorked = LaunchApplication(icono->ejecutableAlt, icono->parametrosAlt);
+	} else if (_tcsclen(icono->ejecutable) > 0) {
+		bWorked = LaunchApplication(icono->ejecutable, icono->parametros);
+	}
+	return bWorked;
+}
+
 void procesaPulsacion(HWND hwnd, POINTS posCursor, BOOL doubleClick, BOOL noLanzar)
 {
 	BOOL bHasBottomBar = hasBottomBar();
@@ -2553,13 +2559,7 @@ void procesaPulsacion(HWND hwnd, POINTS posCursor, BOOL doubleClick, BOOL noLanz
 			estado->iconoActivo = icono;
 		}
 		if (!hasAnimation || configuracion->launchAppAtBeginningOfAnimation) {
-			BOOL bWorked = FALSE;
-			if (hayNotificacion(icono->tipo) > 0 && _tcsclen(icono->ejecutableAlt) > 0) {
-				bWorked = LaunchApplication(icono->ejecutableAlt, icono->parametrosAlt);
-			} else if (_tcsclen(icono->ejecutable) > 0) {
-				bWorked = LaunchApplication(icono->ejecutable, icono->parametros);
-			}
-			if (!bWorked) {
+			if (!LaunchIcon(icono)) {
 				if (estado->estadoCuadro == 2) {
 					estado->timeUltimoLanzamiento = 0;
 				}
