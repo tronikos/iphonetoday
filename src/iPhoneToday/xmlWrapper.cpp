@@ -47,7 +47,13 @@ BOOL XMLUtils::GetAttr(TiXmlElement *pElem, const char *pszAttrName, LPTSTR pszR
 	if (value == NULL) {
 		return FALSE;
 	}
-	MultiByteToWideChar(CP_UTF8, 0, value, -1, pszRet, bufflen);
+	if (!MultiByteToWideChar(CP_UTF8, 0, value, -1, pszRet, bufflen)) {
+		if (!MultiByteToWideChar(CP_ACP, 0, value, -1, pszRet, bufflen)) {
+			if (!MultiByteToWideChar(CP_OEMCP, 0, value, -1, pszRet, bufflen)) {
+				*pszRet = 0;
+			}
+		}
+	}
 	return TRUE;
 }
 
@@ -84,7 +90,13 @@ void XMLUtils::SetAttr(TiXmlElement *pElem, const char *pszAttrName, LPTSTR psz,
 {
 	if (pElem == NULL) return;
 	char *buffer = new char[bufflen];
-	WideCharToMultiByte(CP_UTF8, 0, psz, bufflen, buffer, bufflen, NULL, NULL);
+	if (!WideCharToMultiByte(CP_UTF8, 0, psz, bufflen, buffer, bufflen, NULL, NULL)) {
+		if (!WideCharToMultiByte(CP_ACP, 0, psz, bufflen, buffer, bufflen, NULL, NULL)) {
+			if (!WideCharToMultiByte(CP_OEMCP, 0, psz, bufflen, buffer, bufflen, NULL, NULL)) {
+				*buffer = 0;
+			}
+		}
+	}
 	pElem->SetAttribute(pszAttrName, buffer);
 	delete buffer;
 }
