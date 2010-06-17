@@ -93,7 +93,7 @@ public:
 
 	// Circles
 	UINT circlesDiameter;
-	UINT circlesDistance;
+	INT circlesDistance;
 	INT circlesOffset;
 	BOOL circlesAlignTop;
 	COLORREF circlesColorActive;
