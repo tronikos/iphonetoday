@@ -845,7 +845,9 @@ BOOL CConfiguracion::AutoScale()
 	this->topBarConfig->Scale(scale);
 
 	this->circlesDiameter = UINT(scale * this->circlesDiameter);
-	this->circlesDistance = UINT(scale * this->circlesDistance);
+	if (this->circlesDistance > 0) {
+		this->circlesDistance = UINT(scale * this->circlesDistance);
+	}
 	this->circlesOffset = INT(scale * this->circlesOffset);
 
 	this->headerTextSize = UINT(scale * this->headerTextSize);
