@@ -3,7 +3,7 @@
 <root>
     <screen header="Screen1">
         <icon name="Contacts" image="Contacts.png" sound="" exec=":MSCONTACTS" parameters="contacts" execAlt="" parametersAlt="" type="0" animation="1" />
-        <icon name="E-mail" image="Email.png" sound="" exec=":MSINBOX" parameters="-pickeroption" execAlt="" parametersAlt="" type="0" animation="1" />
+        <icon name="E-mail" image="Email.png" sound="" exec=":MSINBOX" parameters="-pickeroption" execAlt="" parametersAlt="" type="42" animation="1" />
         <icon name="Internet" image="iexplorer.png" sound="" exec=":MSPIE" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
         <icon name="Clock" image="Blank.png" sound="" exec="ctlpnl" parameters="cplmain.cpl,16" execAlt="" parametersAlt="" type="12" animation="1" />
         <icon name="Calculator" image="Calculator.png" sound="" exec=":MSCALC" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
@@ -29,8 +29,8 @@
         <icon name="Camera" image="Camera.png" sound="" exec="\Windows\camera.exe" parameters="" execAlt="" parametersAlt="" type="0" animation="1" />
     </screen>
     <screen header="Screen3">
-        <icon name="Wifi" image="WiFiSignalStrength\WiFiSignalNA.png" sound="" exec="ctlpnl" parameters="cplmain.cpl,17" execAlt="" parametersAlt="" type="28" animation="1" />
-        <icon name="Bluetooth" image="Bluetooth.png" sound="" exec="ctlpnl" parameters="cplmain.cpl,23" execAlt="" parametersAlt="" type="10" animation="1" />
+        <icon name="Wifi" image="WiFiSignalStrength\WifiSignalNA.png" sound="" exec="--wifi" parameters="" execAlt="" parametersAlt="" type="28" animation="1" />
+        <icon name="Bluetooth" image="Bluetooth.png" sound="" exec="--bluetooth" parameters="" execAlt="" parametersAlt="" type="10" animation="1" />
         <icon name="GPS" image="GPS.png" sound="" exec="ctlpnl" parameters="cplmain.cpl,25" execAlt="" parametersAlt="" type="0" animation="1" />
         <icon name="GPRS" image="GPRS.png" sound="" exec="" parameters="" execAlt="" parametersAlt="" type="19" animation="1" />
         <icon name="Connections" image="Connections.png" sound="" exec="ctlpnl" parameters="cplmain.cpl,19" execAlt="" parametersAlt="" type="0" animation="1" />
@@ -48,4 +48,6 @@
         <icon name="Calendar" image="Calendar.png" sound="" exec=":MSCALENDAR" parameters="" execAlt="" parametersAlt="" type="5" animation="1" />
         <icon name="Tasks" image="Tasks.png" sound="" exec=":MSTASKS" parameters="tasks" execAlt="" parametersAlt="" type="6" animation="1" />
     </BottomBar>
+    <TopBar>
+    </TopBar>
 </root>
