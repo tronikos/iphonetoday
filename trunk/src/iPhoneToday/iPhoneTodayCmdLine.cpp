@@ -29,9 +29,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLin
 		if (wcsncmp(lpCmdLine, L"--", 2) == 0) {
 			// Find iPhoneToday window that should be somewhere under the Desktop window...
 			HWND hwnd = FindChildWindow(GetDesktopWindow(), L"iPhoneToday");
-			if (hwnd != NULL) {
-				CommandLineArguements(hwnd, lpCmdLine + 2);
-			}
+			CommandLineArguements(hwnd, lpCmdLine + 2);
 		}
 	}
 
