@@ -3502,10 +3502,8 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		TCHAR szWindowClass[MAX_LOADSTRING];
 		LoadString(hInstance, IDS_APPNAME, szWindowClass, MAX_LOADSTRING);
 		g_hWnd = FindWindow(szWindowClass, NULL);
-		if (g_hWnd) {
-			if (wcsncmp(lpCmdLine, L"--", 2) == 0) {
-				CommandLineArguements(g_hWnd, lpCmdLine + 2);
-			}
+		if (wcsncmp(lpCmdLine, L"--", 2) == 0) {
+			CommandLineArguements(g_hWnd, lpCmdLine + 2);
 		}
 		return 0;
 	}
@@ -3980,7 +3978,7 @@ void InvalidateScreenIfNotificationsChanged(CPantalla *pantalla)
 				}
 				break;
 			case NOTIF_SIGNAL_WIFI:
-				if (notifications->wifiSignalStrength_changed) {
+				if (notifications->wifiSignalStrength_changed || notifications->dwNotificationsChanged[SN_WIFISTATEPOWERON]) {
 					pantalla->debeActualizar = TRUE;
 					return;
 				}

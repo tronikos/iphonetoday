@@ -60,12 +60,13 @@ LPWSTR GetWirelessDeviceName()
 								FILE_ATTRIBUTE_NORMAL,
 								INVALID_HANDLE_VALUE);
 		if (hFile != INVALID_HANDLE_VALUE) {
-			BYTE Buffer[2048];
-			DWORD dwRet = sizeof(Buffer);
+			const DWORD BufferSize = 2048;
+			BYTE *Buffer = new BYTE[BufferSize];
+			DWORD dwRet = BufferSize;
 			if (DeviceIoControl(hFile,
 								IOCTL_NDIS_GET_ADAPTER_NAMES,
 								NULL, 0,
-								Buffer, sizeof(Buffer),
+								Buffer, BufferSize,
 								&dwRet,
 								NULL)) {
 				int count_unknown = 0;
@@ -97,6 +98,7 @@ LPWSTR GetWirelessDeviceName()
 					flag = 0;
 				}
 			}
+			delete Buffer;
 		}
 	}
 

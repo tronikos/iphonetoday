@@ -8,44 +8,48 @@ BOOL CommandLineArguements(HWND hwnd, LPCTSTR pCmdLine)
 		return FALSE;
 	}
 
-	if (wcsicmp(pCmdLine, L"reload") == 0) {
-		PostMessage(hwnd, WM_TIMER, TIMER_ACTUALIZA_NOTIF, 0);
-		return TRUE;
-	} else if (wcsicmp(pCmdLine, L"relaunch") == 0) {
-		PostMessage(hwnd, WM_USER_RELAUNCH, 0, 0);
-		return TRUE;
-	} else if (wcsicmp(pCmdLine, L"add") == 0) {
-		PostMessage(hwnd, WM_USER_ADD, 0, 0);
-		return TRUE;
-	} else if (wcsicmp(pCmdLine, L"options") == 0) {
-		PostMessage(hwnd, WM_USER_OPTIONS, 0, 0);
-		return TRUE;
+	if (hwnd) {
+		if (wcsicmp(pCmdLine, L"reload") == 0) {
+			PostMessage(hwnd, WM_TIMER, TIMER_ACTUALIZA_NOTIF, 0);
+			return TRUE;
+		} else if (wcsicmp(pCmdLine, L"relaunch") == 0) {
+			PostMessage(hwnd, WM_USER_RELAUNCH, 0, 0);
+			return TRUE;
+		} else if (wcsicmp(pCmdLine, L"add") == 0) {
+			PostMessage(hwnd, WM_USER_ADD, 0, 0);
+			return TRUE;
+		} else if (wcsicmp(pCmdLine, L"options") == 0) {
+			PostMessage(hwnd, WM_USER_OPTIONS, 0, 0);
+			return TRUE;
+		} else if (_wcsnicmp(pCmdLine, L"goto:", wcslen(L"goto:")) == 0) {
+			int l = wcslen(L"goto:");
+			if (wcsicmp(pCmdLine + l, L"next") == 0 || wcsicmp(pCmdLine + l, L"right") == 0) {
+				PostMessage(hwnd, WM_USER_GOTO_NEXT, 0, 0);
+			} else if (wcsicmp(pCmdLine + l, L"previous") == 0 || wcsicmp(pCmdLine + l, L"left") == 0) {
+				PostMessage(hwnd, WM_USER_GOTO_PREV, 0, 0);
+			} else if (wcsicmp(pCmdLine + l, L"up") == 0) {
+				PostMessage(hwnd, WM_USER_GOTO_UP, 0, 0);
+			} else if (wcsicmp(pCmdLine + l, L"down") == 0) {
+				PostMessage(hwnd, WM_USER_GOTO_DOWN, 0, 0);
+			} else {
+				PostMessage(hwnd, WM_USER_GOTO, _wtoi(pCmdLine + l), 0);
+			}
+			return TRUE;
 #ifdef EXEC_MODE
-	} else if (wcsicmp(pCmdLine, L"close") == 0 || wcsicmp(pCmdLine, L"exit") == 0) {
-		PostMessage(hwnd, WM_DESTROY, 0, 0);
-		return TRUE;
-	} else if (wcsicmp(pCmdLine, L"minimize") == 0) {
-		ShowWindow(hwnd, SW_MINIMIZE);
-		return TRUE;
-	} else if (wcsicmp(pCmdLine, L"taskbar") == 0) {
+		} else if (wcsicmp(pCmdLine, L"close") == 0 || wcsicmp(pCmdLine, L"exit") == 0) {
+			PostMessage(hwnd, WM_DESTROY, 0, 0);
+			return TRUE;
+		} else if (wcsicmp(pCmdLine, L"minimize") == 0) {
+			ShowWindow(hwnd, SW_MINIMIZE);
+			return TRUE;
+#endif
+		}
+	}
+
+	if (wcsicmp(pCmdLine, L"taskbar") == 0) {
 		HWND hWndTaskbar = FindWindow(L"HHTaskBar", NULL);
 		if (hWndTaskbar != NULL) {
 			ShowWindow(hWndTaskbar, IsWindowVisible(hWndTaskbar) ? SW_HIDE : SW_SHOW);
-		}
-		return TRUE;
-#endif
-	} else if (_wcsnicmp(pCmdLine, L"goto:", wcslen(L"goto:")) == 0) {
-		int l = wcslen(L"goto:");
-		if (wcsicmp(pCmdLine + l, L"next") == 0 || wcsicmp(pCmdLine + l, L"right") == 0) {
-			PostMessage(hwnd, WM_USER_GOTO_NEXT, 0, 0);
-		} else if (wcsicmp(pCmdLine + l, L"previous") == 0 || wcsicmp(pCmdLine + l, L"left") == 0) {
-			PostMessage(hwnd, WM_USER_GOTO_PREV, 0, 0);
-		} else if (wcsicmp(pCmdLine + l, L"up") == 0) {
-			PostMessage(hwnd, WM_USER_GOTO_UP, 0, 0);
-		} else if (wcsicmp(pCmdLine + l, L"down") == 0) {
-			PostMessage(hwnd, WM_USER_GOTO_DOWN, 0, 0);
-		} else {
-			PostMessage(hwnd, WM_USER_GOTO, _wtoi(pCmdLine + l), 0);
 		}
 		return TRUE;
 	} else if (_wcsnicmp(pCmdLine, L"volume:", wcslen(L"volume:")) == 0) {
@@ -78,7 +82,9 @@ BOOL CommandLineArguements(HWND hwnd, LPCTSTR pCmdLine)
 			vol = (WORD) _wtoi(pCmdLine + l);
 		}
 		SetVolumePercentage(vol);
-		PostMessage(hwnd, WM_TIMER, TIMER_ACTUALIZA_NOTIF, 0);
+		if (hwnd) {
+			PostMessage(hwnd, WM_TIMER, TIMER_ACTUALIZA_NOTIF, 0);
+		}
 		return TRUE;
 	} else if (wcsicmp(pCmdLine, L"rotate") == 0) {
 		Rotate(90);
@@ -99,6 +105,12 @@ BOOL CommandLineArguements(HWND hwnd, LPCTSTR pCmdLine)
 	} else if (wcsicmp(pCmdLine, L"winkey") == 0) {
 		keybd_event(91, NULL, KEYEVENTF_SILENT, NULL);
 		keybd_event(91, NULL, KEYEVENTF_SILENT|KEYEVENTF_KEYUP, NULL);
+		return TRUE;
+	} else if (wcsicmp(pCmdLine, L"bluetooth") == 0) {
+		ToggleBluetooth();
+		return TRUE;
+	} else if (wcsicmp(pCmdLine, L"wireless") == 0 || wcsicmp(pCmdLine, L"wifi") == 0 || wcsicmp(pCmdLine, L"wlan") == 0) {
+		ToggleWLAN();
 		return TRUE;
 	}
 

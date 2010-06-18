@@ -1,5 +1,6 @@
 #include "Utils2.h"
 #include "RegistryUtils.h"
+#include <Pm.h>
 
 WORD ConvertVolumeToPercentage(DWORD vol)
 {
@@ -97,6 +98,66 @@ void ToggleKeyboard(int bShow)
 				}
 			}
 			FreeLibrary(hCoredllLib);
+		}
+	}
+}
+
+typedef int (STDAPICALLTYPE FAR fBthGetMode)(DWORD*);
+typedef int (STDAPICALLTYPE FAR fBthSetMode)(DWORD);
+
+enum BTH_RADIO_MODE
+{
+    BTH_POWER_OFF,
+    BTH_CONNECTABLE,
+    BTH_DISCOVERABLE
+};
+
+void ToggleBluetooth(int bEnable)
+{
+	HMODULE hLib = LoadLibrary(L"bthutil.dll");
+	if (hLib != NULL) {
+		fBthGetMode *pBthGetMode = (fBthGetMode*) GetProcAddress(hLib, L"BthGetMode");
+		fBthSetMode *pBthSetMode = (fBthSetMode*) GetProcAddress(hLib, L"BthSetMode");
+		if (pBthGetMode && pBthSetMode) {
+			DWORD mode = 0;
+			if (pBthGetMode(&mode) == ERROR_SUCCESS) {
+				if (bEnable == -1) {
+					pBthSetMode((mode == BTH_POWER_OFF) ? BTH_CONNECTABLE : BTH_POWER_OFF);
+				} else {
+					pBthSetMode(bEnable ? BTH_CONNECTABLE : BTH_POWER_OFF);
+				}
+			}
+		}
+		FreeLibrary(hLib);
+	}
+}
+
+void ToggleWLAN(int bEnable)
+{
+	HKEY hKey;
+	if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, L"System\\CurrentControlSet\\Control\\Power\\State", 0, KEY_READ, &hKey) == ERROR_SUCCESS ) {
+		BOOL found = FALSE;
+		TCHAR achValue[MAX_PATH];
+		DWORD cchValue = MAX_PATH;
+		int i = 0;
+		while (RegEnumValue(hKey, i, achValue, &cchValue, NULL, NULL, NULL, NULL) == ERROR_SUCCESS) {
+			if (wcsncmp(achValue, L"{98C5250D-C29A-4985-AE5F-AFE5367E5006}", 38) == 0) {
+				found = TRUE;
+				break;
+			}
+			cchValue = MAX_PATH;
+			i++;
+		}
+		RegCloseKey(hKey);
+		if (found) {
+			CEDEVICE_POWER_STATE state;
+			if (GetDevicePower(achValue, POWER_NAME, &state) == ERROR_SUCCESS) {
+				if (bEnable == -1) {
+					SetDevicePower(achValue, POWER_NAME, state != D4 ? D4 : D1);
+				} else {
+					SetDevicePower(achValue, POWER_NAME, bEnable ? D1 : D4);
+				}
+			}
 		}
 	}
 }
