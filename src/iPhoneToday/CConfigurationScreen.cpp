@@ -41,7 +41,7 @@ void CConfigurationScreen::calculate(BOOL isStaticbar, int maxIcons, UINT screen
 	if (iconWidth * iconsPerRow <= w) {
 		posReference.x = SHORT((w - iconWidth * iconsPerRow) / (iconsPerRow + 1));
 		distanceIconsH = iconWidth + posReference.x;
-		posReference.x += SHORT(cs.offset.left);
+		posReference.x += SHORT(((w - iconWidth * iconsPerRow) % (iconsPerRow + 1)) / 2) + SHORT(cs.offset.left);
 	} else {
 		posReference.x = 0;
 		distanceIconsH = screenWidth / iconsPerRow;
