@@ -37,7 +37,16 @@ BOOL XMLUtils::GetAttr(TiXmlElement *pElem, const char *pszAttrName, float *valu
 
 BOOL XMLUtils::GetAttr(TiXmlElement *pElem, const char *pszAttrName, COLORREF *value)
 {
-	return XMLUtils::GetAttr(pElem, pszAttrName, (INT *) value);
+	const char *str = pElem->Attribute(pszAttrName);
+	if (str == NULL) {
+		return FALSE;
+	}
+	if (str[0] == '#') {
+		sscanf(str, "#%X", value);
+	} else {
+		sscanf(str, "%d", value);
+	}
+	return TRUE;
 }
 
 BOOL XMLUtils::GetAttr(TiXmlElement *pElem, const char *pszAttrName, LPTSTR pszRet, size_t bufflen)
@@ -75,7 +84,9 @@ void XMLUtils::SetAttr(TiXmlElement *pElem, const char *pszAttrName, LONG value)
 
 void XMLUtils::SetAttr(TiXmlElement *pElem, const char *pszAttrName, COLORREF value)
 {
-	XMLUtils::SetAttr(pElem, pszAttrName, (INT) value);
+	char buffer[10];
+	sprintf(buffer, "#%X", value);
+	pElem->SetAttribute(pszAttrName, buffer);
 }
 
 void XMLUtils::SetAttr(TiXmlElement *pElem, const char *pszAttrName, float value)
