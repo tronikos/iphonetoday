@@ -1175,15 +1175,31 @@ BOOL CConfiguracion::saveXMLScreenIcons(TiXmlElement *pElemScreen, CPantalla *pa
 
 		TiXmlElement *pElemIcon = new TiXmlElement("icon");
 
-		XMLUtils::SetAttr(pElemIcon, "name",			icon->nombre,			CountOf(icon->nombre));
-		XMLUtils::SetAttr(pElemIcon, "image",			icon->rutaImagen,		CountOf(icon->rutaImagen));
-		XMLUtils::SetAttr(pElemIcon, "sound",			icon->sound,			CountOf(icon->sound));
-		XMLUtils::SetAttr(pElemIcon, "exec",			icon->ejecutable,		CountOf(icon->ejecutable));
-		XMLUtils::SetAttr(pElemIcon, "parameters",		icon->parametros,		CountOf(icon->parametros));
-		XMLUtils::SetAttr(pElemIcon, "execAlt",			icon->ejecutableAlt,	CountOf(icon->ejecutableAlt));
-		XMLUtils::SetAttr(pElemIcon, "parametersAlt",	icon->parametrosAlt,	CountOf(icon->parametrosAlt));
-		XMLUtils::SetAttr(pElemIcon, "type",			icon->tipo);
-		XMLUtils::SetAttr(pElemIcon, "animation",		icon->launchAnimation);
+		if (icon->nombre[0] != 0) {
+			XMLUtils::SetAttr(pElemIcon, "name", icon->nombre, CountOf(icon->nombre));
+		}
+		if (icon->rutaImagen[0] != 0) {
+			XMLUtils::SetAttr(pElemIcon, "image", icon->rutaImagen, CountOf(icon->rutaImagen));
+		}
+		if (icon->sound[0] != 0) {
+			XMLUtils::SetAttr(pElemIcon, "sound", icon->sound, CountOf(icon->sound));
+		}
+		if (icon->ejecutable[0] != 0) {
+			XMLUtils::SetAttr(pElemIcon, "exec", icon->ejecutable, CountOf(icon->ejecutable));
+		}
+		if (icon->parametros[0] != 0) {
+			XMLUtils::SetAttr(pElemIcon, "parameters", icon->parametros, CountOf(icon->parametros));
+		}
+		if (icon->ejecutableAlt[0] != 0) {
+			XMLUtils::SetAttr(pElemIcon, "execAlt", icon->ejecutableAlt, CountOf(icon->ejecutableAlt));
+		}
+		if (icon->parametrosAlt[0] != 0) {
+			XMLUtils::SetAttr(pElemIcon, "parametersAlt", icon->parametrosAlt, CountOf(icon->parametrosAlt));
+		}
+		if (icon->tipo != 0) {
+			XMLUtils::SetAttr(pElemIcon, "type", icon->tipo);
+		}
+		XMLUtils::SetAttr(pElemIcon, "animation", icon->launchAnimation);
 
 		pElemScreen->LinkEndChild(pElemIcon);
 	}
