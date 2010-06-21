@@ -731,6 +731,7 @@ void CConfiguracion::defaultValues()
 	this->showExit = 1;
 	this->textQuality = 0;
 	this->textQualityInIcons = 0;
+	this->autoShowKeyboardOnTextboxFocus = 0;
 	this->heightP = 0;
 	this->heightL = 0;
 
@@ -1072,6 +1073,8 @@ BOOL CConfiguracion::loadXMLConfig()
 			XMLUtils::GetTextElem(pElem, &this->textQuality);
 		} else if(_stricmp(nameNode, "TextQualityInIcons") == 0) {
 			XMLUtils::GetTextElem(pElem, &this->textQualityInIcons);
+		} else if(_stricmp(nameNode, "AutoShowKeyboardOnTextboxFocus") == 0) {
+			XMLUtils::GetTextElem(pElem, &this->autoShowKeyboardOnTextboxFocus);
 		} else if(_stricmp(nameNode, "OutOfScreenLeft") == 0) {
 			OutOfScreenSettingsLoad(pElem, &this->ooss_left);
 		} else if(_stricmp(nameNode, "OutOfScreenRight") == 0) {
@@ -1400,6 +1403,10 @@ BOOL CConfiguracion::saveXMLConfig()
 
 	pElem = new TiXmlElement("TextQualityInIcons");
 	XMLUtils::SetTextElem(pElem, this->textQualityInIcons);
+	root->LinkEndChild(pElem);
+
+	pElem = new TiXmlElement("AutoShowKeyboardOnTextboxFocus");
+	XMLUtils::SetTextElem(pElem, this->autoShowKeyboardOnTextboxFocus);
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("OutOfScreenLeft");

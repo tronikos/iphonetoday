@@ -290,11 +290,13 @@ LRESULT CALLBACK ScreenBackSettingsProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPA
 		return 0;
 	case WM_COMMAND:
 		if (HIWORD(wParam) == EN_SETFOCUS) {
-			ToggleKeyboard(TRUE);
+			if (configuracion && configuracion->autoShowKeyboardOnTextboxFocus)
+				ToggleKeyboard(TRUE);
 			focus = TRUE;
 			PostMessage((HWND) lParam, EM_SETSEL, 0, -1);
 		} else if (HIWORD(wParam) == EN_KILLFOCUS) {
-			ToggleKeyboard(FALSE);
+			if (configuracion && configuracion->autoShowKeyboardOnTextboxFocus)
+				ToggleKeyboard(FALSE);
 			focus = FALSE;
 		}
 		switch(LOWORD(wParam))

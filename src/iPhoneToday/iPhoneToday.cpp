@@ -2893,11 +2893,13 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 		return 0;
 	case WM_COMMAND:
 		if (HIWORD(wParam) == EN_SETFOCUS) {
-			ToggleKeyboard(TRUE);
+			if (configuracion && configuracion->autoShowKeyboardOnTextboxFocus)
+				ToggleKeyboard(TRUE);
 			focus = TRUE;
 			PostMessage((HWND) lParam, EM_SETSEL, 0, -1);
 		} else if (HIWORD(wParam) == EN_KILLFOCUS) {
-			ToggleKeyboard(FALSE);
+			if (configuracion && configuracion->autoShowKeyboardOnTextboxFocus)
+				ToggleKeyboard(FALSE);
 			focus = FALSE;
 		}
 		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
