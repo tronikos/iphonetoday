@@ -195,6 +195,7 @@ public:
 	UINT showExit;
 	UINT textQuality;
 	UINT textQualityInIcons;
+	UINT autoShowKeyboardOnTextboxFocus;
 
 	// Today item height (Portrait|Landscape)
 	UINT heightP;
