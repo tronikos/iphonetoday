@@ -100,10 +100,17 @@ void XMLUtils::SetAttr(TiXmlElement *pElem, const char *pszAttrName, float value
 void XMLUtils::SetAttr(TiXmlElement *pElem, const char *pszAttrName, LPTSTR psz, size_t bufflen)
 {
 	if (pElem == NULL) return;
-	char *buffer = new char[bufflen];
-	if (!WideCharToMultiByte(CP_UTF8, 0, psz, bufflen, buffer, bufflen, NULL, NULL)) {
-		if (!WideCharToMultiByte(CP_ACP, 0, psz, bufflen, buffer, bufflen, NULL, NULL)) {
-			if (!WideCharToMultiByte(CP_OEMCP, 0, psz, bufflen, buffer, bufflen, NULL, NULL)) {
+	int cbMultiByte = WideCharToMultiByte(CP_UTF8, 0, psz, bufflen, NULL, 0, NULL, NULL);
+	if (!cbMultiByte) {
+		cbMultiByte = WideCharToMultiByte(CP_ACP, 0, psz, bufflen, NULL, 0, NULL, NULL);
+		if (!cbMultiByte) {
+			cbMultiByte = WideCharToMultiByte(CP_OEMCP, 0, psz, bufflen, NULL, 0, NULL, NULL);
+		}
+	}
+	char *buffer = new char[cbMultiByte];
+	if (!WideCharToMultiByte(CP_UTF8, 0, psz, bufflen, buffer, cbMultiByte, NULL, NULL)) {
+		if (!WideCharToMultiByte(CP_OEMCP, 0, psz, bufflen, buffer, cbMultiByte, NULL, NULL)) {
+			if (!WideCharToMultiByte(CP_ACP, 0, psz, bufflen, buffer, cbMultiByte, NULL, NULL)) {
 				*buffer = 0;
 			}
 		}
