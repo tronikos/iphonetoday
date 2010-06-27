@@ -3141,28 +3141,23 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 				// Extract Path for save lastPath
 				getPathFromFile(pathFile, lastPathExec);
 
-				// Extract Name from path
-				//int resp = MessageBox(hDlg, TEXT("Set Icon Name?"), TEXT("Exit"), MB_YESNO);
-				//if (resp == IDYES) {
-				//	SHFILEINFO cbFileInfo;
-				//	SHGetFileInfo(pathFile, 0, &cbFileInfo, sizeof(cbFileInfo), SHGFI_DISPLAYNAME);
-				//	SetDlgItemText(hDlg, IDC_MICON_NAME, cbFileInfo.szDisplayName);
-				//}
-
 				TCHAR str[MAX_PATH];
-				TCHAR *p = wcsrchr(pathFile, '\\');
-				if (p == NULL) {
-					p = pathFile;
-				} else {
-					++p;
+				GetDlgItemText(hDlg, IDC_MICON_NAME, str, CountOf(str));
+				if (wcslen(str) == 0 || MessageBox(hDlg, L"Set Icon Name?", L"Exit", MB_YESNO) == IDYES) {
+					TCHAR *p = wcsrchr(pathFile, '\\');
+					if (p == NULL) {
+						p = pathFile;
+					} else {
+						++p;
+					}
+					wcscpy(str, p);
+					p = wcsrchr(str, '.');
+					if (p != NULL) {
+						*p = 0;
+					}
+					str[0] = toupper(str[0]);
+					SetDlgItemText(hDlg, IDC_MICON_NAME, str);
 				}
-				wcscpy(str, p);
-				p = wcsrchr(str, '.');
-				if (p != NULL) {
-					*p = 0;
-				}
-				str[0] = toupper(str[0]);
-				SetDlgItemText(hDlg, IDC_MICON_NAME, str);
 
 				configuracion->getRelativePath(str, MAX_PATH, pathFile);
 				SetDlgItemText(hDlg, IDC_MICON_EXEC, str);
