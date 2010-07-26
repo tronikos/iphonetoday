@@ -20,6 +20,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_0164A245CDA3451FABAB85F4336B2FAF"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_019CA72138BD4163B77217E932A4333C"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -2564,6 +2570,32 @@
         }
         "ProjectOutput"
         {
+            "{605BE39E-5046-48BD-AEC0-63C3A46626D5}:_0164A245CDA3451FABAB85F4336B2FAF"
+            {
+            "SourcePath" = "8:..\\iPhoneTodayExeDesktop\\Pocket PC 2003 (ARMV4)\\Release\\iPhoneTodayDesktop.exe"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_592C2201663946748A2FBA31B8D92C75"
+            "Condition" = "8:"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "Register" = "3:0"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            "ProjectOutputGroupRegister" = "3:0"
+            "OutputConfiguration" = "8:"
+            "OutputGroupCanonicalName" = "8:Built"
+            "OutputProjectGuid" = "8:{3BA452DB-E2F2-474D-95D7-CBAC4022F7D0}"
+            "ShowKeyOutput" = "11:TRUE"
+                "ExcludeFilters"
+                {
+                }
+            }
             "{605BE39E-5046-48BD-AEC0-63C3A46626D5}:_0E5E36352A0942F1B518AF9CB081EB2B"
             {
             "SourcePath" = "8:..\\iPhoneTodaySetup\\Pocket PC 2003 (ARMV4)\\Release\\iPhoneTodaySetup.dll"

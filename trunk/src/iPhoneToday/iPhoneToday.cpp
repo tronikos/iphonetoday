@@ -3609,16 +3609,27 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 		return FALSE;
 	}
 
+	DWORD dwStyle = WS_SYSMENU;
+	int nWidth = CW_USEDEFAULT;
+	int nHeight = CW_USEDEFAULT;
+	HWND parent = NULL;
+#ifdef DESKTOP_MODE
+	dwStyle = WS_VISIBLE| WS_POPUP | WS_NONAVDONEBUTTON;
+	nWidth = GetSystemMetrics(SM_CXSCREEN);
+	nHeight = GetSystemMetrics(SM_CYSCREEN);
+	parent = GetDesktopWindow();
+#endif
+
 	// Create main window.
 	g_hWnd = CreateWindowEx (WS_EX_NODRAG,      // Ex Style
 		szWindowClass,       // Window class
 		g_szTitle,           // Window title
-		WS_SYSMENU,          // Style flags
+		dwStyle,             // Style flags
 		CW_USEDEFAULT,       // x position
 		CW_USEDEFAULT,       // y position
-		CW_USEDEFAULT,       // Initial width
-		CW_USEDEFAULT,       // Initial height
-		NULL,                // Parent
+		nWidth,              // Initial width
+		nHeight,             // Initial height
+		parent,              // Parent
 		NULL,                // Menu, must be null
 		hInstance,           // Application instance
 		NULL);               // Pointer to create
