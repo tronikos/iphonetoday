@@ -1380,8 +1380,6 @@ void DrawBubbleText(HDC hDC, CIcono *bubble, DWORD numNotif, CIcono *icon, int i
 	TCHAR str[4];
 	if (numNotif >= 100) {
 		StringCchCopy(str, CountOf(str), TEXT("+"));
-	} else if (numNotif < 0) {
-		StringCchCopy(str, CountOf(str), TEXT("*"));
 	} else {
 		StringCchPrintf(str, CountOf(str), TEXT("%i"), numNotif);
 	}
@@ -1690,7 +1688,7 @@ void pintaIcono(HDC *hDC, CIcono *icono, CPantalla *pantalla, SCREEN_TYPE screen
 			case NOTIF_ALARM:
 				if ((notifications->dwNotifications[SN_CLOCKALARMFLAGS0] + notifications->dwNotifications[SN_CLOCKALARMFLAGS1] + notifications->dwNotifications[SN_CLOCKALARMFLAGS2]) > 0) {
 					if (shouldDrawBubble) {
-						DrawBubbleText(*hDC, configuracion->bubbleAlarm, -1, icono, width, &configuracion->bubble_alarm);
+						DrawBubbleText(*hDC, configuracion->bubbleAlarm, 0, icono, width, &configuracion->bubble_alarm);
 					}
 					SYSTEMTIME stAlarmsNext;
 					FileTimeToSystemTime(&notifications->ftAlarmsNext, &stAlarmsNext);
@@ -1708,7 +1706,7 @@ void pintaIcono(HDC *hDC, CIcono *icono, CPantalla *pantalla, SCREEN_TYPE screen
 				break;
 			case NOTIF_CLOCK_ALARM:
 				if (shouldDrawBubble && (notifications->dwNotifications[SN_CLOCKALARMFLAGS0] + notifications->dwNotifications[SN_CLOCKALARMFLAGS1] + notifications->dwNotifications[SN_CLOCKALARMFLAGS2]) > 0) {
-					DrawBubbleText(*hDC, configuracion->bubbleAlarm, -1, icono, width, &configuracion->bubble_alarm);
+					DrawBubbleText(*hDC, configuracion->bubbleAlarm, 0, icono, width, &configuracion->bubble_alarm);
 				}
 			case NOTIF_CLOCK:
 				if (configuracion->clock12Format) {
