@@ -1581,7 +1581,7 @@ void pintaIcono(HDC *hDC, CIcono *icono, CPantalla *pantalla, SCREEN_TYPE screen
 		int signal = notifications->wifiSignalStrength;
 		configuracion->getAbsolutePath(image_old, CountOf(image_old), icono->rutaImagen);
 		if (getPathFromFile(image_old, image_dir)) {
-			if ((notifications->dwNotifications[SN_WIFISTATEPOWERON] & SN_WIFISTATEPOWERON_BITMASK) || (isPND() && signal > 0)) {
+			if ((notifications->dwNotifications[SN_WIFISTATEPOWERON] & SN_WIFISTATEPOWERON_BITMASK) || (isPND() && signal != 0)) {
 				StringCchPrintf(image_new, CountOf(image_new), L"%s\\WifiSignal%d.png", image_dir, GetWifiSignalStrengthLevel(signal) * 20);
 			} else {
 				StringCchPrintf(image_new, CountOf(image_new), L"%s\\WifiSignalNA.png", image_dir);
@@ -1761,9 +1761,9 @@ void pintaIcono(HDC *hDC, CIcono *icono, CPantalla *pantalla, SCREEN_TYPE screen
 			case NOTIF_SIGNAL_WIFI:
 				{
 				int signal = notifications->wifiSignalStrength;
-				if ((notifications->dwNotifications[SN_WIFISTATEPOWERON] & SN_WIFISTATEPOWERON_BITMASK) || (isPND() && signal > 0)) {
-					if (signal > 0) {
-						StringCchPrintf(str, CountOf(str), L"%d%s", notifications->wifiSignalStrength, configuracion->wsigShowdBm ? L" dBm" : L"");
+				if ((notifications->dwNotifications[SN_WIFISTATEPOWERON] & SN_WIFISTATEPOWERON_BITMASK) || (isPND() && signal != 0)) {
+					if (signal != 0) {
+						StringCchPrintf(str, CountOf(str), L"%d%s", signal, configuracion->wsigShowdBm ? L" dBm" : L"");
 					} else {
 						StringCchCopy(str, CountOf(str), L"NA");
 					}
