@@ -19,7 +19,11 @@ BOOL CommandLineArguements(HWND hwnd, LPCTSTR pCmdLine)
 			PostMessage(hwnd, WM_USER_ADD, 0, 0);
 			return TRUE;
 		} else if (wcsicmp(pCmdLine, L"options") == 0) {
-			PostMessage(hwnd, WM_USER_OPTIONS, 0, 0);
+			PostMessage(hwnd, WM_USER_OPTIONS, -1, 0);
+			return TRUE;
+		} else if (_wcsnicmp(pCmdLine, L"options:", wcslen(L"options:")) == 0) {
+			int l = wcslen(L"options:");
+			PostMessage(hwnd, WM_USER_OPTIONS, _wtoi(pCmdLine + l), 0);
 			return TRUE;
 		} else if (_wcsnicmp(pCmdLine, L"goto:", wcslen(L"goto:")) == 0) {
 			int l = wcslen(L"goto:");

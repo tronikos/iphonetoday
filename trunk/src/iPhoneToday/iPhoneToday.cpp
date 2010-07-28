@@ -269,8 +269,14 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lPara
 		}
 		return 0;
 	case WM_USER_OPTIONS:
+		{
+		int tab = (int) wParam;
+		if (tab >= 0 && tab < NUM_TABS) {
+			lasttab = tab;
+		}
 		DialogBox(g_hInst, MAKEINTRESOURCE(IDD_DIALOGDUMMY), hwnd, (DLGPROC)CustomItemOptionsDlgProc);
 		return 0;
+		}
 	case WM_USER_GOTO:
 		if (estado != NULL && configuracion != NULL && listaPantallas != NULL) {
 			estado->pantallaActiva = min(max((int) wParam, 0), (int)listaPantallas->numPantallas - 1);
