@@ -3,4 +3,4 @@
 #define PRODUCTVER     1,5,4,1
 #define STRFILEVER     "1, 5, 4, 1\0"
 #define STRPRODUCTVER  "1, 5, 4, 1\0"
-#define LSTRPRODUCTVER L"v1.5.4 (July 28, 2010)"
+#define LSTRPRODUCTVER L"v1.5.4 (July 31, 2010)"
