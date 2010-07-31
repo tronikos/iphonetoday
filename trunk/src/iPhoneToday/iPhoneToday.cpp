@@ -1062,7 +1062,7 @@ void RightClick(HWND hwnd, POINTS posCursor)
 
 	ClientToScreen(hwnd, &pt);
 
-	INT iMenuID = TrackPopupMenuEx(hmenu, TPM_RETURNCMD, pt.x, pt.y, hwnd, NULL);
+	INT iMenuID = TrackPopupMenuEx(hmenu, TPM_RETURNCMD | TPM_RIGHTALIGN | TPM_BOTTOMALIGN, pt.x, pt.y, hwnd, NULL);
 
 	switch (iMenuID)
 	{
@@ -3720,26 +3720,22 @@ void resizeWindow(HWND hwnd, BOOL fullScreen)
 
 #ifdef EXEC_MODE
 	static HWND hWndTaskbar = FindWindow(L"HHTaskBar", NULL);
-	DWORD dwState;
+	DWORD dwState = SHFS_HIDESIPBUTTON;
+	INT nCmdShow = -1;
 	if (fullScreen) {
-		dwState = SHFS_HIDESIPBUTTON;
 		if (configuracion != NULL && configuracion->fullscreen) {
 			dwState |= SHFS_HIDETASKBAR;
+			nCmdShow = SW_HIDE;
 		}
 	} else {
-		dwState = SHFS_HIDESIPBUTTON;
 		if (configuracion != NULL && !configuracion->neverShowTaskBar) {
 			dwState |= SHFS_SHOWTASKBAR;
+			nCmdShow = SW_SHOW;
 		}
 	}
 	SHFullScreen(hwnd, dwState);
-
-	if (configuracion != NULL && hWndTaskbar != NULL) {
-		if (configuracion->fullscreen) {
-			ShowWindow(hWndTaskbar, fullScreen || configuracion->neverShowTaskBar ? SW_HIDE : SW_SHOW);
-		} else {
-			ShowWindow(hWndTaskbar, configuracion->neverShowTaskBar ? SW_HIDE : SW_SHOW);
-		}
+	if (hWndTaskbar != NULL && nCmdShow != - 1) {
+		ShowWindow(hWndTaskbar, nCmdShow);
 	}
 #endif
 
