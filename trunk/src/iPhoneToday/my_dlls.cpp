@@ -12,6 +12,9 @@ static fGetSystemPowerStatusEx *pGetSystemPowerStatusEx = NULL;
 typedef BOOL (STDAPICALLTYPE FAR fAlphaBlend)(HDC,int,int,int,int,HDC,int,int,int,int,BLENDFUNCTION);
 static fAlphaBlend *pAlphaBlend = NULL;
 
+typedef BOOL (STDAPICALLTYPE FAR fGradientFill)(HDC,PTRIVERTEX,ULONG,PVOID,ULONG,ULONG);
+static fGradientFill *pGradientFill = NULL;
+
 BOOL InitCoredll()
 {
 	static HMODULE hCoredllLib = NULL;
@@ -24,6 +27,7 @@ BOOL InitCoredll()
 	pSipGetInfo = (fSipGetInfo*)GetProcAddress(hCoredllLib, L"SipGetInfo");
 	pGetSystemPowerStatusEx = (fGetSystemPowerStatusEx*)GetProcAddress(hCoredllLib, L"GetSystemPowerStatusEx");
 	pAlphaBlend = (fAlphaBlend*)GetProcAddress(hCoredllLib, L"AlphaBlend");
+	pGradientFill = (fGradientFill*)GetProcAddress(hCoredllLib, L"GradientFill");
 	return TRUE;
 }
 
@@ -131,6 +135,14 @@ BOOL AlphaBlend(HDC hdcDest, int nXOriginDest, int nYOriginDest, int nWidthDest,
 
 	return TRUE;
 }
+
+BOOL GradientFill(HDC hdc, PTRIVERTEX pVertex, ULONG nVertex, PVOID pMesh, ULONG nCount, ULONG ulMode)
+{
+	if (InitCoredll() && pGradientFill != NULL)
+		return pGradientFill(hdc, pVertex, nVertex, pMesh, nCount, ulMode);
+	return FALSE;
+}
+
 
 typedef BOOL (STDAPICALLTYPE FAR fPropertySheet)(LPCPROPSHEETHEADERW); 
 static fPropertySheet *pPropertySheet = NULL;
