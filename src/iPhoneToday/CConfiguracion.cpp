@@ -91,6 +91,25 @@ BOOL CConfiguracion::hasTimestampChanged()
 	return FALSE;
 }
 
+// pszDest = pszDir + pszSrc with "..\" properly handled.
+void CConfiguracion::getAbsolutePath(LPTSTR pszDest, size_t cchDest, LPCTSTR pszSrc, LPCTSTR pszDir)
+{
+	StringCchCopy(pszDest, cchDest, pszDir);
+	if (pszDest[wcslen(pszDest) - 1] == L'\\') {
+		pszDest[wcslen(pszDest) - 1] = 0;
+	}
+	LPCTSTR s = pszSrc;
+	while (_wcsnicmp(s, L"..\\", 3) == 0) {
+		s += 3;
+		TCHAR *p = wcsrchr(pszDest, '\\');
+		if (p) {
+			*p = 0;
+		}
+	}
+	StringCchCat(pszDest, cchDest, L"\\");
+	StringCchCat(pszDest, cchDest, s);
+}
+
 void CConfiguracion::getAbsolutePath(LPTSTR pszDest, size_t cchDest, LPCTSTR pszSrc)
 {
 	// Convert relative path to absolute
@@ -98,13 +117,13 @@ void CConfiguracion::getAbsolutePath(LPTSTR pszDest, size_t cchDest, LPCTSTR psz
 		StringCchCopy(pszDest, cchDest, pszSrc);
 	} else {
 		// First check whether it is relative to the Icons directory
-		StringCchPrintf(pszDest, cchDest, L"%s%s", pathIconsDir, pszSrc);
+		getAbsolutePath(pszDest, cchDest, pszSrc, pathIconsDir);
 		if (!FileExists(pszDest)) {
 			// Second check whether it is relative to the icons.xml directory
-			StringCchPrintf(pszDest, cchDest, L"%s%s", pathIconsXMLDir, pszSrc);
+			getAbsolutePath(pszDest, cchDest, pszSrc, pathIconsXMLDir);
 			if (!FileExists(pszDest)) {
 				// Third check whether it is relative to the executable's directory
-				StringCchPrintf(pszDest, cchDest, L"%s%s", pathExecutableDir, pszSrc);
+				getAbsolutePath(pszDest, cchDest, pszSrc, pathExecutableDir);
 			}
 		}
 	}
