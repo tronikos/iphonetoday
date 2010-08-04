@@ -53,6 +53,7 @@ public:
 
 	BOOL saveXMLScreenIcons(TiXmlElement *pElemScreen, CPantalla *pantalla);
 
+	void getAbsolutePath(LPTSTR pszDest, size_t cchDest, LPCTSTR pszSrc, LPCTSTR pszDir);
 	void getAbsolutePath(LPTSTR pszDest, size_t cchDest, LPCTSTR pszSrc);
 	void getRelativePath(LPTSTR pszDest, size_t cchDest, LPCTSTR pszSrc);
 	BOOL hasTimestampChanged();
