@@ -183,6 +183,9 @@ public:
 	TCHAR pressed_icon[MAX_PATH];
 	TCHAR pressed_sound[MAX_PATH];
 
+	// OnChangeScreen
+	TCHAR change_screen_sound[MAX_PATH];
+
 	// General
 	UINT notifyTimer;
 	BOOL updateWhenInactive;

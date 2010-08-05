@@ -104,7 +104,7 @@ void pintaIcono(HDC *hDC, CIcono *icono, CPantalla *pantalla, SCREEN_TYPE screen
 void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type = MAINSCREEN, BOOL isFirst = FALSE, BOOL isLast = FALSE);
 void setPosicionesIconos(CPantalla *pantalla, SCREEN_TYPE screen_type);
 void setPosiciones(BOOL inicializa, int offsetX, int offsetY);
-void calculaPosicionObjetivo();
+void calculaPosicionObjetivo(HWND hwnd);
 void procesaPulsacion(HWND hwnd, POINTS posCursor, BOOL doubleClick, BOOL noLanzar = FALSE);
 int hayNotificacion(int tipo);
 BOOL inicializaApp(HWND hwnd);
@@ -123,6 +123,7 @@ void InvalidateScreenIfNotificationsChanged(CPantalla *pantalla);
 BOOL ProcessNotifications();
 BOOL hasTopBar();
 BOOL hasBottomBar();
+void GotoScreen(HWND hwnd, UINT screen);
 
 #ifndef EXEC_MODE
 /*************************************************************************/
@@ -278,28 +279,13 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lPara
 		return 0;
 		}
 	case WM_USER_GOTO:
-		if (estado != NULL && configuracion != NULL && listaPantallas != NULL) {
-			estado->pantallaActiva = min(max((int) wParam, 0), (int)listaPantallas->numPantallas - 1);
-			estado->posObjetivo.x = - (short) (configuracion->anchoPantalla * estado->pantallaActiva);
-			estado->posObjetivo.y = 0;
-			SetTimer(hwnd, TIMER_RECUPERACION, configuracion->refreshTime, NULL);
-		}
+		GotoScreen(hwnd, min(max((int) wParam, 0), (int)listaPantallas->numPantallas - 1));
 		return 0;
 	case WM_USER_GOTO_NEXT:
-		if (estado != NULL && configuracion != NULL && listaPantallas != NULL) {
-			estado->pantallaActiva = (estado->pantallaActiva + 1) % listaPantallas->numPantallas;
-			estado->posObjetivo.x = - (short) (configuracion->anchoPantalla * estado->pantallaActiva);
-			estado->posObjetivo.y = 0;
-			SetTimer(hwnd, TIMER_RECUPERACION, configuracion->refreshTime, NULL);
-		}
+		GotoScreen(hwnd, (estado->pantallaActiva + 1) % listaPantallas->numPantallas);
 		return 0;
 	case WM_USER_GOTO_PREV:
-		if (estado != NULL && configuracion != NULL && listaPantallas != NULL) {
-			estado->pantallaActiva = (listaPantallas->numPantallas + estado->pantallaActiva - 1) % listaPantallas->numPantallas;
-			estado->posObjetivo.x = - (short) (configuracion->anchoPantalla * estado->pantallaActiva);
-			estado->posObjetivo.y = 0;
-			SetTimer(hwnd, TIMER_RECUPERACION, configuracion->refreshTime, NULL);
-		}
+		GotoScreen(hwnd, (listaPantallas->numPantallas + estado->pantallaActiva - 1) % listaPantallas->numPantallas);
 		return 0;
 	case WM_USER_GOTO_UP:
 		if (estado != NULL && configuracion != NULL) {
@@ -646,12 +632,7 @@ LRESULT doSize (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 			borraObjetosHDC();
 			setPosiciones(true, 0, 0);
 
-			// Calculamos la posicion objetivo
-			estado->posObjetivo.x = 0 - (estado->pantallaActiva * configuracion->anchoPantalla);
-			estado->posObjetivo.y = 0;
-
-			// Activamos el timer
-			SetTimer(hwnd, TIMER_RECUPERACION, configuracion->refreshTime, NULL);
+			GotoScreen(hwnd, estado->pantallaActiva);
 		}
 	}
 	return 0;
@@ -1276,10 +1257,7 @@ LRESULT doMouseUp (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 
 	if (estado->hayMovimiento) {
 		// Calculamos la posicion objetivo
-		calculaPosicionObjetivo();
-
-		// Activamos el timer
-		SetTimer(hwnd, TIMER_RECUPERACION, configuracion->refreshTime, NULL);
+		calculaPosicionObjetivo(hwnd);
 	} else {
 		procesaPulsacion(hwnd, point, doubleClick);
 	}
@@ -2269,27 +2247,24 @@ void setPosiciones(BOOL inicializa, int offsetX, int offsetY)
 	}
 }
 
-void calculaPosicionObjetivo()
+void calculaPosicionObjetivo(HWND hwnd)
 {
 	//NKDbgPrintfW(L"posImage = %d %d\n", posImage.x, posImage.y);
-	UINT pantallaActivaOld = estado->pantallaActiva;
-	estado->pantallaActiva = posImage.x > 0 ? 0 : min(listaPantallas->numPantallas - 1, (-posImage.x + configuracion->anchoPantalla / 2) / configuracion->anchoPantalla);
+	UINT newScreen = posImage.x > 0 ? 0 : min(listaPantallas->numPantallas - 1, (-posImage.x + configuracion->anchoPantalla / 2) / configuracion->anchoPantalla);
 
 	if (posImage.x >= (int) configuracion->anchoPantalla * 4 / 5) {
 		if (_tcsclen(configuracion->ooss_left.exec) > 0) {
 			LaunchApplication(configuracion->ooss_left.exec, L"");
 		} else if (configuracion->ooss_left.wrap) {
-			estado->pantallaActiva = listaPantallas->numPantallas - 1;
+			newScreen = listaPantallas->numPantallas - 1;
 		}
 	} else if (-posImage.x - (int) (listaPantallas->numPantallas - 1) * (int) configuracion->anchoPantalla >= (int) configuracion->anchoPantalla * 4 / 5) {
 		if (_tcsclen(configuracion->ooss_right.exec) > 0) {
 			LaunchApplication(configuracion->ooss_right.exec, L"");
 		} else if (configuracion->ooss_right.wrap) {
-			estado->pantallaActiva = 0;
+			newScreen = 0;
 		}
 	}
-
-	estado->posObjetivo.x = 0 - (estado->pantallaActiva * configuracion->anchoPantalla);
 
 	int h = configuracion->altoPantalla;
 	if (hasBottomBar()) {
@@ -2298,9 +2273,14 @@ void calculaPosicionObjetivo()
 	if (hasTopBar()) {
 		h -= listaPantallas->topBar->altoPantalla;
 	}
-	int nrows_screen = ((listaPantallas->listaPantalla[estado->pantallaActiva]->numIconos + configuracion->mainScreenConfig->iconsPerRow - 1) / configuracion->mainScreenConfig->iconsPerRow);
+	int nrows_screen = ((listaPantallas->listaPantalla[newScreen]->numIconos + configuracion->mainScreenConfig->iconsPerRow - 1) / configuracion->mainScreenConfig->iconsPerRow);
 
-	if (posImage.y >= 0 || pantallaActivaOld != estado->pantallaActiva) {
+	if (newScreen != estado->pantallaActiva) {
+		GotoScreen(hwnd, newScreen);
+		return;
+	}
+
+	if (posImage.y >= 0) {
 		estado->posObjetivo.y = 0;
 	} else {
 		int nrows_scroll = (-posImage.y + configuracion->mainScreenConfig->distanceIconsV / 2) / configuracion->mainScreenConfig->distanceIconsV;
@@ -2328,6 +2308,11 @@ void calculaPosicionObjetivo()
 			estado->posObjetivo.y = -(nrows_screen * (int) configuracion->mainScreenConfig->distanceIconsV - h);
 		}
 	}
+
+	estado->pantallaActiva = newScreen;
+	estado->posObjetivo.x = - (short) (estado->pantallaActiva * configuracion->anchoPantalla);
+
+	SetTimer(hwnd, TIMER_RECUPERACION, configuracion->refreshTime, NULL);
 }
 
 #ifndef EXEC_MODE
@@ -2486,18 +2471,15 @@ void procesaPulsacion(HWND hwnd, POINTS posCursor, BOOL doubleClick, BOOL noLanz
 	BOOL bHasTopBar = hasTopBar();
 
 	if (posCursor.x >= configuracion->circlesBarRect.left && posCursor.x <= configuracion->circlesBarRect.right && posCursor.y >= configuracion->circlesBarRect.top && posCursor.y <= configuracion->circlesBarRect.bottom) {
+		UINT newScreen = 0;
 		if (doubleClick) {
 			if (!configuracion->circlesDoubleTap) return;
-			estado->pantallaActiva = 0;
+			newScreen = 0;
 		} else {
 			if (!configuracion->circlesSingleTap) return;
-			estado->pantallaActiva = (posCursor.x - configuracion->circlesBarRect.left + configuracion->circlesDistAdjusted / 2) / (configuracion->circlesDiameter + configuracion->circlesDistAdjusted);
+			newScreen = (posCursor.x - configuracion->circlesBarRect.left + configuracion->circlesDistAdjusted / 2) / (configuracion->circlesDiameter + configuracion->circlesDistAdjusted);
 		}
-		estado->posObjetivo.x = - (short) (configuracion->anchoPantalla * estado->pantallaActiva);
-		estado->posObjetivo.y = 0;
-
-		// Activamos el timer
-		SetTimer(hwnd, TIMER_RECUPERACION, configuracion->refreshTime, NULL);
+		GotoScreen(hwnd, newScreen);
 		return;
 	}
 
@@ -4141,4 +4123,22 @@ BOOL hasTopBar()
 BOOL hasBottomBar()
 {
 	return listaPantallas->barraInferior != NULL && listaPantallas->barraInferior->numIconos > 0 && configuracion->bottomBarConfig->iconWidth > 0;
+}
+
+void GotoScreen(HWND hwnd, UINT screen)
+{
+	if (estado == NULL || configuracion == NULL || listaPantallas == NULL) {
+		return;
+	}
+	if (estado->pantallaActiva != screen) {
+		if (lstrcmpi(notifications->szNotifications[SN_PHONEPROFILE], L"Silent") != 0 && _tcsclen(configuracion->change_screen_sound) > 0) {
+			TCHAR fullPath[MAX_PATH];
+			configuracion->getAbsolutePath(fullPath, CountOf(fullPath), configuracion->change_screen_sound);
+			PlaySound(fullPath, 0, SND_ASYNC | SND_FILENAME | SND_NODEFAULT);
+		}
+	}
+	estado->pantallaActiva = screen;
+	estado->posObjetivo.x = - (short) (estado->pantallaActiva * configuracion->anchoPantalla);
+	estado->posObjetivo.y = 0;
+	SetTimer(hwnd, TIMER_RECUPERACION, configuracion->refreshTime, NULL);
 }
