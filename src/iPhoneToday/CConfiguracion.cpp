@@ -738,6 +738,7 @@ void CConfiguracion::defaultValues()
 	StringCchCopy(this->pressed_icon, CountOf(this->pressed_icon), TEXT("Pressed\\RoundedPressed.png"));
 	this->pressed_sound[0] = 0;
 
+	this->change_screen_sound[0] = 0;
 	this->notifyTimer = 2000;
 	this->updateWhenInactive = 0;
 	this->ignoreRotation = 0;
@@ -1059,6 +1060,8 @@ BOOL CConfiguracion::loadXMLConfig()
 		} else if(_stricmp(nameNode, "OnPressIcon") == 0) {
 			XMLUtils::GetAttr(pElem, "icon",  this->pressed_icon,  CountOf(this->pressed_icon));
 			XMLUtils::GetAttr(pElem, "sound", this->pressed_sound, CountOf(this->pressed_sound));
+		} else if(_stricmp(nameNode, "OnChangeScreen") == 0) {
+			XMLUtils::GetAttr(pElem, "sound", this->change_screen_sound, CountOf(this->change_screen_sound));
 		} else if(_stricmp(nameNode, "Background") == 0) {
 			XMLUtils::GetAttr(pElem, "transparent", &this->fondoTransparente);
 			XMLUtils::GetAttr(pElem, "color",       &this->fondoColor);
@@ -1393,6 +1396,10 @@ BOOL CConfiguracion::saveXMLConfig()
 	pElem = new TiXmlElement("OnPressIcon");
 	XMLUtils::SetAttr(pElem, "icon",  this->pressed_icon,  CountOf(this->pressed_icon));
 	XMLUtils::SetAttr(pElem, "sound", this->pressed_sound, CountOf(this->pressed_sound));
+	root->LinkEndChild(pElem);
+
+	pElem = new TiXmlElement("OnChangeScreen");
+	XMLUtils::SetAttr(pElem, "sound", this->change_screen_sound, CountOf(this->change_screen_sound));
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("NotifyTimer");
