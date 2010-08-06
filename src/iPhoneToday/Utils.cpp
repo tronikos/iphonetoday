@@ -256,3 +256,21 @@ void AddRemoveFonts(TCHAR *location, BOOL add)
 		SendMessage(HWND_BROADCAST, WM_FONTCHANGE, NULL, NULL);
 	}
 }
+
+BYTE* LoadFileData(TCHAR *file, UINT max_size)
+{
+	HANDLE hFile = CreateFile(file, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (hFile == INVALID_HANDLE_VALUE) {
+		return NULL;
+	}
+	BYTE* pFile = NULL;
+	BY_HANDLE_FILE_INFORMATION fi;
+	GetFileInformationByHandle(hFile, &fi);
+	if (fi.nFileSizeLow < max_size) {
+		pFile = new BYTE[fi.nFileSizeLow];
+		DWORD numberOfBytesRead;
+		ReadFile(hFile, pFile, fi.nFileSizeLow, &numberOfBytesRead, NULL);
+	}
+	CloseHandle(hFile);
+	return pFile;
+}

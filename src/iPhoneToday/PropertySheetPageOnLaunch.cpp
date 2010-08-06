@@ -19,12 +19,9 @@ LRESULT CALLBACK OptionDialogOnLaunch(HWND hDlg, UINT uMsg, WPARAM wParam, LPARA
 
 			SendMessage(GetDlgItem(hDlg, IDC_CHECK_ONLAUNCH_CLOSE),		BM_SETCHECK, configuracion->closeOnLaunchIcon			? BST_CHECKED : BST_UNCHECKED, 0);
 			SendMessage(GetDlgItem(hDlg, IDC_CHECK_ONLAUNCH_MINIMIZE),	BM_SETCHECK, configuracion->minimizeOnLaunchIcon		? BST_CHECKED : BST_UNCHECKED, 0);
-			SendMessage(GetDlgItem(hDlg, IDC_CHECK_ONLAUNCH_SOUND),		BM_SETCHECK, configuracion->allowSoundOnLaunchIcon		? BST_CHECKED : BST_UNCHECKED, 0);
 
 			SetDlgItemInt(hDlg, IDC_EDIT_ONLAUNCH_VIBRATE,	configuracion->vibrateOnLaunchIcon, TRUE);
-			SetDlgItemText(hDlg, IDC_EDIT_WAV,				configuracion->soundOnLaunchIcon);
 			SetDlgItemText(hDlg, IDC_EDIT_PRESSED_ICON,		configuracion->pressed_icon);
-			SetDlgItemText(hDlg, IDC_EDIT_PRESSED_SOUND,	configuracion->pressed_sound);
 
 #ifndef EXEC_MODE
 			EnableWindow(GetDlgItem(hDlg, IDC_CHECK_ONLAUNCH_CLOSE), FALSE);
@@ -38,20 +35,6 @@ LRESULT CALLBACK OptionDialogOnLaunch(HWND hDlg, UINT uMsg, WPARAM wParam, LPARA
 			TCHAR str[MAX_PATH];
 			TCHAR fullPath[MAX_PATH];
 			TCHAR browseDir[MAX_PATH];
-			case IDC_BUTTON_WAV:
-				GetDlgItemText(hDlg, IDC_EDIT_WAV, str, MAX_PATH);
-				configuracion->getAbsolutePath(fullPath, MAX_PATH, str);
-				getPathFromFile(fullPath, browseDir);
-				if (openFileBrowse(hDlg, OFN_EXFLAG_DETAILSVIEW, fullPath, browseDir)) {
-					configuracion->getRelativePath(str, MAX_PATH, fullPath);
-					SetDlgItemText(hDlg, IDC_EDIT_WAV, str);
-				}
-				break;
-			case IDC_BUTTON_WAV_PLAY:
-				GetDlgItemText(hDlg, IDC_EDIT_WAV, str, MAX_PATH);
-				configuracion->getAbsolutePath(fullPath, MAX_PATH, str);
-				PlaySound(fullPath, 0, SND_ASYNC | SND_FILENAME | SND_NODEFAULT);
-				break;
 			case IDC_BUTTON_PRESSED_ICON:
 				GetDlgItemText(hDlg, IDC_EDIT_PRESSED_ICON, str, MAX_PATH);
 				configuracion->getAbsolutePath(fullPath, MAX_PATH, str);
@@ -60,20 +43,6 @@ LRESULT CALLBACK OptionDialogOnLaunch(HWND hDlg, UINT uMsg, WPARAM wParam, LPARA
 					configuracion->getRelativePath(str, MAX_PATH, fullPath);
 					SetDlgItemText(hDlg, IDC_EDIT_PRESSED_ICON, str);
 				}
-				break;
-			case IDC_BUTTON_PRESSED_SOUND:
-				GetDlgItemText(hDlg, IDC_EDIT_PRESSED_SOUND, str, MAX_PATH);
-				configuracion->getAbsolutePath(fullPath, MAX_PATH, str);
-				getPathFromFile(fullPath, browseDir);
-				if (openFileBrowse(hDlg, OFN_EXFLAG_DETAILSVIEW, fullPath, browseDir)) {
-					configuracion->getRelativePath(str, MAX_PATH, fullPath);
-					SetDlgItemText(hDlg, IDC_EDIT_PRESSED_SOUND, str);
-				}
-				break;
-			case IDC_BUTTON_PRESSED_SOUND_PLAY:
-				GetDlgItemText(hDlg, IDC_EDIT_PRESSED_SOUND, str, MAX_PATH);
-				configuracion->getAbsolutePath(fullPath, MAX_PATH, str);
-				PlaySound(fullPath, 0, SND_ASYNC | SND_FILENAME | SND_NODEFAULT);
 				break;
 		}
 		break;
@@ -108,11 +77,8 @@ BOOL SaveConfigurationOnLaunch(HWND hDlg)
 
 	configuracion->closeOnLaunchIcon			= SendMessage(GetDlgItem(hDlg, IDC_CHECK_ONLAUNCH_CLOSE),		BM_GETCHECK, 0, 0) == BST_CHECKED;
 	configuracion->minimizeOnLaunchIcon			= SendMessage(GetDlgItem(hDlg, IDC_CHECK_ONLAUNCH_MINIMIZE),	BM_GETCHECK, 0, 0) == BST_CHECKED;
-	configuracion->allowSoundOnLaunchIcon		= SendMessage(GetDlgItem(hDlg, IDC_CHECK_ONLAUNCH_SOUND),		BM_GETCHECK, 0, 0) == BST_CHECKED;
 
-	GetDlgItemText(hDlg, IDC_EDIT_WAV,			configuracion->soundOnLaunchIcon,	CountOf(configuracion->soundOnLaunchIcon));
 	GetDlgItemText(hDlg, IDC_EDIT_PRESSED_ICON,	configuracion->pressed_icon,		CountOf(configuracion->pressed_icon));
-	GetDlgItemText(hDlg, IDC_EDIT_PRESSED_SOUND,configuracion->pressed_sound,		CountOf(configuracion->pressed_sound));
 
 	return TRUE;
 }

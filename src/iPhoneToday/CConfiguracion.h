@@ -38,11 +38,12 @@ public:
 
 	void calculaConfiguracion(CListaPantalla *listaPantallas, int width, int height);
 	BOOL loadXMLIcons2(CListaPantalla *listaPantallas);
-	BOOL loadIconsImages(HDC *hDC, CListaPantalla *listaPantallas);
-	BOOL loadIconImage(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type);
-	BOOL loadImages(HDC *hDC);
-	BOOL loadBackground(HDC *hDC);
-	BOOL loadBackgrounds(HDC *hDC);
+	void loadIconsImages(HDC *hDC, CListaPantalla *listaPantallas);
+	void loadIconImage(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type);
+	void loadImages(HDC *hDC);
+	void loadBackground(HDC *hDC);
+	void loadBackgrounds(HDC *hDC);
+	void loadSounds();
 
 	BOOL loadXMLIcons(CListaPantalla *listaPantallas);
 	void defaultValues();
@@ -176,15 +177,17 @@ public:
 	BOOL closeOnLaunchIcon;
 	BOOL minimizeOnLaunchIcon;
 	UINT vibrateOnLaunchIcon;
-	UINT allowSoundOnLaunchIcon;
 	TCHAR soundOnLaunchIcon[MAX_PATH];
+	BYTE* soundOnLaunchIcon_bytes;
 
 	// OnPressIcon
 	TCHAR pressed_icon[MAX_PATH];
 	TCHAR pressed_sound[MAX_PATH];
+	BYTE* pressed_sound_bytes;
 
 	// OnChangeScreen
 	TCHAR change_screen_sound[MAX_PATH];
+	BYTE* change_screen_sound_bytes;
 
 	// General
 	UINT notifyTimer;
@@ -200,6 +203,7 @@ public:
 	UINT textQuality;
 	UINT textQualityInIcons;
 	UINT autoShowKeyboardOnTextboxFocus;
+	UINT soundsEnabled;
 
 	// Today item height (Portrait|Landscape)
 	UINT heightP;

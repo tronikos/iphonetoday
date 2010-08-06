@@ -33,3 +33,7 @@ BOOL isPhone();
 BOOL nativelySupportsAlphaBlend();
 
 void AddRemoveFonts(TCHAR *location, BOOL add);
+
+// Loads the file into memory only if its size is less than max_size.
+// Allocates memory that has to be manually deallocated.
+BYTE* LoadFileData(TCHAR *file, UINT max_size);

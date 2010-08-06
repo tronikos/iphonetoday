@@ -107,6 +107,9 @@ void PaintOptionsDialog(HWND hDlg, INT iDlg)
 		case TAB_ANIMATION:
 			isValid = IsValidConfigurationAnimation(hDlg);
 			break;
+		case TAB_SOUND:
+			isValid = IsValidConfigurationSound(hDlg);
+			break;
 	}
 	return isValid;
 }*/
@@ -332,6 +335,9 @@ BOOL CreatePropertySheet(HWND hwnd)
 	psp[TAB_ANIMATION].pszTemplate = MAKEINTRESOURCE(IDD_DIALOGPAGE_ANIMATION);
 	psp[TAB_ANIMATION].pfnDlgProc = (DLGPROC) &OptionDialogAnimation;
 
+	psp[TAB_SOUND].pszTemplate = MAKEINTRESOURCE(IDD_DIALOGPAGE_SOUND);
+	psp[TAB_SOUND].pfnDlgProc = (DLGPROC) &OptionDialogSound;
+
 
     //
     // See http://msdn.microsoft.com/library/default.asp?url=/library/en-us/win_ce/htm/pwc_propertysheets.asp
@@ -399,6 +405,9 @@ BOOL SaveConfiguration()
 					break;
 				case TAB_ANIMATION:
 					result &= SaveConfigurationAnimation(hDlg);
+					break;
+				case TAB_SOUND:
+					result &= SaveConfigurationSound(hDlg);
 					break;
 			}
 		}
