@@ -105,7 +105,7 @@ void pintaPantalla(HDC *hDC, CPantalla *pantalla, SCREEN_TYPE screen_type = MAIN
 void setPosicionesIconos(CPantalla *pantalla, SCREEN_TYPE screen_type);
 void setPosiciones(BOOL inicializa, int offsetX, int offsetY);
 void calculaPosicionObjetivo(HWND hwnd);
-void procesaPulsacion(HWND hwnd, POINTS posCursor, BOOL doubleClick, BOOL noLanzar = FALSE);
+BOOL procesaPulsacion(HWND hwnd, POINTS posCursor, BOOL doubleClick, BOOL noLanzar = FALSE);
 int hayNotificacion(int tipo);
 BOOL inicializaApp(HWND hwnd);
 BOOL borraObjetosHDC();
@@ -124,6 +124,7 @@ BOOL ProcessNotifications();
 BOOL hasTopBar();
 BOOL hasBottomBar();
 void GotoScreen(HWND hwnd, UINT screen);
+BOOL PlaySoundMemOrFile(BYTE* soundInMem, LPCWSTR sound, BOOL checkSilent = TRUE);
 
 #ifndef EXEC_MODE
 /*************************************************************************/
@@ -1151,17 +1152,8 @@ LRESULT doMouseDown (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 	posCursorInitialized = TRUE;
 
 	if (configuracion->pressedIcon->hDC != NULL || _tcsclen(configuracion->pressed_sound) > 0) {
-		procesaPulsacion(hwnd, posCursor, FALSE, TRUE);
-		if (iconoActual.nIconoActual >= 0) {
-			if (configuracion->soundsEnabled && lstrcmpi(notifications->szNotifications[SN_PHONEPROFILE], L"Silent") != 0) {
-				if (configuracion->pressed_sound_bytes != NULL) {
-					PlaySound((LPCWSTR) configuracion->pressed_sound_bytes, 0, SND_ASYNC | SND_MEMORY | SND_NODEFAULT);
-				} else if (_tcsclen(configuracion->pressed_sound) > 0) {
-					TCHAR fullPath[MAX_PATH];
-					configuracion->getAbsolutePath(fullPath, CountOf(fullPath), configuracion->pressed_sound);
-					PlaySound(fullPath, 0, SND_ASYNC | SND_FILENAME | SND_NODEFAULT);
-				}
-			}
+		if (procesaPulsacion(hwnd, posCursor, FALSE, TRUE) && iconoActual.nIconoActual >= 0) {
+			PlaySoundMemOrFile(configuracion->pressed_sound_bytes, configuracion->pressed_sound);
 			if (configuracion->pressedIcon->hDC != NULL) {
 				CIcono *icono;
 				int x, y, width;
@@ -2469,7 +2461,7 @@ BOOL LaunchIcon(CIcono *icono)
 	return bWorked;
 }
 
-void procesaPulsacion(HWND hwnd, POINTS posCursor, BOOL doubleClick, BOOL noLanzar)
+BOOL procesaPulsacion(HWND hwnd, POINTS posCursor, BOOL doubleClick, BOOL noLanzar)
 {
 	BOOL bHasBottomBar = hasBottomBar();
 	BOOL bHasTopBar = hasTopBar();
@@ -2477,14 +2469,19 @@ void procesaPulsacion(HWND hwnd, POINTS posCursor, BOOL doubleClick, BOOL noLanz
 	if (posCursor.x >= configuracion->circlesBarRect.left && posCursor.x <= configuracion->circlesBarRect.right && posCursor.y >= configuracion->circlesBarRect.top && posCursor.y <= configuracion->circlesBarRect.bottom) {
 		UINT newScreen = 0;
 		if (doubleClick) {
-			if (!configuracion->circlesDoubleTap) return;
+			if (!configuracion->circlesDoubleTap) return FALSE;
 			newScreen = 0;
 		} else {
-			if (!configuracion->circlesSingleTap) return;
+			if (!configuracion->circlesSingleTap) return FALSE;
 			newScreen = (posCursor.x - configuracion->circlesBarRect.left + configuracion->circlesDistAdjusted / 2) / (configuracion->circlesDiameter + configuracion->circlesDistAdjusted);
 		}
-		GotoScreen(hwnd, newScreen);
-		return;
+		if (noLanzar) {
+			PlaySoundMemOrFile(configuracion->pressed_sound_bytes, configuracion->pressed_sound);
+		} else {
+			PlaySoundMemOrFile(configuracion->soundOnLaunchIcon_bytes, configuracion->soundOnLaunchIcon);
+			GotoScreen(hwnd, newScreen);
+		}
+		return FALSE;
 	}
 
 	CPantalla *pantalla;
@@ -2528,17 +2525,8 @@ void procesaPulsacion(HWND hwnd, POINTS posCursor, BOOL doubleClick, BOOL noLanz
 	if (!noLanzar && iconoActual.nIconoActual >= 0) {
 
 		if (lstrcmpi(notifications->szNotifications[SN_PHONEPROFILE], L"Silent") != 0) {
-			if (configuracion->soundsEnabled) {
-				TCHAR fullPath[MAX_PATH];
-				if (_tcsclen(icono->sound) > 0) {
-					configuracion->getAbsolutePath(fullPath, CountOf(fullPath), icono->sound);
-					PlaySound(fullPath, 0, SND_ASYNC | SND_FILENAME | SND_NODEFAULT);
-				} else if (configuracion->soundOnLaunchIcon_bytes != NULL) {
-					PlaySound((LPCWSTR) configuracion->soundOnLaunchIcon_bytes, 0, SND_ASYNC | SND_MEMORY | SND_NODEFAULT);
-				} else if (_tcsclen(configuracion->soundOnLaunchIcon) > 0) {
-					configuracion->getAbsolutePath(fullPath, CountOf(fullPath), configuracion->soundOnLaunchIcon);
-					PlaySound(fullPath, 0, SND_ASYNC | SND_FILENAME | SND_NODEFAULT);
-				}
+			if (!PlaySoundMemOrFile(NULL, icono->sound)) {
+				PlaySoundMemOrFile(configuracion->soundOnLaunchIcon_bytes, configuracion->soundOnLaunchIcon);
 			}
 
 			// Vibration
@@ -2567,6 +2555,7 @@ void procesaPulsacion(HWND hwnd, POINTS posCursor, BOOL doubleClick, BOOL noLanz
 			}
 		}
 	}
+	return TRUE;
 }
 
 int hayNotificacion(int tipo)
@@ -3120,10 +3109,8 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 			}
 		} else if (LOWORD(wParam) == IDC_MICON_SOUND_PLAY) {
 			TCHAR pathFile[MAX_PATH];
-			TCHAR fullPath[MAX_PATH];
 			GetDlgItemText(hDlg, IDC_MICON_SOUND, pathFile, MAX_PATH);
-			configuracion->getAbsolutePath(fullPath, CountOf(fullPath), pathFile);
-			PlaySound(fullPath, 0, SND_ASYNC | SND_FILENAME | SND_NODEFAULT);
+			PlaySoundMemOrFile(NULL, pathFile, FALSE);
 		} else if (LOWORD(wParam) == IDC_MICON_EXEC_B) {
 			if (lastPathExec[0] == 0) {
 				if (!SHGetSpecialFolderPath(hDlg, lastPathExec, CSIDL_PROGRAMS, FALSE)) {
@@ -4139,18 +4126,26 @@ void GotoScreen(HWND hwnd, UINT screen)
 		return;
 	}
 	if (estado->pantallaActiva != screen) {
-		if (configuracion->soundsEnabled && lstrcmpi(notifications->szNotifications[SN_PHONEPROFILE], L"Silent") != 0) {
-			if (configuracion->change_screen_sound_bytes != NULL) {
-				PlaySound((LPCWSTR) configuracion->change_screen_sound_bytes, 0, SND_ASYNC | SND_MEMORY | SND_NODEFAULT);
-			} else if (_tcsclen(configuracion->change_screen_sound) > 0) {
-				TCHAR fullPath[MAX_PATH];
-				configuracion->getAbsolutePath(fullPath, CountOf(fullPath), configuracion->change_screen_sound);
-				PlaySound(fullPath, 0, SND_ASYNC | SND_FILENAME | SND_NODEFAULT);
-			}
-		}
+		PlaySoundMemOrFile(configuracion->change_screen_sound_bytes, configuracion->change_screen_sound);
 	}
 	estado->pantallaActiva = screen;
 	estado->posObjetivo.x = - (short) (estado->pantallaActiva * configuracion->anchoPantalla);
 	estado->posObjetivo.y = 0;
 	SetTimer(hwnd, TIMER_RECUPERACION, configuracion->refreshTime, NULL);
+}
+
+BOOL PlaySoundMemOrFile(BYTE* soundInMem, LPCWSTR sound, BOOL checkSilent)
+{
+	if (!checkSilent || (configuracion->soundsEnabled && lstrcmpi(notifications->szNotifications[SN_PHONEPROFILE], L"Silent") != 0)) {
+		if (soundInMem != NULL) {
+			PlaySound((LPCWSTR) soundInMem, 0, SND_ASYNC | SND_MEMORY | SND_NODEFAULT);
+			return TRUE;
+		} else if (sound != NULL && _tcsclen(sound) > 0) {
+			TCHAR fullPath[MAX_PATH];
+			configuracion->getAbsolutePath(fullPath, CountOf(fullPath), sound);
+			PlaySound(fullPath, 0, SND_ASYNC | SND_FILENAME | SND_NODEFAULT);
+			return TRUE;
+		}
+	}
+	return FALSE;
 }
