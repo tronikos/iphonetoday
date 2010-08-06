@@ -4,18 +4,6 @@
 //
 #define IDS_APPNAME                     1
 #define IDI_DISPLAYICON                 2
-#define IDS_TAB_SCREEN                  110
-#define IDS_TAB_WALLPAPER               111
-#define IDS_TAB_MOVEMENT                112
-#define IDS_TAB_HEADER                  113
-#define IDS_TAB_BUBBLES                 114
-#define IDS_TAB_SPECIALICONS            115
-#define IDS_TAB_GENERAL                 116
-#define IDS_TAB_ONLAUNCH                117
-#define IDS_TAB_TRANSPARENCY            118
-#define IDS_TAB_OUTOFSCREEN             119
-#define IDS_TAB_ABOUT                   120
-#define IDS_TAB_ANIMATION               121
 #define IDD_DIALOGFONT                  200
 #define IDD_DIALOGBACK                  201
 #define IDD_KB_BUTTON                   202
@@ -34,6 +22,7 @@
 #define IDD_DIALOGPAGE_OUTOFSCREEN      519
 #define IDD_DIALOGPAGE_ABOUT            520
 #define IDD_DIALOGPAGE_ANIMATION        521
+#define IDD_DIALOGPAGE_SOUND            522
 #define IDC_CHECK_DUMMY                 1000
 #define IDC_MICON_SCREEN                1001
 #define IDC_MICON_NAME                  1002
@@ -52,6 +41,7 @@
 #define IDC_MICON_EXEC_B                1017
 #define IDC_MICON_LAUNCHANIMATION       1018
 #define IDC_MICON_SOUND_B               1019
+#define IDC_MICON_SOUND_PLAY            1020
 #define IDC_EDIT_CS_ICON_WIDTH          1032
 #define IDC_EDIT_CS_ICONS_PER_ROW       1033
 #define IDC_BUTTON_CS_TEXT              1034
@@ -118,12 +108,8 @@
 #define IDC_EDIT_ANIMATION_DELAY        1126
 #define IDC_EDIT_BACK_FACTOR            1142
 #define IDC_COMBO_CS                    1144
-#define IDC_CHECK_ONLAUNCH_SOUND        1145
 #define IDC_BUTTON_ANIM_COLOR           1146
 #define IDC_EDIT_ANIM_COLOR             1147
-#define IDC_EDIT_WAV                    1148
-#define IDC_BUTTON_WAV                  1149
-#define IDC_BUTTON_WAV_PLAY             1150
 #define IDC_EDIT_HEIGHTP                1151
 #define IDC_EDIT_HEIGHTL                1152
 #define IDC_COMBO_OUTOFSCREEN           1153
@@ -139,9 +125,6 @@
 #define IDC_BUTTON_RESET_SETTINGS       1165
 #define IDC_EDIT_PRESSED_ICON           1166
 #define IDC_BUTTON_PRESSED_ICON         1167
-#define IDC_EDIT_PRESSED_SOUND          1168
-#define IDC_BUTTON_PRESSED_SOUND        1169
-#define IDC_BUTTON_PRESSED_SOUND_PLAY   1170
 #define IDC_EDIT_REFRESH_TIME           1171
 #define IDC_CHECK_BACK_FIT_WIDTH        1172
 #define IDC_CHECK_BACK_FIT_HEIGHT       1173
@@ -208,6 +191,16 @@
 #define IDC_EDIT_CIRCLES_COLOR_OUTER    1234
 #define IDC_BUTTON_CIRCLES_COLOR_OUTER  1235
 #define IDC_CHECK_CIRCLES_ALIGN_TOP     1236
+#define IDC_CHECK_ENABLE_SOUNDS         1237
+#define IDC_EDIT_LAUNCH_SOUND           1238
+#define IDC_BUTTON_LAUNCH_SOUND         1239
+#define IDC_BUTTON_LAUNCH_SOUND_PLAY    1240
+#define IDC_EDIT_PRESSED_SOUND          1241
+#define IDC_BUTTON_PRESSED_SOUND        1242
+#define IDC_BUTTON_PRESSED_SOUND_PLAY   1243
+#define IDC_EDIT_FLIP_SOUND             1244
+#define IDC_BUTTON_FLIP_SOUND           1245
+#define IDC_BUTTON_FLIP_SOUND_PLAY      1246
 
 // Next default values for new objects
 // 
@@ -215,7 +208,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        124
 #define _APS_NEXT_COMMAND_VALUE         40003
-#define _APS_NEXT_CONTROL_VALUE         1236
+#define _APS_NEXT_CONTROL_VALUE         1247
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

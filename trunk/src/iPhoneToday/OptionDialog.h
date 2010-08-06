@@ -4,7 +4,7 @@
 
 #pragma once
 
-#define NUM_TABS			12
+#define NUM_TABS			13
 
 #define TAB_SCREEN			0
 #define TAB_WALLPAPER		1
@@ -17,7 +17,8 @@
 #define TAB_BUBBLES			8
 #define TAB_SPECIALICONS	9
 #define TAB_HEADER			10
-#define TAB_ABOUT			11
+#define TAB_SOUND			11
+#define TAB_ABOUT			12
 
 //////////////////////////////////////////////////////////////////////////////
 // GLOBALS
@@ -54,6 +55,7 @@ BOOL				SaveConfigurationOnLaunch(HWND);
 BOOL				SaveConfigurationTransparency(HWND);
 BOOL				SaveConfigurationOutOfScreen(HWND);
 BOOL				SaveConfigurationAnimation(HWND);
+BOOL				SaveConfigurationSound(HWND);
 
 /*BOOL				IsValidConfiguration(HWND, INT);
 BOOL				IsValidConfigurationScreen(HWND);
@@ -66,7 +68,8 @@ BOOL				IsValidConfigurationGeneral(HWND);
 BOOL				IsValidConfigurationOnLaunch(HWND);
 BOOL				IsValidConfigurationTransparency(HWND);
 BOOL				IsValidConfigurationOutOfScreen(HWND);
-BOOL				IsValidConfigurationAnimation(HWND);*/
+BOOL				IsValidConfigurationAnimation(HWND);
+BOOL				IsValidConfigurationSound(HWND);*/
 
 // Option dialog box procedure functions
 LRESULT	CALLBACK	OptionDialogScreen(HWND, UINT, WPARAM, LPARAM);
@@ -81,6 +84,7 @@ LRESULT	CALLBACK	OptionDialogTransparency(HWND, UINT, WPARAM, LPARAM);
 LRESULT	CALLBACK	OptionDialogOutOfScreen(HWND, UINT, WPARAM, LPARAM);
 LRESULT	CALLBACK	OptionDialogAbout(HWND, UINT, WPARAM, LPARAM);
 LRESULT	CALLBACK	OptionDialogAnimation(HWND, UINT, WPARAM, LPARAM);
+LRESULT	CALLBACK	OptionDialogSound(HWND, UINT, WPARAM, LPARAM);
 
 UINT GetDlgItemHex(HWND hDlg, int nIDDlgItem, BOOL* lpTranslated);
 BOOL SetDlgItemHex(HWND hDlg, int nIDDlgItem, UINT uValue);

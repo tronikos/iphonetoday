@@ -6,7 +6,7 @@
 #include "iPhoneToday.h"
 #include "OptionDialog.h"
 
-void EnableAllDlgItems1(HWND hDlg, BOOL bEnable)
+void EnableAllDlgItemsWallpaper(HWND hDlg, BOOL bEnable)
 {
 	EnableWindow(GetDlgItem(hDlg, IDC_EDIT_BACK_WALLPAPER),		bEnable);
 	EnableWindow(GetDlgItem(hDlg, IDC_BUTTON_BACK_WALLPAPER),	bEnable);
@@ -45,7 +45,7 @@ LRESULT CALLBACK OptionDialogWallpaper(HWND hDlg, UINT uMsg, WPARAM wParam, LPAR
 #ifdef EXEC_MODE
 			EnableWindow(GetDlgItem(hDlg, IDC_CHECK_BACK_TRANSPARENT), FALSE);
 #else
-			EnableAllDlgItems1(hDlg, !configuracion->fondoTransparente);
+			EnableAllDlgItemsWallpaper(hDlg, !configuracion->fondoTransparente);
 #endif
 		}
 		return TRUE;
@@ -54,7 +54,7 @@ LRESULT CALLBACK OptionDialogWallpaper(HWND hDlg, UINT uMsg, WPARAM wParam, LPAR
 			switch (LOWORD(wParam))
 			{
 			case IDC_CHECK_BACK_TRANSPARENT:
-				EnableAllDlgItems1(hDlg, SendMessage(GetDlgItem(hDlg, IDC_CHECK_BACK_TRANSPARENT), BM_GETCHECK, 0, 0) == BST_UNCHECKED);
+				EnableAllDlgItemsWallpaper(hDlg, SendMessage(GetDlgItem(hDlg, IDC_CHECK_BACK_TRANSPARENT), BM_GETCHECK, 0, 0) == BST_UNCHECKED);
 				break;
 			case IDC_BUTTON_BACK_WALLPAPER:
 				TCHAR str[MAX_PATH];

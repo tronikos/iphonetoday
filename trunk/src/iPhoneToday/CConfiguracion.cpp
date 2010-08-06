@@ -3,6 +3,9 @@
 #include "RegistryUtils.h"
 #include "iPhoneToday.h"
 
+// Maximum size of a wav to load it in memory
+#define MAX_SND_MEMORY 200 * 1024
+
 CConfiguracion::CConfiguracion(void)
 {
 	// Initialize paths
@@ -77,6 +80,16 @@ CConfiguracion::~CConfiguracion(void)
 	}
 	if (topBarConfig != NULL) {
 		delete topBarConfig;
+	}
+	PlaySound(NULL, 0, 0);
+	if (soundOnLaunchIcon_bytes != NULL) {
+		delete soundOnLaunchIcon_bytes;
+	}
+	if (pressed_sound_bytes != NULL) {
+		delete pressed_sound_bytes;
+	}
+	if (change_screen_sound_bytes != NULL) {
+		delete change_screen_sound_bytes;
 	}
 }
 
@@ -321,7 +334,7 @@ BOOL CConfiguracion::loadXMLIcons2(CListaPantalla *listaPantallas)
 	return TRUE;
 }
 
-BOOL CConfiguracion::loadIconsImages(HDC *hDC, CListaPantalla *listaPantallas)
+void CConfiguracion::loadIconsImages(HDC *hDC, CListaPantalla *listaPantallas)
 {
 	TIMER_RESET(loadImage_duration);
 	TIMER_RESET(loadImage_load_duration);
@@ -366,13 +379,10 @@ BOOL CConfiguracion::loadIconsImages(HDC *hDC, CListaPantalla *listaPantallas)
 	NKDbgPrintfW(L" *** %d msec\t loadImage_resize_duration.\n", loadImage_resize_duration);
 	NKDbgPrintfW(L" *** %d msec\t loadImage_fix_duration.\n", loadImage_fix_duration);
 #endif
-
-	return TRUE;
 }
 
-BOOL CConfiguracion::loadIconImage(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type)
+void CConfiguracion::loadIconImage(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_type)
 {
-	BOOL result;
 	TCHAR rutaImgCompleta[MAX_PATH];
 	UINT width;
 	if (screen_type == BOTTOMBAR) {
@@ -390,12 +400,9 @@ BOOL CConfiguracion::loadIconImage(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_t
 		getAbsolutePath(rutaImgCompleta, CountOf(rutaImgCompleta), icono->ejecutable);
 		icono->loadImageFromExec(hDC, rutaImgCompleta, width, width);
 	}
-
-	result = true;
-	return result;
 }
 
-BOOL CConfiguracion::loadBackground(HDC *hDC)
+void CConfiguracion::loadBackground(HDC *hDC)
 {
 	if (fondoPantalla != NULL) {
 		delete fondoPantalla;
@@ -424,11 +431,9 @@ BOOL CConfiguracion::loadBackground(HDC *hDC)
 		ReleaseDC(NULL, hdc);
 	}
 #endif
-
-	return TRUE;
 }
 
-BOOL CConfiguracion::loadBackgrounds(HDC *hDC)
+void CConfiguracion::loadBackgrounds(HDC *hDC)
 {
 	TCHAR fullPath[MAX_PATH];
 
@@ -501,13 +506,10 @@ BOOL CConfiguracion::loadBackgrounds(HDC *hDC)
 	} else {
 		loadBackground(hDC);
 	}
-
-	return TRUE;
 }
 
-BOOL CConfiguracion::loadImages(HDC *hDC)
+void CConfiguracion::loadImages(HDC *hDC)
 {
-	BOOL result = false;
 	TCHAR rutaImgCompleta[MAX_PATH];
 
 	// Background
@@ -530,9 +532,24 @@ BOOL CConfiguracion::loadImages(HDC *hDC)
 	bubbleAlarm = new CIcono();
 	getAbsolutePath(rutaImgCompleta, CountOf(rutaImgCompleta), bubble_alarm.image);
 	bubbleAlarm->loadImage(hDC, rutaImgCompleta, UINT(mainScreenConfig->iconWidth * bubble_alarm.width / 100.0), UINT(mainScreenConfig->iconWidth * bubble_alarm.height / 100.0), PIXFMT_32BPP_ARGB, 1, TRUE);
+}
 
-	result = true;
-	return result;
+void CConfiguracion::loadSounds()
+{
+	if (!this->soundsEnabled) {
+		return;
+	}
+
+	TCHAR fullPath[MAX_PATH];
+
+	this->getAbsolutePath(fullPath, CountOf(fullPath), this->soundOnLaunchIcon);
+	this->soundOnLaunchIcon_bytes = LoadFileData(fullPath, MAX_SND_MEMORY);
+
+	this->getAbsolutePath(fullPath, CountOf(fullPath), this->pressed_sound);
+	this->pressed_sound_bytes = LoadFileData(fullPath, MAX_SND_MEMORY);
+
+	this->getAbsolutePath(fullPath, CountOf(fullPath), this->change_screen_sound);
+	this->change_screen_sound_bytes = LoadFileData(fullPath, MAX_SND_MEMORY);
 }
 
 void CConfiguracion::defaultValues()
@@ -732,13 +749,16 @@ void CConfiguracion::defaultValues()
 	this->closeOnLaunchIcon = 0;
 	this->minimizeOnLaunchIcon = 0;
 	this->vibrateOnLaunchIcon = 0;
-	this->allowSoundOnLaunchIcon = 1;
 	this->soundOnLaunchIcon[0] = 0;
+	this->soundOnLaunchIcon_bytes = NULL;
 
 	StringCchCopy(this->pressed_icon, CountOf(this->pressed_icon), TEXT("Pressed\\RoundedPressed.png"));
 	this->pressed_sound[0] = 0;
+	this->pressed_sound_bytes = NULL;
 
 	this->change_screen_sound[0] = 0;
+	this->change_screen_sound_bytes = NULL;
+
 	this->notifyTimer = 2000;
 	this->updateWhenInactive = 0;
 	this->ignoreRotation = 0;
@@ -752,6 +772,7 @@ void CConfiguracion::defaultValues()
 	this->textQuality = 0;
 	this->textQualityInIcons = 0;
 	this->autoShowKeyboardOnTextboxFocus = 0;
+	this->soundsEnabled = 1;
 	this->heightP = 0;
 	this->heightL = 0;
 
@@ -1055,8 +1076,9 @@ BOOL CConfiguracion::loadXMLConfig()
 			XMLUtils::GetAttr(pElem, "close",    &this->closeOnLaunchIcon);
 			XMLUtils::GetAttr(pElem, "minimize", &this->minimizeOnLaunchIcon);
 			XMLUtils::GetAttr(pElem, "vibrate",  &this->vibrateOnLaunchIcon);
-			XMLUtils::GetAttr(pElem, "sound",    &this->allowSoundOnLaunchIcon);
-			XMLUtils::GetAttr(pElem, "wav",      this->soundOnLaunchIcon, CountOf(this->soundOnLaunchIcon));
+			if (!XMLUtils::GetAttr(pElem, "wav", this->soundOnLaunchIcon, CountOf(this->soundOnLaunchIcon))) {
+				XMLUtils::GetAttr(pElem, "sound", this->soundOnLaunchIcon, CountOf(this->soundOnLaunchIcon));
+			}
 		} else if(_stricmp(nameNode, "OnPressIcon") == 0) {
 			XMLUtils::GetAttr(pElem, "icon",  this->pressed_icon,  CountOf(this->pressed_icon));
 			XMLUtils::GetAttr(pElem, "sound", this->pressed_sound, CountOf(this->pressed_sound));
@@ -1097,6 +1119,8 @@ BOOL CConfiguracion::loadXMLConfig()
 			XMLUtils::GetTextElem(pElem, &this->textQualityInIcons);
 		} else if(_stricmp(nameNode, "AutoShowKeyboardOnTextboxFocus") == 0) {
 			XMLUtils::GetTextElem(pElem, &this->autoShowKeyboardOnTextboxFocus);
+		} else if(_stricmp(nameNode, "Sounds") == 0) {
+			XMLUtils::GetTextElem(pElem, &this->soundsEnabled);
 		} else if(_stricmp(nameNode, "OutOfScreenLeft") == 0) {
 			OutOfScreenSettingsLoad(pElem, &this->ooss_left);
 		} else if(_stricmp(nameNode, "OutOfScreenRight") == 0) {
@@ -1389,8 +1413,7 @@ BOOL CConfiguracion::saveXMLConfig()
 	XMLUtils::SetAttr(pElem, "close",    this->closeOnLaunchIcon);
 	XMLUtils::SetAttr(pElem, "minimize", this->minimizeOnLaunchIcon);
 	XMLUtils::SetAttr(pElem, "vibrate",  this->vibrateOnLaunchIcon);
-	XMLUtils::SetAttr(pElem, "sound",    this->allowSoundOnLaunchIcon);
-	XMLUtils::SetAttr(pElem, "wav",      this->soundOnLaunchIcon, CountOf(this->soundOnLaunchIcon));
+	XMLUtils::SetAttr(pElem, "sound",    this->soundOnLaunchIcon, CountOf(this->soundOnLaunchIcon));
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("OnPressIcon");
@@ -1449,6 +1472,10 @@ BOOL CConfiguracion::saveXMLConfig()
 
 	pElem = new TiXmlElement("AutoShowKeyboardOnTextboxFocus");
 	XMLUtils::SetTextElem(pElem, this->autoShowKeyboardOnTextboxFocus);
+	root->LinkEndChild(pElem);
+
+	pElem = new TiXmlElement("Sounds");
+	XMLUtils::SetTextElem(pElem, this->soundsEnabled);
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("OutOfScreenLeft");
