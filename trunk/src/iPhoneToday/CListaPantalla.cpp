@@ -15,16 +15,10 @@ CListaPantalla::CListaPantalla(void)
 CListaPantalla::~CListaPantalla(void)
 {
 	for (int i = 0; i < MAX_PANTALLAS; i++) {
-		if (listaPantalla[i] != NULL) {
-			delete listaPantalla[i];
-		}
+		delete listaPantalla[i];
 	}
-	if (barraInferior != NULL) {
-		delete barraInferior;
-	}
-	if (topBar != NULL) {
-		delete topBar;
-	}
+	delete barraInferior;
+	delete topBar;
 }
 
 CPantalla *CListaPantalla::creaPantalla()

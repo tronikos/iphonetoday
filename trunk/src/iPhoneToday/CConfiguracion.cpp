@@ -48,49 +48,21 @@ CConfiguracion::CConfiguracion(void)
 
 CConfiguracion::~CConfiguracion(void)
 {
-	if (pressedIcon != NULL) {
-		delete pressedIcon;
-	}
-	if (bubbleNotif != NULL) {
-		delete bubbleNotif;
-	}
-	if (bubbleState != NULL) {
-		delete bubbleState;
-	}
-	if (bubbleAlarm != NULL) {
-		delete bubbleAlarm;
-	}
-	if (fondoPantalla != NULL) {
-		delete fondoPantalla;
-	}
-	if (backMainScreen != NULL) {
-		delete backMainScreen;
-	}
-	if (backBottomBar != NULL) {
-		delete backBottomBar;
-	}
-	if (backTopBar != NULL) {
-		delete backTopBar;
-	}
-	if (mainScreenConfig != NULL) {
-		delete mainScreenConfig;
-	}
-	if (bottomBarConfig != NULL) {
-		delete bottomBarConfig;
-	}
-	if (topBarConfig != NULL) {
-		delete topBarConfig;
-	}
+	delete pressedIcon;
+	delete bubbleNotif;
+	delete bubbleState;
+	delete bubbleAlarm;
+	delete fondoPantalla;
+	delete backMainScreen;
+	delete backBottomBar;
+	delete backTopBar;
+	delete mainScreenConfig;
+	delete bottomBarConfig;
+	delete topBarConfig;
 	PlaySound(NULL, 0, 0);
-	if (soundOnLaunchIcon_bytes != NULL) {
-		delete soundOnLaunchIcon_bytes;
-	}
-	if (pressed_sound_bytes != NULL) {
-		delete pressed_sound_bytes;
-	}
-	if (change_screen_sound_bytes != NULL) {
-		delete change_screen_sound_bytes;
-	}
+	delete soundOnLaunchIcon_bytes;
+	delete pressed_sound_bytes;
+	delete change_screen_sound_bytes;
 }
 
 BOOL CConfiguracion::hasTimestampChanged()
@@ -404,9 +376,7 @@ void CConfiguracion::loadIconImage(HDC *hDC, CIcono *icono, SCREEN_TYPE screen_t
 
 void CConfiguracion::loadBackground(HDC *hDC)
 {
-	if (fondoPantalla != NULL) {
-		delete fondoPantalla;
-	}
+	delete fondoPantalla;
 	fondoPantalla = new CIcono();
 
 #ifndef EXEC_MODE
@@ -499,10 +469,8 @@ void CConfiguracion::loadBackgrounds(HDC *hDC)
 
 	// do not load background if mainscreen pages already have a background (gradient or image)
 	if ((backMainScreen && backMainScreen->hDC) || mainScreenConfig->cs.backGradient) {
-		if (fondoPantalla != NULL) {
-			delete fondoPantalla;
-			fondoPantalla = NULL;
-		}
+		delete fondoPantalla;
+		fondoPantalla = NULL;
 	} else {
 		loadBackground(hDC);
 	}
