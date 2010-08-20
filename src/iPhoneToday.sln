@@ -26,6 +26,10 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lpng", "..\libs\lpng\lpng.vcproj", "{DB339E33-FBD6-4190-AF9E-1576BD2DE996}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "iPhoneTodayExeDesktop", "iPhoneTodayExeDesktop\iPhoneTodayExeDesktop.vcproj", "{3BA452DB-E2F2-474D-95D7-CBAC4022F7D0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{EAFA8814-C7E3-41A7-969C-E9F5EFCC42E8} = {EAFA8814-C7E3-41A7-969C-E9F5EFCC42E8}
+		{DB339E33-FBD6-4190-AF9E-1576BD2DE996} = {DB339E33-FBD6-4190-AF9E-1576BD2DE996}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
