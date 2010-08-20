@@ -1394,7 +1394,7 @@ void DrawBubbleText(HDC hDC, CIcono *bubble, DWORD numNotif, CIcono *icon, int i
 			bubble->hDC, 0, 0, bubble->anchoImagen, bubble->altoImagen, bf);
 		if (numNotif > 0) {
 			int w = rc.right - rc.left;
-			int h = rc.bottom - rc.top;
+			//int h = rc.bottom - rc.top;
 			rc.left += LONG(bs->sis.offset.left / 100.0 * w);
 			rc.right -= LONG(bs->sis.offset.right / 100.0 * w);
 			rc.top += LONG(bs->sis.offset.top / 100.0 * w);
@@ -1534,9 +1534,9 @@ void pintaIcono(HDC *hDC, CIcono *icono, CPantalla *pantalla, SCREEN_TYPE screen
 			}
 		}
 	} else if (icono->tipo == NOTIF_MEMORYFREE || icono->tipo == NOTIF_MEMORYLOAD || icono->tipo == NOTIF_MEMORYUSED) {
-		int memoryPercent = (notifications->memoryStatus.dwAvailPhys > (notifications->memoryStatus.dwTotalPhys - (DWORD) configuracion->memOSUsedKB * 1024)) ? 100 : notifications->memoryStatus.dwAvailPhys * 100 / (notifications->memoryStatus.dwTotalPhys - (DWORD) configuracion->memOSUsedKB * 1024);
 		configuracion->getAbsolutePath(image_old, CountOf(image_old), icono->rutaImagen);
 		if (getPathFromFile(image_old, image_dir)) {
+			int memoryPercent = (notifications->memoryStatus.dwAvailPhys > (notifications->memoryStatus.dwTotalPhys - (DWORD) configuracion->memOSUsedKB * 1024)) ? 100 : notifications->memoryStatus.dwAvailPhys * 100 / (notifications->memoryStatus.dwTotalPhys - (DWORD) configuracion->memOSUsedKB * 1024);
 			StringCchPrintf(image_new, CountOf(image_new), L"%s\\RAM%d.png", image_dir, ((memoryPercent + 5) / 10) * 10);
 			if (wcsicmp(image_old, image_new) != 0 && FileExists(image_new)) {
 				configuracion->getRelativePath(icono->rutaImagen, CountOf(icono->rutaImagen), image_new);
@@ -3669,18 +3669,12 @@ void doDestroy(HWND hwnd) {
 
 	borraObjetosHDC();
 
-	if (listaPantallas != NULL) {
-		delete listaPantallas;
-		listaPantallas = NULL;
-	}
-	if (estado != NULL) {
-		delete estado;
-		estado = NULL;
-	}
-	if (notifications != NULL) {
-		delete notifications;
-		notifications = NULL;
-	}
+	delete listaPantallas;
+	listaPantallas = NULL;
+	delete estado;
+	estado = NULL;
+	delete notifications;
+	notifications = NULL;
 	if (configuracion != NULL) {
 		TCHAR szFontsPath[MAX_PATH];
 		configuracion->getAbsolutePath(szFontsPath, CountOf(szFontsPath), L"fonts");

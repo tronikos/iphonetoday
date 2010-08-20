@@ -98,7 +98,7 @@ LPWSTR GetWirelessDeviceName()
 					flag = 0;
 				}
 			}
-			delete Buffer;
+			delete[] Buffer;
 		}
 	}
 

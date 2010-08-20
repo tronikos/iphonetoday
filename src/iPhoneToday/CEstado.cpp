@@ -4,7 +4,7 @@
 CEstado::CEstado(void)
 {
 	hayMovimiento = false;
-
+	iconoActivo = NULL;
 	pantallaActiva = 0;
 }
 

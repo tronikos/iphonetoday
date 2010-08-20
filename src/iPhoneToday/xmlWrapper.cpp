@@ -116,7 +116,7 @@ void XMLUtils::SetAttr(TiXmlElement *pElem, const char *pszAttrName, LPTSTR psz,
 		}
 	}
 	pElem->SetAttribute(pszAttrName, buffer);
-	delete buffer;
+	delete[] buffer;
 }
 
 BOOL XMLUtils::GetTextElem(TiXmlElement *pElem, UINT *value)
