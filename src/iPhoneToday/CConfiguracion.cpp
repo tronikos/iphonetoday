@@ -1169,6 +1169,7 @@ BOOL CConfiguracion::saveXMLIcons(CListaPantalla *listaPantallas)
 	}
 
 	FILE *f = _wfopen(pathIconsXML, L"w");
+	doc.SetUseMicrosoftBOM(true);
 	doc.SaveFile(f);
 	fclose(f);
 
@@ -1481,6 +1482,7 @@ BOOL CConfiguracion::saveXMLConfig()
 	root->LinkEndChild(pElem);
 
 	FILE *f = _wfopen(pathSettingsXML, L"w");
+	doc.SetUseMicrosoftBOM(true);
 	doc.SaveFile(f);
 	fclose(f);
 
