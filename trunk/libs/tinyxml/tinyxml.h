@@ -1498,6 +1498,8 @@ public:
 
 	int TabSize() const	{ return tabsize; }
 
+	void SetUseMicrosoftBOM( bool _useMicrosoftBOM )		{ useMicrosoftBOM = _useMicrosoftBOM; }
+
 	/** If you have handled the error, it can be reset with this call. The error
 		state is automatically cleared if you Parse a new XML block.
 	*/
