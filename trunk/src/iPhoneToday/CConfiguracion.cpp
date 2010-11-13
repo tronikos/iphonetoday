@@ -719,6 +719,7 @@ void CConfiguracion::defaultValues()
 	this->vibrateOnLaunchIcon = 0;
 	this->soundOnLaunchIcon[0] = 0;
 	this->soundOnLaunchIcon_bytes = NULL;
+	this->runTool[0] = 0;
 
 	StringCchCopy(this->pressed_icon, CountOf(this->pressed_icon), TEXT("Pressed\\RoundedPressed.png"));
 	this->pressed_sound[0] = 0;
@@ -1047,6 +1048,7 @@ BOOL CConfiguracion::loadXMLConfig()
 			if (!XMLUtils::GetAttr(pElem, "wav", this->soundOnLaunchIcon, CountOf(this->soundOnLaunchIcon))) {
 				XMLUtils::GetAttr(pElem, "sound", this->soundOnLaunchIcon, CountOf(this->soundOnLaunchIcon));
 			}
+			XMLUtils::GetAttr(pElem, "RunTool", this->runTool, CountOf(this->runTool));
 		} else if(_stricmp(nameNode, "OnPressIcon") == 0) {
 			XMLUtils::GetAttr(pElem, "icon",  this->pressed_icon,  CountOf(this->pressed_icon));
 			XMLUtils::GetAttr(pElem, "sound", this->pressed_sound, CountOf(this->pressed_sound));
@@ -1383,6 +1385,7 @@ BOOL CConfiguracion::saveXMLConfig()
 	XMLUtils::SetAttr(pElem, "minimize", this->minimizeOnLaunchIcon);
 	XMLUtils::SetAttr(pElem, "vibrate",  this->vibrateOnLaunchIcon);
 	XMLUtils::SetAttr(pElem, "sound",    this->soundOnLaunchIcon, CountOf(this->soundOnLaunchIcon));
+	XMLUtils::SetAttr(pElem, "RunTool",  this->runTool, CountOf(this->runTool));
 	root->LinkEndChild(pElem);
 
 	pElem = new TiXmlElement("OnPressIcon");
