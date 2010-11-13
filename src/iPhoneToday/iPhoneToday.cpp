@@ -2405,7 +2405,7 @@ LRESULT WINAPI CustomItemOptionsDlgProc(HWND hDlg, UINT message, WPARAM wParam, 
 
 }  // End CustomItemOptionsDlgProc
 
-BOOL LaunchApplication(LPCTSTR pCmdLine, LPCTSTR pParametros)
+BOOL LaunchApplication(LPCTSTR pCmdLine, LPCTSTR pParameters)
 {
 	if (pCmdLine == NULL) {
 		return FALSE;
@@ -2417,10 +2417,7 @@ BOOL LaunchApplication(LPCTSTR pCmdLine, LPCTSTR pParametros)
 		}
 	}
 
-	TCHAR fullPath[MAX_PATH];
-	configuracion->getAbsolutePath(fullPath, CountOf(fullPath), pCmdLine);
-
-	// Launch de application
+	// Launch the application
 	BOOL bWorked;
 	SHELLEXECUTEINFO sei;
 
@@ -2429,12 +2426,32 @@ BOOL LaunchApplication(LPCTSTR pCmdLine, LPCTSTR pParametros)
 	sei.nShow = SW_SHOWNORMAL;
 	sei.hwnd = g_hWnd;
 
-	if (FileExists(fullPath)) {
-		sei.lpFile = fullPath;
-	} else {
-		sei.lpFile = pCmdLine;
+	TCHAR cmdLineFullPath[MAX_PATH];
+	configuracion->getAbsolutePath(cmdLineFullPath, CountOf(cmdLineFullPath), pCmdLine);
+
+	TCHAR parameters[MAX_PATH];
+	if (configuracion->runTool[0] != 0) {
+		TCHAR runTool[MAX_PATH];
+		configuracion->getAbsolutePath(runTool, CountOf(runTool), configuracion->runTool);
+		if (FileExists(runTool) && FileExists(cmdLineFullPath)) {
+			sei.lpFile = runTool;
+			if (pParameters) {
+				StringCchPrintf(parameters, CountOf(parameters), L"\"%s\" %s", cmdLineFullPath, pParameters);
+			} else {
+				StringCchPrintf(parameters, CountOf(parameters), L"\"%s\"", cmdLineFullPath);
+			}
+			sei.lpParameters = parameters;
+		}
 	}
-	sei.lpParameters = pParametros;
+
+	if (sei.lpFile == 0) {
+		if (FileExists(cmdLineFullPath)) {
+			sei.lpFile = cmdLineFullPath;
+		} else {
+			sei.lpFile = pCmdLine;
+		}
+		sei.lpParameters = pParameters;
+	}
 
 	bWorked = ShellExecuteEx(&sei);
 

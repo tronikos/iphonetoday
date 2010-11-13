@@ -179,6 +179,7 @@ public:
 	UINT vibrateOnLaunchIcon;
 	TCHAR soundOnLaunchIcon[MAX_PATH];
 	BYTE* soundOnLaunchIcon_bytes;
+	TCHAR runTool[MAX_PATH];
 
 	// OnPressIcon
 	TCHAR pressed_icon[MAX_PATH];
