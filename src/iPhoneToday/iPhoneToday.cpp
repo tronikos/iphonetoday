@@ -993,6 +993,7 @@ LRESULT doMove (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 void RightClick(HWND hwnd, POINTS posCursor)
 {
 	ResetPressed();
+	posCursorInitialized = FALSE;
 
 	// Create context menu
 	HMENU hmenu = CreatePopupMenu();
@@ -1230,6 +1231,7 @@ LRESULT doMouseUp (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 	bool doubleClick = false;
 
 	ResetPressed();
+	posCursorInitialized = FALSE;
 
 	KillTimer(hwnd, TIMER_LONGTAP);
 
@@ -1258,7 +1260,6 @@ LRESULT doMouseUp (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 		procesaPulsacion(hwnd, point, doubleClick);
 	}
 
-	posCursorInitialized = FALSE;
 	return 0;
 }
 
