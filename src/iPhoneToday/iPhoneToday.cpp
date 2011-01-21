@@ -1258,6 +1258,7 @@ LRESULT doMouseUp (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 		procesaPulsacion(hwnd, point, doubleClick);
 	}
 
+	posCursorInitialized = FALSE;
 	return 0;
 }
 
