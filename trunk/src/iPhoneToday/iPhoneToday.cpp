@@ -34,6 +34,7 @@ CConfiguracion *configuracion = NULL;
 CEstado *estado = NULL;
 CNotifications *notifications = NULL;
 
+UINT lastMouseEvent = -1;
 BOOL posCursorInitialized = FALSE;
 POINTS posCursor;
 POINTS posImage = {0, 2};
@@ -898,9 +899,14 @@ LRESULT doMove (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 	POINTS posCursor2;
 	posCursor2 = MAKEPOINTS(lParam);
 	//NKDbgPrintfW(L"WM_MOUSEMOVE at (%d,%d)\n", posCursor2.x, posCursor2.y);
+	//WriteToLog(L"WM_MOUSEMOVE at (%d,%d)\n", posCursor2.x, posCursor2.y);
 	static BOOL movementInitiatedByVertical = FALSE;
 
 	ResetPressed();
+
+	if (lastMouseEvent != WM_LBUTTONDOWN) {
+		return 0;
+	}
 
 	if (!posCursorInitialized) {
 		posCursor = posCursor2;
@@ -1150,6 +1156,8 @@ LRESULT doMouseDown (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 	KillTimer(hwnd, TIMER_RECUPERACION);
 	posCursor = MAKEPOINTS(lParam);
 	//NKDbgPrintfW(L"WM_LBUTTONDOWN at (%d,%d)\n", posCursor.x, posCursor.y);
+	//WriteToLog(L"WM_LBUTTONDOWN at (%d,%d)\n", posCursor.x, posCursor.y);
+	lastMouseEvent = uimessage;
 	posCursorInitialized = TRUE;
 
 	if (configuracion->pressedIcon->hDC != NULL || _tcsclen(configuracion->pressed_sound) > 0) {
@@ -1228,9 +1236,11 @@ LRESULT doMouseUp (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lParam)
 	POINTS point;
 	point = MAKEPOINTS(lParam);
 	//NKDbgPrintfW(L"WM_LBUTTONUP at (%d,%d)\n", point.x, point.y);
+	//WriteToLog(L"WM_LBUTTONUP at (%d,%d)\n", point.x, point.y);
 	bool doubleClick = false;
 
 	ResetPressed();
+	lastMouseEvent = uimessage;
 	posCursorInitialized = FALSE;
 
 	KillTimer(hwnd, TIMER_LONGTAP);
