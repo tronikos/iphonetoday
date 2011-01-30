@@ -33,6 +33,7 @@
 #define IDC_MICON_EXECALT               1007
 #define IDC_MICON_PARAMETERSALT         1008
 #define IDC_MICON_TYPE                  1009
+#define IDC_MICON_TYPEPARAMS			1010
 #define IDC_MICON_ICON                  1011
 #define IDC_MICON_SPIN_SCREEN           1012
 #define IDC_MICON_SPIN_ICON             1013
