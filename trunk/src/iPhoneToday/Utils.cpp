@@ -1,4 +1,5 @@
 #include "Utils.h"
+#include "RegistryUtils.h"
 
 /*
 // ANSI to Unicode
@@ -273,4 +274,59 @@ BYTE* LoadFileData(TCHAR *file, UINT max_size)
 	}
 	CloseHandle(hFile);
 	return pFile;
+}
+
+void PopulateOtherEmailAccounts(HWND combobox) {
+	TCHAR tmp[MAX_PATH];
+	if (LoadTextSetting(HKEY_CURRENT_USER, tmp, L"System\\State\\Messages\\OtherEmail\\Unread", L"Text", L"")) {
+		TCHAR *t = tmp;
+		TCHAR *p = tmp;
+		while (p) {
+			p = wcschr(t, 10);
+			if (p) {
+				*p = 0;
+			}
+			TCHAR *pa = wcsrchr(t, L'(');
+			if (pa) {
+				while (*(pa - 1) == ' ') {
+					--pa;
+				}
+				*pa = 0;
+			}
+			SendMessage(combobox, CB_ADDSTRING, 0, (LPARAM) t);
+			t = p + 1;
+		}
+	}
+}
+
+int GetUnreadOtherEmailAccount(TCHAR *account_name) {
+	TCHAR tmp[MAX_PATH];
+	if (LoadTextSetting(HKEY_CURRENT_USER, tmp, L"System\\State\\Messages\\OtherEmail\\Unread", L"Text", L"")) {
+		TCHAR *t = tmp;
+		TCHAR *p = tmp;
+		while (p) {
+			p = wcschr(t, 10);
+			if (p) {
+				*p = 0;
+			}
+			int num = 0;
+			TCHAR *pa = wcsrchr(t, L'(');
+			if (pa) {
+				TCHAR *pa2 = wcschr(pa + 1, L')');
+				if (pa2) {
+					*pa2 = 0;
+					num = _wtoi(pa + 1);
+				}
+				while (*(pa - 1) == ' ') {
+					--pa;
+				}
+				*pa = 0;
+			}
+			if (wcsicmp(t, account_name) == 0) {
+				return num;
+			}
+			t = p + 1;
+		}
+	}
+	return 0;
 }

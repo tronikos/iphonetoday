@@ -37,6 +37,7 @@ void CIcono::defaultValues()
 	ejecutableAlt[0] = 0;
 	parametrosAlt[0] = 0;
 	tipo = NOTIF_NORMAL;
+	typeParams[0] = 0;
 	launchAnimation = 1;
 	AlphaFormat = 0;
 }

@@ -37,6 +37,7 @@ public:
 	TCHAR ejecutableAlt[MAX_PATH];	// execAlt
 	TCHAR parametrosAlt[MAX_PATH];	// parametersAlt
 	UINT tipo;						// type
+	TCHAR typeParams[MAX_PATH];		// typeParams
 	UINT launchAnimation;			// animation
 
 	HDC hDC;

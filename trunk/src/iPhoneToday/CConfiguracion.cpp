@@ -264,6 +264,7 @@ BOOL CConfiguracion::loadXMLIcons(CListaPantalla *listaPantallas)
 				XMLUtils::GetAttr(pElemIcon, "execAlt",			icono->ejecutableAlt,	CountOf(icono->ejecutableAlt));
 				XMLUtils::GetAttr(pElemIcon, "parametersAlt",	icono->parametrosAlt,	CountOf(icono->parametrosAlt));
 				XMLUtils::GetAttr(pElemIcon, "type",			&icono->tipo);
+				XMLUtils::GetAttr(pElemIcon, "typeParams",		icono->typeParams,		CountOf(icono->typeParams));
 				XMLUtils::GetAttr(pElemIcon, "animation",		&icono->launchAnimation);
 			}
 		}
@@ -1215,6 +1216,9 @@ BOOL CConfiguracion::saveXMLScreenIcons(TiXmlElement *pElemScreen, CPantalla *pa
 		}
 		if (icon->tipo != 0) {
 			XMLUtils::SetAttr(pElemIcon, "type", icon->tipo);
+		}
+		if (icon->typeParams[0] != 0) {
+			XMLUtils::SetAttr(pElemIcon, "typeParams", icon->typeParams, CountOf(icon->typeParams));
 		}
 		XMLUtils::SetAttr(pElemIcon, "animation", icon->launchAnimation);
 

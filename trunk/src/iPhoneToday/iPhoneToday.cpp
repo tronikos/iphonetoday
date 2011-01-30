@@ -1110,6 +1110,7 @@ void RightClick(HWND hwnd, POINTS posCursor)
 				StringCchCopy(destIcon->parametros, CountOf(destIcon->parametros), srcIcon->parametros);
 				StringCchCopy(destIcon->ejecutableAlt, CountOf(destIcon->ejecutableAlt), srcIcon->ejecutableAlt);
 				StringCchCopy(destIcon->parametrosAlt, CountOf(destIcon->parametrosAlt), srcIcon->parametrosAlt);
+				StringCchCopy(destIcon->typeParams, CountOf(destIcon->typeParams), srcIcon->typeParams);
 				destIcon->tipo = srcIcon->tipo;
 				destIcon->launchAnimation = srcIcon->launchAnimation;
 				SCREEN_TYPE st = MAINSCREEN;
@@ -1659,7 +1660,11 @@ void pintaIcono(HDC *hDC, CIcono *icono, CPantalla *pantalla, SCREEN_TYPE screen
 				numNotif = notifications->dwNotifications[SN_MESSAGINGMMSUNREAD];
 				break;
 			case NOTIF_OTHER_EMAIL:
-				numNotif = notifications->dwNotifications[SN_MESSAGINGOTHEREMAILUNREAD];
+				if (icono->typeParams[0] != 0) {
+					numNotif = GetUnreadOtherEmailAccount(icono->typeParams);
+				} else {
+					numNotif = notifications->dwNotifications[SN_MESSAGINGOTHEREMAILUNREAD];
+				}
 				break;
 			case NOTIF_SYNC_EMAIL:
 				numNotif = notifications->dwNotifications[SN_MESSAGINGACTIVESYNCEMAILUNREAD];
@@ -1670,11 +1675,15 @@ void pintaIcono(HDC *hDC, CIcono *icono, CPantalla *pantalla, SCREEN_TYPE screen
 			case NOTIF_APPOINTS:
 				numNotif = notifications->dwNotifications[SN_APPOINTMENTSLISTCOUNT];
 			case NOTIF_CALENDAR:
-				if (!configuracion->dowUseLocale || !GetDateFormat(LOCALE_USER_DEFAULT, 0, &notifications->st, L"ddd", str, CountOf(str))) {
-					StringCchCopy(str, CountOf(str), configuracion->diasSemana[notifications->st.wDayOfWeek]);
+				if (icono->typeParams[0] != 0) {
+					GetDateFormat(LOCALE_USER_DEFAULT, 0, &notifications->st, icono->typeParams, str, CountOf(str));
+				} else {
+					if (!configuracion->dowUseLocale || !GetDateFormat(LOCALE_USER_DEFAULT, 0, &notifications->st, L"ddd", str, CountOf(str))) {
+						StringCchCopy(str, CountOf(str), configuracion->diasSemana[notifications->st.wDayOfWeek]);
+					}
+					DrawSpecialIconText(*hDC, str, icono, width, &configuracion->dow);
+					StringCchPrintf(str, CountOf(str), TEXT("%i"), notifications->st.wDay);
 				}
-				DrawSpecialIconText(*hDC, str, icono, width, &configuracion->dow);
-				StringCchPrintf(str, CountOf(str), TEXT("%i"), notifications->st.wDay);
 				DrawSpecialIconText(*hDC, str, icono, width, &configuracion->dom);
 				break;
 			case NOTIF_ALARM:
@@ -1701,14 +1710,18 @@ void pintaIcono(HDC *hDC, CIcono *icono, CPantalla *pantalla, SCREEN_TYPE screen
 					DrawBubbleText(*hDC, configuracion->bubbleAlarm, 0, icono, width, &configuracion->bubble_alarm);
 				}
 			case NOTIF_CLOCK:
-				if (configuracion->clock12Format) {
-					if (configuracion->clckShowAMPM) {
-						GetTimeFormat(LOCALE_USER_DEFAULT, 0, &notifications->st, L"h':'mm' 'tt", str, CountOf(str));
-					} else {
-						StringCchPrintf(str, CountOf(str), TEXT("%d:%02d"), (notifications->st.wHour == 0 ? 12 : (notifications->st.wHour > 12 ? (notifications->st.wHour - 12) : notifications->st.wHour)), notifications->st.wMinute);
-					}
+				if (icono->typeParams[0] != 0) {
+					GetTimeFormat(LOCALE_USER_DEFAULT, 0, &notifications->st, icono->typeParams, str, CountOf(str));
 				} else {
-					StringCchPrintf(str, CountOf(str), TEXT("%02d:%02d"), notifications->st.wHour, notifications->st.wMinute);
+					if (configuracion->clock12Format) {
+						if (configuracion->clckShowAMPM) {
+							GetTimeFormat(LOCALE_USER_DEFAULT, 0, &notifications->st, L"h':'mm' 'tt", str, CountOf(str));
+						} else {
+							StringCchPrintf(str, CountOf(str), TEXT("%d:%02d"), (notifications->st.wHour == 0 ? 12 : (notifications->st.wHour > 12 ? (notifications->st.wHour - 12) : notifications->st.wHour)), notifications->st.wMinute);
+						}
+					} else {
+						StringCchPrintf(str, CountOf(str), TEXT("%02d:%02d"), notifications->st.wHour, notifications->st.wMinute);
+					}
 				}
 				DrawSpecialIconText(*hDC, str, icono, width, &configuracion->clck);
 				break;
@@ -2876,6 +2889,11 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 			}
 			int c = SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_FINDSTRINGEXACT, -1, (LPARAM) lpszFind);
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, c, 0);
+
+			if (icono->tipo == NOTIF_OTHER_EMAIL) {
+				PopulateOtherEmailAccounts(GetDlgItem(hDlg, IDC_MICON_TYPEPARAMS));
+			}
+			SetDlgItemText(hDlg, IDC_MICON_TYPEPARAMS, icono->typeParams);
 		} else {
 			int c = SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_FINDSTRINGEXACT, -1, (LPARAM) NOTIF_NORMAL_TXT);
 			SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPE), CB_SETCURSEL, c, 0);
@@ -2940,6 +2958,7 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 			TCHAR strParameters[MAX_PATH];
 			TCHAR strExecAlt[MAX_PATH];
 			TCHAR strParametersAlt[MAX_PATH];
+			TCHAR strTypeParams[MAX_PATH];
 			UINT launchAnimation = 0;
 
 			nScreen = GetDlgItemInt(hDlg, IDC_MICON_SCREEN, NULL, TRUE);
@@ -2952,6 +2971,7 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 			GetDlgItemText(hDlg, IDC_MICON_PARAMETERS, strParameters, MAX_PATH);
 			GetDlgItemText(hDlg, IDC_MICON_EXECALT, strExecAlt, MAX_PATH);
 			GetDlgItemText(hDlg, IDC_MICON_PARAMETERSALT, strParametersAlt, MAX_PATH);
+			GetDlgItemText(hDlg, IDC_MICON_TYPEPARAMS, strTypeParams, MAX_PATH);
 			launchAnimation = SendMessage(GetDlgItem(hDlg, IDC_MICON_LAUNCHANIMATION), BM_GETCHECK, 0, 0) == BST_CHECKED;
 
 
@@ -3091,6 +3111,7 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 			StringCchCopy(icono->parametros, CountOf(icono->parametros), strParameters);
 			StringCchCopy(icono->ejecutableAlt, CountOf(icono->ejecutableAlt), strExecAlt);
 			StringCchCopy(icono->parametrosAlt, CountOf(icono->parametrosAlt), strParametersAlt);
+			StringCchCopy(icono->typeParams, CountOf(icono->typeParams), strTypeParams);
 			icono->tipo = nType;
 			icono->launchAnimation = launchAnimation;
 			SCREEN_TYPE st = MAINSCREEN;
@@ -3112,8 +3133,17 @@ LRESULT CALLBACK editaIconoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 
 			EndDialog(hDlg, LOWORD(wParam));
 			return FALSE;
-		} else if (HIWORD(wParam) == EN_CHANGE) {
-
+		} else if (LOWORD(wParam) == IDC_MICON_TYPE) {
+			if (HIWORD(wParam) == CBN_SELCHANGE) {
+				TCHAR str[MAX_PATH];
+				if (GetDlgItemText(hDlg, IDC_MICON_TYPE, str, MAX_PATH) > 0) {
+					if (wcsicmp(str, NOTIF_OTHER_EMAIL_TXT) == 0) {
+						PopulateOtherEmailAccounts(GetDlgItem(hDlg, IDC_MICON_TYPEPARAMS));
+					} else {
+						SendMessage(GetDlgItem(hDlg, IDC_MICON_TYPEPARAMS), CB_RESETCONTENT, 0, 0);
+					}
+				}
+			}
 		} else if (LOWORD(wParam) == IDC_MICON_IMAGE_B) {
 			TCHAR pathFile[MAX_PATH];
 			if (openFileBrowse(hDlg, OFN_EXFLAG_THUMBNAILVIEW, pathFile, lastPathImage)) {
