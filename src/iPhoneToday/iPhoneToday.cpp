@@ -1830,10 +1830,18 @@ void pintaIcono(HDC *hDC, CIcono *icono, CPantalla *pantalla, SCREEN_TYPE screen
 	}
 
 	// Pintamos el nombre del icono
-	posTexto.top = int(icono->y + width + cs->cs.textOffset);
+	posTexto.top = int(icono->y + width + cs->cs.textOffsetVertical);
 	posTexto.bottom = posTexto.top + cs->textHeight;
-	posTexto.left = int(icono->x - (cs->distanceIconsH * 0.5) + 0.5);
-	posTexto.right = int(icono->x + width + (cs->distanceIconsH * 0.5) + 0.5);
+	if (cs->cs.textAlign == DT_LEFT) {
+		posTexto.left = int(icono->x + cs->cs.textOffsetHorizontal);
+	} else {
+		posTexto.left = int(icono->x - (cs->distanceIconsH * 0.5) + 0.5);
+	}
+	if (cs->cs.textAlign == DT_RIGHT) {
+		posTexto.right = int(icono->x + width - cs->cs.textOffsetHorizontal);
+	} else {
+		posTexto.right = int(icono->x + width + (cs->distanceIconsH * 0.5) + 0.5);
+	}
 
 	if (cs->textHeight > 0) {
 		TCHAR *p = icono->nombre;
@@ -1843,7 +1851,7 @@ void pintaIcono(HDC *hDC, CIcono *icono, CPantalla *pantalla, SCREEN_TYPE screen
 			p = notifications->szNotifications[SN_PHONEPROFILE];
 		}
 		if (p && p[0]) {
-			DrawText2(*hDC, p, -1, &posTexto, DT_CENTER | DT_TOP, cs->cs.textRoundRect, cs->cs.textShadow);
+			DrawText2(*hDC, p, -1, &posTexto, cs->cs.textAlign | DT_TOP, cs->cs.textRoundRect, cs->cs.textShadow);
 		}
 	}
 }

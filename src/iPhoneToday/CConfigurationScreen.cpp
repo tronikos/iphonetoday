@@ -47,7 +47,7 @@ void CConfigurationScreen::calculate(BOOL isStaticbar, int maxIcons, UINT screen
 		distanceIconsH = screenWidth / iconsPerRow;
 	}
 	posReference.y = SHORT(cs.offset.top);
-	distanceIconsV = UINT(iconWidth + textHeight + cs.textOffset + cs.additionalVerticalSpace);
+	distanceIconsV = UINT(iconWidth + textHeight + cs.textOffsetVertical + cs.additionalVerticalSpace);
 }
 
 void CConfigurationScreen::defaultValues()
@@ -62,7 +62,9 @@ void CConfigurationScreen::defaultValues()
 	this->cs.textHeightXML = 11;
 	this->cs.textColor = RGB(255, 255, 255);
 	this->cs.textWeight = 400;
-	this->cs.textOffset = 0;
+	this->cs.textOffsetVertical = 0;
+	this->cs.textOffsetHorizontal = 0;
+	this->cs.textAlign = DT_CENTER;
 	this->cs.textShadow = 1;
 	this->cs.textRoundRect = 0;
 
@@ -94,7 +96,8 @@ void CConfigurationScreen::Scale(double scale)
 	this->cs.additionalVerticalSpace = UINT(scale * this->cs.additionalVerticalSpace);
 
 	this->cs.textHeightXML = UINT(scale * this->cs.textHeightXML);
-	this->cs.textOffset = INT(scale * this->cs.textOffset);
+	this->cs.textOffsetVertical = INT(scale * this->cs.textOffsetVertical);
+	this->cs.textOffsetHorizontal = INT(scale * this->cs.textOffsetHorizontal);
 
 	this->cs.offset.left = LONG(scale * this->cs.offset.left);
 	this->cs.offset.top = LONG(scale * this->cs.offset.top);
@@ -136,7 +139,9 @@ BOOL CConfigurationScreen::loadXMLConfig(TiXmlElement *pRoot)
 			XMLUtils::GetAttr(pElem, "size",      &this->cs.textHeightXML);
 			XMLUtils::GetAttr(pElem, "color",     &this->cs.textColor);
 			XMLUtils::GetAttr(pElem, "weight",    &this->cs.textWeight);
-			XMLUtils::GetAttr(pElem, "offset",    &this->cs.textOffset);
+			XMLUtils::GetAttr(pElem, "offset",    &this->cs.textOffsetVertical);
+			XMLUtils::GetAttr(pElem, "offsetH",   &this->cs.textOffsetHorizontal);
+			XMLUtils::GetAttr(pElem, "align",     &this->cs.textAlign);
 			XMLUtils::GetAttr(pElem, "shadow",    &this->cs.textShadow);
 			XMLUtils::GetAttr(pElem, "roundrect", &this->cs.textRoundRect);
 		} else if(_stricmp(nameNode, "Background") == 0) {
@@ -197,7 +202,9 @@ BOOL CConfigurationScreen::saveXMLConfig(TiXmlElement *pRoot, BOOL isStaticbar)
 	XMLUtils::SetAttr(pElem, "size",      this->cs.textHeightXML);
 	XMLUtils::SetAttr(pElem, "color",     this->cs.textColor);
 	XMLUtils::SetAttr(pElem, "weight",    this->cs.textWeight);
-	XMLUtils::SetAttr(pElem, "offset",    this->cs.textOffset);
+	XMLUtils::SetAttr(pElem, "offset",    this->cs.textOffsetVertical);
+	XMLUtils::SetAttr(pElem, "offsetH",   this->cs.textOffsetHorizontal);
+	XMLUtils::SetAttr(pElem, "align",     this->cs.textAlign);
 	XMLUtils::SetAttr(pElem, "shadow",    this->cs.textShadow);
 	XMLUtils::SetAttr(pElem, "roundrect", this->cs.textRoundRect);
 	pRoot->LinkEndChild(pElem);
