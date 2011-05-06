@@ -13,7 +13,9 @@ typedef struct ConfigurationScreen {
 	UINT textHeightXML;
 	COLORREF textColor;
 	UINT textWeight;
-	INT textOffset;
+	INT textOffsetHorizontal;
+	INT textOffsetVertical;
+	UINT textAlign;
 	UINT textShadow;
 	BOOL textRoundRect;
 	RECT offset;
