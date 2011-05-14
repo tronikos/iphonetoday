@@ -95,6 +95,8 @@ public:
 
 	// Circles
 	UINT circlesDiameter;
+	INT circlesDiameterActivePerc;
+	UINT circlesDiameterMax;
 	INT circlesDistance;
 	INT circlesOffset;
 	BOOL circlesAlignTop;

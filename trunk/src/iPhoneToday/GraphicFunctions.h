@@ -6,6 +6,7 @@
 //void BltAlpha(HDC, int, int, int, int, HDC, int, int, int, int, BYTE alpha);
 
 //HBITMAP CreateBitmapMask(HBITMAP hbmColour, COLORREF crTransparent);
+void drawCircle(HDC hDC, float centerX, float centerY, float diameter, COLORREF color, COLORREF colorOuter = RGB(255, 255, 255));
 void drawEllipse(HDC hDC, int x, int y, int x2, int y2, COLORREF color, TCHAR *texto, COLORREF colorOuter = RGB(255, 255, 255));
 
 //HBITMAP HBITMAPFromImage (IImage *pImage);

@@ -159,7 +159,8 @@ void CConfiguracion::calculaConfiguracion(CListaPantalla *listaPantallas, int wi
 	this->altoPantallaMax = max(((maxIconos + mainScreenConfig->iconsPerRow - 1) / mainScreenConfig->iconsPerRow) * mainScreenConfig->distanceIconsV + mainScreenConfig->posReference.y * 2, altoPantalla);
 
 	// calculate circles' configuration
-	if (listaPantallas->numPantallas > 1 && this->circlesDiameter > 0) {
+	circlesDiameterMax = max(circlesDiameter, (UINT) (circlesDiameter + circlesDiameter * (circlesDiameterActivePerc / 100.0f)));
+	if (listaPantallas->numPantallas > 1 && circlesDiameterMax > 0) {
 		this->circlesDistAdjusted = this->circlesDistance;
 		if (this->circlesDistAdjusted < 0) {
 			CConfigurationScreen *cs_tmp = this->mainScreenConfig;
@@ -172,13 +173,13 @@ void CConfiguracion::calculaConfiguracion(CListaPantalla *listaPantallas, int wi
 					cs_tmp = this->bottomBarConfig;
 				}
 			}
-			this->circlesBarRect.left = cs_tmp->posReference.x + (cs_tmp->iconWidth - this->circlesDiameter) / 2;
+			this->circlesBarRect.left = cs_tmp->posReference.x + (cs_tmp->iconWidth - circlesDiameterMax) / 2;
 			this->circlesBarRect.left += (-(int) this->circlesDistAdjusted - 1) * cs_tmp->distanceIconsH;
-			this->circlesDistAdjusted = cs_tmp->distanceIconsH - this->circlesDiameter;
+			this->circlesDistAdjusted = cs_tmp->distanceIconsH - circlesDiameterMax;
 		} else {
-			this->circlesBarRect.left = int((this->anchoPantalla / 2) - ((listaPantallas->numPantallas - 1) * (this->circlesDiameter + this->circlesDistAdjusted) + this->circlesDiameter) / 2);
+			this->circlesBarRect.left = int((this->anchoPantalla / 2) - ((listaPantallas->numPantallas - 1) * (circlesDiameterMax + this->circlesDistAdjusted) + circlesDiameterMax) / 2);
 		}
-		this->circlesBarRect.right = this->circlesBarRect.left + (listaPantallas->numPantallas - 1) * (this->circlesDiameter + this->circlesDistAdjusted) + this->circlesDiameter;
+		this->circlesBarRect.right = this->circlesBarRect.left + (listaPantallas->numPantallas - 1) * (circlesDiameterMax + this->circlesDistAdjusted) + circlesDiameterMax;
 		if (this->circlesAlignTop) {
 			this->circlesBarRect.top = this->circlesOffset;
 			if (numIconsInTopBar > 0 && this->topBarConfig->iconWidth > 0) {
@@ -186,13 +187,13 @@ void CConfiguracion::calculaConfiguracion(CListaPantalla *listaPantallas, int wi
 				this->circlesBarRect.top += this->topBarConfig->distanceIconsV + this->topBarConfig->cs.offset.top + this->topBarConfig->cs.offset.bottom;
 			}
 		} else {
-			this->circlesBarRect.top = int(this->altoPantalla) - this->circlesDiameter - this->circlesOffset;
+			this->circlesBarRect.top = int(this->altoPantalla) - circlesDiameterMax - this->circlesOffset;
 			if (numIconsInBottomBar > 0 && this->bottomBarConfig->iconWidth > 0) {
 				//this->circlesBarRect.top -= listaPantallas->barraInferior->altoPantalla;
 				this->circlesBarRect.top -= this->bottomBarConfig->distanceIconsV + this->bottomBarConfig->cs.offset.top + this->bottomBarConfig->cs.offset.bottom;
 			}
 		}
-		this->circlesBarRect.bottom = this->circlesBarRect.top + this->circlesDiameter;
+		this->circlesBarRect.bottom = this->circlesBarRect.top + circlesDiameterMax;
 	}
 }
 
@@ -533,6 +534,7 @@ void CConfiguracion::defaultValues()
 	//this->bottomBarConfig->cs.minHorizontalSpace = 5;
 
 	this->circlesDiameter = 7;
+	this->circlesDiameterActivePerc = 30;
 	this->circlesDistance = 3;
 	this->circlesOffset = 3;
 	this->circlesAlignTop = 0;
@@ -963,6 +965,7 @@ BOOL CConfiguracion::loadXMLConfig()
 
 		if(_stricmp(nameNode, "Circles") == 0) {
 			XMLUtils::GetAttr(pElem, "diameter",      &this->circlesDiameter);
+			XMLUtils::GetAttr(pElem, "diameterActivePerc", &this->circlesDiameterActivePerc);
 			XMLUtils::GetAttr(pElem, "distance",      &this->circlesDistance);
 			XMLUtils::GetAttr(pElem, "offset",        &this->circlesOffset);
 			XMLUtils::GetAttr(pElem, "alignTop",      &this->circlesAlignTop);
@@ -1257,6 +1260,7 @@ BOOL CConfiguracion::saveXMLConfig()
 
 	pElem = new TiXmlElement("Circles");
 	XMLUtils::SetAttr(pElem, "diameter",      this->circlesDiameter);
+	XMLUtils::SetAttr(pElem, "diameterActivePerc", this->circlesDiameterActivePerc);
 	XMLUtils::SetAttr(pElem, "distance",      this->circlesDistance);
 	XMLUtils::SetAttr(pElem, "offset",        this->circlesOffset);
 	XMLUtils::SetAttr(pElem, "alignTop",      this->circlesAlignTop);

@@ -284,10 +284,10 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT uimessage, WPARAM wParam, LPARAM lPara
 		GotoScreen(hwnd, min(max((int) wParam, 0), (int)listaPantallas->numPantallas - 1));
 		return 0;
 	case WM_USER_GOTO_NEXT:
-		GotoScreen(hwnd, (estado->pantallaActiva + 1) % listaPantallas->numPantallas);
+		GotoScreen(hwnd, estado->pantallaActiva + 1);
 		return 0;
 	case WM_USER_GOTO_PREV:
-		GotoScreen(hwnd, (listaPantallas->numPantallas + estado->pantallaActiva - 1) % listaPantallas->numPantallas);
+		GotoScreen(hwnd, listaPantallas->numPantallas + estado->pantallaActiva - 1);
 		return 0;
 	case WM_USER_GOTO_UP:
 		if (estado != NULL && configuracion != NULL) {
@@ -1360,9 +1360,10 @@ void pintaIconos(HDC *hDC, RECT *rcWindBounds)
 			int B = (int) (GetBValue(configuracion->circlesColorInactive) * perc + GetBValue(configuracion->circlesColorActive) * (1 - perc));
 			color = RGB(R, G, B);
 
-			int tmp = configuracion->circlesBarRect.left + i * (configuracion->circlesDiameter + configuracion->circlesDistAdjusted);
-
-			drawEllipse(*hDC, tmp, configuracion->circlesBarRect.top, tmp + configuracion->circlesDiameter, configuracion->circlesBarRect.bottom, color, NULL, configuracion->circlesColorOuter);
+			float diameter = (configuracion->circlesDiameter + configuracion->circlesDiameter * (1 - perc) * configuracion->circlesDiameterActivePerc / 100.0f);
+			float centerX = configuracion->circlesBarRect.left + i * (configuracion->circlesDiameterMax + configuracion->circlesDistAdjusted) + configuracion->circlesDiameterMax / 2.0f;
+			float centerY = configuracion->circlesBarRect.top + (configuracion->circlesBarRect.bottom - configuracion->circlesBarRect.top) / 2.0f;
+			drawCircle(*hDC, centerX, centerY, diameter, color, configuracion->circlesColorOuter);
 		}
 	}
 
@@ -2523,7 +2524,7 @@ BOOL procesaPulsacion(HWND hwnd, POINTS posCursor, BOOL doubleClick, BOOL noLanz
 			newScreen = 0;
 		} else {
 			if (!configuracion->circlesSingleTap) return FALSE;
-			newScreen = (posCursor.x - configuracion->circlesBarRect.left + configuracion->circlesDistAdjusted / 2) / (configuracion->circlesDiameter + configuracion->circlesDistAdjusted);
+			newScreen = (posCursor.x - configuracion->circlesBarRect.left + configuracion->circlesDistAdjusted / 2) / (configuracion->circlesDiameterMax + configuracion->circlesDistAdjusted);
 		}
 		if (noLanzar) {
 			PlaySoundMemOrFile(configuracion->pressed_sound_bytes, configuracion->pressed_sound);
@@ -4183,9 +4184,10 @@ BOOL hasBottomBar()
 
 void GotoScreen(HWND hwnd, UINT screen)
 {
-	if (estado == NULL || configuracion == NULL || listaPantallas == NULL) {
+	if (estado == NULL || configuracion == NULL || listaPantallas == NULL || listaPantallas->numPantallas == 0) {
 		return;
 	}
+	screen %= listaPantallas->numPantallas;
 	if (estado->pantallaActiva != screen) {
 		PlaySoundMemOrFile(configuracion->change_screen_sound_bytes, configuracion->change_screen_sound);
 	}
