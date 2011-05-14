@@ -112,6 +112,12 @@ HBITMAP CreateBitmapMask(HBITMAP hbmColour, COLORREF crTransparent)
 }
 */
 
+void drawCircle(HDC hDC, float centerX, float centerY, float diameter, COLORREF color, COLORREF colorOuter) {
+	float x = centerX - diameter / 2.0f;
+	float y = centerY - diameter / 2.0f;
+	drawEllipse(hDC, (int) (x + 0.5f), (int) (y + 0.5f), (int) (x + diameter + 0.5f), (int) (y + diameter + 0.5f), color, NULL, colorOuter);
+}
+
 // Draw an ellipse
 void drawEllipse(HDC hDC, int x, int y, int x2, int y2, COLORREF color, TCHAR *texto, COLORREF colorOuter) {
 	HPEN hEllipsePen;

@@ -33,7 +33,7 @@
 #define IDC_MICON_EXECALT               1007
 #define IDC_MICON_PARAMETERSALT         1008
 #define IDC_MICON_TYPE                  1009
-#define IDC_MICON_TYPEPARAMS			1010
+#define IDC_MICON_TYPEPARAMS            1010
 #define IDC_MICON_ICON                  1011
 #define IDC_MICON_SPIN_SCREEN           1012
 #define IDC_MICON_SPIN_ICON             1013
@@ -202,14 +202,14 @@
 #define IDC_EDIT_FLIP_SOUND             1244
 #define IDC_BUTTON_FLIP_SOUND           1245
 #define IDC_BUTTON_FLIP_SOUND_PLAY      1246
-
+#define IDC_EDIT_CIRCLES_DIAMETER_ACTIVE 1247
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        124
 #define _APS_NEXT_COMMAND_VALUE         40003
-#define _APS_NEXT_CONTROL_VALUE         1247
+#define _APS_NEXT_CONTROL_VALUE         1248
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
